@@ -40,6 +40,11 @@ void InfiniSleepController::Init(System::SystemTask* systemTask) {
 
   LoadSettingsFromFile();
   LoadPrevSessionData();
+  if (infiniSleepSettings.pushesToStopAlarm == 0) {
+    infiniSleepSettings.pushesToStopAlarm = PUSHES_TO_STOP_ALARM;
+    settingsChanged = true;
+  }
+  pushesLeftToStopWakeAlarm = infiniSleepSettings.pushesToStopAlarm;
   if (wakeAlarm.isEnabled) {
     NRF_LOG_INFO("[InfiniSleepController] Loaded wake alarm was enabled, scheduling");
     ScheduleWakeAlarm();
@@ -106,7 +111,7 @@ void InfiniSleepController::ScheduleWakeAlarm() {
   xTimerStop(wakeAlarmTimer, 0);
   xTimerStop(gradualWakeTimer, 0);
 
-  pushesLeftToStopWakeAlarm = PUSHES_TO_STOP_ALARM;
+  pushesLeftToStopWakeAlarm = infiniSleepSettings.pushesToStopAlarm;
 
   gradualWakeStep = 9;
 

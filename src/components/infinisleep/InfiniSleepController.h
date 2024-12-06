@@ -193,6 +193,8 @@ namespace Pinetime {
         uint8_t sleepCycleDuration = SLEEP_CYCLE_DURATION;
         uint8_t desiredCycles = DESIRED_CYCLES;
         uint8_t motorStrength = 100;
+        bool naturalWake = false;
+        uint8_t pushesToStopAlarm = PUSHES_TO_STOP_ALARM;
       };
 
       InfiniSleepSettings infiniSleepSettings;
