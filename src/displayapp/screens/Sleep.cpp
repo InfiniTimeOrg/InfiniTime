@@ -88,6 +88,10 @@ void Sleep::Refresh() {
 }
 
 void Sleep::UpdateDisplay() {
+  if (lastDisplayState == displayState && displayState == SleepDisplayState::Alarm) {
+    return;
+  }
+
   // Clear the screen
   lv_obj_clean(lv_scr_act());
   if (infiniSleepController.IsAlerting()) {
@@ -528,6 +532,7 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 
       OnValueChanged();
       infiniSleepController.ScheduleWakeAlarm();
+      SetSwitchState(LV_ANIM_OFF);
       return;
     }
   }
