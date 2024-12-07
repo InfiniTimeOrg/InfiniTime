@@ -72,6 +72,8 @@ FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateA
   lv_label_set_text_static(lblRing, ringLabelText);
   lv_obj_set_style_local_bg_color(btnRing, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+  // Refresh ASAP to properly set buttons state.
+  Refresh();
 }
 
 FindMyPhone::~FindMyPhone() {
