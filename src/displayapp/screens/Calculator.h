@@ -58,7 +58,7 @@ namespace Pinetime {
         int64_t value = 0;
         int64_t result = 0;
         char operation = ' ';
-        bool equalSignPressed = false;
+        bool equalSignPressedBefore = false;
 
         enum Error {
           TooLarge,
