@@ -48,10 +48,10 @@ namespace Pinetime {
 
         lv_obj_t* container;
         lv_obj_t* lblTitle;
-        lv_obj_t* btnNone;
-        lv_obj_t* btnHigh;
-        lv_obj_t* lblNone;
-        lv_obj_t* lblHigh;
+        lv_obj_t* btnStop;
+        lv_obj_t* btnRing;
+        lv_obj_t* lblStop;
+        lv_obj_t* lblRing;
         lv_task_t* refreshTask = nullptr;
 
         std::optional<Pinetime::Controllers::ImmediateAlertClient::Levels> lastUserInitiatedLevel;
