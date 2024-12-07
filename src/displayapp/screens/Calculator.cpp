@@ -65,7 +65,7 @@ void Calculator::HandleInput() {
     return;
   }
 
-  if ((equalSignPressed && (*buttonText != '=')) || (error != Error::None)) {
+  if ((equalSignPressedBefore && (*buttonText != '=')) || (error != Error::None)) {
     ResetInput();
     UpdateOperation();
   }
@@ -188,7 +188,7 @@ void Calculator::HandleInput() {
       break;
 
     case '=':
-      equalSignPressed = true;
+      equalSignPressedBefore = true;
       Eval();
       // If the operation is ' ' then we move the value to the result.
       // We reset the input after this.
@@ -239,7 +239,7 @@ void Calculator::ResetInput() {
   value = 0;
   offset = FIXED_POINT_OFFSET;
   operation = ' ';
-  equalSignPressed = false;
+  equalSignPressedBefore = false;
   error = Error::None;
 }
 
