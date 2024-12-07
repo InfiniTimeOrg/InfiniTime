@@ -9,8 +9,8 @@ using namespace Pinetime::Applications::Screens;
 namespace {
   static constexpr char alertSentLabelText[] = "Alerting";
 
-  static constexpr char noneLabelText[] = "Stop";
-  static constexpr char highLabelText[] = "Ring";
+  static constexpr char stopLabelText[] = "Stop";
+  static constexpr char ringLabelText[] = "Ring";
 
   void btnImmediateAlertEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<FindMyPhone*>(obj->user_data);
@@ -54,23 +54,23 @@ FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateA
 
   lblTitle = lv_label_create(lv_scr_act(), nullptr);
 
-  btnNone = lv_btn_create(container, nullptr);
-  btnNone->user_data = this;
-  lv_obj_set_event_cb(btnNone, btnImmediateAlertEventHandler);
-  lv_obj_set_size(btnNone, 114, 76);
-  lv_obj_align(btnNone, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  lblNone = lv_label_create(btnNone, nullptr);
-  lv_label_set_text_static(lblNone, noneLabelText);
-  lv_obj_set_style_local_bg_color(btnNone, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  btnStop = lv_btn_create(container, nullptr);
+  btnStop->user_data = this;
+  lv_obj_set_event_cb(btnStop, btnImmediateAlertEventHandler);
+  lv_obj_set_size(btnStop, 114, 76);
+  lv_obj_align(btnStop, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lblStop = lv_label_create(btnStop, nullptr);
+  lv_label_set_text_static(lblStop, stopLabelText);
+  lv_obj_set_style_local_bg_color(btnStop, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
 
-  btnHigh = lv_btn_create(container, nullptr);
-  btnHigh->user_data = this;
-  lv_obj_set_event_cb(btnHigh, btnImmediateAlertEventHandler);
-  lv_obj_set_size(btnHigh, 114, 76);
-  lv_obj_align(btnHigh, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  lblHigh = lv_label_create(btnHigh, nullptr);
-  lv_label_set_text_static(lblHigh, highLabelText);
-  lv_obj_set_style_local_bg_color(btnHigh, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  btnRing = lv_btn_create(container, nullptr);
+  btnRing->user_data = this;
+  lv_obj_set_event_cb(btnRing, btnImmediateAlertEventHandler);
+  lv_obj_set_size(btnRing, 114, 76);
+  lv_obj_align(btnRing, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lblRing = lv_label_create(btnRing, nullptr);
+  lv_label_set_text_static(lblRing, ringLabelText);
+  lv_obj_set_style_local_bg_color(btnRing, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
@@ -81,9 +81,9 @@ FindMyPhone::~FindMyPhone() {
 
 void FindMyPhone::OnImmediateAlertEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    if (obj == btnNone) {
+    if (obj == btnStop) {
       lastUserInitiatedLevel = Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert;
-    } else if (obj == btnHigh) {
+    } else if (obj == btnRing) {
       lastUserInitiatedLevel = Pinetime::Controllers::ImmediateAlertClient::Levels::HighAlert;
     } else {
       // Unknown button?
@@ -124,11 +124,11 @@ const FindMyPhone::LabelState& FindMyPhone::GetLabelState() const {
 void FindMyPhone::Refresh() {
   const auto service_state = immediateAlertClient.GetState();
   if (service_state == Pinetime::Controllers::ImmediateAlertClient::State::Connected) {
-    lv_obj_clear_state(btnNone, LV_STATE_DISABLED);
-    lv_obj_clear_state(btnHigh, LV_STATE_DISABLED);
+    lv_obj_clear_state(btnStop, LV_STATE_DISABLED);
+    lv_obj_clear_state(btnRing, LV_STATE_DISABLED);
   } else {
-    lv_obj_add_state(btnNone, LV_STATE_DISABLED);
-    lv_obj_add_state(btnHigh, LV_STATE_DISABLED);
+    lv_obj_add_state(btnStop, LV_STATE_DISABLED);
+    lv_obj_add_state(btnRing, LV_STATE_DISABLED);
     lastUserInitiatedLevel = std::nullopt;
   }
   const auto& label_state = GetLabelState();
