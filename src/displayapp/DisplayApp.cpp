@@ -359,6 +359,9 @@ void DisplayApp::Refresh() {
           if (infiniSleepController.IsEnabled()) {
             if (currentApp != Apps::Sleep) {
               LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::Up);
+              // Wait for the sleep app to load before moving on.
+              while (!lv_task_handler()) {
+              };
             }
           }
         }
