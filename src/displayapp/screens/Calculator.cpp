@@ -257,18 +257,18 @@ void Calculator::UpdateResultLabel() const {
     remainder = -remainder;
   }
 
-  uint8_t min_width = N_DECIMALS;
+  uint8_t minWidth = N_DECIMALS;
 
   // cut "0"-digits on the right
   while ((remainder > 0) && (remainder % 10 == 0)) {
     remainder /= 10;
-    min_width--;
+    minWidth--;
   }
 
   if ((integer == 0) && negative) {
-    lv_label_set_text_fmt(resultLabel, "-0.%0*" PRId64, min_width, remainder);
+    lv_label_set_text_fmt(resultLabel, "-0.%0*" PRId64, minWidth, remainder);
   } else {
-    lv_label_set_text_fmt(resultLabel, "%" PRId64 ".%0*" PRId64, integer, min_width, remainder);
+    lv_label_set_text_fmt(resultLabel, "%" PRId64 ".%0*" PRId64, integer, minWidth, remainder);
   }
 }
 
@@ -288,31 +288,31 @@ void Calculator::UpdateValueLabel() {
 
       int64_t printRemainder = remainder < 0 ? -remainder : remainder;
 
-      uint8_t min_width = 0;
-      int64_t tmp_offset = offset;
+      uint8_t minWidth = 0;
+      int64_t tmpOffset = offset;
 
-      if (tmp_offset == 0) {
-        tmp_offset = 1;
-        min_width = 1;
+      if (tmpOffset == 0) {
+        tmpOffset = 1;
+        minWidth = 1;
       }
-      while (tmp_offset < FIXED_POINT_OFFSET) {
-        tmp_offset *= 10;
-        min_width++;
+      while (tmpOffset < FIXED_POINT_OFFSET) {
+        tmpOffset *= 10;
+        minWidth++;
       }
-      min_width--;
+      minWidth--;
 
-      for (uint8_t i = min_width; i < N_DECIMALS; i++) {
+      for (uint8_t i = minWidth; i < N_DECIMALS; i++) {
         printRemainder /= 10;
       }
 
       if ((integer == 0) && negative) {
-        lv_label_set_text_fmt(valueLabel, "-0.%0*" PRId64, min_width, printRemainder);
+        lv_label_set_text_fmt(valueLabel, "-0.%0*" PRId64, minWidth, printRemainder);
       } else if (offset == FIXED_POINT_OFFSET) {
         lv_label_set_text_fmt(valueLabel, "%" PRId64, integer);
       } else if ((offset == (FIXED_POINT_OFFSET / 10)) && (remainder == 0)) {
         lv_label_set_text_fmt(valueLabel, "%" PRId64 ".", integer);
       } else {
-        lv_label_set_text_fmt(valueLabel, "%" PRId64 ".%0*" PRId64, integer, min_width, printRemainder);
+        lv_label_set_text_fmt(valueLabel, "%" PRId64 ".%0*" PRId64, integer, minWidth, printRemainder);
       }
     } break;
   }
