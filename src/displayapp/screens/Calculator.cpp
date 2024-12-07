@@ -84,8 +84,8 @@ void Calculator::HandleInput() {
     case '9': {
       // *buttonText is the first char in buttonText
       // "- '0'" results in the int value of the char
-      auto digit = (*buttonText) - '0';
-      auto sign = (value < 0) ? -1 : 1;
+      uint8_t digit = (*buttonText) - '0';
+      int8_t sign = (value < 0) ? -1 : 1;
 
       // if this is true, we already pressed the . button
       if (offset < FIXED_POINT_OFFSET) {
