@@ -307,10 +307,12 @@ void Sleep::DrawInfoScreen() {
 
   // Gradual Wake info
   label_gradual_wake = lv_label_create(lv_scr_act(), nullptr);
-  if (infiniSleepController.GetInfiniSleepSettings().graddualWake && infiniSleepController.gradualWakeStep >= 0) {
-    lv_label_set_text_fmt(label_gradual_wake, "Gradual Wake: ON");
+  if (infiniSleepController.infiniSleepSettings.graddualWake) {
+    lv_label_set_text_static(label_gradual_wake, "Wake Mode: Gradual");
+  } else if (infiniSleepController.infiniSleepSettings.naturalWake) {
+    lv_label_set_text_static(label_gradual_wake, "Wake Mode: Natural");
   } else {
-    lv_label_set_text_static(label_gradual_wake, "Gradual Wake: OFF");
+    lv_label_set_text_static(label_gradual_wake, "Wake Mode: Off");
   }
   lv_obj_align(label_gradual_wake, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
   lv_obj_set_style_local_text_color(label_gradual_wake,
