@@ -94,8 +94,7 @@ bool ImmediateAlertClient::SendImmediateAlert(ImmediateAlertClient::Levels level
     return false;
   }
 
-  ble_gattc_write_no_rsp(connectionHandle, *alertLevelHandle, om);
-  return true;
+  return ble_gattc_write_no_rsp(connectionHandle, *alertLevelHandle, om) == 0;
 }
 
 int ImmediateAlertClient::OnDiscoveryEventCallback(uint16_t conn_handle,

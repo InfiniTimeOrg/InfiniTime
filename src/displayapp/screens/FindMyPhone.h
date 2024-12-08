@@ -44,6 +44,7 @@ namespace Pinetime {
         static const LabelState noServiceLabelState;
         static const LabelState defaultLabelState;
         static const LabelState alertingLabelState;
+        static const LabelState sendFailedLabelState;
         const LabelState& GetLabelState() const;
 
         lv_obj_t* container;
@@ -54,6 +55,7 @@ namespace Pinetime {
         lv_obj_t* lblRing;
         lv_task_t* refreshTask = nullptr;
 
+        bool lastSendFailed = false;
         std::optional<Pinetime::Controllers::ImmediateAlertClient::Levels> lastUserInitiatedLevel;
       };
     }
