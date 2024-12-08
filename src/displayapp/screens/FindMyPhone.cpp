@@ -43,6 +43,11 @@ const FindMyPhone::LabelState FindMyPhone::alertingLabelState {
   .color = LV_COLOR_RED,
 };
 
+const FindMyPhone::LabelState FindMyPhone::sendFailedLabelState {
+  .text = "Communication fail",
+  .color = LV_COLOR_WHITE,
+};
+
 FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateAlertClient) : immediateAlertClient {immediateAlertClient} {
   container = lv_cont_create(lv_scr_act(), nullptr);
 
@@ -92,7 +97,11 @@ void FindMyPhone::OnImmediateAlertEvent(lv_obj_t* obj, lv_event_t event) {
       ASSERT(false);
       return;
     }
-    immediateAlertClient.SendImmediateAlert(*lastUserInitiatedLevel);
+    if (immediateAlertClient.SendImmediateAlert(*lastUserInitiatedLevel)) {
+      lastSendFailed = false;
+    } else {
+      lastSendFailed = true;
+    }
   }
 }
 
@@ -105,6 +114,9 @@ const FindMyPhone::LabelState& FindMyPhone::GetLabelState() const {
       return noServiceLabelState;
     case Pinetime::Controllers::ImmediateAlertClient::State::Connected:
       break;
+  }
+  if (lastSendFailed) {
+    return sendFailedLabelState;
   }
   // Conntected state handling.
   if (!lastUserInitiatedLevel.has_value()) {
@@ -132,6 +144,7 @@ void FindMyPhone::Refresh() {
     lv_obj_add_state(btnStop, LV_STATE_DISABLED);
     lv_obj_add_state(btnRing, LV_STATE_DISABLED);
     lastUserInitiatedLevel = std::nullopt;
+    lastSendFailed = false;
   }
   const auto& label_state = GetLabelState();
   lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, label_state.color);
