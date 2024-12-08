@@ -1,0 +1,14 @@
+{
+   "lang_pack" : {
+      "sources": [
+         {
+            "file": "JetBrainsMono-Bold.ttf",
+            "range": "0xc0-0xff"
+         }
+      ],
+      "bpp": 1,
+      "size": 20,
+      "format": "bin",
+      "target_path": "/fonts/"
+   }
+}
