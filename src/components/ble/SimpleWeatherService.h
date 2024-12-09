@@ -75,11 +75,13 @@ namespace Pinetime {
         }
 
         [[nodiscard]] int16_t Celsius() const {
-          return (PreciseCelsius() + 50) / 100;
+          int16_t temp = PreciseCelsius();
+          return (temp + (temp >= 0 ? 50 : -50)) / 100;
         }
 
         [[nodiscard]] int16_t Fahrenheit() const {
-          return (PreciseFahrenheit() + 50) / 100;
+          int16_t temp = PreciseFahrenheit();
+          return (temp + (temp >= 0 ? 50 : -50)) / 100;
         }
 
         bool operator==(const Temperature& other) const {
