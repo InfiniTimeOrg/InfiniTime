@@ -88,7 +88,7 @@ void Sleep::Refresh() {
 }
 
 void Sleep::UpdateDisplay() {
-  if (lastDisplayState == displayState && displayState == SleepDisplayState::Alarm) {
+  if (infiniSleepController.IsAlerting() != true && lastDisplayState == displayState && displayState == SleepDisplayState::Alarm) {
     return;
   }
 
@@ -540,11 +540,8 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 
 bool Sleep::OnButtonPushed() {
   if (infiniSleepController.IsAlerting()) {
-    if (StopAlarmPush()) {
-      return true;
-    }
-  }
-  if (displayState != SleepDisplayState::Info) {
+    return true;
+  } else if (displayState != SleepDisplayState::Info) {
     displayState = SleepDisplayState::Info;
     UpdateDisplay();
     return true;
@@ -579,8 +576,8 @@ bool Sleep::StopAlarmPush() {
 bool Sleep::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
   // Swiping should be ignored when in alerting state
-  if (infiniSleepController.IsAlerting() && (event != TouchEvents::SwipeDown && event != TouchEvents::SwipeUp &&
-                                             event != TouchEvents::SwipeLeft && event != TouchEvents::SwipeRight)) {
+  if (infiniSleepController.IsAlerting() && (event == TouchEvents::SwipeDown || event == TouchEvents::SwipeUp ||
+                                             event == TouchEvents::SwipeLeft || event == TouchEvents::SwipeRight)) {
     return true;
   }
 
@@ -663,7 +660,9 @@ void Sleep::SetAlerting() {
   lv_obj_set_hidden(txtSuggestedAlarm, true);
   lv_obj_set_hidden(iconSuggestedAlarm, true);
   NRF_LOG_INFO("Alarm is alerting");
-  taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, 120 * 1000, LV_TASK_PRIO_MID, this);
+  if (infiniSleepController.infiniSleepSettings.naturalWake != true) {
+    taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, 120 * 1000, LV_TASK_PRIO_MID, this);
+  }
   if (infiniSleepController.infiniSleepSettings.graddualWake) {
     motorController.StartWakeAlarm();
   } else if (infiniSleepController.infiniSleepSettings.naturalWake) {
