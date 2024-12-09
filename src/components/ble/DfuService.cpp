@@ -1,6 +1,8 @@
 #include "components/ble/DfuService.h"
 #include <cstring>
 #include "components/ble/BleController.h"
+#include "components/ble/NotificationManager.h"
+#include "components/settings/Settings.h"
 #include "drivers/SpiNorFlash.h"
 #include "systemtask/SystemTask.h"
 #include <nrf_log.h>
@@ -78,6 +80,18 @@ void DfuService::Init() {
 }
 
 int DfuService::OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
+#ifndef PINETIME_IS_RECOVERY
+  if (systemTask.GetSettings().GetDfuAndFsMode() == Pinetime::Controllers::Settings::DfuAndFsMode::Disabled) {
+    Pinetime::Controllers::NotificationManager::Notification notif;
+    memcpy(notif.message.data(), denyAlert, denyAlertLength);
+    notif.size = denyAlertLength;
+    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    systemTask.GetNotificationManager().Push(std::move(notif));
+    systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
+    return BLE_ATT_ERR_INSUFFICIENT_AUTHOR;
+  }
+#endif
+
   if (bleController.IsFirmwareUpdating()) {
     xTimerStart(timeoutTimer, 0);
   }
