@@ -6,7 +6,7 @@
 #include "Symbols.h"
 
 namespace {
-  int64_t constexpr powi(int64_t base, uint8_t exponent) {
+  constexpr int64_t powi(int64_t base, uint8_t exponent) {
     int64_t value = 1;
     while (exponent) {
       value *= base;
