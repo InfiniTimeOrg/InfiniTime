@@ -40,7 +40,6 @@ namespace {
   }
 }
 
-
 Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
              Controllers::Settings::ClockType clockType,
              System::SystemTask& systemTask,
@@ -52,7 +51,7 @@ Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
     clockType {clockType},
     displayApp {displayApp} {
 
-  infiniSleepController.SetHeartRateTrackingEnabled(false);
+  infiniSleepController.infiniSleepSettings.heartRateTracking = false;
   infiniSleepController.SetSettingsChanged();
   UpdateDisplay();
   taskRefresh = lv_task_create(RefreshTaskCallback, 2000, LV_TASK_PRIO_MID, this);
@@ -494,7 +493,9 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         infiniSleepController.infiniSleepSettings.graddualWake = true;
       }
       infiniSleepController.SetSettingsChanged();
-      const char* mode = infiniSleepController.infiniSleepSettings.graddualWake ? "Grad." : infiniSleepController.infiniSleepSettings.naturalWake ? "Nat." : "Off";
+      const char* mode = infiniSleepController.infiniSleepSettings.graddualWake  ? "Grad."
+                         : infiniSleepController.infiniSleepSettings.naturalWake ? "Nat."
+                                                                                 : "Off";
       lv_label_set_text_static(lv_obj_get_child(obj, nullptr), mode);
       return;
     }

@@ -98,38 +98,6 @@ namespace Pinetime {
       void DisableTracker();
       void UpdateTracker();
 
-      bool BodyTrackingEnabled() const {
-        return infiniSleepSettings.bodyTracking;
-      }
-
-      void SetBodyTrackingEnabled(bool enabled) {
-        infiniSleepSettings.bodyTracking = enabled;
-      }
-
-      bool HeartRateTrackingEnabled() const {
-        return infiniSleepSettings.heartRateTracking;
-      }
-
-      void SetHeartRateTrackingEnabled(bool enabled) {
-        infiniSleepSettings.heartRateTracking = enabled;
-      }
-
-      bool GradualWakeEnabled() const {
-        return infiniSleepSettings.graddualWake;
-      }
-
-      void SetGradualWakeEnabled(bool enabled) {
-        infiniSleepSettings.graddualWake = enabled;
-      }
-
-      bool SmartAlarmEnabled() const {
-        return infiniSleepSettings.smartAlarm;
-      }
-
-      void SetSmartAlarmEnabled(bool enabled) {
-        infiniSleepSettings.smartAlarm = enabled;
-      }
-
       void SetSettingsChanged() {
         settingsChanged = true;
       }
@@ -149,14 +117,12 @@ namespace Pinetime {
       WakeAlarmSettings wakeAlarm;
 
       // Dertermine the steps for the gradual wake alarm, the corresponding vibration durations determine the power of the vibration
-      static constexpr uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600};                   // In seconds
-      static constexpr uint16_t gradualWakeVibrationDurations[9] = {1000, 1000, 900, 800, 800, 700, 700, 700, 500}; // In ms
+      static constexpr uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600}; // In seconds
 
-      int8_t gradualWakeStep = 9; // used to keep track of which step to use, in position form not idex
+      uint8_t gradualWakeStep = 9; // used to keep track of which step to use, in position form not idex
 
-      uint16_t GetSleepCycles() {
-        uint16_t totalMinutes = GetTotalSleep();
-        return (totalMinutes * 100 / infiniSleepSettings.sleepCycleDuration);
+      uint16_t GetSleepCycles() const {
+        return (GetTotalSleep() * 100 / infiniSleepSettings.sleepCycleDuration);
       }
 
       uint16_t GetTotalSleep() const {
@@ -177,7 +143,7 @@ namespace Pinetime {
         return sleepMinutes;
       }
 
-      uint16_t GetSuggestedSleepTime() {
+      uint16_t GetSuggestedSleepTime() const {
         return infiniSleepSettings.desiredCycles * infiniSleepSettings.sleepCycleDuration;
       }
 
@@ -230,10 +196,6 @@ namespace Pinetime {
         return dateTimeController.Minutes();
       }
 
-      int bpm = 0;
-      int prevBpm = 0;
-      int rollingBpm = 0;
-
       void UpdateBPM();
 
       uint8_t GetGradualWakeStep() const {
@@ -246,6 +208,10 @@ namespace Pinetime {
       bool wakeAlarmChanged = false;
       bool isEnabled = false;
       bool settingsChanged = false;
+
+      // uint8_t bpm = 0;
+      // uint8_t prevBpm = 0;
+      // uint8_t rollingBpm = 0;
 
       Controllers::DateTime& dateTimeController;
       Controllers::FS& fs;
@@ -262,8 +228,8 @@ namespace Pinetime {
       void SavePrevSessionData() const;
 
       // For File IO
-      void WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const;
-      void ClearDataCSV(const char* fileName) const;
+      // void WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const;
+      // void ClearDataCSV(const char* fileName) const;
     };
   }
 
