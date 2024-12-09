@@ -77,6 +77,9 @@ namespace Pinetime {
         lv_obj_t* label_sleep_cycles;
         lv_obj_t *btnSuggestedAlarm, *txtSuggestedAlarm, *iconSuggestedAlarm;
 
+        lv_obj_t *lblWakeMode, *btnWakeMode, *lblWakeModeValue, *lblCycles, *btnCycles, *lblCycleValue, *btnTestMotorGradual,
+          *lblMotorStrength, *btnMotorStrength, *lblMotorStrengthValue, *lblPushesToStop, *btnPushesToStop, *lblPushesToStopValue;
+
         Widgets::PageIndicator pageIndicator1 = Widgets::PageIndicator(0, 3);
         Widgets::PageIndicator pageIndicator2 = Widgets::PageIndicator(1, 3);
         Widgets::PageIndicator pageIndicator3 = Widgets::PageIndicator(2, 3);
