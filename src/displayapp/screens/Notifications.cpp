@@ -310,19 +310,19 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       std::chrono::minutes age = std::chrono::duration_cast<std::chrono::minutes>(diff);
       uint32_t ageInt = static_cast<uint32_t>(age.count());
       char timeUnit;
-      if ((ageInt / (60 * 24)) >= 1) {
+      if (ageInt / (60 * 24) >= 1) {
         ageInt /= (60 * 24);
         timeUnit = 'd';
-      } else if ((ageInt / 60) >= 1) {
+      } else if (ageInt >= 60) {
         ageInt /= 60;
         timeUnit = 'h';
       } else {
         timeUnit = 'm';
       }
-      lv_obj_t* alert_age = lv_label_create(container, nullptr);
-      lv_label_set_text_fmt(alert_age, "%d%c ago", ageInt, timeUnit);
+      lv_obj_t* alertAge = lv_label_create(container, nullptr);
+      lv_label_set_text_fmt(alertAge, "%d%c ago", ageInt, timeUnit);
       // same format as alert_count
-      lv_obj_align(alert_age, container, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -16);
+      lv_obj_align(alertAge, container, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -10);
     }
 
     // copy title to label and replace newlines with spaces
