@@ -91,6 +91,8 @@ void Sleep::UpdateDisplay() {
     return;
   }
 
+  lv_task_reset(taskRefresh);
+
   // Clear the screen
   lv_obj_clean(lv_scr_act());
   if (infiniSleepController.IsAlerting()) {
@@ -199,12 +201,12 @@ void Sleep::DrawAlarmScreen() {
   // lv_label_set_text_static(txtSuggestedAlarm, "Use Sugg.\nAlarmTime");
 
   txtSuggestedAlarm = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(txtSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -15, -10);
+  lv_obj_align(txtSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -15, -13);
   lv_label_set_text_static(txtSuggestedAlarm, "Auto");
 
   iconSuggestedAlarm = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(iconSuggestedAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_obj_align(iconSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -50, -10);
+  lv_obj_align(iconSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -50, -13);
   lv_label_set_text_static(iconSuggestedAlarm, Symbols::sun);
 
   enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
@@ -245,7 +247,7 @@ void Sleep::DrawInfoScreen() {
   // Total sleep time
   label_total_sleep = lv_label_create(lv_scr_act(), nullptr);
 
-  uint16_t totalMinutes = infiniSleepController.GetTotalSleep();
+  const uint16_t totalMinutes = infiniSleepController.GetTotalSleep();
 
   lv_label_set_text_fmt(label_total_sleep, "Time Asleep: %dh%dm", totalMinutes / 60, totalMinutes % 60);
   lv_obj_align(label_total_sleep, lv_scr_act(), LV_ALIGN_CENTER, 0, -60);
@@ -310,8 +312,10 @@ void Sleep::DrawInfoScreen() {
 
   // Gradual Wake info
   label_gradual_wake = lv_label_create(lv_scr_act(), nullptr);
-  if (infiniSleepController.infiniSleepSettings.graddualWake) {
-    lv_label_set_text_static(label_gradual_wake, "Wake Mode: Gradual");
+  if (infiniSleepController.infiniSleepSettings.graddualWake && infiniSleepController.infiniSleepSettings.naturalWake) {
+    lv_label_set_text_static(label_gradual_wake, "Wake Mode: Both");
+  } else if (infiniSleepController.infiniSleepSettings.graddualWake) {
+    lv_label_set_text_static(label_gradual_wake, "Wake Mode: PreWake");
   } else if (infiniSleepController.infiniSleepSettings.naturalWake) {
     lv_label_set_text_static(label_gradual_wake, "Wake Mode: Natural");
   } else {
@@ -365,9 +369,11 @@ void Sleep::DrawSettingsScreen() {
   lv_obj_align(btnWakeMode, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 130, y_offset);
   btnWakeMode->user_data = this;
   lv_obj_set_event_cb(btnWakeMode, btnEventHandler);
-  const char* mode = infiniSleepController.infiniSleepSettings.graddualWake  ? "Grad."
-                     : infiniSleepController.infiniSleepSettings.naturalWake ? "Nat."
-                                                                             : "Off";
+  const char* mode = (infiniSleepController.infiniSleepSettings.graddualWake && infiniSleepController.infiniSleepSettings.naturalWake)
+                       ? "Both"
+                     : infiniSleepController.infiniSleepSettings.graddualWake ? "Pre."
+                     : infiniSleepController.infiniSleepSettings.naturalWake  ? "Nat."
+                                                                              : "Off";
   lblWakeModeValue = lv_label_create(btnWakeMode, nullptr);
   lv_label_set_text_static(lblWakeModeValue, mode);
   lv_obj_align(lblWakeModeValue, nullptr, LV_ALIGN_CENTER, 0, 0);
@@ -464,13 +470,13 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     }
     if (obj == btnSuggestedAlarm) {
       // Set the suggested time
-      uint16_t totalSuggestedMinutes = infiniSleepController.GetSuggestedSleepTime();
-      uint8_t suggestedHours = totalSuggestedMinutes / 60;
-      uint8_t suggestedMinutes = totalSuggestedMinutes % 60;
+      const uint16_t totalSuggestedMinutes = infiniSleepController.GetSuggestedSleepTime();
+      const uint8_t suggestedHours = totalSuggestedMinutes / 60;
+      const uint8_t suggestedMinutes = totalSuggestedMinutes % 60;
 
       // Time for alarm, current time + suggested sleep time
-      uint8_t alarmHour = (infiniSleepController.GetCurrentHour() + suggestedHours) % 24;
-      uint8_t alarmMinute = (infiniSleepController.GetCurrentMinute() + suggestedMinutes) % 60;
+      const uint8_t alarmHour = (infiniSleepController.GetCurrentHour() + suggestedHours) % 24;
+      const uint8_t alarmMinute = (infiniSleepController.GetCurrentMinute() + suggestedMinutes) % 60;
 
       infiniSleepController.SetWakeAlarmTime(alarmHour, alarmMinute);
 
@@ -483,19 +489,25 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       return;
     }
     if (obj == btnWakeMode) {
-      if (infiniSleepController.infiniSleepSettings.graddualWake) {
+      if (infiniSleepController.infiniSleepSettings.graddualWake && infiniSleepController.infiniSleepSettings.naturalWake) {
+        infiniSleepController.infiniSleepSettings.graddualWake = false;
+        infiniSleepController.infiniSleepSettings.naturalWake = false;
+      } else if (infiniSleepController.infiniSleepSettings.graddualWake) {
         infiniSleepController.infiniSleepSettings.graddualWake = false;
         infiniSleepController.infiniSleepSettings.naturalWake = true;
       } else if (infiniSleepController.infiniSleepSettings.naturalWake) {
-        infiniSleepController.infiniSleepSettings.naturalWake = false;
-        infiniSleepController.infiniSleepSettings.graddualWake = false;
+        infiniSleepController.infiniSleepSettings.naturalWake = true;
+        infiniSleepController.infiniSleepSettings.graddualWake = true;
       } else if (!infiniSleepController.infiniSleepSettings.graddualWake && !infiniSleepController.infiniSleepSettings.naturalWake) {
         infiniSleepController.infiniSleepSettings.graddualWake = true;
+        infiniSleepController.infiniSleepSettings.naturalWake = false;
       }
       infiniSleepController.SetSettingsChanged();
-      const char* mode = infiniSleepController.infiniSleepSettings.graddualWake  ? "Grad."
-                         : infiniSleepController.infiniSleepSettings.naturalWake ? "Nat."
-                                                                                 : "Off";
+      const char* mode = (infiniSleepController.infiniSleepSettings.graddualWake && infiniSleepController.infiniSleepSettings.naturalWake)
+                           ? "Both"
+                         : infiniSleepController.infiniSleepSettings.graddualWake ? "Pre."
+                         : infiniSleepController.infiniSleepSettings.naturalWake  ? "Nat."
+                                                                                  : "Off";
       lv_label_set_text_static(lv_obj_get_child(obj, nullptr), mode);
       return;
     }
@@ -624,8 +636,8 @@ void Sleep::SnoozeWakeAlarm() {
 
   NRF_LOG_INFO("Snoozing alarm for %d minutes", SNOOZE_MINUTES);
 
-  uint16_t totalAlarmMinutes = infiniSleepController.GetCurrentHour() * 60 + infiniSleepController.GetCurrentMinute();
-  uint16_t newSnoozeMinutes = totalAlarmMinutes + SNOOZE_MINUTES;
+  const uint16_t totalAlarmMinutes = infiniSleepController.GetCurrentHour() * 60 + infiniSleepController.GetCurrentMinute();
+  const uint16_t newSnoozeMinutes = totalAlarmMinutes + SNOOZE_MINUTES;
 
   infiniSleepController.SetPreSnoozeTime();
   infiniSleepController.isSnoozing = true;
@@ -661,10 +673,10 @@ void Sleep::SetAlerting() {
   if (!infiniSleepController.infiniSleepSettings.naturalWake) {
     taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, 120 * 1000, LV_TASK_PRIO_MID, this);
   }
-  if (infiniSleepController.infiniSleepSettings.graddualWake) {
-    motorController.StartWakeAlarm();
-  } else if (infiniSleepController.infiniSleepSettings.naturalWake) {
+  if (infiniSleepController.infiniSleepSettings.naturalWake) {
     motorController.StartNaturalWakeAlarm();
+  } else {
+    motorController.StartWakeAlarm();
   }
   if (!infiniSleepController.infiniSleepSettings.naturalWake) {
     wakeLock.Lock();
@@ -686,10 +698,10 @@ void Sleep::RedrawSetAlerting() {
 
 void Sleep::StopAlerting(bool setSwitch) {
   infiniSleepController.StopAlerting();
-  if (infiniSleepController.infiniSleepSettings.graddualWake) {
-    motorController.StopWakeAlarm();
-  } else if (infiniSleepController.infiniSleepSettings.naturalWake) {
+  if (infiniSleepController.infiniSleepSettings.naturalWake) {
     motorController.StopNaturalWakeAlarm();
+  } else {
+    motorController.StopWakeAlarm();
   }
   if (setSwitch) {
     SetSwitchState(LV_ANIM_OFF);

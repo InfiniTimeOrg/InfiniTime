@@ -108,15 +108,23 @@ void MotorController::StopWakeAlarm() {
 }
 
 void MotorController::StartNaturalWakeAlarm() {
-  SetMotorStrength((60 * infiniSleepMotorStrength) / 100);
-  RunForDuration(280);
+  wakeAlarmStrength = (80 * infiniSleepMotorStrength) / 100;
+  wakeAlarmDuration = 100;
+  SetMotorStrength(wakeAlarmStrength);
+  RunForDuration(wakeAlarmDuration);
   xTimerStart(naturalWakeAlarmVib, 0);
 }
 
 void MotorController::NaturalWakeAlarmRing(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->SetMotorStrength((60 * motorController->infiniSleepMotorStrength) / 100);
-  motorController->RunForDuration(280);
+  if (motorController->wakeAlarmStrength > (40 * motorController->infiniSleepMotorStrength) / 100) {
+    motorController->wakeAlarmStrength -= (30 * motorController->infiniSleepMotorStrength) / 100;
+  }
+  if (motorController->wakeAlarmDuration < 500) {
+    motorController->wakeAlarmDuration += 180;
+  }
+  motorController->SetMotorStrength(motorController->wakeAlarmStrength);
+  motorController->RunForDuration(motorController->wakeAlarmDuration);
 }
 
 void MotorController::StopNaturalWakeAlarm() {
