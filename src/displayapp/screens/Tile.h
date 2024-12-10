@@ -29,7 +29,8 @@ namespace Pinetime {
                       const Controllers::Battery& batteryController,
                       const Controllers::Ble& bleController,
                       Controllers::DateTime& dateTimeController,
-                      std::array<Applications, 6>& applications);
+                      std::array<Applications, 6>& applications,
+                      Controllers::Timer& timer);
 
         ~Tile() override;
 
