@@ -66,7 +66,7 @@ DFU files are the files you'll need to install your build of InfiniTime using OT
 #### CMake command 
 
 ```
-cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=...
+cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -S ..
 ```
 
 ### Build the project
