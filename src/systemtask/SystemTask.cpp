@@ -358,6 +358,16 @@ void SystemTask::Work() {
             nimbleController.DisableRadio();
           }
           break;
+        case Messages::OnMusicStarted:
+          if (settingsController.IsAutoOpenOn(Controllers::Settings::AutoOpen::Music)) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::MusicStarted);
+          }
+          break;
+        case Messages::OnNavChange:
+          if (settingsController.IsAutoOpenOn(Controllers::Settings::AutoOpen::Navigation)) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::NavStarted);
+          }
+          break;
         default:
           break;
       }
