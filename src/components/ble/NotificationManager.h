@@ -4,6 +4,8 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <chrono>
+#include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -28,6 +30,7 @@ namespace Pinetime {
         using Id = uint8_t;
         using Idx = uint8_t;
 
+        std::time_t timeArrived;
         std::array<char, MessageSize + 1> message;
         uint8_t size;
         Categories category = Categories::Unknown;
@@ -37,6 +40,9 @@ namespace Pinetime {
         const char* Message() const;
         const char* Title() const;
       };
+
+      NotificationManager(Controllers::DateTime& dateTimeController) : dateTimeController {dateTimeController} {
+      }
 
       void Push(Notification&& notif);
       Notification GetLastNotification() const;
@@ -61,6 +67,7 @@ namespace Pinetime {
 
     private:
       Notification::Id nextId {0};
+      Controllers::DateTime& dateTimeController;
       Notification::Id GetNextId();
       const Notification& At(Notification::Idx idx) const;
       Notification& At(Notification::Idx idx);
