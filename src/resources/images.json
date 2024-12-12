@@ -1,6 +1,13 @@
 {
-   "pine_small" : {
+    "pine_small" : {
       "sources": "images/pine_logo.png",
+      "color_format": "CF_TRUE_COLOR_ALPHA",
+      "output_format": "bin",
+      "binary_format": "ARGB8565_RBSWAP",
+      "target_path": "/images/"
+   },
+   "cat_small" : {
+      "sources": "images/cat_clean.png",
       "color_format": "CF_TRUE_COLOR_ALPHA",
       "output_format": "bin",
       "binary_format": "ARGB8565_RBSWAP",
