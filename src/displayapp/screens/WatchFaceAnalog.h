@@ -99,7 +99,7 @@ namespace Pinetime {
                                             controllers.bleController,
                                             controllers.notificationManager,
                                             controllers.settingsController);
-      };
+      }
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
         return true;

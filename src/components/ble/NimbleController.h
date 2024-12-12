@@ -57,26 +57,26 @@ namespace Pinetime {
 
       Pinetime::Controllers::MusicService& music() {
         return musicService;
-      };
+      }
 
       Pinetime::Controllers::NavigationService& navigation() {
         return navService;
-      };
+      }
 
       Pinetime::Controllers::AlertNotificationService& alertService() {
         return anService;
-      };
+      }
 
       Pinetime::Controllers::SimpleWeatherService& weather() {
         return weatherService;
-      };
+      }
 
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
 
       void RestartFastAdv() {
         fastAdvCount = 0;
-      };
+      }
 
       void EnableRadio();
       void DisableRadio();

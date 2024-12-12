@@ -150,8 +150,9 @@ void Dice::Refresh() {
 
       Roll();
     }
-  } else if (currentRollHysteresis > 0)
+  } else if (currentRollHysteresis > 0) {
     --currentRollHysteresis;
+  }
 }
 
 void Dice::Roll() {

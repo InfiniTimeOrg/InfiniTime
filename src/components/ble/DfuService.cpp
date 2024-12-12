@@ -87,20 +87,23 @@ int DfuService::OnServiceData(uint16_t connectionHandle, uint16_t attributeHandl
   ble_gatts_find_chr(&serviceUuid.u, &revisionCharacteristicUuid.u, nullptr, &revisionCharacteristicHandle);
 
   if (attributeHandle == packetCharacteristicHandle) {
-    if (context->op == BLE_GATT_ACCESS_OP_WRITE_CHR)
+    if (context->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
       return WritePacketHandler(connectionHandle, context->om);
-    else
+    } else {
       return 0;
+    }
   } else if (attributeHandle == controlPointCharacteristicHandle) {
-    if (context->op == BLE_GATT_ACCESS_OP_WRITE_CHR)
+    if (context->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
       return ControlPointHandler(connectionHandle, context->om);
-    else
+    } else {
       return 0;
+    }
   } else if (attributeHandle == revisionCharacteristicHandle) {
-    if (context->op == BLE_GATT_ACCESS_OP_READ_CHR)
+    if (context->op == BLE_GATT_ACCESS_OP_READ_CHR) {
       return SendDfuRevision(context->om);
-    else
+    } else {
       return 0;
+    }
   } else {
     NRF_LOG_INFO("[DFU] Unknown Characteristic : %d", attributeHandle);
     return 0;
@@ -321,8 +324,9 @@ DfuService::NotificationManager::NotificationManager() {
 }
 
 bool DfuService::NotificationManager::AsyncSend(uint16_t connection, uint16_t charactHandle, uint8_t* data, size_t s) {
-  if (size != 0 || s > 10)
+  if (size != 0 || s > 10) {
     return false;
+  }
 
   connectionHandle = connection;
   characteristicHandle = charactHandle;
@@ -353,8 +357,9 @@ void DfuService::NotificationManager::Reset() {
 }
 
 void DfuService::DfuImage::Init(size_t chunkSize, size_t totalSize, uint16_t expectedCrc) {
-  if (chunkSize != 20)
+  if (chunkSize != 20) {
     return;
+  }
   this->chunkSize = chunkSize;
   this->totalSize = totalSize;
   this->expectedCrc = expectedCrc;
@@ -364,8 +369,9 @@ void DfuService::DfuImage::Init(size_t chunkSize, size_t totalSize, uint16_t exp
 }
 
 void DfuService::DfuImage::Append(uint8_t* data, size_t size) {
-  if (!ready)
+  if (!ready) {
     return;
+  }
   ASSERT(size <= 20);
 
   std::memcpy(tempBuffer + bufferWriteIndex, data, size);
@@ -380,8 +386,9 @@ void DfuService::DfuImage::Append(uint8_t* data, size_t size) {
   if (bufferWriteIndex > 0 && totalWriteIndex + bufferWriteIndex == totalSize) {
     spiNorFlash.Write(writeOffset + totalWriteIndex, tempBuffer, bufferWriteIndex);
     totalWriteIndex += bufferWriteIndex;
-    if (totalSize < maxSize)
+    if (totalSize < maxSize) {
       WriteMagicNumber();
+    }
   }
 }
 
@@ -417,8 +424,9 @@ bool DfuService::DfuImage::Validate() {
     if (first) {
       crc = ComputeCrc(tempBuffer, readSize, NULL);
       first = false;
-    } else
+    } else {
       crc = ComputeCrc(tempBuffer, readSize, &crc);
+    }
     currentOffset += readSize;
   }
 
@@ -440,7 +448,8 @@ uint16_t DfuService::DfuImage::ComputeCrc(uint8_t const* p_data, uint32_t size, 
 }
 
 bool DfuService::DfuImage::IsComplete() {
-  if (!ready)
+  if (!ready) {
     return false;
+  }
   return totalWriteIndex == totalSize;
 }

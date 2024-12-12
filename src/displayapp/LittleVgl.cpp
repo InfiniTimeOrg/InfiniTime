@@ -176,9 +176,9 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
         toScroll = height;
       }
 
-      if (scrollOffset >= toScroll)
+      if (scrollOffset >= toScroll) {
         scrollOffset -= toScroll;
-      else {
+      } else {
         toScroll -= scrollOffset;
         scrollOffset = (totalNbLines) -toScroll;
       }
