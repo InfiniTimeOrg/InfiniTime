@@ -7,6 +7,7 @@
 #include "systemtask/SystemTask.h"
 #include "systemtask/WakeLock.h"
 #include "Symbols.h"
+#include "utility/DirtyValue.h"
 
 namespace Pinetime::Applications {
   namespace Screens {
@@ -16,6 +17,7 @@ namespace Pinetime::Applications {
       int mins;
       int secs;
       int hundredths;
+      int epochSecs;
     };
 
     class StopWatch : public Screen {
@@ -47,6 +49,7 @@ namespace Pinetime::Applications {
       int displayedLaps = 3;
       lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
       lv_obj_t* lapText;
+      Utility::DirtyValue<TickType_t> renderedSeconds;
       bool hoursVisible = false;
 
       lv_task_t* taskRefresh;
