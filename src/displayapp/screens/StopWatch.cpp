@@ -15,7 +15,7 @@ namespace {
     const int secs = (timeElapsedSecs) % 60;
     const int mins = (timeElapsedSecs / 60) % 60;
     const int hours = (timeElapsedSecs / 60) / 60;
-    return TimeSeparated {hours, mins, secs, hundredths};
+    return TimeSeparated {hours, mins, secs, hundredths, timeElapsedSecs};
   }
 
   void PlayPauseEventHandler(lv_obj_t* obj, lv_event_t event) {
@@ -145,11 +145,14 @@ void StopWatch::DisplayCleared() {
 
 void StopWatch::RenderTime() {
   TimeSeparated elapsedTime = ConvertTicksToTimeSegments(stopWatchController.GetElapsedTime());
-  SetHoursVisible(elapsedTime.hours != 0);
-  if (!hoursVisible) {
-    lv_label_set_text_fmt(time, "%02d:%02d", elapsedTime.mins, elapsedTime.secs);
-  } else {
-    lv_label_set_text_fmt(time, "%02d:%02d:%02d", elapsedTime.hours, elapsedTime.mins, elapsedTime.secs);
+  renderedSeconds = elapsedTime.epochSecs;
+  if (renderedSeconds.IsUpdated()) {
+    SetHoursVisible(elapsedTime.hours != 0);
+    if (!hoursVisible) {
+      lv_label_set_text_fmt(time, "%02d:%02d", elapsedTime.mins, elapsedTime.secs);
+    } else {
+      lv_label_set_text_fmt(time, "%02d:%02d:%02d", elapsedTime.hours, elapsedTime.mins, elapsedTime.secs);
+    }
   }
   lv_label_set_text_fmt(msecTime, "%02d", elapsedTime.hundredths);
 }
