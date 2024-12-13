@@ -9,8 +9,9 @@ using namespace std::chrono_literals;
 
 InfiniSleepController::InfiniSleepController(Controllers::DateTime& dateTimeController,
                                              Controllers::FS& fs,
-                                             Controllers::HeartRateController& heartRateController)
-  : dateTimeController {dateTimeController}, fs {fs}, heartRateController {heartRateController} {
+                                             Controllers::HeartRateController& heartRateController,
+                                             Controllers::BrightnessController& brightnessController)
+  : dateTimeController {dateTimeController}, fs {fs}, heartRateController {heartRateController}, brightnessController {brightnessController} {
 }
 
 namespace {
@@ -49,10 +50,14 @@ void InfiniSleepController::Init(System::SystemTask* systemTask) {
     NRF_LOG_INFO("[InfiniSleepController] Loaded wake alarm was enabled, scheduling");
     ScheduleWakeAlarm();
   }
+
+  prevBrightnessLevel = brightnessController.Level();
 }
 
 void InfiniSleepController::EnableTracker() {
-  DisableTracker();
+  prevBrightnessLevel = brightnessController.Level();
+  brightnessController.Set(BrightnessController::Levels::Low);
+  // DisableTracker();
   NRF_LOG_INFO("[InfiniSleepController] Enabling tracker");
   isEnabled = true;
   trackerUpdateTimer =
@@ -61,6 +66,7 @@ void InfiniSleepController::EnableTracker() {
 }
 
 void InfiniSleepController::DisableTracker() {
+  brightnessController.Set(prevBrightnessLevel);
   NRF_LOG_INFO("[InfiniSleepController] Disabling tracker");
   xTimerStop(trackerUpdateTimer, 0);
   isEnabled = false;

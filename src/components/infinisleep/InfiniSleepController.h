@@ -29,7 +29,8 @@ namespace Pinetime {
     public:
       InfiniSleepController(Controllers::DateTime& dateTimeCOntroller,
                             Controllers::FS&,
-                            Controllers::HeartRateController& heartRateController);
+                            Controllers::HeartRateController& heartRateController,
+                            Controllers::BrightnessController& brightnessController);
 
       void Init(System::SystemTask* systemTask);
       void SaveWakeAlarm();
@@ -169,6 +170,8 @@ namespace Pinetime {
         return infiniSleepSettings;
       }
 
+      BrightnessController::Levels prevBrightnessLevel;
+
       bool ToggleTracker() {
         if (isEnabled) {
           prevSessionData.endTimeHours = GetCurrentHour();
@@ -216,6 +219,7 @@ namespace Pinetime {
       Controllers::DateTime& dateTimeController;
       Controllers::FS& fs;
       Controllers::HeartRateController& heartRateController;
+      Controllers::BrightnessController& brightnessController;
       System::SystemTask* systemTask = nullptr;
       TimerHandle_t wakeAlarmTimer;
       TimerHandle_t gradualWakeTimer;
