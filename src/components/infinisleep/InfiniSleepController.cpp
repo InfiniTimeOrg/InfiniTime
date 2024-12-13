@@ -55,8 +55,6 @@ void InfiniSleepController::Init(System::SystemTask* systemTask) {
 }
 
 void InfiniSleepController::EnableTracker() {
-  prevBrightnessLevel = brightnessController.Level();
-  brightnessController.Set(BrightnessController::Levels::Low);
   // DisableTracker();
   NRF_LOG_INFO("[InfiniSleepController] Enabling tracker");
   isEnabled = true;
@@ -66,7 +64,6 @@ void InfiniSleepController::EnableTracker() {
 }
 
 void InfiniSleepController::DisableTracker() {
-  brightnessController.Set(prevBrightnessLevel);
   NRF_LOG_INFO("[InfiniSleepController] Disabling tracker");
   xTimerStop(trackerUpdateTimer, 0);
   isEnabled = false;

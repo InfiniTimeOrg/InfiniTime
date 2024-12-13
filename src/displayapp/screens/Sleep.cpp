@@ -59,6 +59,11 @@ Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
     lv_task_create(PressesToStopAlarmTimeoutCallback, PUSHES_TO_STOP_ALARM_TIMEOUT * 1000, LV_TASK_PRIO_MID, this);
   infiniSleepController.infiniSleepSettings.sleepCycleDuration = 90;
   infiniSleepController.SetSettingsChanged();
+
+  if (!infiniSleepController.IsEnabled()) {
+    infiniSleepController.prevBrightnessLevel = infiniSleepController.GetBrightnessController().Level();
+  }
+  infiniSleepController.GetBrightnessController().Set(Controllers::BrightnessController::Levels::Low);
 }
 
 Sleep::~Sleep() {
@@ -73,6 +78,9 @@ Sleep::~Sleep() {
   lv_obj_clean(lv_scr_act());
   infiniSleepController.SaveWakeAlarm();
   infiniSleepController.SaveInfiniSleepSettings();
+  if (!infiniSleepController.IsEnabled()) {
+    infiniSleepController.GetBrightnessController().Set(infiniSleepController.prevBrightnessLevel);
+  }
 }
 
 void Sleep::DisableWakeAlarm() {

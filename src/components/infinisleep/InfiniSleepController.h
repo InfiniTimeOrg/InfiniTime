@@ -205,6 +205,10 @@ namespace Pinetime {
         return (9 - gradualWakeStep) + 1;
       }
 
+      BrightnessController& GetBrightnessController() {
+        return brightnessController;
+      }
+
     private:
       bool isAlerting = false;
       bool isGradualWakeAlerting = false;
