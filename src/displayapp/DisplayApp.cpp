@@ -759,6 +759,10 @@ void DisplayApp::Register(Pinetime::Controllers::NavigationService* NavigationSe
 }
 
 void DisplayApp::ApplyBrightness() {
+  if (infiniSleepController.IsEnabled() || currentApp == Apps::Sleep) {
+    brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+    return;
+  }
   auto brightness = settingsController.GetBrightness();
   if (brightness != Controllers::BrightnessController::Levels::Low && brightness != Controllers::BrightnessController::Levels::Medium &&
       brightness != Controllers::BrightnessController::Levels::High) {
