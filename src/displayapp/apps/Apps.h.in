@@ -51,6 +51,7 @@ namespace Pinetime {
       PineTimeStyle,
       Terminal,
       Infineat,
+      LCARS,
       CasioStyleG7710,
     };
 
