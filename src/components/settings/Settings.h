@@ -34,6 +34,7 @@ namespace Pinetime {
         Orange,
         Pink
       };
+      enum class VibrationStrength : uint8_t { Weak = 15, Normal = 35, Strong = 75 };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
 
@@ -43,6 +44,13 @@ namespace Pinetime {
         Colors ColorBG = Colors::Black;
         PTSGaugeStyle gaugeStyle = PTSGaugeStyle::Full;
         PTSWeather weatherEnable = PTSWeather::Off;
+      };
+
+      enum class CasioWeatherSegment : uint8_t { WeekNumber, DayCounter, DayOfWeek };
+
+      struct CasioStyleG7710 {
+        PTSWeather weatherEnable = PTSWeather::Off;
+        CasioWeatherSegment weatherSegment = CasioWeatherSegment::DayCounter;
       };
 
       struct WatchFaceInfineat {
@@ -153,6 +161,27 @@ namespace Pinetime {
       PTSWeather GetPTSWeather() const {
         return settings.PTS.weatherEnable;
       };
+
+      void SetCasioWeather(PTSWeather weatherEnable) {
+        if (weatherEnable != settings.casio.weatherEnable)
+          settingsChanged = true;
+        settings.casio.weatherEnable = weatherEnable;
+      }
+
+      PTSWeather GetCasioWeather() const {
+        return settings.casio.weatherEnable;
+      }
+
+      void SetCasioWeatherSegment(CasioWeatherSegment weatherSegment) {
+        if (weatherSegment != settings.casio.weatherSegment)
+          settingsChanged = true;
+
+        settings.casio.weatherSegment = weatherSegment;
+      }
+
+      CasioWeatherSegment GetCasioWeatherSegment() const {
+        return settings.casio.weatherSegment;
+      }
 
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
@@ -298,6 +327,28 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
+      void SetNotifVibration(VibrationStrength strength) {
+        if (strength != settings.notifVibration) {
+          settingsChanged = true;
+        }
+        settings.notifVibration = strength;
+      };
+
+      VibrationStrength GetNotifVibration() const {
+        return settings.notifVibration;
+      }
+
+      void SetChimeVibration(VibrationStrength strength) {
+        if (strength != settings.chimeVibration) {
+          settingsChanged = true;
+        }
+        settings.chimeVibration = strength;
+      };
+
+      VibrationStrength GetChimeVibration() const {
+        return settings.chimeVibration;
+      }
+
     private:
       Pinetime::Controllers::FS& fs;
 
@@ -319,12 +370,17 @@ namespace Pinetime {
 
         PineTimeStyle PTS;
 
+        CasioStyleG7710 casio;
+
         WatchFaceInfineat watchFaceInfineat;
 
         std::bitset<5> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        VibrationStrength notifVibration = VibrationStrength::Normal;
+        VibrationStrength chimeVibration = VibrationStrength::Normal;
       };
 
       SettingsData settings;
