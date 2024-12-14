@@ -60,15 +60,6 @@ task.h is included from an application file. */
 /* Assumes 8bit bytes! */
 #define heapBITS_PER_BYTE		( ( size_t ) 8 )
 
-/* Allocate the memory for the heap. */
-#if( configAPPLICATION_ALLOCATED_HEAP == 1 )
-/* The application writer has already defined the array used for the RTOS
-heap - probably so it can be placed in a special segment or address. */
-extern uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
-#else
-static uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
-#endif /* configAPPLICATION_ALLOCATED_HEAP */
-
 /* Define the linked list structure.  This is used to link free blocks in order
 of their memory address. */
 typedef struct A_BLOCK_LINK
@@ -112,6 +103,8 @@ member of an BlockLink_t structure is set then the block belongs to the
 application.  When the bit is free the block is still part of the free heap
 space. */
 static size_t xBlockAllocatedBit = 0;
+
+static size_t xHeapSize = 0;
 
 /*-----------------------------------------------------------*/
 
@@ -332,27 +325,38 @@ size_t xPortGetMinimumEverFreeHeapSize( void )
 }
 /*-----------------------------------------------------------*/
 
+size_t xPortGetHeapSize( void )
+{
+ return xHeapSize;
+}
+/*-----------------------------------------------------------*/
+
 void vPortInitialiseBlocks( void )
 {
  /* This just exists to keep the linker quiet. */
 }
 /*-----------------------------------------------------------*/
 
+extern uint8_t *__HeapLimit; // Defined by nrf_common.ld
+
 static void prvHeapInit( void )
 {
  BlockLink_t *pxFirstFreeBlock;
  uint8_t *pucAlignedHeap;
  size_t uxAddress;
- size_t xTotalHeapSize = configTOTAL_HEAP_SIZE;
+ size_t xTotalHeapSize = ( size_t ) &__StackLimit - ( size_t ) &__HeapLimit;
+ uint8_t *pucHeap = ( uint8_t * ) &__HeapLimit;
+
+ xHeapSize = xTotalHeapSize;
 
  /* Ensure the heap starts on a correctly aligned boundary. */
- uxAddress = ( size_t ) ucHeap;
+ uxAddress = ( size_t ) pucHeap;
 
  if( ( uxAddress & portBYTE_ALIGNMENT_MASK ) != 0 )
  {
    uxAddress += ( portBYTE_ALIGNMENT - 1 );
    uxAddress &= ~( ( size_t ) portBYTE_ALIGNMENT_MASK );
-   xTotalHeapSize -= uxAddress - ( size_t ) ucHeap;
+   xTotalHeapSize -= uxAddress - ( size_t ) pucHeap;
  }
 
  pucAlignedHeap = ( uint8_t * ) uxAddress;
