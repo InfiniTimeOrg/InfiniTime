@@ -22,7 +22,7 @@ void StopWatchController::Clear() {
   currentState = StopWatchStates::Cleared;
   timeElapsedPreviously = 0;
 
-  for (int i = 0; i < histSize; i++) {
+  for (uint8_t i = 0; i < histSize; i++) {
     history[i].number = 0;
     history[i].timeSinceStart = 0;
   }
@@ -38,12 +38,12 @@ void StopWatchController::AddLapToHistory() {
   history[0].number = ++maxLapNumber % lapNumberBoundary;
 }
 
-int StopWatchController::GetMaxLapNumber() {
+uint16_t StopWatchController::GetMaxLapNumber() {
   return maxLapNumber;
 }
 
-std::optional<LapInfo> StopWatchController::GetLapFromHistory(int index) {
-  if (index < 0 || index >= histSize || history[index].number == 0) {
+std::optional<LapInfo> StopWatchController::GetLapFromHistory(uint8_t index) {
+  if (index >= histSize || history[index].number == 0) {
     return {};
   }
   return history[index];
