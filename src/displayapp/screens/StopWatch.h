@@ -13,11 +13,11 @@ namespace Pinetime::Applications {
   namespace Screens {
 
     struct TimeSeparated {
-      int hours;
-      int mins;
-      int secs;
-      int hundredths;
-      int epochSecs;
+      uint16_t hours;
+      uint8_t mins;
+      uint8_t secs;
+      uint8_t hundredths;
+      uint32_t epochSecs;
     };
 
     class StopWatch : public Screen {
@@ -46,7 +46,7 @@ namespace Pinetime::Applications {
       Pinetime::System::WakeLock wakeLock;
       Controllers::StopWatchController& stopWatchController;
       TickType_t blinkTime = 0;
-      int displayedLaps = 3;
+      uint8_t displayedLaps = 3;
       lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
       lv_obj_t* lapText;
       Utility::DirtyValue<TickType_t> renderedSeconds;
