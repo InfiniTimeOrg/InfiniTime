@@ -25,6 +25,20 @@ namespace Pinetime {
   }
 
   namespace Controllers {
+    namespace InfiniSleepControllerTypes {
+      // Struct for sessions
+      struct SessionData {
+        uint8_t day = 0;
+        uint8_t month = 0;
+        uint16_t year = 0;
+
+        uint8_t startTimeHours = 0;
+        uint8_t startTimeMinutes = 0;
+        uint8_t endTimeHours = 0;
+        uint8_t endTimeMinutes = 0;
+      };
+    }
+
     class InfiniSleepController {
     public:
       InfiniSleepController(Controllers::DateTime& dateTimeCOntroller,
@@ -51,15 +65,7 @@ namespace Pinetime {
       uint8_t preSnoozeMinutes = 255;
       uint8_t preSnnoozeHours = 255;
 
-      // Struct for sessions
-      struct SessionData {
-        uint8_t startTimeHours = 0;
-        uint8_t startTimeMinutes = 0;
-        uint8_t endTimeHours = 0;
-        uint8_t endTimeMinutes = 0;
-      };
-
-      SessionData prevSessionData;
+      InfiniSleepControllerTypes::SessionData prevSessionData;
 
       void SetPreSnoozeTime() {
         if (preSnoozeMinutes != 255 || preSnnoozeHours != 255) {
@@ -180,8 +186,13 @@ namespace Pinetime {
           DisableTracker();
         } else {
           // ClearDataCSV(TRACKER_DATA_FILE_NAME);
+          prevSessionData.endTimeHours = 255;
+          prevSessionData.endTimeMinutes = 255;
           prevSessionData.startTimeHours = GetCurrentHour();
           prevSessionData.startTimeMinutes = GetCurrentMinute();
+          prevSessionData.day = dateTimeController.Day();
+          prevSessionData.month = static_cast<uint8_t>(dateTimeController.Month());
+          prevSessionData.year = dateTimeController.Year();
           EnableTracker();
         }
         return isEnabled;

@@ -686,9 +686,9 @@ void Sleep::SetAlerting() {
   } else {
     motorController.StartWakeAlarm();
   }
-  if (!infiniSleepController.infiniSleepSettings.naturalWake) {
-    wakeLock.Lock();
-  }
+  // if (!infiniSleepController.infiniSleepSettings.naturalWake) {
+  //   wakeLock.Lock();
+  // }
   alreadyAlerting = true;
 }
 
@@ -699,9 +699,9 @@ void Sleep::RedrawSetAlerting() {
   lv_obj_set_hidden(btnSuggestedAlarm, true);
   lv_obj_set_hidden(txtSuggestedAlarm, true);
   lv_obj_set_hidden(iconSuggestedAlarm, true);
-  if (!infiniSleepController.infiniSleepSettings.naturalWake) {
-    wakeLock.Lock();
-  }
+  // if (!infiniSleepController.infiniSleepSettings.naturalWake) {
+  //   wakeLock.Lock();
+  // }
 }
 
 void Sleep::StopAlerting(bool setSwitch) {
