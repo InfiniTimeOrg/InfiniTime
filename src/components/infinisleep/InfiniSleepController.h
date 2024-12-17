@@ -36,6 +36,8 @@ namespace Pinetime {
         uint8_t startTimeMinutes = 0;
         uint8_t endTimeHours = 0;
         uint8_t endTimeMinutes = 0;
+
+        uint16_t totalSleepMinutes = 0;
       };
     }
 
@@ -182,10 +184,23 @@ namespace Pinetime {
         if (isEnabled) {
           prevSessionData.endTimeHours = GetCurrentHour();
           prevSessionData.endTimeMinutes = GetCurrentMinute();
+
+          // Calculate total sleep time
+          uint16_t startTotalMinutes = prevSessionData.startTimeHours * 60 + prevSessionData.startTimeMinutes;
+          uint16_t endTotalMinutes = GetCurrentHour() * 60 + GetCurrentMinute();
+
+          // If end time is before start time, add 24 hours to end time (handle crossing midnight)
+          if (endTotalMinutes < startTotalMinutes) {
+            endTotalMinutes += 24 * 60;
+          }
+
+          prevSessionData.totalSleepMinutes = endTotalMinutes - startTotalMinutes;
+
           SavePrevSessionData();
           DisableTracker();
         } else {
           // ClearDataCSV(TRACKER_DATA_FILE_NAME);
+          prevSessionData.totalSleepMinutes = 0;
           prevSessionData.endTimeHours = 255;
           prevSessionData.endTimeMinutes = 255;
           prevSessionData.startTimeHours = GetCurrentHour();
