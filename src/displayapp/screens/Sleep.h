@@ -37,6 +37,8 @@ namespace Pinetime {
 
         Controllers::InfiniSleepController& infiniSleepController;
 
+        bool ignoreButtonPush = false;
+
       private:
         System::WakeLock wakeLock;
         Controllers::MotorController& motorController;

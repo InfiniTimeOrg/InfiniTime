@@ -24,13 +24,15 @@ namespace {
   }
 
   void SnoozeAlarmTaskCallback(lv_task_t* task) {
-    auto* screen = static_cast<Sleep*>(task->user_data);
     lv_task_set_prio(task, LV_TASK_PRIO_OFF);
+    auto* screen = static_cast<Sleep*>(task->user_data);
+    screen->ignoreButtonPush = true;
     screen->StopAlerting(false);
     screen->UpdateDisplay();
     screen->SnoozeWakeAlarm();
     screen->displayState = Sleep::SleepDisplayState::Info;
     screen->UpdateDisplay();
+    screen->ignoreButtonPush = false;
   }
 
   void PressesToStopAlarmTimeoutCallback(lv_task_t* task) {
@@ -555,7 +557,7 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 bool Sleep::OnButtonPushed() {
-  if (infiniSleepController.IsAlerting()) {
+  if (infiniSleepController.IsAlerting() || ignoreButtonPush) {
     return true;
   }
   if (displayState != SleepDisplayState::Info) {
