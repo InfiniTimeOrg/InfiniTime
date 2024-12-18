@@ -29,7 +29,6 @@ git clone https://github.com/InfiniTimeOrg/InfiniTime.git
 cd InfiniTime
 git submodule update --init
 mkdir build
-cd build
 ```
 
 ### Project generation using CMake
@@ -65,8 +64,10 @@ DFU files are the files you'll need to install your build of InfiniTime using OT
 
 #### CMake command 
 
+ARM_NONE_EABI_TOOLCHAIN_PATH and NRF5_SDK_PATH must be specified (see above):
+
 ```
-cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=...
+cmake -S "." -B "build" -DCMAKE_BUILD_TYPE=Release -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=.. -DBUILD_DFU=1 -DBUILD_RESOURCES=1 -DNRF_TARGET=nrf52
 ```
 
 ### Build the project
@@ -85,7 +86,17 @@ If you just want to build the project and run it on the Pinetime, using *pinetim
 Build:
 
 ```
+cd build
 make -j4 pinetime-app
+```
+
+However if you want to flash the firmware OTA using an app like Gadgetbridge, using *pinetime-mcuboot-app* will create the `pinetime-mcuboot-app-dfu-$VERSION.zip` file you want in the `build/src` folder.
+
+Build:
+
+```
+cd build
+make -j4 pinetime-mcuboot-app
 ```
 
 List of files generated:
