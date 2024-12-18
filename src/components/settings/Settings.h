@@ -203,6 +203,47 @@ namespace Pinetime {
         return settings.notificationStatus;
       };
 
+      void SetNotificationStatusByTime(uint8_t h, uint8_t m) {
+        if (settings.notificationStatus == Notification::Off) {
+          return;
+        }
+        if (settings.sleepHour == settings.wakeHour &&
+            settings.sleepMinute == settings.wakeMinute) {
+          return;
+	}
+        if (h == settings.sleepHour && m == settings.sleepMinute) {
+          SetNotificationStatus(Notification::Sleep);
+        } else if (h == settings.wakeHour && m == settings.wakeMinute) {
+          SetNotificationStatus(Notification::On);
+        }
+      };
+
+      void SetSleepTime(uint8_t h, uint8_t m) {
+        if (h != settings.sleepHour || m != settings.sleepMinute) {
+          settingsChanged = true;
+	}
+        settings.sleepHour = h;
+        settings.sleepMinute = m;
+      };
+
+      void SetWakeTime(uint8_t h, uint8_t m) {
+        if (h != settings.wakeHour || m != settings.wakeMinute) {
+          settingsChanged = true;
+	}
+        settings.wakeHour = h;
+        settings.wakeMinute = m;
+      };
+
+      void GetSleepTime(uint8_t &h, uint8_t &m) {
+        h = settings.sleepHour;
+        m = settings.sleepMinute;
+      };
+
+      void GetWakeTime(uint8_t &h, uint8_t &m) {
+        h = settings.wakeHour;
+        m = settings.wakeMinute;
+      };
+
       void SetScreenTimeOut(uint32_t timeout) {
         if (timeout != settings.screenTimeOut) {
           settingsChanged = true;
@@ -325,6 +366,10 @@ namespace Pinetime {
         uint16_t shakeWakeThreshold = 150;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+        uint8_t sleepHour;
+        uint8_t sleepMinute;
+        uint8_t wakeHour;
+        uint8_t wakeMinute;
       };
 
       SettingsData settings;
