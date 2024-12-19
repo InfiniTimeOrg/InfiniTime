@@ -123,6 +123,17 @@ void Sleep::UpdateDisplay() {
       pageIndicator3.Create();
       break;
   }
+
+  if (alreadyAlerting) {
+    RedrawSetAlerting();
+    return;
+  }
+
+  if (infiniSleepController.IsAlerting()) {
+    SetAlerting();
+  } else {
+    SetSwitchState(LV_ANIM_OFF);
+  }
 }
 
 void Sleep::DrawAlarmScreen() {
@@ -228,17 +239,6 @@ void Sleep::DrawAlarmScreen() {
   lv_obj_set_style_local_bg_color(enableSwitch, LV_SWITCH_PART_BG, LV_STATE_DEFAULT, bgColor);
 
   UpdateWakeAlarmTime();
-
-  if (alreadyAlerting) {
-    RedrawSetAlerting();
-    return;
-  }
-
-  if (infiniSleepController.IsAlerting()) {
-    SetAlerting();
-  } else {
-    SetSwitchState(LV_ANIM_OFF);
-  }
 }
 
 void Sleep::DrawInfoScreen() {
@@ -688,9 +688,7 @@ void Sleep::SetAlerting() {
   } else {
     motorController.StartWakeAlarm();
   }
-  // if (!infiniSleepController.infiniSleepSettings.naturalWake) {
-  //   wakeLock.Lock();
-  // }
+  wakeLock.Lock();
   alreadyAlerting = true;
 }
 
@@ -701,9 +699,7 @@ void Sleep::RedrawSetAlerting() {
   lv_obj_set_hidden(btnSuggestedAlarm, true);
   lv_obj_set_hidden(txtSuggestedAlarm, true);
   lv_obj_set_hidden(iconSuggestedAlarm, true);
-  // if (!infiniSleepController.infiniSleepSettings.naturalWake) {
-  //   wakeLock.Lock();
-  // }
+  wakeLock.Lock();
 }
 
 void Sleep::StopAlerting(bool setSwitch) {
