@@ -11,11 +11,11 @@
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceTrans::WatchFaceTrans(Controllers::DateTime& dateTimeController,
-                                     const Controllers::Battery& batteryController,
-                                     const Controllers::Ble& bleController,
-                                     Controllers::NotificationManager& notificationManager,
-                                     Controllers::Settings& settingsController,
-                                     Controllers::MotionController& motionController)
+                               const Controllers::Battery& batteryController,
+                               const Controllers::Ble& bleController,
+                               Controllers::NotificationManager& notificationManager,
+                               Controllers::Settings& settingsController,
+                               Controllers::MotionController& motionController)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     batteryController {batteryController},
@@ -111,8 +111,7 @@ void WatchFaceTrans::Refresh() {
   if (bleState.IsUpdated()) {
     if (bleState.Get()) {
       lv_label_set_text_static(bluetoothStatus, Symbols::bluetooth);
-    }
-    else {
+    } else {
       lv_label_set_text_static(bluetoothStatus, "");
     }
   }

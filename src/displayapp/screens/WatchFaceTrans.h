@@ -26,11 +26,11 @@ namespace Pinetime {
       class WatchFaceTrans : public Screen {
       public:
         WatchFaceTrans(Controllers::DateTime& dateTimeController,
-                          const Controllers::Battery& batteryController,
-                          const Controllers::Ble& bleController,
-                          Controllers::NotificationManager& notificationManager,
-                          Controllers::Settings& settingsController,
-                          Controllers::MotionController& motionController);
+                       const Controllers::Battery& batteryController,
+                       const Controllers::Ble& bleController,
+                       Controllers::NotificationManager& notificationManager,
+                       Controllers::Settings& settingsController,
+                       Controllers::MotionController& motionController);
         ~WatchFaceTrans() override;
 
         void Refresh() override;
@@ -75,11 +75,11 @@ namespace Pinetime {
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::WatchFaceTrans(controllers.dateTimeController,
-                                              controllers.batteryController,
-                                              controllers.bleController,
-                                              controllers.notificationManager,
-                                              controllers.settingsController,
-                                              controllers.motionController);
+                                           controllers.batteryController,
+                                           controllers.bleController,
+                                           controllers.notificationManager,
+                                           controllers.settingsController,
+                                           controllers.motionController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
