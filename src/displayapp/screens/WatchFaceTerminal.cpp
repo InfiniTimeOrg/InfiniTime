@@ -9,8 +9,24 @@
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
+#include "components/ble/SimpleWeatherService.h"
+#include "displayapp/screens/WeatherSymbols.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
+
+namespace {
+  lv_color_t TemperatureColor(Pinetime::Controllers::SimpleWeatherService::Temperature temp) {
+    if (temp.Celsius() <= 0) { // freezing
+      return Colors::blue;
+    } else if (temp.Celsius() <= 4) { // ice
+      return LV_COLOR_CYAN;
+    } else if (temp.Celsius() >= 27) { // hot
+      return Colors::deepOrange;
+    }
+    return Colors::orange; // normal
+  }
+}
 
 WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
                                      const Controllers::Battery& batteryController,
@@ -18,7 +34,8 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
                                      Controllers::NotificationManager& notificationManager,
                                      Controllers::Settings& settingsController,
                                      Controllers::HeartRateController& heartRateController,
-                                     Controllers::MotionController& motionController)
+                                     Controllers::MotionController& motionController,
+                                     Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     batteryController {batteryController},
@@ -26,7 +43,8 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
     notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
-    motionController {motionController} {
+    motionController {motionController},
+    weatherService {weatherService} {
   batteryValue = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(batteryValue, true);
   lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
@@ -47,7 +65,7 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
   lv_label_set_text_static(label_prompt_1, "user@watch:~ $ now");
 
   label_prompt_2 = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
+  lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 80);
   lv_label_set_text_static(label_prompt_2, "user@watch:~ $");
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
@@ -61,6 +79,10 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(stepValue, true);
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
+
+  weather = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(weather, true);
+  lv_obj_align(weather, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -147,5 +169,27 @@ void WatchFaceTerminal::Refresh() {
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated()) {
     lv_label_set_text_fmt(stepValue, "[STEP]#ee3377 %lu steps#", stepCount.Get());
+  }
+
+  currentWeather = weatherService.Current();
+  if (currentWeather.IsUpdated()) {
+    auto optCurrentWeather = currentWeather.Get();
+    if (optCurrentWeather) {
+      int16_t temp = optCurrentWeather->temperature.Celsius();
+      char tempUnit = 'C';
+      lv_obj_set_style_local_text_color(weather, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, TemperatureColor(optCurrentWeather->temperature));
+      if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
+        temp = optCurrentWeather->temperature.Fahrenheit();
+        tempUnit = 'F';
+      }
+      lv_label_set_text_fmt(weather,
+                            "#ffffff [WTHR]#%d°%c %s",
+                            temp,
+                            tempUnit,
+                            // Change to GetSimpleCondition with pull request #2134 (Add shorter/simpler weather condition options)
+                            Symbols::GetCondition(optCurrentWeather->iconId));
+    } else {
+      lv_label_set_text(weather, "#ffffff [WTHR]---°");
+    }
   }
 }
