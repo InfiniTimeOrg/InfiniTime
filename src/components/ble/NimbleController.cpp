@@ -49,6 +49,7 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     heartRateService {*this, heartRateController},
     motionService {*this, motionController},
     fsService {systemTask, fs},
+    ancsService {systemTask, notificationManager},
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }
 
@@ -97,6 +98,7 @@ void NimbleController::Init() {
   immediateAlertService.Init();
   heartRateService.Init();
   motionService.Init();
+  ancsService.Init();
   fsService.Init();
 
   int rc;
