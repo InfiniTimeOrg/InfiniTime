@@ -23,6 +23,7 @@
 #include "components/ble/MotionService.h"
 #include "components/ble/SimpleWeatherService.h"
 #include "components/fs/FS.h"
+#include "components/ble/ANCSService.h"
 
 namespace Pinetime {
   namespace Drivers {
@@ -71,6 +72,10 @@ namespace Pinetime {
         return weatherService;
       };
 
+      Pinetime::Controllers::ANCSService& ancs() {
+        return ancsService;
+      };
+
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
 
@@ -106,6 +111,7 @@ namespace Pinetime {
       HeartRateService heartRateService;
       MotionService motionService;
       FSService fsService;
+      ANCSService ancsService;
       ServiceDiscovery serviceDiscovery;
 
       uint8_t addrType;
