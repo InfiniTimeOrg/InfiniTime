@@ -368,7 +368,17 @@ void InfiniSleepController::LoadPrevSessionData() {
     return;
   }
 
-  fs.FileRead(&prevSessionFile, reinterpret_cast<uint8_t*>(&prevSessionData), sizeof(prevSessionData));
+  InfiniSleepControllerTypes::SessionData tmpSessionData;
+
+  fs.FileRead(&prevSessionFile, reinterpret_cast<uint8_t*>(&tmpSessionData), sizeof(tmpSessionData));
   fs.FileClose(&prevSessionFile);
+
+  if (tmpSessionData.version != SESSION_DATA_VERSION) {
+    NRF_LOG_WARNING("[InfiniSleepController] Loaded previous session data has version %u instead of %u, discarding",
+                    tmpSessionData.version,
+                    SESSION_DATA_VERSION);
+    return;
+  }
+  prevSessionData = tmpSessionData;
   NRF_LOG_INFO("[InfiniSleepController] Loaded previous session data");
 }

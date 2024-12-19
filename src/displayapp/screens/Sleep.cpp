@@ -3,7 +3,7 @@
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
 #include "components/settings/Settings.h"
-#include "components/alarm/AlarmController.h"
+#include "components/infinisleep/InfiniSleepController.h"
 #include "components/motor/MotorController.h"
 #include "systemtask/SystemTask.h"
 
@@ -131,7 +131,7 @@ void Sleep::UpdateDisplay() {
 
   if (infiniSleepController.IsAlerting()) {
     SetAlerting();
-  } else {
+  } else if (displayState == SleepDisplayState::Alarm) {
     SetSwitchState(LV_ANIM_OFF);
   }
 }
@@ -329,7 +329,7 @@ void Sleep::DrawInfoScreen() {
   } else if (infiniSleepController.infiniSleepSettings.naturalWake) {
     lv_label_set_text_static(label_gradual_wake, "Wake Mode: Natural");
   } else {
-    lv_label_set_text_static(label_gradual_wake, "Wake Mode: Off");
+    lv_label_set_text_static(label_gradual_wake, "Wake Mode: Normal");
   }
   lv_obj_align(label_gradual_wake, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
   lv_obj_set_style_local_text_color(label_gradual_wake,
@@ -383,7 +383,7 @@ void Sleep::DrawSettingsScreen() {
                        ? "Both"
                      : infiniSleepController.infiniSleepSettings.graddualWake ? "Pre."
                      : infiniSleepController.infiniSleepSettings.naturalWake  ? "Nat."
-                                                                              : "Off";
+                                                                              : "Norm.";
   lblWakeModeValue = lv_label_create(btnWakeMode, nullptr);
   lv_label_set_text_static(lblWakeModeValue, mode);
   lv_obj_align(lblWakeModeValue, nullptr, LV_ALIGN_CENTER, 0, 0);
@@ -517,7 +517,7 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
                            ? "Both"
                          : infiniSleepController.infiniSleepSettings.graddualWake ? "Pre."
                          : infiniSleepController.infiniSleepSettings.naturalWake  ? "Nat."
-                                                                                  : "Off";
+                                                                                  : "Norm.";
       lv_label_set_text_static(lv_obj_get_child(obj, nullptr), mode);
       return;
     }
@@ -724,7 +724,7 @@ void Sleep::StopAlerting(bool setSwitch) {
 }
 
 void Sleep::SetSwitchState(lv_anim_enable_t anim) {
-  if (infiniSleepController.GetWakeAlarm().isEnabled) {
+  if (displayState == SleepDisplayState::Alarm && infiniSleepController.GetWakeAlarm().isEnabled) {
     lv_switch_on(enableSwitch, anim);
   } else {
     lv_switch_off(enableSwitch, anim);

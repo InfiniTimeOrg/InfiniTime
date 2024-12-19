@@ -18,6 +18,7 @@
 #define SLEEP_CYCLE_DURATION         90 // sleep cycle duration in minutes
 #define DESIRED_CYCLES               5  // desired number of sleep cycles
 #define PUSHES_TO_STOP_ALARM_TIMEOUT 2  // in seconds
+#define SESSION_DATA_VERSION         1  // Version of the session data struct
 
 namespace Pinetime {
   namespace System {
@@ -38,6 +39,8 @@ namespace Pinetime {
         uint8_t endTimeMinutes = 0;
 
         uint16_t totalSleepMinutes = 0;
+
+        uint8_t version = SESSION_DATA_VERSION;
       };
     }
 
