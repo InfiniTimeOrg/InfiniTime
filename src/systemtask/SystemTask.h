@@ -16,6 +16,7 @@
 #include "components/ble/NimbleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/alarm/AlarmController.h"
+#include "components/infinisleep/InfiniSleepController.h"
 #include "components/fs/FS.h"
 #include "touchhandler/TouchHandler.h"
 #include "buttonhandler/ButtonHandler.h"
@@ -72,7 +73,8 @@ namespace Pinetime {
                  Pinetime::Applications::HeartRateTask& heartRateApp,
                  Pinetime::Controllers::FS& fs,
                  Pinetime::Controllers::TouchHandler& touchHandler,
-                 Pinetime::Controllers::ButtonHandler& buttonHandler);
+                 Pinetime::Controllers::ButtonHandler& buttonHandler,
+                 Pinetime::Controllers::InfiniSleepController& infiniSleepController);
 
       void Start();
       void PushMessage(Messages msg);
@@ -116,6 +118,7 @@ namespace Pinetime {
       Pinetime::Controllers::TouchHandler& touchHandler;
       Pinetime::Controllers::ButtonHandler& buttonHandler;
       Pinetime::Controllers::NimbleController nimbleController;
+      Pinetime::Controllers::InfiniSleepController& infiniSleepController;
 
       static void Process(void* instance);
       void Work();
