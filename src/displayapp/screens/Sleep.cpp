@@ -543,6 +543,7 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       infiniSleepController.SetSettingsChanged();
       lv_label_set_text_fmt(lv_obj_get_child(obj, nullptr), "%d", value);
       motorController.infiniSleepMotorStrength = value;
+      motorController.GradualWakeBuzz();
       return;
     }
     if (obj == btnPushesToStop) {
