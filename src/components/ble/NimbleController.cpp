@@ -49,8 +49,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     heartRateService {*this, heartRateController},
     motionService {*this, motionController},
     fsService {systemTask, fs},
-    ancsService {systemTask, notificationManager},
-    serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
+    ancsClient {systemTask, notificationManager},
+    serviceDiscovery({&currentTimeClient, &alertNotificationClient, &ancsClient}) {
 }
 
 void nimble_on_reset(int reason) {
@@ -98,7 +98,6 @@ void NimbleController::Init() {
   immediateAlertService.Init();
   heartRateService.Init();
   motionService.Init();
-  ancsService.Init();
   fsService.Init();
 
   int rc;
@@ -202,6 +201,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
         /* Connection failed; resume advertising. */
         currentTimeClient.Reset();
         alertNotificationClient.Reset();
+        ancsClient.Reset();
         connectionHandle = BLE_HS_CONN_HANDLE_NONE;
         bleController.Disconnect();
         fastAdvCount = 0;
@@ -225,6 +225,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
 
       currentTimeClient.Reset();
       alertNotificationClient.Reset();
+      ancsClient.Reset();
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
       if (bleController.IsConnected()) {
         bleController.Disconnect();
@@ -372,6 +373,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
                    notifSize);
 
       alertNotificationClient.OnNotification(event);
+      ancsClient.OnNotification(event);
     } break;
 
     case BLE_GAP_EVENT_NOTIFY_TX:
