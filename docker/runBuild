@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Build just the pinetime mcuboot app (with DFU version) by executing:
+#   ./docker/runBuild pinetime-mcuboot-app
+#  from the main InfiniTime repository folder
+#
+#docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime-build
+docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime-build /opt/build.sh $1
+
