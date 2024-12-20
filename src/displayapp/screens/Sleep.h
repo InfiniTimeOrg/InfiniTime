@@ -39,13 +39,15 @@ namespace Pinetime {
 
         bool ignoreButtonPush = false;
 
+        lv_obj_t *btnSnooze;
+
       private:
         System::WakeLock wakeLock;
         Controllers::MotorController& motorController;
         Controllers::Settings::ClockType clockType;
         DisplayApp& displayApp;
 
-        lv_obj_t *btnStop, *btnSnooze, *txtStop, *txtSnooze, /**btnRecur, *txtRecur,*/ *btnInfo, *enableSwitch;
+        lv_obj_t *btnStop, *txtStop, *txtSnooze, /**btnRecur, *txtRecur,*/ *btnInfo, *enableSwitch;
         lv_obj_t *trackerToggleBtn, *trackerToggleLabel;
         lv_obj_t* lblampm = nullptr;
         lv_obj_t* txtMessage = nullptr;

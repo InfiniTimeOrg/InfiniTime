@@ -27,11 +27,7 @@ namespace {
     lv_task_set_prio(task, LV_TASK_PRIO_OFF);
     auto* screen = static_cast<Sleep*>(task->user_data);
     screen->ignoreButtonPush = true;
-    screen->StopAlerting(false);
-    screen->UpdateDisplay();
-    screen->SnoozeWakeAlarm();
-    screen->displayState = Sleep::SleepDisplayState::Info;
-    screen->UpdateDisplay();
+    screen->OnButtonEvent(screen->btnSnooze, LV_EVENT_CLICKED);
     screen->ignoreButtonPush = false;
   }
 
@@ -709,6 +705,10 @@ void Sleep::RedrawSetAlerting() {
 }
 
 void Sleep::StopAlerting(bool setSwitch) {
+  if (taskSnoozeWakeAlarm != nullptr) {
+    lv_task_del(taskSnoozeWakeAlarm);
+    taskSnoozeWakeAlarm = nullptr;
+  }
   infiniSleepController.StopAlerting();
   if (infiniSleepController.infiniSleepSettings.naturalWake) {
     motorController.StopNaturalWakeAlarm();
