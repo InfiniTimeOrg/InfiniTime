@@ -558,7 +558,12 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 bool Sleep::OnButtonPushed() {
-  if (infiniSleepController.IsAlerting() || ignoreButtonPush) {
+  if (ignoreButtonPush) {
+    return true;
+  }
+  // Side button to snooze
+  if (infiniSleepController.IsAlerting() && displayState == SleepDisplayState::Alarm) {
+    OnButtonEvent(btnSnooze, LV_EVENT_CLICKED);
     return true;
   }
   if (displayState != SleepDisplayState::Info) {
