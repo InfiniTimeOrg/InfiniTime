@@ -51,7 +51,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Pinetime::Applications::HeartRateTask& heartRateApp,
                        Pinetime::Controllers::FS& fs,
                        Pinetime::Controllers::TouchHandler& touchHandler,
-                       Pinetime::Controllers::ButtonHandler& buttonHandler)
+                       Pinetime::Controllers::ButtonHandler& buttonHandler,
+                       Pinetime::Controllers::InfiniSleepController& infiniSleepController)
   : spi {spi},
     spiNorFlash {spiNorFlash},
     twiMaster {twiMaster},
@@ -80,7 +81,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                      spiNorFlash,
                      heartRateController,
                      motionController,
-                     fs) {
+                     fs),
+    infiniSleepController {infiniSleepController} {
 }
 
 void SystemTask::Start() {
@@ -128,6 +130,7 @@ void SystemTask::Work() {
   batteryController.Register(this);
   motionSensor.SoftReset();
   alarmController.Init(this);
+  infiniSleepController.Init(this);
 
   // Reset the TWI device because the motion sensor chip most probably crashed it...
   twiMaster.Sleep();
@@ -199,11 +202,15 @@ void SystemTask::Work() {
           GoToRunning();
           break;
         case Messages::GoToSleep:
+          infiniSleepController.pushesLeftToStopWakeAlarm = infiniSleepController.infiniSleepSettings.pushesToStopAlarm;
           GoToSleep();
           break;
         case Messages::OnNewTime:
           if (alarmController.IsEnabled()) {
             alarmController.ScheduleAlarm();
+          }
+          if (infiniSleepController.GetWakeAlarm().isEnabled) {
+            infiniSleepController.ScheduleWakeAlarm();
           }
           break;
         case Messages::OnNewNotification:
@@ -217,6 +224,15 @@ void SystemTask::Work() {
         case Messages::SetOffAlarm:
           GoToRunning();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
+          break;
+        case Messages::SetOffWakeAlarm:
+          // Code the screen trigger here
+          GoToRunning();
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::WakeAlarmTriggered);
+          break;
+        case Messages::SetOffGradualWake:
+          // GoToRunning();
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::GradualWakeTriggered);
           break;
         case Messages::BleConnected:
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NotifyDeviceActivity);
@@ -357,6 +373,9 @@ void SystemTask::Work() {
           } else {
             nimbleController.DisableRadio();
           }
+          break;
+        case Messages::SleepTrackerUpdate:
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::SleepTrackerUpdate);
           break;
         default:
           break;
