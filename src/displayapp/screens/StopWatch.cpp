@@ -180,23 +180,18 @@ void StopWatch::RenderLaps() {
       TimeSeparated laptime = ConvertTicksToTimeSegments(lap->timeSinceStart);
       char buffer[19];
       if (laptime.hours > 0) {
-        snprintf(buffer, sizeof(buffer), "\n#%-3d %3d:%02d:%02d.%02d",
+        snprintf(buffer,
+                 sizeof(buffer),
+                 "\n#%-3d %3d:%02d:%02d.%02d",
                  lap->number,
                  laptime.hours,
                  laptime.mins,
                  laptime.secs,
                  laptime.hundredths);
       } else if (laptime.mins > 0) {
-        snprintf(buffer, sizeof(buffer), "\n#%-3d     %2d:%02d.%02d",
-                 lap->number,
-                 laptime.mins,
-                 laptime.secs,
-                 laptime.hundredths);
+        snprintf(buffer, sizeof(buffer), "\n#%-3d     %2d:%02d.%02d", lap->number, laptime.mins, laptime.secs, laptime.hundredths);
       } else {
-        snprintf(buffer, sizeof(buffer), "\n#%-3d        %2d.%02d",
-                 lap->number,
-                 laptime.secs,
-                 laptime.hundredths);
+        snprintf(buffer, sizeof(buffer), "\n#%-3d        %2d.%02d", lap->number, laptime.secs, laptime.hundredths);
       }
       lv_label_ins_text(lapText, LV_LABEL_POS_LAST, buffer);
     }
