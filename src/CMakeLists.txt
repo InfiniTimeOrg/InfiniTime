@@ -834,8 +834,8 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 
   # NRF SDK Logging
   add_definitions(-DNRF_LOG_ENABLED=1)
-  # add_definitions(-DNRF_LOG_BACKEND_RTT_ENABLED=1)
-  # add_definitions(-DNRF_LOG_BACKEND_SERIAL_USES_RTT=1)
+  add_definitions(-DNRF_LOG_BACKEND_RTT_ENABLED=1)
+  add_definitions(-DNRF_LOG_BACKEND_SERIAL_USES_RTT=1)
 
   # NRF SDK individual modules logging
   # add_definitions(-DCLOCK_CONFIG_LOG_ENABLED=1)
