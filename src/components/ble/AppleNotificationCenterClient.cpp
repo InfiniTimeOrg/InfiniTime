@@ -5,7 +5,6 @@
 
 using namespace Pinetime::Controllers;
 
-
 int OnDiscoveryEventCallback(uint16_t conn_handle, const struct ble_gatt_error* error, const struct ble_gatt_svc* service, void* arg) {
   auto client = static_cast<AppleNotificationCenterClient*>(arg);
   return client->OnDiscoveryEvent(conn_handle, error, service);
@@ -19,8 +18,11 @@ int OnANCSCharacteristicDiscoveredCallback(uint16_t conn_handle,
   return client->OnCharacteristicsDiscoveryEvent(conn_handle, error, chr);
 }
 
-int OnANCSDescriptorDiscoveryEventCallback(
-  uint16_t conn_handle, const struct ble_gatt_error* error, uint16_t chr_val_handle, const struct ble_gatt_dsc* dsc, void* arg) {
+int OnANCSDescriptorDiscoveryEventCallback(uint16_t conn_handle,
+                                           const struct ble_gatt_error* error,
+                                           uint16_t chr_val_handle,
+                                           const struct ble_gatt_dsc* dsc,
+                                           void* arg) {
   auto client = static_cast<AppleNotificationCenterClient*>(arg);
   return client->OnDescriptorDiscoveryEventCallback(conn_handle, error, chr_val_handle, dsc);
 }
@@ -31,7 +33,7 @@ int NewAlertSubcribeCallback(uint16_t conn_handle, const struct ble_gatt_error* 
 }
 
 AppleNotificationCenterClient::AppleNotificationCenterClient(Pinetime::System::SystemTask& systemTask,
-                                                 Pinetime::Controllers::NotificationManager& notificationManager)
+                                                             Pinetime::Controllers::NotificationManager& notificationManager)
   : systemTask {systemTask}, notificationManager {notificationManager} {
 }
 
@@ -57,7 +59,9 @@ bool AppleNotificationCenterClient::OnDiscoveryEvent(uint16_t connectionHandle, 
   return false;
 }
 
-int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_chr* characteristic) {
+int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t connectionHandle,
+                                                                   const ble_gatt_error* error,
+                                                                   const ble_gatt_chr* characteristic) {
   if (error->status != 0 && error->status != BLE_HS_EDONE) {
     NRF_LOG_INFO("ANCS Characteristic discovery ERROR");
     onServiceDiscovered(connectionHandle);
@@ -82,7 +86,10 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
   return 0;
 }
 
-int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t connectionHandle, const ble_gatt_error* error, uint16_t characteristicValueHandle, const ble_gatt_dsc* descriptor) {
+int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t connectionHandle,
+                                                                      const ble_gatt_error* error,
+                                                                      uint16_t characteristicValueHandle,
+                                                                      const ble_gatt_dsc* descriptor) {
   if (error->status == 0) {
     if (characteristicValueHandle == notificationSourceHandle && ble_uuid_cmp(&notificationSourceChar.u, &descriptor->uuid.u)) {
       if (notificationSourceDescriptorHandle == 0) {
