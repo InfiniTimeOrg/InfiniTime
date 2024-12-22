@@ -651,7 +651,9 @@ void Sleep::SnoozeWakeAlarm() {
   const uint16_t totalAlarmMinutes = infiniSleepController.GetCurrentHour() * 60 + infiniSleepController.GetCurrentMinute();
   const uint16_t newSnoozeMinutes = totalAlarmMinutes + SNOOZE_MINUTES;
 
-  infiniSleepController.SetPreSnoozeTime();
+  if (infiniSleepController.isSnoozing != true) {
+    infiniSleepController.SetPreSnoozeTime();
+  }
   infiniSleepController.isSnoozing = true;
 
   infiniSleepController.SetWakeAlarmTime(newSnoozeMinutes / 60, newSnoozeMinutes % 60);
@@ -683,6 +685,10 @@ void Sleep::SetAlerting() {
   lv_obj_set_hidden(iconSuggestedAlarm, true);
   NRF_LOG_INFO("Alarm is alerting");
   if (!infiniSleepController.infiniSleepSettings.naturalWake) {
+    if (taskSnoozeWakeAlarm != nullptr) {
+      lv_task_del(taskSnoozeWakeAlarm);
+      taskSnoozeWakeAlarm = nullptr;
+    }
     taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, 120 * 1000, LV_TASK_PRIO_MID, this);
   }
   if (infiniSleepController.infiniSleepSettings.naturalWake) {
