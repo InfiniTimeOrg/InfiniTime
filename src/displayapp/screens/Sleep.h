@@ -39,7 +39,7 @@ namespace Pinetime {
 
         bool ignoreButtonPush = false;
 
-        lv_obj_t *btnSnooze;
+        lv_obj_t* btnSnooze;
 
       private:
         System::WakeLock wakeLock;

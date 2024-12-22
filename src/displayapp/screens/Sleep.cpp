@@ -316,22 +316,24 @@ void Sleep::DrawInfoScreen() {
                                     LV_STATE_DEFAULT,
                                     infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
 
-  // Gradual Wake info
-  label_gradual_wake = lv_label_create(lv_scr_act(), nullptr);
-  if (infiniSleepController.infiniSleepSettings.graddualWake && infiniSleepController.infiniSleepSettings.naturalWake) {
-    lv_label_set_text_static(label_gradual_wake, "Wake Mode: Both");
-  } else if (infiniSleepController.infiniSleepSettings.graddualWake) {
-    lv_label_set_text_static(label_gradual_wake, "Wake Mode: PreWake");
-  } else if (infiniSleepController.infiniSleepSettings.naturalWake) {
-    lv_label_set_text_static(label_gradual_wake, "Wake Mode: Natural");
-  } else {
-    lv_label_set_text_static(label_gradual_wake, "Wake Mode: Normal");
+  // Wake Mode info
+  if (infiniSleepController.GetWakeAlarm().isEnabled) {
+    label_gradual_wake = lv_label_create(lv_scr_act(), nullptr);
+    if (infiniSleepController.infiniSleepSettings.graddualWake && infiniSleepController.infiniSleepSettings.naturalWake) {
+      lv_label_set_text_static(label_gradual_wake, "Wake Mode: Both");
+    } else if (infiniSleepController.infiniSleepSettings.graddualWake) {
+      lv_label_set_text_static(label_gradual_wake, "Wake Mode: PreWake");
+    } else if (infiniSleepController.infiniSleepSettings.naturalWake) {
+      lv_label_set_text_static(label_gradual_wake, "Wake Mode: Natural");
+    } else {
+      lv_label_set_text_static(label_gradual_wake, "Wake Mode: Normal");
+    }
+    lv_obj_align(label_gradual_wake, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
+    lv_obj_set_style_local_text_color(label_gradual_wake,
+                                      LV_LABEL_PART_MAIN,
+                                      LV_STATE_DEFAULT,
+                                      infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
   }
-  lv_obj_align(label_gradual_wake, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
-  lv_obj_set_style_local_text_color(label_gradual_wake,
-                                    LV_LABEL_PART_MAIN,
-                                    LV_STATE_DEFAULT,
-                                    infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
 
   // Start/Stop button
   trackerToggleBtn = lv_btn_create(lv_scr_act(), nullptr);
