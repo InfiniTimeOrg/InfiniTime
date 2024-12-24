@@ -30,6 +30,7 @@ namespace Pinetime {
       void OnNotification(ble_gap_event* event);
       void Reset();
       void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
+      void DebugNotification(const char* msg) const;
 
     private:
       // 7905F431-B5CE-4E99-A40F-4B1E122D00D0

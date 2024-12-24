@@ -41,10 +41,12 @@ bool AppleNotificationCenterClient::OnDiscoveryEvent(uint16_t connectionHandle, 
   if (service == nullptr && error->status == BLE_HS_EDONE) {
     if (isDiscovered) {
       NRF_LOG_INFO("ANCS Discovery found, starting characteristics discovery");
+      DebugNotification("ANCS Discovery found, starting characteristics discovery");
 
       ble_gattc_disc_all_chrs(connectionHandle, ancsStartHandle, ancsEndHandle, OnANCSCharacteristicDiscoveredCallback, this);
     } else {
       NRF_LOG_INFO("ANCS not found");
+      DebugNotification("ANCS not found");
       onServiceDiscovered(connectionHandle);
     }
     return true;
@@ -52,6 +54,7 @@ bool AppleNotificationCenterClient::OnDiscoveryEvent(uint16_t connectionHandle, 
 
   if (service != nullptr && ble_uuid_cmp(&ancsUuid.u, &service->uuid.u) == 0) {
     NRF_LOG_INFO("ANCS discovered : 0x%x - 0x%x", service->start_handle, service->end_handle);
+    DebugNotification("ANCS discovered");
     ancsStartHandle = service->start_handle;
     ancsEndHandle = service->end_handle;
     isDiscovered = true;
@@ -64,12 +67,14 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
                                                                    const ble_gatt_chr* characteristic) {
   if (error->status != 0 && error->status != BLE_HS_EDONE) {
     NRF_LOG_INFO("ANCS Characteristic discovery ERROR");
+    DebugNotification("ANCS Characteristic discovery ERROR");
     onServiceDiscovered(connectionHandle);
     return 0;
   }
 
   if (characteristic == nullptr && error->status == BLE_HS_EDONE) {
     NRF_LOG_INFO("ANCS Characteristic discovery complete");
+    DebugNotification("ANCS Characteristic discovery complete");
     if (isCharacteristicDiscovered) {
       ble_gattc_disc_all_dscs(connectionHandle, notificationSourceHandle, ancsEndHandle, OnANCSDescriptorDiscoveryEventCallback, this);
     } else {
@@ -78,6 +83,7 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
   } else {
     if (characteristic != nullptr && ble_uuid_cmp(&notificationSourceChar.u, &characteristic->uuid.u) == 0) {
       NRF_LOG_INFO("ANCS Characteristic discovered: Notification Source");
+      DebugNotification("ANCS Characteristic discovered: Notification Source");
       notificationSourceHandle = characteristic->val_handle;
       // notificationSourceDefHandle = characteristic->def_handle;
       isCharacteristicDiscovered = true;
@@ -94,6 +100,7 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
     if (characteristicValueHandle == notificationSourceHandle && ble_uuid_cmp(&notificationSourceChar.u, &descriptor->uuid.u)) {
       if (notificationSourceDescriptorHandle == 0) {
         NRF_LOG_INFO("ANCS Descriptor discovered : %d", descriptor->handle);
+        DebugNotification("ANCS Descriptor discovered");
         notificationSourceDescriptorHandle = descriptor->handle;
         isDescriptorFound = true;
         uint8_t value[2] {1, 0};
@@ -110,8 +117,10 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
 int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* /*attribute*/) {
   if (error->status == 0) {
     NRF_LOG_INFO("ANCS New alert subscribe OK");
+    DebugNotification("ANCS New alert subscribe OK");
   } else {
     NRF_LOG_INFO("ANCS New alert subscribe ERROR");
+    DebugNotification("ANCS New alert subscribe ERROR");
   }
   onServiceDiscovered(connectionHandle);
 
@@ -142,6 +151,20 @@ void AppleNotificationCenterClient::Reset() {
 
 void AppleNotificationCenterClient::Discover(uint16_t connectionHandle, std::function<void(uint16_t)> onServiceDiscovered) {
   NRF_LOG_INFO("[ANCS] Starting discovery");
+  DebugNotification("[ANCS] Starting discovery");
   this->onServiceDiscovered = onServiceDiscovered;
   ble_gattc_disc_svc_by_uuid(connectionHandle, &ancsUuid.u, OnDiscoveryEventCallback, this);
+}
+
+void AppleNotificationCenterClient::DebugNotification(const char* msg) const {
+  NRF_LOG_INFO("[ANCS DEBUG] %s", msg);
+
+  NotificationManager::Notification notif;
+  std::strncpy(notif.message.data(), msg, notif.message.size() - 1);
+  notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
+  notif.size = std::min(std::strlen(msg), notif.message.size());
+  notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+  notificationManager.Push(std::move(notif));
+
+  systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
 }
