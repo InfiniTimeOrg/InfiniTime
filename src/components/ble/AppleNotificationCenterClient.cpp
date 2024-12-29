@@ -129,9 +129,49 @@ int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle,
 
 void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
   if (event->notify_rx.attr_handle == notificationSourceHandle) {
+    NRF_LOG_INFO("ANCS Notification received");
+    uint8_t eventId;
+    uint8_t eventFlag;
+    uint8_t category;
+    uint8_t categoryCount;
+    uint32_t notificationUuid;
+
+    os_mbuf_copydata(event->notify_rx.om, 0, 1, &eventId);
+    os_mbuf_copydata(event->notify_rx.om, 1, 1, &eventFlag);
+    os_mbuf_copydata(event->notify_rx.om, 2, 1, &category);
+    os_mbuf_copydata(event->notify_rx.om, 3, 1, &categoryCount);
+    os_mbuf_copydata(event->notify_rx.om, 4, 4, &notificationUuid);
+
+    if (eventId != static_cast<uint8_t>(EventIds::Added)) {
+      return;
+    }
+
+    // Request ANCS more info
+    // uint8_t request[] = {
+    //   0x00, // Command ID: Get Notification Attributes
+    //   (uint8_t) (notificationUuid & 0xFF),
+    //   (uint8_t) ((notificationUuid >> 8) & 0xFF),
+    //   (uint8_t) ((notificationUuid >> 16) & 0xFF),
+    //   (uint8_t) ((notificationUuid >> 24) & 0xFF),
+    //   0x01,
+    //   0x00,
+    //   0xFF,
+    //   0xFF, // Title (max length 65535)
+    //   0x03,
+    //   0x00,
+    //   0xFF,
+    //   0xFF // Message (max length 65535)
+    // };
+    // ble_gattc_write_flat(event->notify_rx.conn_handle, controlPointHandle, request, sizeof(request), nullptr, nullptr);
+
     NotificationManager::Notification notif;
-    notif.message = std::array<char, 101> {"Hello\0World"};
-    notif.size = 11;
+    char uuidStr[55];
+    snprintf(uuidStr, sizeof(uuidStr), "iOS Notif.:%08lx\nEvID: %d\nCat: %d", notificationUuid, eventId, category);
+    notif.message = std::array<char, 101> {};
+    std::strncpy(notif.message.data(), uuidStr, notif.message.size() - 1);
+    notif.message[10] = '\0'; // Seperate Title and Message
+    notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
+    notif.size = std::min(std::strlen(uuidStr), notif.message.size());
     notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
     notificationManager.Push(std::move(notif));
 
@@ -142,11 +182,26 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 void AppleNotificationCenterClient::Reset() {
   ancsStartHandle = 0;
   ancsEndHandle = 0;
+  gattStartHandle = 0;
+  gattEndHandle = 0;
+  serviceChangedHandle = 0;
+  serviceChangedDescriptorHandle = 0;
   notificationSourceHandle = 0;
   notificationSourceDescriptorHandle = 0;
+  controlPointHandle = 0;
+  controlPointDescriptorHandle = 0;
+  dataSourceHandle = 0;
+  dataSourceDescriptorHandle = 0;
+  isGattDiscovered = false;
+  isGattCharacteristicDiscovered = false;
+  isGattDescriptorFound = false;
   isDiscovered = false;
   isCharacteristicDiscovered = false;
   isDescriptorFound = false;
+  isControlCharacteristicDiscovered = false;
+  isControlDescriptorFound = false;
+  isDataCharacteristicDiscovered = false;
+  isDataDescriptorFound = false;
 }
 
 void AppleNotificationCenterClient::Discover(uint16_t connectionHandle, std::function<void(uint16_t)> onServiceDiscovered) {

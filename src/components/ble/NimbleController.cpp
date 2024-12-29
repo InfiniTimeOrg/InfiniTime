@@ -162,8 +162,10 @@ void NimbleController::StartAdvertising() {
   fields.uuids16 = &HeartRateService::heartRateServiceUuid;
   fields.num_uuids16 = 1;
   fields.uuids16_is_complete = 1;
-  fields.uuids128 = &DfuService::serviceUuid;
-  fields.num_uuids128 = 1;
+  const ble_uuid128_t uuids128[2] = {DfuService::serviceUuid, AppleNotificationCenterClient::ancsUuid};
+  // fields.uuids128 = &DfuService::serviceUuid;
+  fields.uuids128 = uuids128;
+  fields.num_uuids128 = 2;
   fields.uuids128_is_complete = 1;
   fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
 
