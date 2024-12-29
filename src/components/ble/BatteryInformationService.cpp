@@ -17,7 +17,7 @@ BatteryInformationService::BatteryInformationService(Controllers::Battery& batte
     characteristicDefinition {{.uuid = &batteryLevelUuid.u,
                                .access_cb = BatteryInformationServiceCallback,
                                .arg = this,
-                               .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_READ_ENC | BLE_GATT_CHR_F_READ_AUTHEN | BLE_GATT_CHR_F_NOTIFY,
+                               .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
                                .val_handle = &batteryLevelHandle},
                               {0}},
     serviceDefinition {
