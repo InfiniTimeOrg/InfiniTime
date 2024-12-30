@@ -27,27 +27,27 @@ WatchFaceTrans::WatchFaceTrans(Controllers::DateTime& dateTimeController,
   topBlueBackground = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(topBlueBackground, LV_HOR_RES, LV_VER_RES / 5);
   lv_obj_set_pos(topBlueBackground, 0, 0);
-  lv_obj_set_style_local_bg_color(topBlueBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00bff3));
+  lv_obj_set_style_local_bg_color(topBlueBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightBlue);
   lv_obj_set_style_local_radius(topBlueBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
   topPinkBackground = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(topPinkBackground, LV_HOR_RES, LV_VER_RES / 5);
   lv_obj_set_pos(topPinkBackground, 0, LV_VER_RES / 5);
-  lv_obj_set_style_local_bg_color(topPinkBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xf49ac1));
+  lv_obj_set_style_local_bg_color(topPinkBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightPink);
   lv_obj_set_style_local_radius(topPinkBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
   whiteBackground = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(whiteBackground, LV_HOR_RES, LV_VER_RES / 5);
   lv_obj_set_pos(whiteBackground, 0, 2 * LV_VER_RES / 5);
-  lv_obj_set_style_local_bg_color(whiteBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xffffff));
+  lv_obj_set_style_local_bg_color(whiteBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_radius(whiteBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
   bottomPinkBackground = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(bottomPinkBackground, LV_HOR_RES, LV_VER_RES / 5);
   lv_obj_set_pos(bottomPinkBackground, 0, 3 * LV_VER_RES / 5);
-  lv_obj_set_style_local_bg_color(bottomPinkBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xf49ac1));
+  lv_obj_set_style_local_bg_color(bottomPinkBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightPink);
   lv_obj_set_style_local_radius(bottomPinkBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
   bottomBlueBackground = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(bottomBlueBackground, LV_HOR_RES, LV_VER_RES / 5);
   lv_obj_set_pos(bottomBlueBackground, 0, 4 * LV_VER_RES / 5);
-  lv_obj_set_style_local_bg_color(bottomBlueBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00bff3));
+  lv_obj_set_style_local_bg_color(bottomBlueBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightBlue);
   lv_obj_set_style_local_radius(bottomBlueBackground, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
 
   bluetoothStatus = lv_label_create(lv_scr_act(), nullptr);
@@ -62,26 +62,26 @@ WatchFaceTrans::WatchFaceTrans(Controllers::DateTime& dateTimeController,
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_LEFT_MID, 0, -100);
-  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
+  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
-  label_date = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_recolor(label_date, true);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, -48);
-  lv_label_set_align(label_date, LV_LABEL_ALIGN_CENTER);
-  lv_obj_set_auto_realign(label_date, true);
+  labelDate = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(labelDate, true);
+  lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -48);
+  lv_label_set_align(labelDate, LV_LABEL_ALIGN_CENTER);
+  lv_obj_set_auto_realign(labelDate, true);
 
-  label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_recolor(label_time, true);
-  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
-  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_obj_set_auto_realign(label_time, true);
+  labelTime = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(labelTime, true);
+  lv_obj_align(labelTime, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_label_set_align(labelTime, LV_LABEL_ALIGN_CENTER);
+  lv_obj_set_style_local_text_font(labelTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_auto_realign(labelTime, true);
 
-  label_day = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_recolor(label_day, true);
-  lv_obj_align(label_day, lv_scr_act(), LV_ALIGN_CENTER, 0, 48);
-  lv_label_set_align(label_day, LV_LABEL_ALIGN_CENTER);
-  lv_obj_set_auto_realign(label_day, true);
+  labelDay = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(labelDay, true);
+  lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 48);
+  lv_label_set_align(labelDay, LV_LABEL_ALIGN_CENTER);
+  lv_obj_set_auto_realign(labelDay, true);
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(stepValue, true);
@@ -103,7 +103,7 @@ void WatchFaceTrans::Refresh() {
   bleState = bleController.IsConnected();
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated() || powerPresent.IsUpdated()) {
-    lv_label_set_text_fmt(batteryValue, "#ffffff %d%%", batteryPercentRemaining.Get());
+    lv_label_set_text_fmt(batteryValue, "#ffffff %d%%#", batteryPercentRemaining.Get());
     if (batteryController.IsPowerPresent()) {
       lv_label_ins_text(batteryValue, LV_LABEL_POS_LAST, " Charging");
     }
@@ -141,9 +141,9 @@ void WatchFaceTrans::Refresh() {
         hour = hour - 12;
         ampmChar[0] = 'P';
       }
-      lv_label_set_text_fmt(label_time, "#000000 %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
+      lv_label_set_text_fmt(labelTime, "#000000 %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
     } else {
-      lv_label_set_text_fmt(label_time, "#000000 %02d:%02d:%02d", hour, minute, second);
+      lv_label_set_text_fmt(labelTime, "#000000 %02d:%02d:%02d#", hour, minute, second);
     }
 
     currentDate = std::chrono::time_point_cast<std::chrono::days>(currentDateTime.Get());
@@ -152,35 +152,8 @@ void WatchFaceTrans::Refresh() {
       Controllers::DateTime::Months month = dateTimeController.Month();
       uint8_t day = dateTimeController.Day();
       Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
-      lv_label_set_text_fmt(label_date, "#ffffff %02d-%02d-%04d#", short(day), char(month), year);
-      const char* dayString;
-      switch (dayOfWeek) {
-        case Controllers::DateTime::Days::Monday:
-          dayString = "Monday";
-          break;
-        case Controllers::DateTime::Days::Tuesday:
-          dayString = "Tuesday";
-          break;
-        case Controllers::DateTime::Days::Wednesday:
-          dayString = "Wednesday";
-          break;
-        case Controllers::DateTime::Days::Thursday:
-          dayString = "Thursday";
-          break;
-        case Controllers::DateTime::Days::Friday:
-          dayString = "Friday";
-          break;
-        case Controllers::DateTime::Days::Saturday:
-          dayString = "Saturday";
-          break;
-        case Controllers::DateTime::Days::Sunday:
-          dayString = "Sunday";
-          break;
-        default:
-          dayString = "?";
-          break;
-      }
-      lv_label_set_text_fmt(label_day, "#ffffff %s", dayString);
+      lv_label_set_text_fmt(labelDate, "#ffffff %02d-%02d-%04d#", day, static_cast<uint8_t>(month), year);
+      lv_label_set_text_fmt(labelDay, "#ffffff %s#", dateTimeController.DayOfWeekToStringLow(dayOfWeek));
     }
   }
 

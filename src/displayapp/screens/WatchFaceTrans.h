@@ -36,7 +36,7 @@ namespace Pinetime {
         void Refresh() override;
 
       private:
-        Utility::DirtyValue<int> batteryPercentRemaining {};
+        Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
         Utility::DirtyValue<bool> powerPresent {};
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>> currentDateTime {};
@@ -50,12 +50,15 @@ namespace Pinetime {
         lv_obj_t* bottomPinkBackground;
         lv_obj_t* bottomBlueBackground;
         lv_obj_t* bluetoothStatus;
-        lv_obj_t* label_time;
-        lv_obj_t* label_date;
-        lv_obj_t* label_day;
+        lv_obj_t* labelTime;
+        lv_obj_t* labelDate;
+        lv_obj_t* labelDay;
         lv_obj_t* batteryValue;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
+
+        static constexpr lv_color_t lightBlue = LV_COLOR_MAKE(0x00, 0xbf, 0xf3);
+        static constexpr lv_color_t lightPink = LV_COLOR_MAKE(0xf4, 0x9a, 0xc1);
 
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
