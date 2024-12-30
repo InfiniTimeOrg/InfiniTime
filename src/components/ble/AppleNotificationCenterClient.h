@@ -27,6 +27,7 @@ namespace Pinetime {
       int OnCharacteristicsDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_chr* characteristic);
       int OnNewAlertSubcribe(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* attribute);
       int OnDescriptorDiscoveryEventCallback(uint16_t connectionHandle, const ble_gatt_error* error, uint16_t characteristicValueHandle, const ble_gatt_dsc* descriptor);
+      int OnControlPointWrite(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* attribute);
       void OnNotification(ble_gap_event* event);
       void Reset();
       void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
@@ -52,7 +53,7 @@ namespace Pinetime {
       // 22EAC6E9-24D6-4BB5-BE44-B36ACE7C7BFB
       const ble_uuid128_t dataSourceChar {
         .u {.type = BLE_UUID_TYPE_128},
-        .value = {0xFB, 0x7B, 0x7C, 0xCE, 0x6A, 0xB3, 0x44, 0xBE,0xB5, 0x4B,0xD6, 0x24, 0xE9, 0xC6, 0xEA, 0x22 }
+        .value = {0xFB, 0x7B, 0x7C, 0xCE, 0x6A, 0xB3, 0x44, 0xBE, 0xB5, 0x4B, 0xD6, 0x24, 0xE9, 0xC6, 0xEA, 0x22 }
       };
 
       const ble_uuid16_t gattServiceUuid = {BLE_UUID_TYPE_16, 0x1801};
