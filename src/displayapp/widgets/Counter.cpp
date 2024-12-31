@@ -8,14 +8,14 @@ namespace {
   void upBtnEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* widget = static_cast<Counter*>(obj->user_data);
     if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
-      widget->UpBtnPressed();
+      widget->UpBtnPressed(event);
     }
   }
 
   void downBtnEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* widget = static_cast<Counter*>(obj->user_data);
     if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
-      widget->DownBtnPressed();
+      widget->DownBtnPressed(event);
     }
   }
 
@@ -32,10 +32,18 @@ namespace {
 Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, value {min}, leadingZeroCount {digitCount(max)}, font {font} {
 }
 
-void Counter::UpBtnPressed() {
-  value++;
-  if (value > max) {
-    value = min;
+void Counter::UpBtnPressed(lv_event_t event) {
+  if (fastMode && event == LV_EVENT_LONG_PRESSED_REPEAT) {
+    value += fastSkip;
+    if (value > max) {
+      int diff = value - max;
+      value = min + diff - 1;
+    }
+  } else {
+    value++;
+    if (value > max) {
+      value = min;
+    }
   }
   UpdateLabel();
 
@@ -44,10 +52,18 @@ void Counter::UpBtnPressed() {
   }
 };
 
-void Counter::DownBtnPressed() {
-  value--;
-  if (value < min) {
-    value = max;
+void Counter::DownBtnPressed(lv_event_t event) {
+  if (fastMode && event == LV_EVENT_LONG_PRESSED_REPEAT) {
+    value -= fastSkip;
+    if (value < min) {
+      int diff = value - min;
+      value = max + diff + 1;
+    }
+  } else {
+    value--;
+    if (value < min) {
+      value = max;
+    }
   }
   UpdateLabel();
 
@@ -106,6 +122,15 @@ void Counter::EnableTwelveHourMode() {
 // Make sure to set the max and min values to 1 and 12. Otherwise behaviour is undefined
 void Counter::EnableMonthMode() {
   monthMode = true;
+}
+
+// Make sure fastSkip is positive and not larger than max.
+// Otherwise fast mode will not enable.
+void Counter::EnableFastMode(int fastSkip) {
+  if (fastSkip > 0 && fastSkip < max) {
+    fastMode = true;
+    this->fastSkip = fastSkip;
+  }
 }
 
 // Counter cannot be resized after creation,
