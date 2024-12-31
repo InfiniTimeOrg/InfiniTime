@@ -84,7 +84,7 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
       ble_gattc_disc_all_dscs(connectionHandle, notificationSourceHandle, ancsEndHandle, OnANCSDescriptorDiscoveryEventCallback, this);
     } if (isDataCharacteristicDiscovered) {
       // DebugNotification("ANCS Characteristic discovery complete: Data Source");
-      ble_gattc_disc_all_dscs(connectionHandle, dataSourceHandle, 0xFFFF, OnANCSDescriptorDiscoveryEventCallback, this);
+      ble_gattc_disc_all_dscs(connectionHandle, dataSourceHandle, ancsEndHandle, OnANCSDescriptorDiscoveryEventCallback, this);
     }
     if (isCharacteristicDiscovered == isControlCharacteristicDiscovered && isCharacteristicDiscovered == isDataCharacteristicDiscovered) {
       onServiceDiscovered(connectionHandle);
@@ -102,8 +102,10 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
         controlPointHandle = characteristic->val_handle;
         isControlCharacteristicDiscovered = true;
       } else if (ble_uuid_cmp(&dataSourceChar.u, &characteristic->uuid.u) == 0) {
-        NRF_LOG_INFO("ANCS Characteristic discovered: Data Source");
-        DebugNotification("ANCS Characteristic discovered: Data Source");
+        char msg[55];
+        snprintf(msg, sizeof(msg), "ANCS Characteristic discovered: Data Source\n%d", characteristic->val_handle);
+        NRF_LOG_INFO(msg);
+        DebugNotification(msg);
         dataSourceHandle = characteristic->val_handle;
         isDataCharacteristicDiscovered = true;
       }
@@ -144,10 +146,12 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
       }
     }
   } else {
-    char errorStr[55];
-    snprintf(errorStr, sizeof(errorStr), "ANCS Descriptor discovery ERROR: %d", error->status);
-    NRF_LOG_INFO(errorStr);
-    DebugNotification(errorStr);
+    if (error->status != BLE_HS_EDONE) {
+      char errorStr[55];
+      snprintf(errorStr, sizeof(errorStr), "ANCS Descriptor discovery ERROR: %d", error->status);
+      NRF_LOG_INFO(errorStr);
+      DebugNotification(errorStr);
+    }
     if (isDescriptorFound == isDataDescriptorFound)
       onServiceDiscovered(connectionHandle);
   }
