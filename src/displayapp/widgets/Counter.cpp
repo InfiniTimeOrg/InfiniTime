@@ -59,6 +59,9 @@ void Counter::DownBtnPressed() {
 void Counter::SetValue(int newValue) {
   value = newValue;
   UpdateLabel();
+  if (ValueChangedHandler != nullptr) {
+    ValueChangedHandler(userData);
+  }
 }
 
 void Counter::HideControls() {
