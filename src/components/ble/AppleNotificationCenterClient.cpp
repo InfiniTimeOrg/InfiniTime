@@ -203,11 +203,11 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     // bool silent = eventFlags & static_cast<uint8_t>(EventFlags::Silent);
     // bool important = eventFlags & static_cast<uint8_t>(EventFlags::Important);
-    bool preExisting = eventFlags & static_cast<uint8_t>(EventFlags::PreExisting);
+    bool preExisting = (eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) == 1;
     // bool positiveAction = eventFlags & static_cast<uint8_t>(EventFlags::PositiveAction);
     // bool negativeAction = eventFlags & static_cast<uint8_t>(EventFlags::NegativeAction);
 
-    if (eventId != static_cast<uint8_t>(EventIds::Added) && preExisting != true) {
+    if (eventId != static_cast<uint8_t>(EventIds::Added) || preExisting == true) {
       return;
     }
 
