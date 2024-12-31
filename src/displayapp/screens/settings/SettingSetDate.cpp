@@ -64,6 +64,7 @@ SettingSetDate::SettingSetDate(Pinetime::Controllers::DateTime& dateTimeControll
   dayCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
   dayCounter.Create();
   dayCounter.SetValue(dateTimeController.Day());
+  dayCounter.EnableFastMode(5);
   lv_obj_align(dayCounter.GetObject(), nullptr, LV_ALIGN_CENTER, POS_X_DAY, POS_Y_TEXT);
 
   monthCounter.EnableMonthMode();

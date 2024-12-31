@@ -68,6 +68,7 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
   lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
   minuteCounter.SetValue(alarmController.Minutes());
   minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
+  minuteCounter.EnableFastMode(5);
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
