@@ -127,6 +127,7 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
         isDescriptorFound = true;
         uint8_t value[2] {1, 0};
         ble_gattc_write_flat(connectionHandle, notificationSourceDescriptorHandle, value, sizeof(value), NewAlertSubcribeCallback, this);
+        ble_gattc_write_flat(connectionHandle, ancsEndHandle, value, sizeof(value), NewAlertSubcribeCallback, this);
       }
     } else if (characteristicValueHandle == controlPointHandle && ble_uuid_cmp(&controlPointChar.u, &descriptor->uuid.u)) {
       if (controlPointDescriptorHandle == 0) {
@@ -236,7 +237,8 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     // notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
     // notificationManager.Push(std::move(notif));
 
-    systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
+    // systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
+    DebugNotification("ANCS Notification received");
   } else if (event->notify_rx.attr_handle == dataSourceHandle || event->notify_rx.attr_handle == dataSourceDescriptorHandle) {
     uint16_t titleSize;
     uint16_t title;
@@ -244,12 +246,17 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     os_mbuf_copydata(event->notify_rx.om, 6, 2, &titleSize);
     os_mbuf_copydata(event->notify_rx.om, 8, titleSize, &title);
 
-    // char mesgStr[90];
-    // snprintf(mesgStr, sizeof(mesgStr), "ANCS Data Source received\nTitle: %d", title);
+    std::string decodedTitle;
+    decodedTitle.reserve(titleSize);
+    for (uint16_t i = 0; i < titleSize; ++i) {
+      uint8_t byte;
+      os_mbuf_copydata(event->notify_rx.om, 8 + i, 1, &byte);
+      decodedTitle.push_back(static_cast<char>(byte));
+    }
 
-    // NRF_LOG_INFO(mesgStr);
-    // DebugNotification(mesgStr);
-    DebugNotification("ANCS Data Source received");
+    NRF_LOG_INFO("Decoded Title: %s", decodedTitle.c_str());
+    DebugNotification(decodedTitle.c_str());
+    // DebugNotification("ANCS Data Source received");
   }
 }
 
