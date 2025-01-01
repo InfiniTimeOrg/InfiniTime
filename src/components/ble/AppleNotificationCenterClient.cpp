@@ -207,22 +207,30 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     // bool positiveAction = eventFlags & static_cast<uint8_t>(EventFlags::PositiveAction);
     // bool negativeAction = eventFlags & static_cast<uint8_t>(EventFlags::NegativeAction);
 
-    if (eventId != static_cast<uint8_t>(EventIds::Added) || preExisting == true) {
+    if (preExisting || eventId != static_cast<uint8_t>(EventIds::Added)) {
       return;
     }
 
     // Request ANCS more info
     uint8_t titleSize = 30;
-    BYTE request[8];
+    uint8_t subTitleSize = 30;
+    uint8_t messageSize = 90;
+    BYTE request[14];
     request[0] = 0x00; // Command ID: Get Notification Attributes
     request[1] = (uint8_t) (notificationUuid & 0xFF);
     request[2] = (uint8_t) ((notificationUuid >> 8) & 0xFF);
     request[3] = (uint8_t) ((notificationUuid >> 16) & 0xFF);
     request[4] = (uint8_t) ((notificationUuid >> 24) & 0xFF);
-    request[5] = 0x01;
+    request[5] = 0x01; // Attribute ID: Title
     // request[6] = 0x00;
     request[6] = (titleSize & 0xFF);
     request[7] = ((titleSize >> 8) & 0xFF);
+    request[8] = 0x02; // Attribute ID: Subtitle
+    request[9] = (subTitleSize & 0xFF);
+    request[10] = ((subTitleSize >> 8) & 0xFF);
+    request[11] = 0x03; // Attribute ID: Message
+    request[12] = (messageSize & 0xFF);
+    request[13] = ((messageSize >> 8) & 0xFF);
 
     ble_gattc_write_flat(event->notify_rx.conn_handle, controlPointHandle, request, sizeof(request), OnControlPointWriteCallback, this);
 
@@ -241,10 +249,12 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     DebugNotification("ANCS Notification received");
   } else if (event->notify_rx.attr_handle == dataSourceHandle || event->notify_rx.attr_handle == dataSourceDescriptorHandle) {
     uint16_t titleSize;
-    uint16_t title;
+    uint16_t subTitleSize;
+    uint16_t messageSize;
 
     os_mbuf_copydata(event->notify_rx.om, 6, 2, &titleSize);
-    os_mbuf_copydata(event->notify_rx.om, 8, titleSize, &title);
+    os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1, 2, &subTitleSize);
+    os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1 + 2 + subTitleSize + 1, 2, &messageSize);
 
     std::string decodedTitle;
     decodedTitle.reserve(titleSize);
@@ -254,9 +264,54 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
       decodedTitle.push_back(static_cast<char>(byte));
     }
 
+    std::string decodedSubTitle;
+    decodedSubTitle.reserve(subTitleSize);
+    for (uint16_t i = 0; i < subTitleSize; ++i) {
+      uint8_t byte;
+      os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1 + 2 + i, 1, &byte);
+      decodedSubTitle.push_back(static_cast<char>(byte));
+    }
+
+    std::string decodedMessage;
+    decodedMessage.reserve(messageSize);
+    for (uint16_t i = 0; i < messageSize; ++i) {
+      uint8_t byte;
+      os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1 + 2 + subTitleSize + 1 + 2 + i, 1, &byte);
+      decodedMessage.push_back(static_cast<char>(byte));
+    }
+
     NRF_LOG_INFO("Decoded Title: %s", decodedTitle.c_str());
-    DebugNotification(decodedTitle.c_str());
+    NRF_LOG_INFO("Decoded SubTitle: %s", decodedSubTitle.c_str());
+    // DebugNotification(decodedTitle.c_str());
     // DebugNotification("ANCS Data Source received");
+
+    if (titleSize > 10) {
+      decodedTitle.resize(7);
+      decodedTitle += "... ";
+    }
+
+    if (subTitleSize > 15) {
+      decodedSubTitle.resize(12);
+      decodedSubTitle += "...";
+    }
+
+    if (messageSize > 50) {
+      decodedMessage.resize(47);
+      decodedMessage += "...";
+    }
+
+    NotificationManager::Notification notif;
+    // std::string notifStr = "iOS Notif.:" + decodedTitle + "\n" + decodedSubTitle;
+    std::string notifStr = decodedTitle + decodedSubTitle + "\n\n" + decodedMessage;
+    notif.message = std::array<char, 101> {};
+    std::strncpy(notif.message.data(), notifStr.c_str(), notif.message.size() - 1);
+    notif.message[10] = '\0'; // Seperate Title and Message
+    notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
+    notif.size = std::min(std::strlen(notifStr.c_str()), notif.message.size());
+    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    notificationManager.Push(std::move(notif));
+
+    systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
   }
 }
 
