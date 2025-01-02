@@ -50,7 +50,7 @@ WatchFaceNumerals::WatchFaceNumerals(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_text_font(labelTimeAMPM1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
   lv_obj_set_style_local_text_color(labelTimeAMPM1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
   lv_obj_align(labelTimeAMPM1, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 2, -34);
-
+  // We use two labels for more flexibility with alignment
   labelTimeAMPM2 = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(labelTimeAMPM2, "M");
   lv_obj_set_style_local_text_font(labelTimeAMPM2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
