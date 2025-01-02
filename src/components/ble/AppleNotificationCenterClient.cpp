@@ -287,9 +287,18 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     if (titleSize >= maxTitleSize) {
       decodedTitle.resize(maxTitleSize - 3);
-      decodedTitle += "..._";
+      decodedTitle += "...";
+      if (!decodedSubTitle.empty()) {
+        decodedTitle += " - ";
+      } else {
+        decodedTitle += "-";
+      }
     } else {
-      decodedTitle += "_";
+      if (!decodedSubTitle.empty()) {
+        decodedTitle += " - ";
+      } else {
+        decodedTitle += "-";
+      }
     }
 
     if (subTitleSize > maxSubtitleSize) {
@@ -297,10 +306,10 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
       decodedSubTitle += "...";
     }
 
-    if (messageSize > maxMessageSize) {
-      decodedMessage.resize(maxMessageSize - 3);
-      decodedMessage += "...";
-    }
+    // if (messageSize > maxMessageSize) {
+    //   decodedMessage.resize(maxMessageSize - 3);
+    //   decodedMessage += "...";
+    // }
 
     titleSize = static_cast<uint16_t>(decodedTitle.size());
     subTitleSize = static_cast<uint16_t>(decodedSubTitle.size());
@@ -312,12 +321,17 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     notifStr += decodedTitle;
     if (!decodedSubTitle.empty()) {
-      notifStr += decodedSubTitle + ": ";
+      notifStr += decodedSubTitle + ":";
     }
     notifStr += decodedMessage;
     notif.message = std::array<char, 101> {};
     std::strncpy(notif.message.data(), notifStr.c_str(), notif.message.size() - 1);
-    notif.message[titleSize-1] = '\0'; // Seperate Title and Message
+    
+    if (!decodedSubTitle.empty())
+      notif.message[titleSize+subTitleSize] = '\0'; // Seperate Title and Message
+    else
+      notif.message[titleSize-1] = '\0'; // Seperate Title and Message
+  
     notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
     notif.size = std::min(std::strlen(notifStr.c_str()), notif.message.size());
     notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;

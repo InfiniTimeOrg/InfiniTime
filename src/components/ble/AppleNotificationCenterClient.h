@@ -33,10 +33,9 @@ namespace Pinetime {
       void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
       void DebugNotification(const char* msg) const;
 
-      // Lengths of the parts of the notification, MUST ADD TO 100
-      static constexpr uint8_t maxTitleSize {15};
-      static constexpr uint8_t maxSubtitleSize {17};
-      static constexpr uint8_t maxMessageSize {68};
+      static constexpr uint8_t maxTitleSize {20};
+      static constexpr uint8_t maxSubtitleSize {15};
+      static constexpr uint8_t maxMessageSize {120};
 
       // 7905F431-B5CE-4E99-A40F-4B1E122D00D0
       static constexpr ble_uuid128_t ancsUuid { 
