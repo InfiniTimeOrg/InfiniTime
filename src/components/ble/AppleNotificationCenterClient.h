@@ -33,6 +33,11 @@ namespace Pinetime {
       void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
       void DebugNotification(const char* msg) const;
 
+      // Lengths of the parts of the notification, MUST ADD TO 100
+      static constexpr uint8_t maxTitleSize {15};
+      static constexpr uint8_t maxSubtitleSize {17};
+      static constexpr uint8_t maxMessageSize {68};
+
       // 7905F431-B5CE-4E99-A40F-4B1E122D00D0
       static constexpr ble_uuid128_t ancsUuid { 
         .u {.type = BLE_UUID_TYPE_128},
@@ -81,11 +86,11 @@ namespace Pinetime {
       };
 
       enum class EventFlags : uint8_t {
-        Silent = 0x01,
-        Important = 0x02,
-        PreExisting = 0x04,
-        PositiveAction = 0x08,
-        NegativeAction = 0x10
+        Silent = (1 << 0),
+        Important = (1 << 1),
+        PreExisting = (1 << 2),
+        PositiveAction = (1 << 3),
+        NegativeAction = (1 << 4)
       };
 
 
