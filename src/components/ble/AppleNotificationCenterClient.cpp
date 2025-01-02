@@ -308,7 +308,13 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     NotificationManager::Notification notif;
     // std::string notifStr = "iOS Notif.:" + decodedTitle + "\n" + decodedSubTitle;
-    std::string notifStr = decodedTitle + decodedSubTitle + "\n\n" + decodedMessage;
+    std::string notifStr;
+
+    notifStr += decodedTitle;
+    if (!decodedSubTitle.empty()) {
+      notifStr += decodedSubTitle + ": ";
+    }
+    notifStr += decodedMessage;
     notif.message = std::array<char, 101> {};
     std::strncpy(notif.message.data(), notifStr.c_str(), notif.message.size() - 1);
     notif.message[titleSize-1] = '\0'; // Seperate Title and Message
