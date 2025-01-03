@@ -79,7 +79,7 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
 
   if (characteristic == nullptr && error->status == BLE_HS_EDONE) {
     NRF_LOG_INFO("ANCS Characteristic discovery complete");
-    DebugNotification("ANCS Characteristic discovery complete");
+    // DebugNotification("ANCS Characteristic discovery complete");
     if (isCharacteristicDiscovered) {
       ble_gattc_disc_all_dscs(connectionHandle, notificationSourceHandle, ancsEndHandle, OnANCSDescriptorDiscoveryEventCallback, this);
     } if (isDataCharacteristicDiscovered) {
@@ -105,7 +105,7 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
         char msg[55];
         snprintf(msg, sizeof(msg), "ANCS Characteristic discovered: Data Source\n%d", characteristic->val_handle);
         NRF_LOG_INFO(msg);
-        DebugNotification(msg);
+        // DebugNotification(msg);
         dataSourceHandle = characteristic->val_handle;
         isDataCharacteristicDiscovered = true;
       }
@@ -139,7 +139,7 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
     } else if (characteristicValueHandle == dataSourceHandle && ble_uuid_cmp(&dataSourceChar.u, &descriptor->uuid.u)) {
       if (dataSourceDescriptorHandle == 0) {
         NRF_LOG_INFO("ANCS Descriptor discovered : %d", descriptor->handle);
-        DebugNotification("ANCS Descriptor discovered: Data Source");
+        // DebugNotification("ANCS Descriptor discovered: Data Source");
         dataSourceDescriptorHandle = descriptor->handle;
         isDataDescriptorFound = true;
         uint8_t value[2] {1, 0};
@@ -151,7 +151,7 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
       char errorStr[55];
       snprintf(errorStr, sizeof(errorStr), "ANCS Descriptor discovery ERROR: %d", error->status);
       NRF_LOG_INFO(errorStr);
-      DebugNotification(errorStr);
+      // DebugNotification(errorStr);
     }
     if (isDescriptorFound == isDataDescriptorFound)
       onServiceDiscovered(connectionHandle);
@@ -181,7 +181,7 @@ int AppleNotificationCenterClient::OnControlPointWrite(uint16_t /*connectionHand
     char errorStr[55];
     snprintf(errorStr, sizeof(errorStr), "ANCS Control Point ERROR: %d", error->status);
     NRF_LOG_INFO(errorStr);
-    DebugNotification(errorStr);
+    // DebugNotification(errorStr);
   }
   return 0;
 }
