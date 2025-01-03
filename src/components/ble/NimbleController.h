@@ -68,6 +68,10 @@ namespace Pinetime {
         return anService;
       };
 
+      Pinetime::Controllers::AppleNotificationCenterClient& ancs() {
+        return ancsClient;
+      };
+
       Pinetime::Controllers::SimpleWeatherService& weather() {
         return weatherService;
       };
