@@ -2,6 +2,7 @@
 #include "displayapp/DisplayApp.h"
 #include "components/ble/MusicService.h"
 #include "components/ble/AlertNotificationService.h"
+#include "components/ble/AppleNotificationCenterClient.h"
 #include "displayapp/screens/Symbols.h"
 #include <algorithm>
 #include "displayapp/InfiniTimeTheme.h"
@@ -13,12 +14,14 @@ extern lv_font_t jetbrains_mono_bold_20;
 Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                              Pinetime::Controllers::AppleNotificationCenterClient& ancsClient,
                              Pinetime::Controllers::MotorController& motorController,
                              System::SystemTask& systemTask,
                              Modes mode)
   : app {app},
     notificationManager {notificationManager},
     alertNotificationService {alertNotificationService},
+    ancsClient {ancsClient},
     motorController {motorController},
     wakeLock(systemTask),
     mode {mode} {
@@ -33,10 +36,12 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.category,
                                                      notificationManager.NbNotifications(),
                                                      alertNotificationService,
-                                                     motorController);
+                                                     ancsClient,
+                                                     motorController,
+                                                     notification.ancsUid);
     validDisplay = true;
   } else {
-    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+    currentItem = std::make_unique<NotificationItem>(alertNotificationService, ancsClient, motorController);
     validDisplay = false;
   }
   if (mode == Modes::Preview) {
@@ -109,7 +114,9 @@ void Notifications::Refresh() {
                                                        notification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       ancsClient,
+                                                       motorController,
+                                                       notification.ancsUid);
     } else {
       running = false;
     }
@@ -202,7 +209,9 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        previousNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       ancsClient,
+                                                       motorController,
+                                                       previousNotification.ancsUid);
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeUp: {
@@ -229,7 +238,9 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        nextNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       ancsClient,
+                                                       motorController,
+                                                       nextNotification.ancsUid);
     }
       return true;
     default:
@@ -245,6 +256,7 @@ namespace {
 }
 
 Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                                                  Pinetime::Controllers::AppleNotificationCenterClient& ancsClient,
                                                   Pinetime::Controllers::MotorController& motorController)
   : NotificationItem("Notifications",
                      "No notifications to display",
@@ -252,7 +264,9 @@ Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNo
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
                      alertNotificationService,
-                     motorController) {
+                     ancsClient,
+                     motorController,
+                     0) {
 }
 
 Notifications::NotificationItem::NotificationItem(const char* title,
@@ -261,8 +275,12 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Controllers::NotificationManager::Categories category,
                                                   uint8_t notifNb,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController)
-  : alertNotificationService {alertNotificationService}, motorController {motorController} {
+                                                  Pinetime::Controllers::AppleNotificationCenterClient& ancsClient,
+                                                  Pinetime::Controllers::MotorController& motorController,
+                                                  uint32_t ancsUid)
+  : alertNotificationService {alertNotificationService}, ancsClient {ancsClient}, motorController {motorController} {
+  this->ancsUid = ancsUid;
+
   container = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
@@ -360,8 +378,10 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
 
   if (obj == bt_accept) {
     alertNotificationService.AcceptIncomingCall();
+    ancsClient.AcceptIncomingCall(ancsUid);
   } else if (obj == bt_reject) {
     alertNotificationService.RejectIncomingCall();
+    ancsClient.RejectIncomingCall(ancsUid);
   } else if (obj == bt_mute) {
     alertNotificationService.MuteIncomingCall();
   }

@@ -8,6 +8,7 @@
 #undef max
 #undef min
 #include "components/ble/BleClient.h"
+#include <unordered_map>
 
 namespace Pinetime {
 
@@ -32,6 +33,9 @@ namespace Pinetime {
       void Reset();
       void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
       void DebugNotification(const char* msg) const;
+
+      void AcceptIncomingCall(uint32_t notificationUid);
+      void RejectIncomingCall(uint32_t notificationUid);
 
       static constexpr uint8_t maxTitleSize {20};
       static constexpr uint8_t maxSubtitleSize {15};
@@ -92,6 +96,14 @@ namespace Pinetime {
         NegativeAction = (1 << 4)
       };
 
+      struct AncsNotitfication {
+        uint8_t eventId {0};
+        uint8_t eventFlags {0};
+        uint8_t category {0};
+        uint32_t uuid {0};
+      };
+
+      std::unordered_map<uint32_t, AncsNotitfication> notifications;
 
       uint16_t ancsStartHandle {0};
       uint16_t ancsEndHandle {0};

@@ -207,6 +207,22 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     // bool positiveAction = eventFlags & static_cast<uint8_t>(EventFlags::PositiveAction);
     // bool negativeAction = eventFlags & static_cast<uint8_t>(EventFlags::NegativeAction);
 
+    AncsNotitfication ancsNotif;
+    ancsNotif.eventId = eventId;
+    ancsNotif.eventFlags = eventFlags;
+    ancsNotif.category = category;
+    ancsNotif.uuid = notificationUuid;
+
+    while (notifications.size() > 6) {
+      notifications.erase(notifications.begin());
+    }
+
+    if (notifications.contains(notificationUuid)) {
+      notifications[notificationUuid] = ancsNotif;
+    } else {
+      notifications.insert({notificationUuid, ancsNotif});
+    }
+
     if (preExisting || eventId != static_cast<uint8_t>(EventIds::Added)) {
       return;
     }
@@ -251,10 +267,19 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     uint16_t titleSize;
     uint16_t subTitleSize;
     uint16_t messageSize;
+    uint32_t notificationUid;
 
+    os_mbuf_copydata(event->notify_rx.om, 1, 4, &notificationUid);
     os_mbuf_copydata(event->notify_rx.om, 6, 2, &titleSize);
     os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1, 2, &subTitleSize);
     os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1 + 2 + subTitleSize + 1, 2, &messageSize);
+
+    AncsNotitfication ancsNotif;
+    ancsNotif.uuid = 0;
+
+    if (notifications.contains(notificationUid)) {
+      ancsNotif = notifications[notificationUid];
+    }
 
     std::string decodedTitle;
     decodedTitle.reserve(titleSize);
@@ -285,60 +310,123 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     // DebugNotification(decodedTitle.c_str());
     // DebugNotification("ANCS Data Source received");
 
-    if (titleSize >= maxTitleSize) {
-      decodedTitle.resize(maxTitleSize - 3);
-      decodedTitle += "...";
-      if (!decodedSubTitle.empty()) {
-        decodedTitle += " - ";
-      } else {
-        decodedTitle += "-";
-      }
-    } else {
-      if (!decodedSubTitle.empty()) {
-        decodedTitle += " - ";
-      } else {
-        decodedTitle += "-";
-      }
-    }
+    bool incomingCall = ancsNotif.uuid != 0 && ancsNotif.category == static_cast<uint8_t>(Categories::IncomingCall);
 
-    if (subTitleSize > maxSubtitleSize) {
-      decodedSubTitle.resize(maxSubtitleSize - 3);
-      decodedSubTitle += "...";
-    }
+    if (!incomingCall) {
+      if (titleSize >= maxTitleSize) {
+        decodedTitle.resize(maxTitleSize - 3);
+        decodedTitle += "...";
+        if (!decodedSubTitle.empty()) {
+          decodedTitle += " - ";
+        } else {
+          decodedTitle += "-";
+        }
+      } else {
+        if (!decodedSubTitle.empty()) {
+          decodedTitle += " - ";
+        } else {
+          decodedTitle += "-";
+        }
+      }
 
-    // if (messageSize > maxMessageSize) {
-    //   decodedMessage.resize(maxMessageSize - 3);
-    //   decodedMessage += "...";
-    // }
+      if (subTitleSize > maxSubtitleSize) {
+        decodedSubTitle.resize(maxSubtitleSize - 3);
+        decodedSubTitle += "...";
+      }
+
+      // if (messageSize > maxMessageSize) {
+      //   decodedMessage.resize(maxMessageSize - 3);
+      //   decodedMessage += "...";
+      // }
+    }
 
     titleSize = static_cast<uint16_t>(decodedTitle.size());
     subTitleSize = static_cast<uint16_t>(decodedSubTitle.size());
     messageSize = static_cast<uint16_t>(decodedMessage.size());
 
     NotificationManager::Notification notif;
+    notif.ancsUid = notificationUid;
     // std::string notifStr = "iOS Notif.:" + decodedTitle + "\n" + decodedSubTitle;
     std::string notifStr;
 
-    notifStr += decodedTitle;
-    if (!decodedSubTitle.empty()) {
-      notifStr += decodedSubTitle + ":";
+    if (incomingCall) {
+      notifStr += "Incoming Call:";
+      notifStr += decodedTitle;
+      notifStr += "\n";
+      notifStr += decodedSubTitle;
+    } else {
+      notifStr += decodedTitle;
+      if (!decodedSubTitle.empty()) {
+        notifStr += decodedSubTitle + ":";
+      }
+      notifStr += decodedMessage;
     }
-    notifStr += decodedMessage;
+
     notif.message = std::array<char, 101> {};
     std::strncpy(notif.message.data(), notifStr.c_str(), notif.message.size() - 1);
-    
-    if (!decodedSubTitle.empty())
+
+    if (incomingCall) 
+      notif.message[13] = '\0'; // Seperate Title and Message
+    else if (!decodedSubTitle.empty())
       notif.message[titleSize+subTitleSize] = '\0'; // Seperate Title and Message
     else
       notif.message[titleSize-1] = '\0'; // Seperate Title and Message
   
     notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
     notif.size = std::min(std::strlen(notifStr.c_str()), notif.message.size());
-    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    if (incomingCall) {
+      notif.category = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
+    } else {
+      notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    }
     notificationManager.Push(std::move(notif));
 
     systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
   }
+}
+
+void AppleNotificationCenterClient::AcceptIncomingCall(uint32_t uuid) {
+  AncsNotitfication ancsNotif;
+  if (notifications.contains(uuid)) {
+    ancsNotif = notifications[uuid];
+    if (ancsNotif.category != static_cast<uint8_t>(Categories::IncomingCall)) {
+      return;
+    }
+  } else {
+    return;
+  }
+
+  uint8_t value[6];
+  value[0] = 0x02; // Command ID: Perform Notification Action
+  value[1] = (uint8_t) (uuid & 0xFF);
+  value[2] = (uint8_t) ((uuid >> 8) & 0xFF);
+  value[3] = (uint8_t) ((uuid >> 16) & 0xFF);
+  value[4] = (uint8_t) ((uuid >> 24) & 0xFF);
+  value[5] = 0x00; // Action ID: Positive Action
+
+  ble_gattc_write_flat(systemTask.nimble().connHandle(), controlPointHandle, value, sizeof(value), OnControlPointWriteCallback, this);
+}
+
+void AppleNotificationCenterClient::RejectIncomingCall(uint32_t uuid) {
+  AncsNotitfication ancsNotif;
+  if (notifications.contains(uuid)) {
+    ancsNotif = notifications[uuid];
+    if (ancsNotif.category != static_cast<uint8_t>(Categories::IncomingCall)) {
+      return;
+    }
+  } else {
+    return;
+  }
+
+  uint8_t value[6];
+  value[0] = 0x02; // Command ID: Perform Notification Action
+  value[1] = (uint8_t) (uuid & 0xFF);
+  value[2] = (uint8_t) ((uuid >> 8) & 0xFF);
+  value[3] = (uint8_t) ((uuid >> 16) & 0xFF);
+  value[4] = (uint8_t) ((uuid >> 24) & 0xFF);
+  value[5] = 0x01; // Action ID: Negative Action
+
+  ble_gattc_write_flat(systemTask.nimble().connHandle(), controlPointHandle, value, sizeof(value), OnControlPointWriteCallback, this);
 }
 
 void AppleNotificationCenterClient::Reset() {
@@ -364,6 +452,8 @@ void AppleNotificationCenterClient::Reset() {
   isControlDescriptorFound = false;
   isDataCharacteristicDiscovered = false;
   isDataDescriptorFound = false;
+
+  notifications.clear();
 }
 
 void AppleNotificationCenterClient::Discover(uint16_t connectionHandle, std::function<void(uint16_t)> onServiceDiscovered) {
