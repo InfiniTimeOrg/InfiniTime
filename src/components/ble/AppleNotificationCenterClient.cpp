@@ -82,7 +82,8 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
     // DebugNotification("ANCS Characteristic discovery complete");
     if (isCharacteristicDiscovered) {
       ble_gattc_disc_all_dscs(connectionHandle, notificationSourceHandle, ancsEndHandle, OnANCSDescriptorDiscoveryEventCallback, this);
-    } if (isDataCharacteristicDiscovered) {
+    }
+    if (isDataCharacteristicDiscovered) {
       // DebugNotification("ANCS Characteristic discovery complete: Data Source");
       ble_gattc_disc_all_dscs(connectionHandle, dataSourceHandle, ancsEndHandle, OnANCSDescriptorDiscoveryEventCallback, this);
     }
@@ -134,7 +135,7 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
         NRF_LOG_INFO("ANCS Descriptor discovered : %d", descriptor->handle);
         // DebugNotification("ANCS Descriptor discovered");
         controlPointDescriptorHandle = descriptor->handle;
-        isControlDescriptorFound = true;      
+        isControlDescriptorFound = true;
       }
     } else if (characteristicValueHandle == dataSourceHandle && ble_uuid_cmp(&dataSourceChar.u, &descriptor->uuid.u)) {
       if (dataSourceDescriptorHandle == 0) {
@@ -159,7 +160,9 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
   return 0;
 }
 
-int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* /*attribute*/) {
+int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle,
+                                                      const ble_gatt_error* error,
+                                                      ble_gatt_attr* /*attribute*/) {
   if (error->status == 0) {
     NRF_LOG_INFO("ANCS New alert subscribe OK");
     DebugNotification("ANCS New alert subscribe OK");
@@ -173,7 +176,9 @@ int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle,
   return 0;
 }
 
-int AppleNotificationCenterClient::OnControlPointWrite(uint16_t /*connectionHandle*/, const ble_gatt_error* error, ble_gatt_attr* /*attribute*/) {
+int AppleNotificationCenterClient::OnControlPointWrite(uint16_t /*connectionHandle*/,
+                                                       const ble_gatt_error* error,
+                                                       ble_gatt_attr* /*attribute*/) {
   if (error->status == 0) {
     NRF_LOG_INFO("ANCS Control Point write OK");
     // DebugNotification("ANCS Control Point write OK");
@@ -255,7 +260,7 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     snprintf(uuidStr, sizeof(uuidStr), "iOS Notif.:%08lx\nEvID: %d\nCat: %d\nFlags: %d", notificationUuid, eventId, category, eventFlags);
     notif.message = std::array<char, 101> {};
     std::strncpy(notif.message.data(), uuidStr, notif.message.size() - 1);
-    notif.message[10] = '\0'; // Seperate Title and Message
+    notif.message[10] = '\0';                       // Seperate Title and Message
     notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
     notif.size = std::min(std::strlen(uuidStr), notif.message.size());
     notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
@@ -365,13 +370,13 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     notif.message = std::array<char, 101> {};
     std::strncpy(notif.message.data(), notifStr.c_str(), notif.message.size() - 1);
 
-    if (incomingCall) 
+    if (incomingCall)
       notif.message[13] = '\0'; // Seperate Title and Message
     else if (!decodedSubTitle.empty())
-      notif.message[titleSize+subTitleSize] = '\0'; // Seperate Title and Message
+      notif.message[titleSize + subTitleSize] = '\0'; // Seperate Title and Message
     else
-      notif.message[titleSize-1] = '\0'; // Seperate Title and Message
-  
+      notif.message[titleSize - 1] = '\0'; // Seperate Title and Message
+
     notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
     notif.size = std::min(std::strlen(notifStr.c_str()), notif.message.size());
     if (incomingCall) {

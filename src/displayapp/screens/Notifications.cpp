@@ -14,7 +14,7 @@ extern lv_font_t jetbrains_mono_bold_20;
 Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                              Pinetime::Controllers::AppleNotificationCenterClient& ancsClient,
+                             Pinetime::Controllers::AppleNotificationCenterClient& ancsClient,
                              Pinetime::Controllers::MotorController& motorController,
                              System::SystemTask& systemTask,
                              Modes mode)

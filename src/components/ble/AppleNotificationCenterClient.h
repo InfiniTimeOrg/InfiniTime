@@ -22,12 +22,15 @@ namespace Pinetime {
     class AppleNotificationCenterClient : public BleClient {
     public:
       explicit AppleNotificationCenterClient(Pinetime::System::SystemTask& systemTask,
-                                       Pinetime::Controllers::NotificationManager& notificationManager);
+                                             Pinetime::Controllers::NotificationManager& notificationManager);
 
       bool OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_svc* service);
       int OnCharacteristicsDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_chr* characteristic);
       int OnNewAlertSubcribe(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* attribute);
-      int OnDescriptorDiscoveryEventCallback(uint16_t connectionHandle, const ble_gatt_error* error, uint16_t characteristicValueHandle, const ble_gatt_dsc* descriptor);
+      int OnDescriptorDiscoveryEventCallback(uint16_t connectionHandle,
+                                             const ble_gatt_error* error,
+                                             uint16_t characteristicValueHandle,
+                                             const ble_gatt_dsc* descriptor);
       int OnControlPointWrite(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* attribute);
       void OnNotification(ble_gap_event* event);
       void Reset();
@@ -42,27 +45,23 @@ namespace Pinetime {
       static constexpr uint8_t maxMessageSize {120};
 
       // 7905F431-B5CE-4E99-A40F-4B1E122D00D0
-      static constexpr ble_uuid128_t ancsUuid { 
+      static constexpr ble_uuid128_t ancsUuid {
         .u {.type = BLE_UUID_TYPE_128},
-        .value = {0xd0, 0x00, 0x2D, 0x12, 0x1E, 0x4B, 0x0F, 0xA4, 0x99, 0x4E, 0xCE, 0xB5, 0x31, 0xF4, 0x05, 0x79}
-      };
+        .value = {0xd0, 0x00, 0x2D, 0x12, 0x1E, 0x4B, 0x0F, 0xA4, 0x99, 0x4E, 0xCE, 0xB5, 0x31, 0xF4, 0x05, 0x79}};
 
     private:
       // 9FBF120D-6301-42D9-8C58-25E699A21DBD
-      const ble_uuid128_t notificationSourceChar { 
-        .u {.type = BLE_UUID_TYPE_128}, 
-        .value = {0xBD, 0x1D, 0xA2, 0x99, 0xE6, 0x25, 0x58, 0x8C, 0xD9, 0x42, 0x01, 0x63, 0x0D, 0x12, 0xBF, 0x9F}
-      };
+      const ble_uuid128_t notificationSourceChar {
+        .u {.type = BLE_UUID_TYPE_128},
+        .value = {0xBD, 0x1D, 0xA2, 0x99, 0xE6, 0x25, 0x58, 0x8C, 0xD9, 0x42, 0x01, 0x63, 0x0D, 0x12, 0xBF, 0x9F}};
       // 69D1D8F3-45E1-49A8-9821-9BBDFDAAD9D9
       const ble_uuid128_t controlPointChar {
         .u {.type = BLE_UUID_TYPE_128},
-        .value = {0xD9, 0xD9, 0xAA, 0xFD, 0xBD, 0x9B, 0x21, 0x98,0xA8, 0x49,0xE1, 0x45, 0xF3, 0xD8, 0xD1, 0x69 }
-      };
+        .value = {0xD9, 0xD9, 0xAA, 0xFD, 0xBD, 0x9B, 0x21, 0x98, 0xA8, 0x49, 0xE1, 0x45, 0xF3, 0xD8, 0xD1, 0x69}};
       // 22EAC6E9-24D6-4BB5-BE44-B36ACE7C7BFB
       const ble_uuid128_t dataSourceChar {
         .u {.type = BLE_UUID_TYPE_128},
-        .value = {0xFB, 0x7B, 0x7C, 0xCE, 0x6A, 0xB3, 0x44, 0xBE, 0xB5, 0x4B, 0xD6, 0x24, 0xE9, 0xC6, 0xEA, 0x22 }
-      };
+        .value = {0xFB, 0x7B, 0x7C, 0xCE, 0x6A, 0xB3, 0x44, 0xBE, 0xB5, 0x4B, 0xD6, 0x24, 0xE9, 0xC6, 0xEA, 0x22}};
 
       const ble_uuid16_t gattServiceUuid = {BLE_UUID_TYPE_16, 0x1801};
       const ble_uuid16_t serviceChangedCharUuid = {BLE_UUID_TYPE_16, 0x2A05};
@@ -82,11 +81,7 @@ namespace Pinetime {
         Entertainment = 11
       };
 
-      enum class EventIds : uint8_t {
-        Added = 0,
-        Modified = 1,
-        Removed = 2
-      };
+      enum class EventIds : uint8_t { Added = 0, Modified = 1, Removed = 2 };
 
       enum class EventFlags : uint8_t {
         Silent = (1 << 0),
