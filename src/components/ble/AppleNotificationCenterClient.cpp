@@ -165,7 +165,7 @@ int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle,
                                                       ble_gatt_attr* /*attribute*/) {
   if (error->status == 0) {
     NRF_LOG_INFO("ANCS New alert subscribe OK");
-    DebugNotification("ANCS New alert subscribe OK");
+    // DebugNotification("ANCS New alert subscribe OK");
   } else {
     NRF_LOG_INFO("ANCS New alert subscribe ERROR");
     DebugNotification("ANCS New alert subscribe ERROR");
@@ -255,18 +255,18 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     ble_gattc_write_flat(event->notify_rx.conn_handle, controlPointHandle, request, sizeof(request), OnControlPointWriteCallback, this);
 
-    NotificationManager::Notification notif;
-    char uuidStr[55];
-    snprintf(uuidStr, sizeof(uuidStr), "iOS Notif.:%08lx\nEvID: %d\nCat: %d\nFlags: %d", notificationUuid, eventId, category, eventFlags);
-    notif.message = std::array<char, 101> {};
-    std::strncpy(notif.message.data(), uuidStr, notif.message.size() - 1);
-    notif.message[10] = '\0';                       // Seperate Title and Message
-    notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
-    notif.size = std::min(std::strlen(uuidStr), notif.message.size());
-    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
-    notificationManager.Push(std::move(notif));
+    // NotificationManager::Notification notif;
+    // char uuidStr[55];
+    // snprintf(uuidStr, sizeof(uuidStr), "iOS Notif.:%08lx\nEvID: %d\nCat: %d\nFlags: %d", notificationUuid, eventId, category, eventFlags);
+    // notif.message = std::array<char, 101> {};
+    // std::strncpy(notif.message.data(), uuidStr, notif.message.size() - 1);
+    // notif.message[10] = '\0';                       // Seperate Title and Message
+    // notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
+    // notif.size = std::min(std::strlen(uuidStr), notif.message.size());
+    // notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    // notificationManager.Push(std::move(notif));
 
-    systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
+    // systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
     // DebugNotification("ANCS Notification received");
   } else if (event->notify_rx.attr_handle == dataSourceHandle || event->notify_rx.attr_handle == dataSourceDescriptorHandle) {
     uint16_t titleSize;
