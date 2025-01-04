@@ -74,7 +74,7 @@ namespace Pinetime {
     template <>
     struct WatchFaceTraits<WatchFace::Trans> {
       static constexpr WatchFace watchFace = WatchFace::Trans;
-      static constexpr const char* name = "Trans";
+      static constexpr const char* name = "Trans Flag";
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::WatchFaceTrans(controllers.dateTimeController,
