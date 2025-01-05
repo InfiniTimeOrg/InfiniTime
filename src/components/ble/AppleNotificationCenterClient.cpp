@@ -168,7 +168,7 @@ int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle,
     // DebugNotification("ANCS New alert subscribe OK");
   } else {
     NRF_LOG_INFO("ANCS New alert subscribe ERROR");
-    DebugNotification("ANCS New alert subscribe ERROR");
+    // DebugNotification("ANCS New alert subscribe ERROR");
   }
   if (isDescriptorFound == isControlDescriptorFound && isDescriptorFound == isDataDescriptorFound)
     onServiceDiscovered(connectionHandle);
