@@ -206,7 +206,7 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     os_mbuf_copydata(event->notify_rx.om, 3, 1, &categoryCount);
     os_mbuf_copydata(event->notify_rx.om, 4, 4, &notificationUuid);
 
-    // bool silent = eventFlags & static_cast<uint8_t>(EventFlags::Silent);
+    bool silent = (eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0;
     // bool important = eventFlags & static_cast<uint8_t>(EventFlags::Important);
     bool preExisting = (eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) != 0;
     // bool positiveAction = eventFlags & static_cast<uint8_t>(EventFlags::PositiveAction);
@@ -224,11 +224,11 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     if (notifications.contains(notificationUuid)) {
       notifications[notificationUuid] = ancsNotif;
-    } else {
+    } else if (!silent) {
       notifications.insert({notificationUuid, ancsNotif});
     }
 
-    if (preExisting || eventId != static_cast<uint8_t>(EventIds::Added)) {
+    if (preExisting || eventId != static_cast<uint8_t>(EventIds::Added) || silent) {
       return;
     }
 
