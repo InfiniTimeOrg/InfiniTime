@@ -349,6 +349,12 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
       notifStr += decodedMessage;
     }
 
+    // Adjust notification if too long
+    if (notifStr.size() > 100) {
+      notifStr.resize(97);
+      notifStr += "...";
+    }
+
     notif.message = std::array<char, 101> {};
     std::strncpy(notif.message.data(), notifStr.c_str(), notif.message.size() - 1);
 
