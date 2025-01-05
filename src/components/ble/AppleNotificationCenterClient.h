@@ -9,6 +9,7 @@
 #undef min
 #include "components/ble/BleClient.h"
 #include <unordered_map>
+#include <string>
 
 namespace Pinetime {
 
@@ -99,6 +100,8 @@ namespace Pinetime {
       };
 
       std::unordered_map<uint32_t, AncsNotitfication> notifications;
+
+      std::string DecodeUtf8String(os_mbuf* om, uint16_t size, uint16_t offset);
 
       uint16_t ancsStartHandle {0};
       uint16_t ancsEndHandle {0};
