@@ -58,5 +58,17 @@
       "size": 115,
       "format": "bin",
       "target_path": "/fonts/"
+   },
+   "edge_of_the_galaxy" : {
+      "sources": [
+         {
+            "file": "fonts/EdgeOfTheGalaxyRegular.ttf",
+            "symbols": "1234567890"
+         }
+      ],
+      "bpp": 1,
+      "size": 80,
+      "format": "bin",
+      "target_path": "/fonts/"
    }
 }

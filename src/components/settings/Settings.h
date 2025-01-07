@@ -36,6 +36,7 @@ namespace Pinetime {
       };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
+      enum class StarTrekAnimateType { None, Start, Continuous, All };
 
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
@@ -48,6 +49,13 @@ namespace Pinetime {
       struct WatchFaceInfineat {
         bool showSideCover = true;
         int colorIndex = 0;
+      };
+
+      struct WatchFaceStarTrek {
+        bool useSystemFont = false;
+        StarTrekAnimateType animate = StarTrekAnimateType::All;
+        bool displaySeconds = false;
+        bool weather = true;
       };
 
       Settings(Pinetime::Controllers::FS& fs);
@@ -152,6 +160,50 @@ namespace Pinetime {
 
       PTSWeather GetPTSWeather() const {
         return settings.PTS.weatherEnable;
+      };
+
+      bool GetStarTrekUseSystemFont() const {
+        return settings.watchFaceStarTrek.useSystemFont;
+      };
+
+      void SetStarTrekUseSystemFont(bool useSystemFont) {
+        if (useSystemFont != settings.watchFaceStarTrek.useSystemFont) {
+          settings.watchFaceStarTrek.useSystemFont = useSystemFont;
+          settingsChanged = true;
+        }
+      };
+
+      StarTrekAnimateType GetStarTrekAnimate() const {
+        return settings.watchFaceStarTrek.animate;
+      };
+
+      void SetStarTrekAnimate(StarTrekAnimateType animate) {
+        if (animate != settings.watchFaceStarTrek.animate) {
+          settings.watchFaceStarTrek.animate = animate;
+          settingsChanged = true;
+        }
+      };
+
+      bool GetStarTrekDisplaySeconds() const {
+        return settings.watchFaceStarTrek.displaySeconds;
+      };
+
+      void SetStarTrekDisplaySeconds(bool displaySeconds) {
+        if (displaySeconds != settings.watchFaceStarTrek.displaySeconds) {
+          settings.watchFaceStarTrek.displaySeconds = displaySeconds;
+          settingsChanged = true;
+        }
+      };
+
+      bool GetStarTrekWeather() const {
+        return settings.watchFaceStarTrek.weather;
+      };
+
+      void SetStarTrekWeather(bool weather) {
+        if (weather != settings.watchFaceStarTrek.weather) {
+          settings.watchFaceStarTrek.weather = weather;
+          settingsChanged = true;
+        }
       };
 
       void SetAppMenu(uint8_t menu) {
@@ -301,7 +353,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0008;
+      static constexpr uint32_t settingsVersion = 0x0009;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -320,6 +372,8 @@ namespace Pinetime {
         PineTimeStyle PTS;
 
         WatchFaceInfineat watchFaceInfineat;
+
+        WatchFaceStarTrek watchFaceStarTrek;
 
         std::bitset<5> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
