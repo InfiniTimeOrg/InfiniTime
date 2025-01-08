@@ -176,7 +176,7 @@ namespace {
     return {iconsFile1, static_cast<int16_t>(iconHeight * (index - maxIconsPerFile))};
   }
 
-  Icon GetIcon(const std::string& icon) {
+  Icon GetIcon(std::string_view icon) {
     for (const auto& iter : iconMap) {
       if (iter.first == icon) {
         return GetIcon(iter.second);
