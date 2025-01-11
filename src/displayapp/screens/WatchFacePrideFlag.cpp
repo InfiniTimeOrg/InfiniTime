@@ -96,8 +96,8 @@ WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController
     motionController {motionController} {
 
   bluetoothStatus = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(bluetoothStatus, "");
-  lv_obj_align(bluetoothStatus, nullptr, LV_ALIGN_IN_TOP_RIGHT, -16, 0);
+  lv_obj_align(bluetoothStatus, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  lv_obj_set_auto_realign(bluetoothStatus, true);
 
   batteryValue = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(batteryValue, true);
@@ -163,8 +163,8 @@ WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController
 
   UpdateScreen(settingsController.GetPrideFlag());
 
-  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 WatchFacePrideFlag::~WatchFacePrideFlag() {

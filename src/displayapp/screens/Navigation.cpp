@@ -229,6 +229,7 @@ Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navServi
   lv_bar_set_range(barProgress, 0, 100);
   lv_bar_set_value(barProgress, 0, LV_ANIM_OFF);
 
+  Refresh();
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 

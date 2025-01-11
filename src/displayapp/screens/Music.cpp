@@ -105,7 +105,6 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
   txtTrackDuration = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrackDuration, LV_LABEL_LONG_SROLL);
   lv_obj_align(txtTrackDuration, nullptr, LV_ALIGN_IN_TOP_LEFT, 12, 20);
-  lv_label_set_text_static(txtTrackDuration, "--:--/--:--");
   lv_label_set_align(txtTrackDuration, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
 
@@ -142,6 +141,7 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
 
   musicService.event(Controllers::MusicService::EVENT_MUSIC_OPEN);
 
+  Refresh();
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
@@ -168,6 +168,11 @@ void Music::Refresh() {
 
   if (playing != musicService.isPlaying()) {
     playing = musicService.isPlaying();
+    if (playing) {
+      lv_label_set_text_static(txtPlayPause, Symbols::pause);
+    } else {
+      lv_label_set_text_static(txtPlayPause, Symbols::play);
+    }
   }
 
   if (currentPosition != musicService.getProgress()) {
@@ -181,7 +186,6 @@ void Music::Refresh() {
   }
 
   if (playing) {
-    lv_label_set_text_static(txtPlayPause, Symbols::pause);
     if (xTaskGetTickCount() - 1024 >= lastIncrement) {
 
       if (frameB) {
@@ -191,15 +195,8 @@ void Music::Refresh() {
       }
       frameB = !frameB;
 
-      if (currentPosition >= totalLength) {
-        // Let's assume the getTrack finished, paused when the timer ends
-        //  and there's no new getTrack being sent to us
-        playing = false;
-      }
       lastIncrement = xTaskGetTickCount();
     }
-  } else {
-    lv_label_set_text_static(txtPlayPause, Symbols::play);
   }
 }
 
