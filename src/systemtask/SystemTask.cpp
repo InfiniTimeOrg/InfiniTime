@@ -46,6 +46,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Drivers::Bma421& motionSensor,
                        Controllers::Settings& settingsController,
+                       Pinetime::Controllers::FirmwareValidator& validator,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Pinetime::Applications::DisplayApp& displayApp,
                        Pinetime::Applications::HeartRateTask& heartRateApp,
@@ -65,6 +66,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     heartRateSensor {heartRateSensor},
     motionSensor {motionSensor},
     settingsController {settingsController},
+    validator {validator},
     heartRateController {heartRateController},
     motionController {motionController},
     displayApp {displayApp},
@@ -111,6 +113,7 @@ void SystemTask::Work() {
   spiNorFlash.Wakeup();
 
   fs.Init();
+  validator.AutoValidate();
 
   nimbleController.Init();
 
