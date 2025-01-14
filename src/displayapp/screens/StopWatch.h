@@ -49,7 +49,7 @@ namespace Pinetime::Applications {
       uint8_t displayedLaps = 3;
       lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
       lv_obj_t* lapText;
-      Utility::DirtyValue<TickType_t> renderedSeconds;
+      Utility::DirtyValue<uint32_t> renderedSeconds;
       bool hoursVisible = false;
 
       lv_task_t* taskRefresh;
