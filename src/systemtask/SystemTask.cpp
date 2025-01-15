@@ -336,6 +336,14 @@ void SystemTask::Work() {
             displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
           }
           break;
+        case Messages::OnNewQuarterHour:
+          using Pinetime::Controllers::AlarmController;
+          if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
+              settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::QuarterHours && !alarmController.IsAlerting()) {
+            GoToRunning();
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
+          }
+          break;
         case Messages::OnChargingEvent:
           batteryController.ReadPowerState();
           GoToRunning();

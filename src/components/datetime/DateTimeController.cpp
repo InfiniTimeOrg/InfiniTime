@@ -126,6 +126,15 @@ void DateTime::UpdateTime(uint32_t systickCounter, bool forceUpdate) {
     isHalfHourAlreadyNotified = false;
   }
 
+  if ((minute == 0 || minute == 15 || minute == 30 || minute == 45) && !isQuarterHourAlreadyNotified) {
+    isQuarterHourAlreadyNotified = true;
+    if (systemTask != nullptr) {
+      systemTask->PushMessage(System::Messages::OnNewQuarterHour);
+    }
+  } else if (minute != 0 && minute != 15 && minute != 30 && minute != 45) {
+    isQuarterHourAlreadyNotified = false;
+  }
+
   // Notify new day to SystemTask
   if (hour == 0 and not isMidnightAlreadyNotified) {
     isMidnightAlreadyNotified = true;
