@@ -471,9 +471,33 @@ void DisplayApp::Refresh() {
       case Messages::BleRadioEnableToggle:
         PushMessageToSystemTask(System::Messages::BleRadioEnableToggle);
         break;
-      case Messages::Chime:
+      case Messages::FullHourChime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
-        motorController.RunForDuration(35);
+        motorController.RunForDuration(100);
+        vTaskDelay(pdMS_TO_TICKS(500));
+        motorController.RunForDuration(100);
+        vTaskDelay(pdMS_TO_TICKS(500));
+        motorController.RunForDuration(100);
+        vTaskDelay(pdMS_TO_TICKS(500));
+        motorController.RunForDuration(100);
+        break;
+      case Messages::QuarterHourChime:
+        LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+        motorController.RunForDuration(100);
+        break;
+      case Messages::HalfHourChime:
+        LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+        motorController.RunForDuration(100);
+        vTaskDelay(pdMS_TO_TICKS(500));
+        motorController.RunForDuration(100);
+        break;
+      case Messages::ThreeQuarterHourChime:
+        LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+        motorController.RunForDuration(100);
+        vTaskDelay(pdMS_TO_TICKS(500));
+        motorController.RunForDuration(100);
+        vTaskDelay(pdMS_TO_TICKS(500));
+        motorController.RunForDuration(100);
         break;
       case Messages::OnChargingEvent:
         motorController.RunForDuration(15);

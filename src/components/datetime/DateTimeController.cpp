@@ -117,22 +117,31 @@ void DateTime::UpdateTime(uint32_t systickCounter, bool forceUpdate) {
     isHourAlreadyNotified = false;
   }
 
-  if ((minute == 0 || minute == 30) && !isHalfHourAlreadyNotified) {
-    isHalfHourAlreadyNotified = true;
-    if (systemTask != nullptr) {
-      systemTask->PushMessage(System::Messages::OnNewHalfHour);
-    }
-  } else if (minute != 0 && minute != 30) {
-    isHalfHourAlreadyNotified = false;
-  }
-
-  if ((minute == 0 || minute == 15 || minute == 30 || minute == 45) && !isQuarterHourAlreadyNotified) {
+  if (minute == 15 && !isQuarterHourAlreadyNotified) {
     isQuarterHourAlreadyNotified = true;
     if (systemTask != nullptr) {
       systemTask->PushMessage(System::Messages::OnNewQuarterHour);
     }
-  } else if (minute != 0 && minute != 15 && minute != 30 && minute != 45) {
+  } else if (minute != 15) {
     isQuarterHourAlreadyNotified = false;
+  }
+
+  if (minute == 30 && !isHalfHourAlreadyNotified) {
+    isHalfHourAlreadyNotified = true;
+    if (systemTask != nullptr) {
+      systemTask->PushMessage(System::Messages::OnNewHalfHour);
+    }
+  } else if (minute != 30) {
+    isHalfHourAlreadyNotified = false;
+  }
+
+  if (minute == 45 && !isThreeQuarterHourAlreadyNotified) {
+    isThreeQuarterHourAlreadyNotified = true;
+    if (systemTask != nullptr) {
+      systemTask->PushMessage(System::Messages::OnNewThreeQuarterHour);
+    }
+  } else if (minute != 45) {
+    isThreeQuarterHourAlreadyNotified = false;
   }
 
   // Notify new day to SystemTask
