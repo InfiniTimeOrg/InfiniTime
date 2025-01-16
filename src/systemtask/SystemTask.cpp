@@ -340,7 +340,7 @@ void SystemTask::Work() {
           using Pinetime::Controllers::AlarmController;
           if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
               (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours ||
-              settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::QuarterHours) &&
+               settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::QuarterHours) &&
               !alarmController.IsAlerting()) {
             GoToRunning();
             displayApp.PushMessage(Pinetime::Applications::Display::Messages::HalfHourChime);
