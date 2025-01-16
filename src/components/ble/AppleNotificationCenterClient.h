@@ -92,14 +92,14 @@ namespace Pinetime {
         NegativeAction = (1 << 4)
       };
 
-      struct AncsNotitfication {
+      struct AncsNotification {
         uint8_t eventId {0};
         uint8_t eventFlags {0};
         uint8_t category {0};
         uint32_t uuid {0};
       };
 
-      std::unordered_map<uint32_t, AncsNotitfication> notifications;
+      std::unordered_map<uint32_t, AncsNotification> notifications;
 
       std::string DecodeUtf8String(os_mbuf* om, uint16_t size, uint16_t offset);
 
