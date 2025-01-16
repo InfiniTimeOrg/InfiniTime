@@ -46,12 +46,9 @@ bool AppleNotificationCenterClient::OnDiscoveryEvent(uint16_t connectionHandle, 
   if (service == nullptr && error->status == BLE_HS_EDONE) {
     if (isDiscovered) {
       NRF_LOG_INFO("ANCS Discovery found, starting characteristics discovery");
-      // DebugNotification("ANCS Discovery found, starting characteristics discovery");
-
       ble_gattc_disc_all_chrs(connectionHandle, ancsStartHandle, ancsEndHandle, OnANCSCharacteristicDiscoveredCallback, this);
     } else {
       NRF_LOG_INFO("ANCS not found");
-      // DebugNotification("ANCS not found");
       onServiceDiscovered(connectionHandle);
     }
     return true;
@@ -59,7 +56,7 @@ bool AppleNotificationCenterClient::OnDiscoveryEvent(uint16_t connectionHandle, 
 
   if (service != nullptr && ble_uuid_cmp(&ancsUuid.u, &service->uuid.u) == 0) {
     NRF_LOG_INFO("ANCS discovered : 0x%x - 0x%x", service->start_handle, service->end_handle);
-    // DebugNotification("ANCS discovered");
+
     ancsStartHandle = service->start_handle;
     ancsEndHandle = service->end_handle;
     isDiscovered = true;
@@ -72,19 +69,16 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
                                                                    const ble_gatt_chr* characteristic) {
   if (error->status != 0 && error->status != BLE_HS_EDONE) {
     NRF_LOG_INFO("ANCS Characteristic discovery ERROR");
-    // DebugNotification("ANCS Characteristic discovery ERROR");
     onServiceDiscovered(connectionHandle);
     return 0;
   }
 
   if (characteristic == nullptr && error->status == BLE_HS_EDONE) {
     NRF_LOG_INFO("ANCS Characteristic discovery complete");
-    // DebugNotification("ANCS Characteristic discovery complete");
     if (isCharacteristicDiscovered) {
       ble_gattc_disc_all_dscs(connectionHandle, notificationSourceHandle, ancsEndHandle, OnANCSDescriptorDiscoveryEventCallback, this);
     }
     if (isDataCharacteristicDiscovered) {
-      // DebugNotification("ANCS Characteristic discovery complete: Data Source");
       ble_gattc_disc_all_dscs(connectionHandle, dataSourceHandle, ancsEndHandle, OnANCSDescriptorDiscoveryEventCallback, this);
     }
     if (isCharacteristicDiscovered == isControlCharacteristicDiscovered && isCharacteristicDiscovered == isDataCharacteristicDiscovered) {
@@ -94,19 +88,16 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
     if (characteristic != nullptr) {
       if (ble_uuid_cmp(&notificationSourceChar.u, &characteristic->uuid.u) == 0) {
         NRF_LOG_INFO("ANCS Characteristic discovered: Notification Source");
-        // DebugNotification("ANCS Characteristic discovered: Notification Source");
         notificationSourceHandle = characteristic->val_handle;
         isCharacteristicDiscovered = true;
       } else if (ble_uuid_cmp(&controlPointChar.u, &characteristic->uuid.u) == 0) {
         NRF_LOG_INFO("ANCS Characteristic discovered: Control Point");
-        // DebugNotification("ANCS Characteristic discovered: Control Point");
         controlPointHandle = characteristic->val_handle;
         isControlCharacteristicDiscovered = true;
       } else if (ble_uuid_cmp(&dataSourceChar.u, &characteristic->uuid.u) == 0) {
         char msg[55];
         snprintf(msg, sizeof(msg), "ANCS Characteristic discovered: Data Source\n%d", characteristic->val_handle);
         NRF_LOG_INFO(msg);
-        // DebugNotification(msg);
         dataSourceHandle = characteristic->val_handle;
         isDataCharacteristicDiscovered = true;
       }
@@ -123,7 +114,6 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
     if (characteristicValueHandle == notificationSourceHandle && ble_uuid_cmp(&notificationSourceChar.u, &descriptor->uuid.u)) {
       if (notificationSourceDescriptorHandle == 0) {
         NRF_LOG_INFO("ANCS Descriptor discovered : %d", descriptor->handle);
-        // DebugNotification("ANCS Descriptor discovered");
         notificationSourceDescriptorHandle = descriptor->handle;
         isDescriptorFound = true;
         uint8_t value[2] {1, 0};
@@ -133,14 +123,12 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
     } else if (characteristicValueHandle == controlPointHandle && ble_uuid_cmp(&controlPointChar.u, &descriptor->uuid.u)) {
       if (controlPointDescriptorHandle == 0) {
         NRF_LOG_INFO("ANCS Descriptor discovered : %d", descriptor->handle);
-        // DebugNotification("ANCS Descriptor discovered");
         controlPointDescriptorHandle = descriptor->handle;
         isControlDescriptorFound = true;
       }
     } else if (characteristicValueHandle == dataSourceHandle && ble_uuid_cmp(&dataSourceChar.u, &descriptor->uuid.u)) {
       if (dataSourceDescriptorHandle == 0) {
         NRF_LOG_INFO("ANCS Descriptor discovered : %d", descriptor->handle);
-        // DebugNotification("ANCS Descriptor discovered: Data Source");
         dataSourceDescriptorHandle = descriptor->handle;
         isDataDescriptorFound = true;
         uint8_t value[2] {1, 0};
@@ -152,7 +140,6 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
       char errorStr[55];
       snprintf(errorStr, sizeof(errorStr), "ANCS Descriptor discovery ERROR: %d", error->status);
       NRF_LOG_INFO(errorStr);
-      // DebugNotification(errorStr);
     }
     if (isDescriptorFound == isDataDescriptorFound)
       onServiceDiscovered(connectionHandle);
@@ -165,10 +152,8 @@ int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle,
                                                       ble_gatt_attr* /*attribute*/) {
   if (error->status == 0) {
     NRF_LOG_INFO("ANCS New alert subscribe OK");
-    // DebugNotification("ANCS New alert subscribe OK");
   } else {
     NRF_LOG_INFO("ANCS New alert subscribe ERROR");
-    // DebugNotification("ANCS New alert subscribe ERROR");
   }
   if (isDescriptorFound == isControlDescriptorFound && isDescriptorFound == isDataDescriptorFound)
     onServiceDiscovered(connectionHandle);
@@ -181,12 +166,10 @@ int AppleNotificationCenterClient::OnControlPointWrite(uint16_t /*connectionHand
                                                        ble_gatt_attr* /*attribute*/) {
   if (error->status == 0) {
     NRF_LOG_INFO("ANCS Control Point write OK");
-    // DebugNotification("ANCS Control Point write OK");
   } else {
     char errorStr[55];
     snprintf(errorStr, sizeof(errorStr), "ANCS Control Point ERROR: %d", error->status);
     NRF_LOG_INFO(errorStr);
-    // DebugNotification(errorStr);
   }
   return 0;
 }
@@ -212,7 +195,7 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     // bool positiveAction = eventFlags & static_cast<uint8_t>(EventFlags::PositiveAction);
     // bool negativeAction = eventFlags & static_cast<uint8_t>(EventFlags::NegativeAction);
 
-    AncsNotitfication ancsNotif;
+    AncsNotification ancsNotif;
     ancsNotif.eventId = eventId;
     ancsNotif.eventFlags = eventFlags;
     ancsNotif.category = category;
@@ -254,20 +237,6 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     request[13] = ((messageSize >> 8) & 0xFF);
 
     ble_gattc_write_flat(event->notify_rx.conn_handle, controlPointHandle, request, sizeof(request), OnControlPointWriteCallback, this);
-
-    // NotificationManager::Notification notif;
-    // char uuidStr[55];
-    // snprintf(uuidStr, sizeof(uuidStr), "iOS Notif.:%08lx\nEvID: %d\nCat: %d\nFlags: %d", notificationUuid, eventId, category, eventFlags);
-    // notif.message = std::array<char, 101> {};
-    // std::strncpy(notif.message.data(), uuidStr, notif.message.size() - 1);
-    // notif.message[10] = '\0';                       // Seperate Title and Message
-    // notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
-    // notif.size = std::min(std::strlen(uuidStr), notif.message.size());
-    // notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
-    // notificationManager.Push(std::move(notif));
-
-    // systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
-    // DebugNotification("ANCS Notification received");
   } else if (event->notify_rx.attr_handle == dataSourceHandle || event->notify_rx.attr_handle == dataSourceDescriptorHandle) {
     uint16_t titleSize;
     uint16_t subTitleSize;
@@ -279,7 +248,7 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1, 2, &subTitleSize);
     os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1 + 2 + subTitleSize + 1, 2, &messageSize);
 
-    AncsNotitfication ancsNotif;
+    AncsNotification ancsNotif;
     ancsNotif.uuid = 0;
 
     if (notifications.contains(notificationUid)) {
@@ -294,8 +263,6 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     NRF_LOG_INFO("Decoded Title: %s", decodedTitle.c_str());
     NRF_LOG_INFO("Decoded SubTitle: %s", decodedSubTitle.c_str());
-    // DebugNotification(decodedTitle.c_str());
-    // DebugNotification("ANCS Data Source received");
 
     bool incomingCall = ancsNotif.uuid != 0 && ancsNotif.category == static_cast<uint8_t>(Categories::IncomingCall);
 
@@ -333,7 +300,6 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     NotificationManager::Notification notif;
     notif.ancsUid = notificationUid;
-    // std::string notifStr = "iOS Notif.:" + decodedTitle + "\n" + decodedSubTitle;
     std::string notifStr;
 
     if (incomingCall) {
@@ -359,11 +325,11 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     std::strncpy(notif.message.data(), notifStr.c_str(), notif.message.size() - 1);
 
     if (incomingCall)
-      notif.message[13] = '\0'; // Seperate Title and Message
+      notif.message[13] = '\0'; // Separate Title and Message
     else if (!decodedSubTitle.empty())
-      notif.message[titleSize + subTitleSize] = '\0'; // Seperate Title and Message
+      notif.message[titleSize + subTitleSize] = '\0'; // Separate Title and Message
     else
-      notif.message[titleSize - 1] = '\0'; // Seperate Title and Message
+      notif.message[titleSize - 1] = '\0'; // Separate Title and Message
 
     notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
     notif.size = std::min(std::strlen(notifStr.c_str()), notif.message.size());
@@ -379,7 +345,7 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 }
 
 void AppleNotificationCenterClient::AcceptIncomingCall(uint32_t uuid) {
-  AncsNotitfication ancsNotif;
+  AncsNotification ancsNotif;
   if (notifications.contains(uuid)) {
     ancsNotif = notifications[uuid];
     if (ancsNotif.category != static_cast<uint8_t>(Categories::IncomingCall)) {
@@ -401,7 +367,7 @@ void AppleNotificationCenterClient::AcceptIncomingCall(uint32_t uuid) {
 }
 
 void AppleNotificationCenterClient::RejectIncomingCall(uint32_t uuid) {
-  AncsNotitfication ancsNotif;
+  AncsNotification ancsNotif;
   if (notifications.contains(uuid)) {
     ancsNotif = notifications[uuid];
     if (ancsNotif.category != static_cast<uint8_t>(Categories::IncomingCall)) {
@@ -451,7 +417,6 @@ void AppleNotificationCenterClient::Reset() {
 
 void AppleNotificationCenterClient::Discover(uint16_t connectionHandle, std::function<void(uint16_t)> onServiceDiscovered) {
   NRF_LOG_INFO("[ANCS] Starting discovery");
-  // DebugNotification("[ANCS] Starting discovery");
   this->onServiceDiscovered = onServiceDiscovered;
   ble_gattc_disc_svc_by_uuid(connectionHandle, &ancsUuid.u, OnDiscoveryEventCallback, this);
 }
