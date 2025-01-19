@@ -1,5 +1,4 @@
 #include "displayapp/screens/Tile.h"
-#include "displayapp/DisplayApp.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "components/ble/BleController.h"
 #include "displayapp/InfiniTimeTheme.h"
@@ -30,9 +29,13 @@ Tile::Tile(uint8_t screenID,
            Controllers::Settings& settingsController,
            const Controllers::Battery& batteryController,
            const Controllers::Ble& bleController,
+           const Controllers::AlarmController& alarmController,
            Controllers::DateTime& dateTimeController,
            std::array<Applications, 6>& applications)
-  : app {app}, dateTimeController {dateTimeController}, pageIndicator(screenID, numScreens), statusIcons(batteryController, bleController) {
+  : app {app},
+    dateTimeController {dateTimeController},
+    pageIndicator(screenID, numScreens),
+    statusIcons(batteryController, bleController, alarmController) {
 
   settingsController.SetAppMenu(screenID);
 
@@ -76,7 +79,7 @@ Tile::Tile(uint8_t screenID,
 
   for (uint8_t i = 0; i < 6; i++) {
     lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_CLICK_TRIG);
-    if (applications[i].application == Apps::None) {
+    if (applications[i].application == Apps::None || !applications[i].enabled) {
       lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_DISABLED);
     }
   }

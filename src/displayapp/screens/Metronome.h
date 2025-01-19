@@ -1,8 +1,10 @@
 #pragma once
 
 #include "systemtask/SystemTask.h"
+#include "systemtask/WakeLock.h"
 #include "components/motor/MotorController.h"
 #include "displayapp/screens/Screen.h"
+#include "Symbols.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -20,7 +22,7 @@ namespace Pinetime {
         TickType_t startTime = 0;
         TickType_t tappedTime = 0;
         Controllers::MotorController& motorController;
-        System::SystemTask& systemTask;
+        System::WakeLock wakeLock;
         int16_t bpm = 120;
         uint8_t bpb = 4;
         uint8_t counter = 1;
@@ -36,5 +38,15 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct AppTraits<Apps::Metronome> {
+      static constexpr Apps app = Apps::Metronome;
+      static constexpr const char* icon = Screens::Symbols::drum;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Metronome(controllers.motorController, *controllers.systemTask);
+      };
+    };
   }
 }

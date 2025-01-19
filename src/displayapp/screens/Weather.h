@@ -1,45 +1,56 @@
 #pragma once
 
-#include <memory>
-#include <components/ble/weather/WeatherService.h>
-#include "Screen.h"
-#include "ScreenList.h"
+#include <cstdint>
+#include <lvgl/lvgl.h>
+#include "displayapp/screens/Screen.h"
+#include "components/ble/SimpleWeatherService.h"
+#include "displayapp/apps/Apps.h"
+#include "displayapp/Controllers.h"
+#include "Symbols.h"
+#include "utility/DirtyValue.h"
 
 namespace Pinetime {
-  namespace Applications {
-    class DisplayApp;
 
+  namespace Controllers {
+    class Settings;
+  }
+
+  namespace Applications {
     namespace Screens {
+
       class Weather : public Screen {
       public:
-        explicit Weather(DisplayApp* app, Pinetime::Controllers::WeatherService& weather);
-
+        Weather(Controllers::Settings& settingsController, Controllers::SimpleWeatherService& weatherService);
         ~Weather() override;
 
         void Refresh() override;
 
-        bool OnButtonPushed() override;
-
-        bool OnTouchEvent(TouchEvents event) override;
-
       private:
-        DisplayApp* app;
-        bool running = true;
+        Controllers::Settings& settingsController;
+        Controllers::SimpleWeatherService& weatherService;
 
-        Controllers::WeatherService& weatherService;
+        Utility::DirtyValue<std::optional<Controllers::SimpleWeatherService::CurrentWeather>> currentWeather {};
+        Utility::DirtyValue<std::optional<Controllers::SimpleWeatherService::Forecast>> currentForecast {};
 
-        ScreenList<5> screens;
+        lv_obj_t* icon;
+        lv_obj_t* condition;
+        lv_obj_t* temperature;
+        lv_obj_t* minTemperature;
+        lv_obj_t* maxTemperature;
+        lv_obj_t* forecast;
 
-        std::unique_ptr<Screen> CreateScreenTemperature();
-
-        std::unique_ptr<Screen> CreateScreenAir();
-
-        std::unique_ptr<Screen> CreateScreenClouds();
-
-        std::unique_ptr<Screen> CreateScreenPrecipitation();
-
-        std::unique_ptr<Screen> CreateScreenHumidity();
+        lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct AppTraits<Apps::Weather> {
+      static constexpr Apps app = Apps::Weather;
+      static constexpr const char* icon = Screens::Symbols::cloudSunRain;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Weather(controllers.settingsController, *controllers.weatherController);
+      };
+    };
   }
 }

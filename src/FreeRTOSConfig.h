@@ -62,7 +62,6 @@
 #define configTICK_RATE_HZ                      1024
 #define configMAX_PRIORITIES                    (3)
 #define configMINIMAL_STACK_SIZE                (120)
-#define configTOTAL_HEAP_SIZE                   (1024 * 40)
 #define configMAX_TASK_NAME_LEN                 (4)
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
@@ -75,6 +74,7 @@
 #define configUSE_TIME_SLICING                  0
 #define configUSE_NEWLIB_REENTRANT              0
 #define configENABLE_BACKWARD_COMPATIBILITY     1
+#define configUSE_TASK_NOTIFICATIONS            0
 
 /* Hook function related definitions. */
 #define configUSE_IDLE_HOOK            0

@@ -17,21 +17,23 @@
 */
 #pragma once
 
+#include "displayapp/apps/Apps.h"
+#include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
-#include "systemtask/SystemTask.h"
-#include "displayapp/LittleVgl.h"
-#include "components/alarm/AlarmController.h"
 #include "displayapp/widgets/Counter.h"
+#include "displayapp/Controllers.h"
+#include "systemtask/WakeLock.h"
+#include "Symbols.h"
 
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class Alarm : public Screen {
       public:
-        Alarm(Controllers::AlarmController& alarmController,
-              Controllers::Settings::ClockType clockType,
-              System::SystemTask& systemTask,
-              Controllers::MotorController& motorController);
+        explicit Alarm(Controllers::AlarmController& alarmController,
+                       Controllers::Settings::ClockType clockType,
+                       System::SystemTask& systemTask,
+                       Controllers::MotorController& motorController);
         ~Alarm() override;
         void SetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
@@ -42,7 +44,7 @@ namespace Pinetime {
 
       private:
         Controllers::AlarmController& alarmController;
-        System::SystemTask& systemTask;
+        System::WakeLock wakeLock;
         Controllers::MotorController& motorController;
 
         lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch;
@@ -63,6 +65,19 @@ namespace Pinetime {
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
       };
+    }
+
+    template <>
+    struct AppTraits<Apps::Alarm> {
+      static constexpr Apps app = Apps::Alarm;
+      static constexpr const char* icon = Screens::Symbols::bell;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Alarm(controllers.alarmController,
+                                  controllers.settingsController.GetClockType(),
+                                  *controllers.systemTask,
+                                  controllers.motorController);
+      };
     };
-  };
+  }
 }

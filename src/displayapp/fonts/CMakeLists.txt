@@ -1,5 +1,5 @@
 set(FONTS jetbrains_mono_42 jetbrains_mono_76 jetbrains_mono_bold_20
-   jetbrains_mono_extrabold_compressed lv_font_navi_80 lv_font_sys_48
+   jetbrains_mono_extrabold_compressed lv_font_sys_48
    open_sans_light fontawesome_weathericons)
 find_program(LV_FONT_CONV "lv_font_conv" NO_CACHE REQUIRED
    HINTS "${CMAKE_SOURCE_DIR}/node_modules/.bin")
@@ -11,6 +11,7 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/jetbrains_mono_bold_20.c_M.patch
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.12)
    # FindPython3 module introduces with CMake 3.12
    # https://cmake.org/cmake/help/latest/module/FindPython3.html
+   set(Python3_FIND_STRATEGY LOCATION) # https://discourse.cmake.org/t/find-package-python3-is-not-finding-the-correct-python/10563
    find_package(Python3 REQUIRED)
 else()
    set(Python3_EXECUTABLE "python")

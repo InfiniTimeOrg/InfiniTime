@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <memory>
 #include "displayapp/screens/Screen.h"
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"
@@ -19,6 +19,7 @@ namespace Pinetime {
         struct Applications {
           const char* icon;
           Pinetime::Applications::Apps application;
+          bool enabled;
         };
 
         explicit Tile(uint8_t screenID,
@@ -27,6 +28,7 @@ namespace Pinetime {
                       Controllers::Settings& settingsController,
                       const Controllers::Battery& batteryController,
                       const Controllers::Ble& bleController,
+                      const Controllers::AlarmController& alarmController,
                       Controllers::DateTime& dateTimeController,
                       std::array<Applications, 6>& applications);
 

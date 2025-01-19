@@ -124,9 +124,11 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
                    bootloaderSize,
                    applicationSize);
 
-      // wait until SystemTask has finished waking up all devices
-      while (systemTask.IsSleeping()) {
-        vTaskDelay(50); // 50ms
+      // Wait until SystemTask has disabled sleeping
+      // This isn't quite correct, as we don't actually know
+      // if BleFirmwareUpdateStarted has been received yet
+      while (!systemTask.IsSleepDisabled()) {
+        vTaskDelay(pdMS_TO_TICKS(5));
       }
 
       dfuImage.Erase();
@@ -357,6 +359,8 @@ void DfuService::DfuImage::Init(size_t chunkSize, size_t totalSize, uint16_t exp
   this->totalSize = totalSize;
   this->expectedCrc = expectedCrc;
   this->ready = true;
+  totalWriteIndex = 0;
+  bufferWriteIndex = 0;
 }
 
 void DfuService::DfuImage::Append(uint8_t* data, size_t size) {

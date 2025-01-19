@@ -5,10 +5,12 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <displayapp/Controllers.h>
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/BleController.h"
 #include "utility/DirtyValue.h"
+#include "displayapp/apps/Apps.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -49,8 +51,7 @@ namespace Pinetime {
         Utility::DirtyValue<uint8_t> heartbeat {};
         Utility::DirtyValue<bool> heartbeatRunning {};
         Utility::DirtyValue<bool> notificationState {};
-        using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
         lv_point_t line_icons_points[3] {{0, 5}, {117, 5}, {122, 0}};
         lv_point_t line_day_of_week_number_points[4] {{0, 0}, {100, 0}, {95, 95}, {0, 95}};
@@ -100,5 +101,26 @@ namespace Pinetime {
         lv_font_t* font_segment115 = nullptr;
       };
     }
+
+    template <>
+    struct WatchFaceTraits<WatchFace::CasioStyleG7710> {
+      static constexpr WatchFace watchFace = WatchFace::CasioStyleG7710;
+      static constexpr const char* name = "Casio G7710";
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::WatchFaceCasioStyleG7710(controllers.dateTimeController,
+                                                     controllers.batteryController,
+                                                     controllers.bleController,
+                                                     controllers.notificationManager,
+                                                     controllers.settingsController,
+                                                     controllers.heartRateController,
+                                                     controllers.motionController,
+                                                     controllers.filesystem);
+      };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {
+        return Screens::WatchFaceCasioStyleG7710::IsAvailable(filesystem);
+      }
+    };
   }
 }

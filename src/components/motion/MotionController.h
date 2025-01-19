@@ -6,6 +6,7 @@
 
 #include "drivers/Bma421.h"
 #include "components/ble/MotionService.h"
+#include "utility/CircularBuffer.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -20,15 +21,15 @@ namespace Pinetime {
       void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
 
       int16_t X() const {
-        return x;
+        return xHistory[0];
       }
 
       int16_t Y() const {
-        return y;
+        return yHistory[0];
       }
 
       int16_t Z() const {
-        return z;
+        return zHistory[0];
       }
 
       uint32_t NbSteps() const {
@@ -44,7 +45,8 @@ namespace Pinetime {
       }
 
       bool ShouldShakeWake(uint16_t thresh);
-      bool ShouldRaiseWake(bool isSleeping);
+      bool ShouldRaiseWake() const;
+      bool ShouldLowerSleep() const;
 
       int32_t CurrentShakeSpeed() const {
         return accumulatedSpeed;
@@ -60,6 +62,10 @@ namespace Pinetime {
         this->service = service;
       }
 
+      Pinetime::Controllers::MotionService* GetService() const {
+        return service;
+      }
+
     private:
       uint32_t nbSteps = 0;
       uint32_t currentTripSteps = 0;
@@ -67,13 +73,29 @@ namespace Pinetime {
       TickType_t lastTime = 0;
       TickType_t time = 0;
 
-      int16_t lastX = 0;
-      int16_t x = 0;
-      int16_t lastYForRaiseWake = 0;
-      int16_t lastY = 0;
-      int16_t y = 0;
-      int16_t lastZ = 0;
-      int16_t z = 0;
+      struct AccelStats {
+        static constexpr uint8_t numHistory = 2;
+
+        int16_t xMean = 0;
+        int16_t yMean = 0;
+        int16_t zMean = 0;
+        int16_t prevXMean = 0;
+        int16_t prevYMean = 0;
+        int16_t prevZMean = 0;
+
+        uint32_t xVariance = 0;
+        uint32_t yVariance = 0;
+        uint32_t zVariance = 0;
+      };
+
+      AccelStats GetAccelStats() const;
+
+      AccelStats stats = {};
+
+      static constexpr uint8_t histSize = 8;
+      Utility::CircularBuffer<int16_t, histSize> xHistory = {};
+      Utility::CircularBuffer<int16_t, histSize> yHistory = {};
+      Utility::CircularBuffer<int16_t, histSize> zHistory = {};
       int32_t accumulatedSpeed = 0;
 
       DeviceTypes deviceType = DeviceTypes::Unknown;
