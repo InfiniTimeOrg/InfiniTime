@@ -1,311 +1,337 @@
-#define LV_MONOSERT
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Adder.h"
-#include <cstdlib> //randr
-#include "task.h"
+#include <cstdlib>  // For std::rand
+#include <algorithm>  // For std::max
 
 using namespace Pinetime::Applications::Screens;
 
-Adder::Adder(Pinetime::Components::LittleVgl& lvgl, Controllers::FS& fs) : lvgl {lvgl}, filesystem {fs} {
-
-  AppReady = false;
-
-  LoadGame();
-  
-
-  TileBufferSize = TileSize * TileSize;
-  TileBuffer = new lv_color_t[TileBufferSize];
-
-  DisplayHeight = LV_VER_RES;
-  DisplayWidth = LV_HOR_RES;
-
-  FieldHeight = DisplayHeight / TileSize - 2;
-  FieldWidth = DisplayWidth / TileSize - 1;
-  FieldOffsetHorizontal = (DisplayWidth - FieldWidth * TileSize) / 2;
-  FieldOffsetVertical = (DisplayHeight - FieldHeight * TileSize) / 2 + (TileSize + 0.5) / 2;
-
-  FieldSize = FieldWidth * FieldHeight;
-
-  Field = new AdderField[FieldSize];
-
-  InitBody();
-
-  for (unsigned int ti = 0; ti < TileBufferSize; ti++)
-    TileBuffer[ti] = LV_COLOR_WHITE;
-
-  createLevel();
-
-  taskRefresh = lv_task_create(RefreshTaskCallback, AdderDelayInterval, LV_TASK_PRIO_MID, this);
+Adder::Adder(Pinetime::Components::LittleVgl& lvgl, Controllers::FS& fs)
+    : lvgl(lvgl), filesystem(fs) {
+  InitializeGame();
 }
 
 Adder::~Adder() {
-  delete[] Field;
-  delete[] TileBuffer;
-  lv_task_del(taskRefresh);
+  Cleanup();
+}
+
+void Adder::InitializeGame() {
+  LoadGame();
+
+  tileBuffer = new lv_color_t[TileSize * TileSize];
+  std::fill(tileBuffer, tileBuffer + TileSize * TileSize, LV_COLOR_WHITE);
+
+  displayHeight = LV_VER_RES;
+  displayWidth = LV_HOR_RES;
+
+  fieldHeight = displayHeight / TileSize - 2;
+  fieldWidth = displayWidth / TileSize - 1;
+  fieldOffsetHorizontal = (displayWidth - fieldWidth * TileSize) / 2;
+  fieldOffsetVertical = (displayHeight - fieldHeight * TileSize) / 2 + (TileSize + 0.5) / 2;
+
+  fieldSize = fieldWidth * fieldHeight;
+  field = new AdderField[fieldSize];
+
+  InitializeBody();
+  CreateLevel();
+
+  refreshTask = lv_task_create([](lv_task_t* task) {
+      auto* adder = static_cast<Adder*>(task->user_data);
+      adder->Refresh();
+    },
+    AdderDelayInterval, LV_TASK_PRIO_MID, this);
+
+  appReady = false;
+  vTaskDelay(5); 
+  UpdateScore(0);
+}
+
+void Adder::Cleanup() {
+  delete[] field;
+  delete[] tileBuffer;
+  if (refreshTask) {
+    lv_task_del(refreshTask);
+  }
   lv_obj_clean(lv_scr_act());
 }
 
-void Adder::LoadGame(){
-  lfs_file f;
+void Adder::LoadGame() {
+  lfs_file file;
 
+  if (filesystem.FileOpen(&file, GameSavePath, LFS_O_RDONLY) == LFS_ERR_OK) {
+    filesystem.FileRead(&file, reinterpret_cast<uint8_t*>(&data), sizeof(AdderSave));
+    filesystem.FileClose(&file);
 
-  if (filesystem.FileOpen(&f, GameSavePath, LFS_O_RDONLY) == LFS_ERR_OK) {
-    filesystem.FileRead(&f, reinterpret_cast<uint8_t*>(&Data), sizeof(AdderSave));
-    filesystem.FileClose(&f);
-    if(Data.Version!=AdderVersion){
-      Data= AdderSave();
-    }else
-      HighScore = std::max(Data.HighScore,HighScore);
-    
-  }
-  else{
-    Data=AdderSave();
-    filesystem.DirCreate("games");
-    filesystem.DirCreate("games/adder");
+    if (data.Version != AdderVersion) {
+      data = AdderSave();
+    } else {
+      highScore = std::max(data.HighScore, highScore);
+    }
+  } else {
+    data = AdderSave();
+    filesystem.DirCreate("/games");
+    filesystem.DirCreate("/games/adder");
     SaveGame();
   }
-  Data.Version=AdderVersion;
-
 }
 
-void Adder::SaveGame(){
-  lfs_file f;
-  
-  if (filesystem.FileOpen(&f, GameSavePath, LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK)
+void Adder::SaveGame() {
+  lfs_file file;
+
+  if (filesystem.FileOpen(&file, GameSavePath, LFS_O_WRONLY | LFS_O_CREAT) == LFS_ERR_OK) {
+    filesystem.FileWrite(&file, reinterpret_cast<uint8_t*>(&data), sizeof(AdderSave));
+    filesystem.FileClose(&file);
+  }
+}
+
+void Adder::ResetGame() {
+  GameOver();
+  appReady = false;
+  highScore = std::max(highScore, static_cast<unsigned int>(adderBody.size() - 2));
+
+  SaveGame();
+
+  CreateLevel();
+  InitializeBody();
+  UpdateScore(0);
+  FullRedraw();
+}
+
+void Adder::InitializeBody() {
+  adderBody.clear();
+
+  unsigned int startPosition = (fieldHeight / 2) * fieldWidth + fieldWidth / 2 + 2;
+  adderBody = {startPosition, startPosition - 1};
+
+  currentDirection = 1;  // Start moving to the right
+  prevDirection = currentDirection;
+}
+
+void Adder::CreateLevel() {
+  for (unsigned int i = 0; i < fieldSize; ++i) {
+    unsigned int x = i % fieldWidth;
+    unsigned int y = i / fieldWidth;
+    if (y == 0 || y == fieldHeight - 1 || x == 0 || x == fieldWidth - 1) {
+      field[i] = AdderField::SOLID;
+    } else {
+      field[i] = AdderField::BLANK;
+    }
+  }
+}
+
+void Adder::CreateFood() {
+  blanks.clear();
+  for (unsigned int i = 0; i < fieldSize; ++i) {
+    if (field[i] == AdderField::BLANK) {
+      blanks.push_back(i);
+    }
+  }
+
+  if (!blanks.empty()) {
+    unsigned int randomIndex = std::rand() % blanks.size();
+    field[blanks[randomIndex]] = AdderField::FOOD;
+    UpdateSingleTile(blanks[randomIndex] % fieldWidth, blanks[randomIndex] / fieldWidth, LV_COLOR_GREEN);
+  }
+}
+
+bool Adder::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  switch (event) {
+    case TouchEvents::SwipeLeft:
+      currentDirection = -1;
+      break;
+    case TouchEvents::SwipeUp:
+      currentDirection = -fieldWidth;
+      break;
+    case TouchEvents::SwipeDown:
+      currentDirection = fieldWidth;
+      break;
+    case TouchEvents::SwipeRight:
+      currentDirection = 1;
+      break;
+    case TouchEvents::LongTap:
+      FullRedraw();  // Adjusted to method spelled as "FullRedraw"
+      break;
+    default:
+      break;
+  }
+
+  // Prevent the adder from directly reversing direction
+  if (prevDirection == -currentDirection) {
+    currentDirection = -currentDirection;
+  }
+
+  // Update previous direction if it differs
+  if (currentDirection != prevDirection) {
+    prevDirection = currentDirection;
+  }
+
+  return true;  // Return true to indicate the touch event was handled
+}
+
+
+void Adder::UpdatePosition() {
+  unsigned int newHead = adderBody.front() + currentDirection;
+  Adder::MoveConsequence result = CheckMove();  // Fully qualify MoveConsequence
+
+  switch (result) {
+    case Adder::MoveConsequence::DEATH:  // Fully qualify
+      ResetGame();
       return;
 
-  filesystem.FileWrite(&f, reinterpret_cast<uint8_t*>(&Data), sizeof(AdderSave));
-  filesystem.FileClose(&f);
-}
+    case Adder::MoveConsequence::EAT:  // Fully qualify
+      adderBody.push_front(newHead);
+      CreateFood();
+      UpdateScore(adderBody.size() - 2);
+      break;
 
-void Adder::InitBody() {
-  AdderBody.clear();
-  unsigned int start_position = (FieldHeight / 2) * FieldWidth + FieldWidth / 2 + 2;
-  unsigned int body[] = {start_position, start_position - 1};
-  AdderBody.assign(body, body + 2);
-}
-
-void Adder::createLevel() {
-  for (unsigned int i = 0; i < FieldSize; i++) {
-    unsigned int x = i % FieldWidth;
-    unsigned int y = i / FieldWidth;
-    if (y == 0 || y == FieldHeight - 1 || x == 0 || x == FieldWidth - 1)
-      Field[i] = SOLID;
-    else
-      Field[i] = BLANK;
+    case Adder::MoveConsequence::MOVE:  // Fully qualify
+      adderBody.pop_back();
+      adderBody.push_front(newHead);
+      break;
   }
+
+  field[adderBody.front()] = AdderField::BODY;
+  field[adderBody.back()] = AdderField::BLANK;
+}
+
+Adder::MoveConsequence Adder::CheckMove() const {
+  unsigned int newHead = adderBody.front() + currentDirection;
+  if (newHead >= fieldSize) {
+    return Adder::MoveConsequence::DEATH;  // Fully qualify
+  }
+
+  switch (field[newHead]) {
+    case AdderField::BLANK:
+      return Adder::MoveConsequence::MOVE;  // Fully qualify
+    case AdderField::FOOD:
+      return Adder::MoveConsequence::EAT;  // Fully qualify
+    default:
+      return Adder::MoveConsequence::DEATH;  // Fully qualify
+  }
+}
+
+void Adder::Refresh() {
+  if (!appReady) {
+    FullRedraw();
+    CreateFood();
+    appReady = true;
+  } else {
+    UpdatePosition();
+    UpdateSingleTile(adderBody.front() % fieldWidth, adderBody.front() / fieldWidth, LV_COLOR_YELLOW);
+    UpdateSingleTile(adderBody.back() % fieldWidth, adderBody.back() / fieldWidth, LV_COLOR_BLACK);
+  }
+}
+
+void Adder::FullRedraw() {
+  for (unsigned int x = 0; x < fieldWidth; ++x) {
+    for (unsigned int y = 0; y < fieldHeight; ++y) {
+      lv_color_t color;
+      switch (field[y * fieldWidth + x]) {
+        case AdderField::BODY:
+          color = LV_COLOR_YELLOW;
+          break;
+        case AdderField::SOLID:
+          color = LV_COLOR_WHITE;
+          break;
+        case AdderField::FOOD:
+          color = LV_COLOR_GREEN;
+          break;
+        default:
+          color = LV_COLOR_BLACK;
+          break;
+      }
+      UpdateSingleTile(x, y, color);
+    }
+  }
+}
+
+void Adder::UpdateSingleTile(unsigned int x, unsigned int y, lv_color_t color) {
+  std::fill(tileBuffer, tileBuffer + TileSize * TileSize, color);
+  lv_area_t area {
+    .x1 = static_cast<lv_coord_t>(x * TileSize + fieldOffsetHorizontal),
+    .y1 = static_cast<lv_coord_t>(y * TileSize + fieldOffsetVertical),
+    .x2 = static_cast<lv_coord_t>(x * TileSize + fieldOffsetHorizontal + TileSize - 1),
+    .y2 = static_cast<lv_coord_t>(y * TileSize + fieldOffsetVertical + TileSize - 1)
+  };
+
+  lvgl.FlushDisplay(&area, tileBuffer);
 }
 
 void Adder::GameOver() {
-  unsigned int Digit[] = {7, 0, 5, 3};
+  unsigned int digits[] = { 7, 0, 5, 3 };  // Digits forming the "GAME OVER" display
 
-  unsigned int Offset = FieldOffsetHorizontal > FieldOffsetVertical ? FieldOffsetHorizontal : FieldOffsetVertical;
-  for (unsigned int r = 3 * Offset; r < DisplayWidth - 4 * Offset; r += 16) {
+  // Determine offset based on field dimensions
+  unsigned int offset = fieldOffsetHorizontal > fieldOffsetVertical ? fieldOffsetHorizontal : fieldOffsetVertical;
+
+  // Render "GAME OVER" animation
+  for (unsigned int r = 3 * offset; r < displayWidth - 4 * offset; r += 16) {
     for (unsigned int i = 0; i < 4; i++) {
-      for (unsigned int j = 0; j < 64; j++)
-        DigitBuffer[63 - j] =
-          (DigitFont[Digit[i]][j / 8] & 1 << j % 8) ? LV_COLOR_WHITE : LV_COLOR_BLACK; // Bitmagic to map the font to an image array
+      for (unsigned int j = 0; j < 64; j++) {
+        // Map font bits into the display buffer
+        digitBuffer[63 - j] = (DigitFont[digits[i]][j / 8] & (1 << (j % 8))) ? LV_COLOR_WHITE : LV_COLOR_BLACK;
+      }
 
       lv_area_t area;
       area.x1 = r + 8 * i;
       area.y1 = r;
       area.x2 = area.x1 + 7;
       area.y2 = area.y1 + 7;
+
       lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-      lvgl.FlushDisplay(&area, DigitBuffer);
-    }
-  }
-  createLevel();
-  AdderDirection = 1;
-  InitBody();
-  AppReady = false;
-
-  if(HighScore > Data.HighScore)
-    SaveGame();
-}
-
-bool Adder::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  switch (event) {
-    case TouchEvents::SwipeLeft:
-      AdderDirection = -1;
-      break;
-    case TouchEvents::SwipeUp:
-      AdderDirection = -FieldWidth;
-      break;
-    case TouchEvents::SwipeDown:
-      AdderDirection = +FieldWidth;
-      break;
-    case TouchEvents::SwipeRight:
-      AdderDirection = 1;
-      break;
-    case TouchEvents::LongTap:
-      FullReDraw();
-      break;
-    default:
-      break;
-  }
-  if (prevAdderDirection == -AdderDirection)
-    AdderDirection = -AdderDirection;
-
-  if (AdderDirection != prevAdderDirection)
-    prevAdderDirection = AdderDirection;
-  return true;
-}
-
-MoveConsequence Adder::checkMove() {
-  if (AdderBody.front() + AdderDirection < FieldSize) {
-    if (Field[AdderBody.front() + AdderDirection] == BLANK)
-      return MOVE;
-    if (Field[AdderBody.front() + AdderDirection] == FOOD)
-      return EAT;
-  }
-
-  return DEATH;
-}
-
-void Adder::updateScore(unsigned int Score) {
-
-  unsigned int Digit[] = {0, Score % 10, (Score % 100 - Score % 10) / 10, (Score - Score % 100) / 100};
-
-  // Print Score
-  for (unsigned int i = 0; i < 4; i++) {
-    for (unsigned int j = 0; j < 64; j++)
-      DigitBuffer[j] = (DigitFont[Digit[i]][j / 8] & 1 << j % 8) ? LV_COLOR_WHITE : LV_COLOR_BLACK; 
-                        // Bitmagic to map the font to an image array
-
-    lv_area_t area;
-    area.x1 = DisplayWidth - 16 - 8 * i;
-    area.y1 = 4;
-    area.x2 = area.x1 + 7;
-    area.y2 = area.y1 + 7;
-    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-    lvgl.FlushDisplay(&area, DigitBuffer);
-    vTaskDelay(1); // Hack to give give the system time to refresh
-  }
-
-  // Check if HighScore changed
-  unsigned int HScore = (HighScore > Score) ? HighScore : Score;
-  unsigned int HS_Digit[] = {0, HScore % 10, (HScore % 100 - HScore % 10) / 10, (HScore - HScore % 100) / 100};
-  // Print Highscore
-  for (unsigned int i = 0; i < 4; i++) {
-    for (unsigned int j = 0; j < 64; j++)
-      DigitBuffer[j] = (DigitFont[HS_Digit[i]][j / 8] & 1 << j % 8) ? LV_COLOR_WHITE : LV_COLOR_BLACK; 
-                        // Bitmagic to map the font to an image array
-
-    lv_area_t area;
-    area.x1 = 40 - 8 * i;
-    area.y1 = 4;
-    area.x2 = area.x1 + 7;
-    area.y2 = area.y1 + 7;
-    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-    lvgl.FlushDisplay(&area, DigitBuffer);
-    vTaskDelay(1); // Hack to give give the system time to refresh
-  }
-  HighScore = HScore;
-}
-
-void Adder::createFood() {
-  Blanks.clear();
-
-  for (unsigned int i = 0; i < FieldSize; ++i)
-    if (Field[i] == BLANK)
-      Blanks.push_back(i);
-
-  unsigned int pos = rand() % Blanks.size();
-
-  Field[Blanks[pos]] = FOOD;
-  updateSingleTile(Blanks[pos] % FieldWidth, Blanks[pos] / FieldWidth, LV_COLOR_GREEN);
-}
-
-void Adder::updatePosition() {
-
-  Field[AdderBody.front()] = BODY;
-  Field[AdderBody.back()] = BLANK;
-
-  switch (checkMove()) {
-
-    case DEATH:
-      GameOver();
-      break;
-
-    case EAT:
-      AdderBody.push_front(AdderBody.front() + AdderDirection);
-      createFood();
-      updateScore(AdderBody.size() - 2);
-      break;
-
-    case MOVE:
-      AdderBody.pop_back();
-      AdderBody.push_front(AdderBody.front() + AdderDirection);
-      break;
-  }
-}
-
-void Adder::FullReDraw() {
-  lv_color_t selectColor = LV_COLOR_BLACK;
-
-  for (unsigned int x = 0; x < FieldWidth; x++) {
-    for (unsigned int y = 0; y < FieldHeight; y++) {
-
-      switch (Field[y * FieldWidth + x]) {
-        case BODY:
-          selectColor = LV_COLOR_YELLOW;
-          break;
-        case SOLID:
-          selectColor = LV_COLOR_WHITE;
-          break;
-        case FOOD:
-          selectColor = LV_COLOR_GREEN;
-          break;
-        default:
-          selectColor = LV_COLOR_BLACK;
-          break;
-      }
-      for (unsigned int ti = 0; ti < TileBufferSize; ti++)
-        TileBuffer[ti] = selectColor;
-
-      lv_area_t area;
-
-      area.x1 = x * TileSize + FieldOffsetHorizontal;
-      area.y1 = y * TileSize + FieldOffsetVertical;
-      area.x2 = area.x1 + TileSize - 1;
-      area.y2 = area.y1 + TileSize - 1;
-      lvgl.FlushDisplay(&area, TileBuffer);
-      lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-      vTaskDelay(1); // Hack to give give the system time to refresh
+      lvgl.FlushDisplay(&area, digitBuffer);
     }
   }
 }
 
-void Adder::Refresh() {
-  updateDisplay();
-}
+void Adder::UpdateScore(unsigned int score) {
+  // Extract individual digits of the score
+  unsigned int digits[] = { 0, score % 10, (score % 100 - score % 10) / 10, (score - score % 100) / 100 };
 
-void Adder::updateSingleTile(unsigned int FieldPosX, unsigned int FieldPosY, lv_color_t Color) {
-  for (unsigned int ti = 0; ti < TileBufferSize; ti++)
-    TileBuffer[ti] = Color;
+  // Render the score
+  for (unsigned int i = 0; i < 4; i++) {
+    for (unsigned int j = 0; j < 64; j++) {
+      // Map font bits into the display buffer (using bit manipulation)
+      digitBuffer[j] = (DigitFont[digits[i]][j / 8] & (1 << (j % 8))) ? LV_COLOR_WHITE : LV_COLOR_BLACK;
+    }
 
-  lv_area_t area;
-  area.x1 = FieldPosX * TileSize + FieldOffsetHorizontal;
-  area.y1 = FieldPosY * TileSize + FieldOffsetVertical;
-  area.x2 = area.x1 + TileSize - 1;
-  area.y2 = area.y1 + TileSize - 1;
-  lvgl.FlushDisplay(&area, TileBuffer);
-  lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-  vTaskDelay(1); // Hack to give give the system time to refresh
-}
+    lv_area_t area;
+    area.x1 = displayWidth - 16 - 8 * i;  // Adjust X to display digits
+    area.y1 = 4;                         // Y-offset for Score
+    area.x2 = area.x1 + 7;
+    area.y2 = area.y1 + 7;
 
-void Adder::updateDisplay() {
-  lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-  updatePosition();
-  if (!AppReady) {
-    FullReDraw();
-    createFood();
-    updateSingleTile(AdderBody.back() % FieldWidth, AdderBody.back() / FieldWidth, LV_COLOR_BLACK);
-    updateScore(0);
-    AppReady = true;
-  } else {
-    updateSingleTile(AdderBody.front() % FieldWidth, AdderBody.front() / FieldWidth, LV_COLOR_YELLOW);
-    updateSingleTile(AdderBody.back() % FieldWidth, AdderBody.back() / FieldWidth, LV_COLOR_BLACK);
+    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
+    lvgl.FlushDisplay(&area, digitBuffer);
+    vTaskDelay(1);  // Small delay to allow display refresh
   }
+
+  // Update the high score if necessary
+  unsigned int highScoreToWrite = (highScore > score) ? highScore : score;
+  unsigned int highScoreDigits[] = {
+      0,
+      highScoreToWrite % 10,
+      (highScoreToWrite % 100 - highScoreToWrite % 10) / 10,
+      (highScoreToWrite - highScoreToWrite % 100) / 100
+  };
+
+  // Render the high score
+  for (unsigned int i = 0; i < 4; i++) {
+    for (unsigned int j = 0; j < 64; j++) {
+      // Map font bits into the display buffer
+      digitBuffer[j] = (DigitFont[highScoreDigits[i]][j / 8] & (1 << (j % 8))) ? LV_COLOR_WHITE : LV_COLOR_BLACK;
+    }
+
+    lv_area_t area;
+    area.x1 = 40 - 8 * i;  // Adjust X to display digits
+    area.y1 = 4;           // Y-offset for High Score
+    area.x2 = area.x1 + 7;
+    area.y2 = area.y1 + 7;
+
+    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
+    lvgl.FlushDisplay(&area, digitBuffer);
+    vTaskDelay(1);  // Small delay to allow display refresh
+  }
+
+  // Save the high score if it has changed
+  highScore = highScoreToWrite;
 }
+
