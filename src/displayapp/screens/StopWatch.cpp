@@ -159,8 +159,8 @@ void StopWatch::RenderTime() {
 
 void StopWatch::RenderPause() {
   const TickType_t currentTime = xTaskGetTickCount();
-  if (currentTime > blinkTime) {
-    blinkTime = currentTime + blinkInterval;
+  if (currentTime - lastBlinkTime > blinkInterval) {
+    lastBlinkTime = currentTime;
     if (lv_obj_get_state(time, LV_LABEL_PART_MAIN) == LV_STATE_DEFAULT) {
       lv_obj_set_state(time, LV_STATE_DISABLED);
       lv_obj_set_state(msecTime, LV_STATE_DISABLED);
@@ -253,7 +253,7 @@ bool StopWatch::OnButtonPushed() {
 
 void StopWatch::OnPause() {
   stopWatchController.Pause();
-  blinkTime = xTaskGetTickCount() + blinkInterval;
+  lastBlinkTime = xTaskGetTickCount();
   RenderTime(); // make sure displayed time is not stale
   DisplayPaused();
   wakeLock.Release();
