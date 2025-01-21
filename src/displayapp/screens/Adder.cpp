@@ -41,8 +41,7 @@ void Adder::InitializeGame() {
     AdderDelayInterval, LV_TASK_PRIO_MID, this);
 
   appReady = false;
-  vTaskDelay(5); 
-  UpdateScore(0);
+  vTaskDelay(20); 
 }
 
 void Adder::Cleanup() {
@@ -87,7 +86,7 @@ void Adder::ResetGame() {
   GameOver();
   appReady = false;
   highScore = std::max(highScore, static_cast<unsigned int>(adderBody.size() - 2));
-
+  data.HighScore=highScore;
   SaveGame();
 
   CreateLevel();
@@ -213,11 +212,16 @@ void Adder::Refresh() {
   if (!appReady) {
     FullRedraw();
     CreateFood();
+    vTaskDelay(1); //Required to let the OS draw the tile completely
+    UpdateScore(0);
+    vTaskDelay(1); //Required to let the OS draw the tile completely
     appReady = true;
   } else {
     UpdatePosition();
     UpdateSingleTile(adderBody.front() % fieldWidth, adderBody.front() / fieldWidth, LV_COLOR_YELLOW);
+    vTaskDelay(1); //Required to let the OS draw the tile completely
     UpdateSingleTile(adderBody.back() % fieldWidth, adderBody.back() / fieldWidth, LV_COLOR_BLACK);
+    vTaskDelay(1); //Required to let the OS draw the tile completely
   }
 }
 
@@ -240,6 +244,7 @@ void Adder::FullRedraw() {
           break;
       }
       UpdateSingleTile(x, y, color);
+      vTaskDelay(1); //Required to let the OS draw the tile completely 
     }
   }
 }
@@ -267,7 +272,7 @@ void Adder::GameOver() {
     for (unsigned int i = 0; i < 4; i++) {
       for (unsigned int j = 0; j < 64; j++) {
         // Map font bits into the display buffer
-        digitBuffer[63 - j] = (DigitFont[digits[i]][j / 8] & (1 << (j % 8))) ? LV_COLOR_WHITE : LV_COLOR_BLACK;
+        digitBuffer[63 - j] = (DigitFont[digits[i]][j / 8] & 1 << j % 8) ? LV_COLOR_WHITE : LV_COLOR_BLACK; // Bitmagic to rotate the Digits to look like Letters
       }
 
       lv_area_t area;
@@ -278,6 +283,7 @@ void Adder::GameOver() {
 
       lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
       lvgl.FlushDisplay(&area, digitBuffer);
+      vTaskDelay(1); //Required to let the OS draw the tile completely
     }
   }
 }
@@ -301,7 +307,7 @@ void Adder::UpdateScore(unsigned int score) {
 
     lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
     lvgl.FlushDisplay(&area, digitBuffer);
-    vTaskDelay(1);  // Small delay to allow display refresh
+    vTaskDelay(20);  // Small delay to allow display refresh
   }
 
   // Update the high score if necessary
@@ -328,7 +334,7 @@ void Adder::UpdateScore(unsigned int score) {
 
     lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
     lvgl.FlushDisplay(&area, digitBuffer);
-    vTaskDelay(1);  // Small delay to allow display refresh
+    vTaskDelay(20);  // Small delay to allow display refresh
   }
 
   // Save the high score if it has changed

@@ -3,8 +3,8 @@
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "displayapp/screens/Screen.h"
-#include "components/fs/FS.h"
 #include <lvgl/lvgl.h>
+#include "components/fs/FS.h"
 #include <list>
 #include <vector>
 
@@ -42,8 +42,9 @@ namespace Pinetime {
         static constexpr unsigned int TileSize = 9;
         static constexpr unsigned int AdderDelayInterval = 200;
 
-        Controllers::FS& filesystem;
+
         Pinetime::Components::LittleVgl& lvgl;
+        Controllers::FS& filesystem;
 
         AdderSave data; // Game save data
         AdderField* field{nullptr};
