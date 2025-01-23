@@ -10,7 +10,7 @@ Adder::Adder(Pinetime::Components::LittleVgl& lvgl, Controllers::FS& fs) : lvgl(
 }
 
 Adder::~Adder() {
-  Cleanup();
+  CleanUp();
 }
 
 void Adder::InitializeGame() {
@@ -46,7 +46,7 @@ void Adder::InitializeGame() {
   vTaskDelay(20);
 }
 
-void Adder::Cleanup() {
+void Adder::CleanUp() {
   delete[] field;
   delete[] tileBuffer;
   if (refreshTask) {

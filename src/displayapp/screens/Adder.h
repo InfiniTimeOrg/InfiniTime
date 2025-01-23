@@ -77,12 +77,13 @@ namespace Pinetime {
         void InitializeBody();
         void CreateFood();
         void CreateLevel();
-        
+
         void UpdatePosition();
         void FullRedraw();
         void UpdateSingleTile(unsigned int fieldX, unsigned int fieldY, lv_color_t color);
         void UpdateScore(unsigned int score);
         void GameOver();
+        void CleanUp();
 
         MoveConsequence CheckMove() const;
         
