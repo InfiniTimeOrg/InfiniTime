@@ -45,10 +45,8 @@ namespace {
   }
 }
 
-SettingChimeVibration::SettingChimeVibration(
-  Pinetime::Controllers::Settings& settingsController,
-  Pinetime::Controllers::MotorController& motorController
-)
+SettingChimeVibration::SettingChimeVibration(Pinetime::Controllers::Settings& settingsController,
+                                             Pinetime::Controllers::MotorController& motorController)
   : checkboxList(
       0,
       1,
