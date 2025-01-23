@@ -33,7 +33,7 @@
 ### Companion apps
 
 - [Gadgetbridge](https://gadgetbridge.org/) (Android)
-- [AmazFish](https://openrepos.net/content/piggz/amazfish/) (SailfishOS)
+- [Amazfish](https://github.com/piggz/harbour-amazfish/) ([SailfishOS](https://sailfishos-chum.github.io/apps/harbour-amazfish/), [Ubuntu Touch](https://open-store.io/app/uk.co.piggz.amazfish), [Flatpak](https://flathub.org/apps/uk.co.piggz.amazfish))
 - [Siglo](https://github.com/alexr4535/siglo) (Linux)
 - [InfiniLink](https://github.com/InfiniTimeOrg/InfiniLink) (iOS)
 - [ITD](https://gitea.elara.ws/Elara6331/itd) (Linux)
