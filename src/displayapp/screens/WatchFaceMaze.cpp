@@ -562,63 +562,31 @@ void WatchFaceMaze::PutTime() {
 
 // Generates the maze around whatever it was seeded with
 void WatchFaceMaze::GenerateMaze() {
-  coord_t x = -1;
-  coord_t y = -1;
   // task should only run for 3/4 the time it takes for the task to refresh.
   // Will go over; only checks once it's finished with current line. It won't go too far over though.
-  uint32_t mazeGenStartTime = xTaskGetTickCount();
+  TickType_t mazeGenStartTime = xTaskGetTickCount();
 
-  while (true) {
-    // find position to start generating a path from
-    for (uint8_t i = 0; i < 30; i++) {
-      x = (coord_t) prng.Rand(0, Maze::WIDTH - 1);
-      y = (coord_t) prng.Rand(0, Maze::HEIGHT - 1);
+  // generate a path for every open tile left to right, bottom to top.
+  // Wilson's algorithm explicitly allows this, and it still makes an unbiased maze.
+  for (coord_t x = 0; x < Maze::WIDTH; x++) {
+    for (coord_t y = 0; y < Maze::HEIGHT; y++) {
       if (maze.GetTileAttr(x, y, TileAttr::FlagEmpty)) {
-        break;
-      } // found solution tile
-      if (i == 29) {
-        // failed all 30 attempts (this is inside the for loop for 'organization')
-        // find solution tile slowly but guaranteed (scan over entire field and choose random valid tile)
-        int count = 0;
+        // inspected tile is empty, generate a path from it
+        GeneratePath(x, y);
 
-        // count number of valid tiles
-        for (int32_t j = 0; j < Maze::WIDTH * Maze::HEIGHT; j++) {
-          if (maze.GetTileAttr(j, TileAttr::FlagEmpty)) {
-            count++;
-          }
-        }
-
-        // if no valid tiles are left, maze is done
-        if (count == 0) {
-          pausedGeneration = false;
+        // if generating paths took too long, suspend it
+        // generation should not be allowed to take more than 2x the refresh period
+        // Will go over; only checks once it's finished with current line. It won't go too far over though.
+        if (xTaskGetTickCount() - mazeGenStartTime > pdMS_TO_TICKS(taskRefresh->period * 2)) {
+          pausedGeneration = true;
           return;
         }
 
-        // if execution gets here then maze gen is not done. select random index from valid tiles to start from
-        // 'count' is now used as an index
-        count = (coord_t) prng.Rand(1, count);
-        for (int32_t j = 0; j < Maze::WIDTH * Maze::HEIGHT; j++) {
-          if (maze.GetTileAttr(j, TileAttr::FlagEmpty)) {
-            count--;
-          }
-          if (count == 0) {
-            y = j / Maze::WIDTH;
-            x = j % Maze::WIDTH;
-            break;
-          }
-        }
       }
     }
-    // function now has a valid position a maze line can start from in x and y
-    GeneratePath(x, y);
-
-    // if generating paths took too long, suspend it
-    if (xTaskGetTickCount() - mazeGenStartTime > taskRefresh->period * 3 / 4) {
-      pausedGeneration = true;
-      return;
-    }
   }
-  // execution never gets here! it returns earlier in the function.
+  // generation finished; make it no longer paused
+  pausedGeneration = false;
 }
 
 void WatchFaceMaze::GeneratePath(coord_t x, coord_t y) {
@@ -740,97 +708,90 @@ void WatchFaceMaze::GeneratePath(coord_t x, coord_t y) {
 
 // goes through the maze, finds disconnected segments and connects them
 void WatchFaceMaze::ForceValidMaze() {
-  // Crude maze-optimized flood fill: follow a path until can't move any more, then find some other location to follow from. repeat.
-  // Once it's traversed all reachable tiles, checks if there are any tiles that have not been traversed. if there are, then find a border
-  // between the traversed and non-traversed segments. poke a hole at one of these borders randomly.
-  // Once the hole has been poked, more maze is reachable. continue this "fill-search then poke" scheme until the entire maze is accessible.
-  // This function repurposes flaggen for traversed tiles, so it expects it to be false on all tiles (should be in normal control flow)
+  // Weird depth-first search: has a cursor which keeps moving to the last seen place it can go to, marking where it has gone.
+  // When there are no more places to move to, scan the maze and find the boundary between the traversed area and the non-traversed area.
+  // Pick a random wall along this boundary between traversed and non traversed, and poke a hole there.
+  // Once the hole has been poked, more maze is reachable. Continue this "fill-search then poke" scheme until the entire maze is accessible.
+  // This function repurposes flaggen for traversed tiles, so it expects it to be false on all tiles (should be in normal control flow).
 
-  // initialize cursor x and y to bottom right
-  coord_t x = Maze::WIDTH - 1;
-  coord_t y = Maze::HEIGHT - 1;
+  coord_t x = 0;
+  coord_t y = 0;
+
+  // bitfield only for use in the backtrack stack
+  struct coordXY {
+    coord_t x : 16;
+    coord_t y : 16;
+  };
+  std::stack<coordXY> backtrackStack;
+
   while (true) {
-    // sorry for using goto but this needs to be really nested and the components are too integrated to split out into functions...
-  ForceValidMazeLoop:
     maze.SetAttr(x, y, TileAttr::FlagGen, true);
-    // move cursor
-    if (y > 0 && !maze.GetTileAttr(x, y, TileAttr::Up) && !maze.GetTileAttr(x, y - 1, TileAttr::FlagGen)) {
-      y--;
-    } else if (x < Maze::WIDTH - 1 && !maze.GetTileAttr(x, y, TileAttr::Right) && !maze.GetTileAttr(x + 1, y, TileAttr::FlagGen)) {
-      x++;
-    } else if (y < Maze::HEIGHT - 1 && !maze.GetTileAttr(x, y, TileAttr::Down) && !maze.GetTileAttr(x, y + 1, TileAttr::FlagGen)) {
-      y++;
-    } else if (x > 0 && !maze.GetTileAttr(x, y, TileAttr::Left) && !maze.GetTileAttr(x - 1, y, TileAttr::FlagGen)) {
-      x--;
+
+    // add all possible movement options to the stack
+    if (y > 0 && !maze.GetTileAttr(x, y, TileAttr::Up) && !maze.GetTileAttr(x, y - 1, TileAttr::FlagGen))
+      backtrackStack.push(coordXY(x, y-1));
+    if (x < Maze::WIDTH - 1 && !maze.GetTileAttr(x, y, TileAttr::Right) && !maze.GetTileAttr(x + 1, y, TileAttr::FlagGen))
+      backtrackStack.push(coordXY(x+1, y));
+    if (y < Maze::HEIGHT - 1 && !maze.GetTileAttr(x, y, TileAttr::Down) && !maze.GetTileAttr(x, y + 1, TileAttr::FlagGen))
+      backtrackStack.push(coordXY(x, y+1));
+    if (x > 0 && !maze.GetTileAttr(x, y, TileAttr::Left) && !maze.GetTileAttr(x - 1, y, TileAttr::FlagGen))
+      backtrackStack.push(coordXY(x-1, y));
+
+    if (!backtrackStack.empty()) {
+      // stack not empty (still have traversal to do); pull a position from the stack and move from there
+      x = backtrackStack.top().x;
+      y = backtrackStack.top().y;
+      backtrackStack.pop();
+
     } else {
-      unsigned int pokeLocationCount = 0;
-      // couldn't find any position to move to, need to set cursor to a different usable location
+      // stack empty; find a location to poke a hole in and poke it
+      uint16_t pokeLocationCount = 0;
+
+      // check entire maze for boundaries between traversed and non-traversed space
       for (coord_t proposedY = 0; proposedY < Maze::HEIGHT; proposedY++) {
         for (coord_t proposedX = 0; proposedX < Maze::WIDTH; proposedX++) {
           const bool ownState = maze.GetTileAttr(proposedX, proposedY, TileAttr::FlagGen);
-
           // if tile to the left is of a different traversal state (is traversed boundary)
-          if (proposedX > 0 && (maze.GetTileAttr(proposedX - 1, proposedY, TileAttr::FlagGen) != ownState)) {
-            // if found boundary AND can get to it, just continue working from here
-            if (maze.GetTileAttr(proposedX, proposedY, TileAttr::Left) == false) {
-              x = proposedX, y = proposedY;
-              goto ForceValidMazeLoop;
-            }
+          if (proposedX > 0 && (maze.GetTileAttr(proposedX - 1, proposedY, TileAttr::FlagGen) != ownState))
             pokeLocationCount++;
-          }
-
           // if tile up is of a different traversal state (is traversed boundary)
-          if (proposedY > 0 && (maze.GetTileAttr(proposedX, proposedY - 1, TileAttr::FlagGen) != ownState)) {
-            // if found boundary AND can get to it, just continue working from here
-            if (maze.GetTileAttr(proposedX, proposedY, TileAttr::Up) == false) {
-              x = proposedX, y = proposedY;
-              goto ForceValidMazeLoop;
-            }
+          if (proposedY > 0 && (maze.GetTileAttr(proposedX, proposedY - 1, TileAttr::FlagGen) != ownState))
             pokeLocationCount++;
-          }
         }
       }
-      // finished scanning maze; there are no locations the cursor can be placed for it to continue scanning
 
-      // if there are no walls that can be poked through to increase reachable area, maze is finished
-      if (pokeLocationCount == 0) {
-        return;
-      }
+      // if there are no boundaries, entire maze has been traversed and function can return
+      if (pokeLocationCount == 0) { return; }
 
-      // if execution gets here, need to poke a hole.
-      // choose a random poke location to poke a hole through. pokeLocationCount is now used as an index
+      // choose a random indexed boundary to poke, then go back through the boundary finding process to find the exact place to poke
       pokeLocationCount = (int) prng.Rand(1, pokeLocationCount);
-
-      for (coord_t proposedY = 0; proposedY < Maze::HEIGHT; proposedY++) {
-        for (coord_t proposedX = 0; proposedX < Maze::WIDTH; proposedX++) {
-          // pretty much a copy of the previous code which FINDS poke locations, but now with the goal of actually doing the poking
+      for (coord_t proposedY = 0; proposedY < Maze::HEIGHT && pokeLocationCount > 0; proposedY++) {
+        for (coord_t proposedX = 0; proposedX < Maze::WIDTH && pokeLocationCount > 0; proposedX++) {
           const bool ownState = maze.GetTileAttr(proposedX, proposedY, TileAttr::FlagGen);
-
+          // if tile to the left is of a different traversal state (is traversed boundary)
           if (proposedX > 0 && (maze.GetTileAttr(proposedX - 1, proposedY, TileAttr::FlagGen) != ownState)) {
             pokeLocationCount--;
-            // found the target poke location, poke and loop
             if (pokeLocationCount == 0) {
               maze.SetAttr(proposedX, proposedY, TileAttr::Left, false);
               x = proposedX, y = proposedY;
-              goto ForceValidMazeLoop; // continue OUTSIDE loop
+              break;
             }
           }
-
           // if tile up is of a different traversal state (is traversed boundary)
           if (proposedY > 0 && (maze.GetTileAttr(proposedX, proposedY - 1, TileAttr::FlagGen) != ownState)) {
             pokeLocationCount--;
-            // found the target poke location, poke and loop
             if (pokeLocationCount == 0) {
               maze.SetAttr(proposedX, proposedY, TileAttr::Up, false);
               x = proposedX, y = proposedY;
-              goto ForceValidMazeLoop; // continue processing
+              break;
             }
           }
         }
       }
+      // end boundary poking
     }
-    // done poking a hole in the maze to expand the reachable area
   }
+  // end overall while loop
 }
 
 void WatchFaceMaze::DrawMaze() {

@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <numbers>
+#include <stack>
 #include "FreeRTOS.h"
 #include "task.h"  // configTICK_RATE_HZ
 #include "sys/unistd.h"
@@ -328,7 +329,7 @@ namespace Pinetime {
         // doubleDoubleClickDelay is the aforementioned 'certain timespan' to get to the secret input. In ticks.
         // screen. currentCode is the current swipe sequence that's being inputted.
         Displaying currentState = Displaying::WatchFace;
-        uint32_t lastLongClickTime;
+        TickType_t lastLongClickTime;
         constexpr static uint32_t doubleDoubleClickDelay = pdMS_TO_TICKS(2500);
         uint8_t currentCode[8];
 
