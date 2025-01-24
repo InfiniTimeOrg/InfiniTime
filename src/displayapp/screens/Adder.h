@@ -86,7 +86,7 @@ namespace Pinetime {
         void CleanUp();
 
         MoveConsequence CheckMove() const;
-        
+
         static constexpr const char DigitFont[10][8] = {
           // Font for digits 0-9
           {0x3E, 0x63, 0x73, 0x7B, 0x6F, 0x67, 0x3E, 0x00}, // 0
