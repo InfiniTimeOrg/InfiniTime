@@ -7,6 +7,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "utility/DirtyValue.h"
 #include "displayapp/apps/Apps.h"
+#include "displayapp/fonts/FastFont.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -48,8 +49,8 @@ namespace Pinetime {
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
 
-        lv_font_t* fontLarge = nullptr;
-        lv_font_t* fontSmall = nullptr;
+        Components::FastFont::Font fontLarge = nullptr;
+        Components::FastFont::Font fontSmall = nullptr;
 
         lv_task_t* taskRefresh;
       };

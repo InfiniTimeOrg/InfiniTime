@@ -481,6 +481,7 @@ list(APPEND SOURCE_FILES
         FreeRTOS/port_cmsis.c
 
         displayapp/LittleVgl.cpp
+        displayapp/fonts/FastFont.cpp
         displayapp/InfiniTimeTheme.cpp
 
         systemtask/SystemTask.cpp
@@ -668,6 +669,7 @@ set(INCLUDE_FILES
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
         displayapp/LittleVgl.h
+        displayapp/fonts/FastFont.h
         displayapp/InfiniTimeTheme.h
         systemtask/SystemTask.h
         systemtask/SystemMonitor.h
@@ -1144,5 +1146,13 @@ endif()
 
 if(BUILD_RESOURCES)
   add_subdirectory(resources)
+  target_compile_options(compiled_fonts PUBLIC
+        ${COMMON_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
+        )
+  set_property(TARGET compiled_fonts PROPERTY INTERPROCEDURAL_OPTIMIZATION FALSE)
 endif()
 
