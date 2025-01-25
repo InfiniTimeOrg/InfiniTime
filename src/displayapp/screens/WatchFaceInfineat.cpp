@@ -9,6 +9,7 @@
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motion/MotionController.h"
+#include "displayapp/fonts/FastFont.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -133,16 +134,8 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
     notificationManager {notificationManager},
     settingsController {settingsController},
     motionController {motionController} {
-  lfs_file f = {};
-  if (filesystem.FileOpen(&f, "/fonts/teko.bin", LFS_O_RDONLY) >= 0) {
-    filesystem.FileClose(&f);
-    font_teko = lv_font_load("F:/fonts/teko.bin");
-  }
-
-  if (filesystem.FileOpen(&f, "/fonts/bebas.bin", LFS_O_RDONLY) >= 0) {
-    filesystem.FileClose(&f);
-    font_bebas = lv_font_load("F:/fonts/bebas.bin");
-  }
+  font_teko = Components::FastFont::LoadFont(filesystem, "/fastfonts/teko.bin");
+  font_bebas = Components::FastFont::LoadFont(filesystem, "/fastfonts/bebas.bin");
 
   // Side Cover
   static constexpr lv_point_t linePoints[nLines][2] = {{{30, 25}, {68, -8}},
@@ -304,10 +297,10 @@ WatchFaceInfineat::~WatchFaceInfineat() {
   lv_task_del(taskRefresh);
 
   if (font_bebas != nullptr) {
-    lv_font_free(font_bebas);
+    free(font_bebas);
   }
   if (font_teko != nullptr) {
-    lv_font_free(font_teko);
+    free(font_teko);
   }
 
   lv_obj_clean(lv_scr_act());
@@ -493,12 +486,12 @@ void WatchFaceInfineat::ToggleBatteryIndicatorColor(bool showSideCover) {
 bool WatchFaceInfineat::IsAvailable(Pinetime::Controllers::FS& filesystem) {
   lfs_file file = {};
 
-  if (filesystem.FileOpen(&file, "/fonts/teko.bin", LFS_O_RDONLY) < 0) {
+  if (filesystem.FileOpen(&file, "/fastfonts/teko.bin", LFS_O_RDONLY) < 0) {
     return false;
   }
 
   filesystem.FileClose(&file);
-  if (filesystem.FileOpen(&file, "/fonts/bebas.bin", LFS_O_RDONLY) < 0) {
+  if (filesystem.FileOpen(&file, "/fastfonts/bebas.bin", LFS_O_RDONLY) < 0) {
     return false;
   }
 
