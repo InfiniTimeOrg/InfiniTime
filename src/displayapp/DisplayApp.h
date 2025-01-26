@@ -121,7 +121,7 @@ namespace Pinetime {
 
       TouchEvents GetGesture();
       static void Process(void* instance);
-      void InitHw();
+      void Init();
       void Refresh();
       void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
