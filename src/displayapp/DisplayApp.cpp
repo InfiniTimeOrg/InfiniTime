@@ -574,6 +574,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                notificationManager,
                                                                systemTask->nimble().alertService(),
                                                                motorController,
+                                                               settingsController,
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Preview);
       break;
