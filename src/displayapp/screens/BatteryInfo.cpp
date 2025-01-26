@@ -2,6 +2,7 @@
 #include "displayapp/DisplayApp.h"
 #include "components/battery/BatteryController.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -10,33 +11,48 @@ BatteryInfo::BatteryInfo(const Pinetime::Controllers::Battery& batteryController
   batteryPercent = batteryController.PercentRemaining();
   batteryVoltage = batteryController.Voltage();
 
-  charging_bar = lv_bar_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(charging_bar, 200, 15);
-  lv_bar_set_range(charging_bar, 0, 100);
-  lv_obj_align(charging_bar, nullptr, LV_ALIGN_CENTER, 0, 10);
-  lv_bar_set_anim_time(charging_bar, 1000);
-  lv_obj_set_style_local_radius(charging_bar, LV_BAR_PART_BG, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_BG, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_obj_set_style_local_bg_opa(charging_bar, LV_BAR_PART_BG, LV_STATE_DEFAULT, LV_OPA_100);
-  lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
-  lv_bar_set_value(charging_bar, batteryPercent, LV_ANIM_ON);
+  charging_arc = lv_arc_create(lv_scr_act(), nullptr);
+  lv_arc_set_rotation(charging_arc, 270);
+  lv_arc_set_bg_angles(charging_arc, 0, 360);
+  lv_arc_set_adjustable(charging_arc, false);
+  lv_obj_set_size(charging_arc, 180, 180);
+  lv_obj_align(charging_arc, nullptr, LV_ALIGN_CENTER, 0, -30);
+  lv_arc_set_value(charging_arc, batteryPercent);
+  lv_obj_set_style_local_bg_opa(charging_arc, LV_ARC_PART_BG, LV_STATE_DEFAULT, LV_OPA_0);
+  lv_obj_set_style_local_line_color(charging_arc, LV_ARC_PART_BG, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_border_width(charging_arc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 2);
+  lv_obj_set_style_local_radius(charging_arc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_line_color(charging_arc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_LIME);
+
+  /*
+  charging_bolt_bg = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(charging_bolt_bg, 76, 76);
+  lv_obj_align(charging_bolt_bg, nullptr, LV_ALIGN_CENTER, 0, -20);
+  lv_obj_add_style(charging_bolt_bg, LV_STATE_DEFAULT, &btn_style);
+
+  charging_bolt = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(charging_bolt, Symbols::bolt);
+  lv_obj_set_style_local_text_color(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  // lv_obj_set_style_local_text_font(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_FONT_MONTSERRAT_48);
+  lv_obj_align(charging_bolt, nullptr, LV_ALIGN_CENTER, 0, -20);
+  */
 
   status = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(status, "Reading Battery status");
   lv_label_set_align(status, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(status, charging_bar, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
+  lv_obj_align(status, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -17);
 
   percent = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(percent, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_font(percent, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_label_set_text_fmt(percent, "%02i%%", batteryPercent);
   lv_label_set_align(percent, LV_LABEL_ALIGN_LEFT);
-  lv_obj_align(percent, nullptr, LV_ALIGN_CENTER, 0, -60);
+  lv_obj_align(percent, charging_arc, LV_ALIGN_CENTER, 0, 0);
 
   voltage = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(voltage, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
   lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltage / 1000, batteryVoltage % 1000 / 10);
   lv_label_set_align(voltage, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(voltage, nullptr, LV_ALIGN_CENTER, 0, 95);
+  lv_obj_align(voltage, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -7);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, 5000, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -50,25 +66,28 @@ BatteryInfo::~BatteryInfo() {
 void BatteryInfo::Refresh() {
 
   batteryPercent = batteryController.PercentRemaining();
-  batteryVoltage = batteryController.Voltage();
 
   if (batteryController.IsCharging()) {
-    lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
+    lv_obj_set_style_local_line_color(charging_arc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_LIME);
+    //lv_obj_set_style_local_text_color(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
     lv_label_set_text_static(status, "Charging");
   } else if (batteryPercent == 100) {
-    lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_BLUE);
+    lv_obj_set_style_local_line_color(charging_arc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_BLUE);
+    //lv_obj_set_style_local_text_color(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLUE);
     lv_label_set_text_static(status, "Fully charged");
   } else if (batteryPercent < 10) {
-    lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+    lv_obj_set_style_local_line_color(charging_arc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
+    //lv_obj_set_style_local_text_color(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
     lv_label_set_text_static(status, "Battery low");
   } else {
-    lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, Colors::highlight);
+    lv_obj_set_style_local_line_color(charging_arc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+    //lv_obj_set_style_local_text_color(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
     lv_label_set_text_static(status, "Discharging");
   }
 
   lv_label_set_text_fmt(percent, "%02i%%", batteryPercent);
 
-  lv_obj_align(status, charging_bar, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
+  lv_obj_align(status, voltage, LV_ALIGN_IN_BOTTOM_MID, 0, -27);
   lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltage / 1000, batteryVoltage % 1000 / 10);
-  lv_bar_set_value(charging_bar, batteryPercent, LV_ANIM_ON);
+  lv_arc_set_value(charging_arc, batteryPercent);
 }

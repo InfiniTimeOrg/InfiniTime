@@ -24,8 +24,12 @@ namespace Pinetime {
 
         lv_obj_t* voltage;
         lv_obj_t* percent;
-        lv_obj_t* charging_bar;
+        lv_obj_t* charging_arc;
+        lv_obj_t* animArc;
+        lv_obj_t* charging_bolt;
+        lv_obj_t* charging_bolt_bg;
         lv_obj_t* status;
+        lv_style_t btn_style;
 
         lv_task_t* taskRefresh;
 
