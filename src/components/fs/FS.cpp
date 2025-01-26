@@ -25,8 +25,9 @@ FS::FS(Pinetime::Drivers::SpiNorFlash& driver)
       .cache_size = 16,
       .lookahead_size = 16,
 
-      .name_max = 50,
+      .name_max = LFS_NAME_MAX, // Note: LFS_NAME_MAX is defined in src/CMakeLists.txt
       .attr_max = 50,
+      .metadata_max = 256,
     } {
 }
 
