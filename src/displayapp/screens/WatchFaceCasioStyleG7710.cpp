@@ -420,17 +420,17 @@ void WatchFaceCasioStyleG7710::UpdateWeatherPosition() {
       lv_obj_set_hidden(label_week_number, true);
 
       lv_obj_set_hidden(label_temperature, false);
-      lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 35, 15);
+      lv_obj_align(weatherIcon, label_day_of_week, LV_ALIGN_CENTER, 0, -50);
       lv_label_set_align(label_temperature, LV_LABEL_ALIGN_CENTER);
-      lv_obj_align(label_temperature, nullptr, LV_ALIGN_IN_TOP_LEFT, 20, 40);
+      lv_obj_align(label_temperature, label_day_of_week, LV_ALIGN_CENTER, 0, -27);
       break;
     case Controllers::Settings::CasioWeatherSegment::DayOfWeek:
       lv_obj_set_hidden(label_day_of_week, true);
 
       lv_obj_set_hidden(label_temperature, false);
-      lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 35, 55);
+      lv_obj_align(weatherIcon, label_day_of_week, LV_ALIGN_CENTER, 0, -12);
       lv_label_set_align(label_temperature, LV_LABEL_ALIGN_CENTER);
-      lv_obj_align(label_temperature, nullptr, LV_ALIGN_IN_TOP_LEFT, 20, 80);
+      lv_obj_align(label_temperature, label_day_of_week, LV_ALIGN_CENTER, 0, 11);
       break;
   }
 
