@@ -16,10 +16,8 @@ namespace Pinetime {
 
       class SettingNotifVibration : public Screen {
       public:
-        explicit SettingNotifVibration(
-          Pinetime::Controllers::Settings& settingsController,
-          Pinetime::Controllers::MotorController& motorController
-        );
+        explicit SettingNotifVibration(Pinetime::Controllers::Settings& settingsController,
+                                       Pinetime::Controllers::MotorController& motorController);
         ~SettingNotifVibration() override;
 
       private:
