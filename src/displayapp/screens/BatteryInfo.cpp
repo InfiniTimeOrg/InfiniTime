@@ -24,19 +24,6 @@ BatteryInfo::BatteryInfo(const Pinetime::Controllers::Battery& batteryController
   lv_obj_set_style_local_radius(charging_arc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_line_color(charging_arc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_LIME);
 
-  /*
-  charging_bolt_bg = lv_btn_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(charging_bolt_bg, 76, 76);
-  lv_obj_align(charging_bolt_bg, nullptr, LV_ALIGN_CENTER, 0, -20);
-  lv_obj_add_style(charging_bolt_bg, LV_STATE_DEFAULT, &btn_style);
-
-  charging_bolt = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(charging_bolt, Symbols::bolt);
-  lv_obj_set_style_local_text_color(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  // lv_obj_set_style_local_text_font(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_FONT_MONTSERRAT_48);
-  lv_obj_align(charging_bolt, nullptr, LV_ALIGN_CENTER, 0, -20);
-  */
-
   status = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(status, "Reading Battery status");
   lv_label_set_align(status, LV_LABEL_ALIGN_CENTER);
@@ -69,19 +56,15 @@ void BatteryInfo::Refresh() {
 
   if (batteryController.IsCharging()) {
     lv_obj_set_style_local_line_color(charging_arc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_LIME);
-    //lv_obj_set_style_local_text_color(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
     lv_label_set_text_static(status, "Charging");
   } else if (batteryPercent == 100) {
     lv_obj_set_style_local_line_color(charging_arc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_BLUE);
-    //lv_obj_set_style_local_text_color(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLUE);
     lv_label_set_text_static(status, "Fully charged");
   } else if (batteryPercent < 10) {
     lv_obj_set_style_local_line_color(charging_arc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
-    //lv_obj_set_style_local_text_color(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
     lv_label_set_text_static(status, "Battery low");
   } else {
     lv_obj_set_style_local_line_color(charging_arc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_GREEN);
-    //lv_obj_set_style_local_text_color(charging_bolt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
     lv_label_set_text_static(status, "Discharging");
   }
 
