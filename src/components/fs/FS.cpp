@@ -44,6 +44,8 @@ void FS::Init() {
       return;
     }
   }
+  // Clean filesystem on boot
+  lfs_fs_gc(&lfs);
 
 #ifndef PINETIME_IS_RECOVERY
   VerifyResource();
