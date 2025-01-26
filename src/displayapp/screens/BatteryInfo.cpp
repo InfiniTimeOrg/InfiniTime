@@ -2,7 +2,6 @@
 #include "displayapp/DisplayApp.h"
 #include "components/battery/BatteryController.h"
 #include "displayapp/InfiniTimeTheme.h"
-#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
