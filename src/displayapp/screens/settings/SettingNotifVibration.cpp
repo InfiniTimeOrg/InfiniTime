@@ -1,4 +1,3 @@
-
 #include "displayapp/screens/settings/SettingNotifVibration.h"
 
 #include <lvgl/lvgl.h>
