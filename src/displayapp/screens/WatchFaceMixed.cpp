@@ -61,9 +61,9 @@ WatchFaceMixed::WatchFaceMixed(Controllers::DateTime& dateTimeController,
     weatherService {weather},
     statusIcons {batteryController, bleController, alarmController} {
 
-  sHour = 0;
-  sMinute = 0;
-  sSecond = 0;
+  sHour = 99;
+  sMinute = 99;
+  sSecond = 99;
 
   statusIcons.Create();
 
