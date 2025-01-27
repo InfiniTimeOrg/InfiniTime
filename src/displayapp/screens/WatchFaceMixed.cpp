@@ -97,13 +97,13 @@ WatchFaceMixed::WatchFaceMixed(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_bg_opa(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
   lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 20);
   lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
-  lv_obj_set_style_local_scale_end_color(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0000A0));
+  lv_obj_set_style_local_scale_end_color(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xE5E5E2));
 
   twelve = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_align(twelve, LV_LABEL_ALIGN_CENTER);
   lv_label_set_text_static(twelve, "12");
   lv_obj_set_pos(twelve, 110, 10);
-  lv_obj_set_style_local_text_color(twelve, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  lv_obj_set_style_local_text_color(twelve, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFD700));
 
   // Hands
 
@@ -115,31 +115,31 @@ WatchFaceMixed::WatchFaceMixed(Controllers::DateTime& dateTimeController,
 
   lv_style_init(&second_line_style);
   lv_style_set_line_width(&second_line_style, LV_STATE_DEFAULT, 3);
-  lv_style_set_line_color(&second_line_style, LV_STATE_DEFAULT, lv_color_hex(0xC00000));
+  lv_style_set_line_color(&second_line_style, LV_STATE_DEFAULT, LV_COLOR_RED);
   lv_style_set_line_rounded(&second_line_style, LV_STATE_DEFAULT, true);
   lv_obj_add_style(second_body, LV_LINE_PART_MAIN, &second_line_style);
 
   lv_style_init(&minute_line_style);
   lv_style_set_line_width(&minute_line_style, LV_STATE_DEFAULT, 7);
-  lv_style_set_line_color(&minute_line_style, LV_STATE_DEFAULT, LV_COLOR_NAVY);
+  lv_style_set_line_color(&minute_line_style, LV_STATE_DEFAULT, lv_color_hex(0xB87333));
   lv_style_set_line_rounded(&minute_line_style, LV_STATE_DEFAULT, true);
   lv_obj_add_style(minute_body, LV_LINE_PART_MAIN, &minute_line_style);
 
   lv_style_init(&minute_line_style_trace);
   lv_style_set_line_width(&minute_line_style_trace, LV_STATE_DEFAULT, 3);
-  lv_style_set_line_color(&minute_line_style_trace, LV_STATE_DEFAULT, LV_COLOR_NAVY);
+  lv_style_set_line_color(&minute_line_style_trace, LV_STATE_DEFAULT, lv_color_hex(0xB87333));
   lv_style_set_line_rounded(&minute_line_style_trace, LV_STATE_DEFAULT, false);
   lv_obj_add_style(minute_body_trace, LV_LINE_PART_MAIN, &minute_line_style_trace);
 
   lv_style_init(&hour_line_style);
   lv_style_set_line_width(&hour_line_style, LV_STATE_DEFAULT, 7);
-  lv_style_set_line_color(&hour_line_style, LV_STATE_DEFAULT, LV_COLOR_NAVY);
+  lv_style_set_line_color(&hour_line_style, LV_STATE_DEFAULT, lv_color_hex(0xB87333));
   lv_style_set_line_rounded(&hour_line_style, LV_STATE_DEFAULT, true);
   lv_obj_add_style(hour_body, LV_LINE_PART_MAIN, &hour_line_style);
 
   lv_style_init(&hour_line_style_trace);
   lv_style_set_line_width(&hour_line_style_trace, LV_STATE_DEFAULT, 3);
-  lv_style_set_line_color(&hour_line_style_trace, LV_STATE_DEFAULT, LV_COLOR_NAVY);
+  lv_style_set_line_color(&hour_line_style_trace, LV_STATE_DEFAULT, lv_color_hex(0xB87333));
   lv_style_set_line_rounded(&hour_line_style_trace, LV_STATE_DEFAULT, false);
   lv_obj_add_style(hour_body_trace, LV_LINE_PART_MAIN, &hour_line_style_trace);
 
