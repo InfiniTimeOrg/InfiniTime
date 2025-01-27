@@ -358,7 +358,7 @@ void WatchFaceMixed::UpdateWeather() {
 void WatchFaceMixed::Refresh() {
   statusIcons.Update();
 
-  notificationState = notificationManager.AreNewNotificationsAvailable();
+  notificationState = notificationManager.NbNotifications() > 0;
   if (notificationState.IsUpdated()) {
     lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
