@@ -22,7 +22,7 @@
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
 #include <lvgl/lvgl.h>
 #include <cstdio>
-#include <displayapp/Colors.h>
+#include "displayapp/Colors.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/NotificationIcon.h"
@@ -543,11 +543,10 @@ void WatchFacePineTimeStyle::Refresh() {
   if (currentWeather.IsUpdated()) {
     auto optCurrentWeather = currentWeather.Get();
     if (optCurrentWeather) {
-      int16_t temp = optCurrentWeather->temperature;
+      int16_t temp = optCurrentWeather->temperature.Celsius();
       if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
-        temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
+        temp = optCurrentWeather->temperature.Fahrenheit();
       }
-      temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
       lv_label_set_text_fmt(temperature, "%d°", temp);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
     } else {

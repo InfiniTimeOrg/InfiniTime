@@ -2,6 +2,7 @@
 
 #include <lvgl/lvgl.h>
 #include <cstdio>
+
 #include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/WeatherSymbols.h"
@@ -18,6 +19,7 @@ using namespace Pinetime::Applications::Screens;
 WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    const Controllers::Battery& batteryController,
                                    const Controllers::Ble& bleController,
+                                   const Controllers::AlarmController& alarmController,
                                    Controllers::NotificationManager& notificationManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
@@ -30,7 +32,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     heartRateController {heartRateController},
     motionController {motionController},
     weatherService {weatherService},
-    statusIcons(batteryController, bleController) {
+    statusIcons(batteryController, bleController, alarmController) {
 
   statusIcons.Create();
 
@@ -174,13 +176,12 @@ void WatchFaceDigital::Refresh() {
   if (currentWeather.IsUpdated()) {
     auto optCurrentWeather = currentWeather.Get();
     if (optCurrentWeather) {
-      int16_t temp = optCurrentWeather->temperature;
+      int16_t temp = optCurrentWeather->temperature.Celsius();
       char tempUnit = 'C';
       if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
-        temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
+        temp = optCurrentWeather->temperature.Fahrenheit();
         tempUnit = 'F';
       }
-      temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
       lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
     } else {
