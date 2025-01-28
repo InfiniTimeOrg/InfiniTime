@@ -65,11 +65,13 @@ jobs:
           path: ./build/output/pinetime-mcuboot-app-image-*.bin
       - name: Upload standalone ELF artifacts
         uses: actions/upload-artifact@v4
+        id: upload-firmware
         with:
           name: InfiniTime image ${{ env.REF_NAME }}
           path: ./build/output/src/pinetime-app-*.out
       - name: Upload resources artifacts
         uses: actions/upload-artifact@v4
+        id: upload-resources
         with:
           name: InfiniTime resources ${{ env.REF_NAME }}
           path: ./build/output/infinitime-resources-*.zip
