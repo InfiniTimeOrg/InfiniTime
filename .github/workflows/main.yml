@@ -22,6 +22,8 @@ jobs:
       text_size: ${{ steps.output-sizes.outputs.text_size }}
       data_size: ${{ steps.output-sizes.outputs.data_size }}
       bss_size: ${{ steps.output-sizes.outputs.bss_size }}
+      firmware_artifact: ${{ steps.upload-firmware.outputs.artifact-id }}
+      resources_artifact: ${{ steps.upload-resources.outputs.artifact-id }}
     env:
       # InfiniTime sources are downloaded to the current directory.
       # Override SOURCES_DIR in build.sh
@@ -63,11 +65,13 @@ jobs:
           path: ./build/output/pinetime-mcuboot-app-image-*.bin
       - name: Upload standalone ELF artifacts
         uses: actions/upload-artifact@v4
+        id: upload-firmware
         with:
           name: InfiniTime image ${{ env.REF_NAME }}
           path: ./build/output/src/pinetime-app-*.out
       - name: Upload resources artifacts
         uses: actions/upload-artifact@v4
+        id: upload-resources
         with:
           name: InfiniTime resources ${{ env.REF_NAME }}
           path: ./build/output/infinitime-resources-*.zip
@@ -205,6 +209,8 @@ jobs:
         | text    | ${{ needs.build-firmware.outputs.text_size }}B | ${{ steps.output-sizes-diff.outputs.text_diff }}B |
         | data    | ${{ needs.build-firmware.outputs.data_size }}B | ${{ steps.output-sizes-diff.outputs.data_diff }}B |
         | bss     | ${{ needs.build-firmware.outputs.bss_size }}B  | ${{ steps.output-sizes-diff.outputs.bss_diff }}B  |
+
+        [Run in InfiniEmu](https://infiniemu.pipe01.net/?firmware=artifact://${{ github.repository }}/${{ needs.build-firmware.outputs.firmware_artifact }}&resources=artifact://${{ github.repository }}/${{ needs.build-firmware.outputs.resources_artifact }})
         EOF
 
     - name: Upload comment
