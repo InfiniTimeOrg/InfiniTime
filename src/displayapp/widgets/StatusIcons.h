@@ -40,12 +40,14 @@ namespace Pinetime {
         Utility::DirtyValue<bool> bleRadioEnabled {};
         Utility::DirtyValue<bool> alarmEnabled {};
 
+        lv_obj_t* container;
+        lv_obj_t* timerContainer;
         lv_obj_t* timerIcon;
         lv_obj_t* timeRemaining;
         lv_obj_t* bleIcon;
-        lv_obj_t* alarmIcon;
         lv_obj_t* batteryPlug;
-        lv_obj_t* container;
+        lv_obj_t* soloTimerIcon;
+        lv_obj_t* alarmIcon;
       };
     }
   }
