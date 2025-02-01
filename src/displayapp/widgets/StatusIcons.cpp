@@ -78,22 +78,33 @@ void StatusIcons::Update() {
 
   if (timer.IsRunning()) {
     uint8_t activeIconCounter = 0;
+    lv_obj_t* child = lv_obj_get_child(container, NULL);
 
-    if (!lv_obj_get_hidden(bleIcon)) {
-      activeIconCounter++;
+    while (child != NULL) {
+      if (!lv_obj_get_hidden(child)) {
+        activeIconCounter++;
+      }
+      child = lv_obj_get_child(container, child);
     }
-    if (!lv_obj_get_hidden(batteryPlug)) {
-      activeIconCounter++;
+
+    // Subtract batteryIcon as it doesn't count (always active)
+    activeIconCounter--;
+
+    // Subtract individually because switching pages initially sets all icons
+    // to visible. This causes soloTimerIcon to briefly appear before the
+    // timerContainer is set to visible.
+    if (!lv_obj_get_hidden(timerContainer)) {
+      activeIconCounter--;
     }
-    if (!lv_obj_get_hidden(alarmIcon)) {
-      activeIconCounter++;
+    if (!lv_obj_get_hidden(soloTimerIcon)) {
+      activeIconCounter--;
     }
 
     // more than 2 icons (plus the batteryIcon) make the timerContainer collide
     // with other text, so replace it with a timer icon
     if (activeIconCounter > 2) {
-      lv_obj_set_hidden(soloTimerIcon, false);
       lv_obj_set_hidden(timerContainer, true);
+      lv_obj_set_hidden(soloTimerIcon, false);
     } else {
       auto secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
       uint8_t minutes = secondsRemaining.count() / 60;
