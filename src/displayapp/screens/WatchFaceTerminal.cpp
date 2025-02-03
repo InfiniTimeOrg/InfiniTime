@@ -38,7 +38,7 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
 
   connectState = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(connectState, true);
-  lv_obj_align(connectState, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 40);
+  lv_obj_align(connectState, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_LEFT_MID, 0, -100);
@@ -69,7 +69,7 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
 
   weather = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(weather, true);
-  lv_obj_align(weather, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
+  lv_obj_align(weather, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 40);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -175,7 +175,7 @@ void WatchFaceTerminal::Refresh() {
                             // Change to GetSimpleCondition with pull request #2134 (Add shorter/simpler weather condition options)
                             Symbols::GetCondition(optCurrentWeather->iconId));
     } else {
-      lv_label_set_text(weather, "[WTHR]#ffdd00 ---°");
+      lv_label_set_text(weather, "[WTHR]#ffdd00 ---");
     }
   }
 }
