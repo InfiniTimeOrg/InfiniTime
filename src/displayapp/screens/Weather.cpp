@@ -35,8 +35,10 @@ namespace {
   }
 }
 
-Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleWeatherService& weatherService)
-  : settingsController {settingsController}, weatherService {weatherService} {
+Weather::Weather(Controllers::Settings& settingsController,
+                 Controllers::SimpleWeatherService& weatherService,
+                 Controllers::DateTime& dateTimeController)
+  : settingsController {settingsController}, weatherService {weatherService}, dateTimeController {dateTimeController} {
 
   temperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
@@ -44,6 +46,11 @@ Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleW
   lv_label_set_text(temperature, "---");
   lv_obj_align(temperature, nullptr, LV_ALIGN_CENTER, 0, -30);
   lv_obj_set_auto_realign(temperature, true);
+
+  lastUpdated = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(lastUpdated, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
+  lv_label_set_text_fmt(lastUpdated, "");
+  lv_obj_align(lastUpdated, nullptr, LV_ALIGN_CENTER, -40, 0);
 
   minTemperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(minTemperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
@@ -137,6 +144,18 @@ void Weather::Refresh() {
       lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
       lv_label_set_text_fmt(minTemperature, "%d°", minTemp);
       lv_label_set_text_fmt(maxTemperature, "%d°", maxTemp);
+
+      int64_t secondsSinceEpoch = dateTimeController.CurrentDateTime().time_since_epoch().count() / 1000000000;
+      int64_t secondsSinceWeatherUpdate = secondsSinceEpoch - optCurrentWeather->timestamp;
+      if (secondsSinceWeatherUpdate < 0) {
+        lv_label_set_text_fmt(lastUpdated, "0s old", secondsSinceWeatherUpdate);
+      } else if (secondsSinceWeatherUpdate < 60) {
+        lv_label_set_text_fmt(lastUpdated, "%ds old", secondsSinceWeatherUpdate);
+      } else if (secondsSinceWeatherUpdate > 59 && secondsSinceWeatherUpdate < 3600) {
+        lv_label_set_text_fmt(lastUpdated, "%dm old", secondsSinceWeatherUpdate / 60);
+      } else if (secondsSinceWeatherUpdate > 3599) {
+        lv_label_set_text_fmt(lastUpdated, "%dh old", secondsSinceWeatherUpdate / 3600);
+      }
     } else {
       lv_label_set_text(icon, "");
       lv_label_set_text(condition, "");
