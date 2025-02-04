@@ -111,7 +111,6 @@ uint32_t AlarmController::SecondsToAlarm() const {
 
 void AlarmController::DisableAlarm() {
   xTimerStop(alarmTimer, 0);
-  isAlerting = false;
   if (alarm.isEnabled) {
     alarm.isEnabled = false;
     alarmChanged = true;
