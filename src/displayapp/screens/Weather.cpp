@@ -44,13 +44,13 @@ Weather::Weather(Controllers::Settings& settingsController,
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_text_font(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_label_set_text(temperature, "---");
-  lv_obj_align(temperature, nullptr, LV_ALIGN_CENTER, 0, -30);
+  lv_obj_align(temperature, nullptr, LV_ALIGN_CENTER, 0, -32);
   lv_obj_set_auto_realign(temperature, true);
 
   lastUpdated = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lastUpdated, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
   lv_label_set_text_fmt(lastUpdated, "");
-  lv_obj_align(lastUpdated, nullptr, LV_ALIGN_CENTER, -40, 0);
+  lv_obj_align(lastUpdated, nullptr, LV_ALIGN_CENTER, -40, -1);
 
   minTemperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(minTemperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
@@ -148,13 +148,13 @@ void Weather::Refresh() {
       int64_t secondsSinceEpoch = dateTimeController.CurrentDateTime().time_since_epoch().count() / 1000000000;
       int64_t secondsSinceWeatherUpdate = secondsSinceEpoch - optCurrentWeather->timestamp;
       if (secondsSinceWeatherUpdate < 0) {
-        lv_label_set_text_fmt(lastUpdated, "0s old", secondsSinceWeatherUpdate);
+        lv_label_set_text_fmt(lastUpdated, "0s ago", secondsSinceWeatherUpdate);
       } else if (secondsSinceWeatherUpdate < 60) {
-        lv_label_set_text_fmt(lastUpdated, "%ds old", secondsSinceWeatherUpdate);
+        lv_label_set_text_fmt(lastUpdated, "%ds ago", secondsSinceWeatherUpdate);
       } else if (secondsSinceWeatherUpdate > 59 && secondsSinceWeatherUpdate < 3600) {
-        lv_label_set_text_fmt(lastUpdated, "%dm old", secondsSinceWeatherUpdate / 60);
+        lv_label_set_text_fmt(lastUpdated, "%dm ago", secondsSinceWeatherUpdate / 60);
       } else if (secondsSinceWeatherUpdate > 3599) {
-        lv_label_set_text_fmt(lastUpdated, "%dh old", secondsSinceWeatherUpdate / 3600);
+        lv_label_set_text_fmt(lastUpdated, "%dh ago", secondsSinceWeatherUpdate / 3600);
       }
     } else {
       lv_label_set_text(icon, "");
