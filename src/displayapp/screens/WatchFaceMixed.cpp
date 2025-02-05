@@ -283,35 +283,23 @@ void WatchFaceMixed::UpdateClock() {
 }
 
 void WatchFaceMixed::UpdateDate() {
-  switch(settingsController.GetDateFormat()){
+  switch (settingsController.GetDateFormat()) {
     case Controllers::Settings::DateFormat::DDMMYYYY:
-      lv_label_set_text_fmt(label_date,
-        "%02d/%02d/%04d",
-        dateTimeController.Day(),
-        dateTimeController.Month(),
-        dateTimeController.Year());
+      lv_label_set_text_fmt(label_date, "%02d/%02d/%04d", dateTimeController.Day(), dateTimeController.Month(), dateTimeController.Year());
       break;
     case Controllers::Settings::DateFormat::MMDDYYYY:
-      lv_label_set_text_fmt(label_date,
-        "%02d/%02d/%04d",
-        dateTimeController.Month(),
-        dateTimeController.Day(),
-        dateTimeController.Year());
+      lv_label_set_text_fmt(label_date, "%02d/%02d/%04d", dateTimeController.Month(), dateTimeController.Day(), dateTimeController.Year());
       break;
     case Controllers::Settings::DateFormat::YYYYMMDD:
-      lv_label_set_text_fmt(label_date,
-        "%04d-%02d-%02d",
-        dateTimeController.Year(),
-        dateTimeController.Month(),
-        dateTimeController.Day());
+      lv_label_set_text_fmt(label_date, "%04d-%02d-%02d", dateTimeController.Year(), dateTimeController.Month(), dateTimeController.Day());
       break;
     case Controllers::Settings::DateFormat::DayDDMonthYYYY:
       lv_label_set_text_fmt(label_date,
-        "%s %02d %s %04d",
-        Controllers::DateTime::DayOfWeekShortToStringLow(dateTimeController.DayOfWeek()),
-        dateTimeController.Day(),
-        Controllers::DateTime::MonthShortToStringLow(dateTimeController.Month()),
-        dateTimeController.Year());
+                            "%s %02d %s %04d",
+                            Controllers::DateTime::DayOfWeekShortToStringLow(dateTimeController.DayOfWeek()),
+                            dateTimeController.Day(),
+                            Controllers::DateTime::MonthShortToStringLow(dateTimeController.Month()),
+                            dateTimeController.Year());
       break;
   }
   lv_obj_realign(label_date);
