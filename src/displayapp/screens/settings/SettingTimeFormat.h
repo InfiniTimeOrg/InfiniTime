@@ -10,8 +10,7 @@ namespace Pinetime {
     namespace Screens {
       class SettingTimeFormat : public Screen {
       public:
-        SettingTimeFormat(DisplayApp* app,
-                           Pinetime::Controllers::Settings& settingsController);
+        SettingTimeFormat(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingTimeFormat() override;
 
         bool OnTouchEvent(TouchEvents event) override;

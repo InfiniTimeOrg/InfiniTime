@@ -12,8 +12,7 @@ bool SettingTimeFormat::OnTouchEvent(Pinetime::Applications::TouchEvents event) 
   return screens.OnTouchEvent(event);
 }
 
-SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app,
-                                     Pinetime::Controllers::Settings& settingsController)
+SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : settingsController {settingsController},
     screens {app,
              0,
@@ -41,4 +40,3 @@ std::unique_ptr<Screen> SettingTimeFormat::screenClockFormat() {
 SettingTimeFormat::~SettingTimeFormat() {
   lv_obj_clean(lv_scr_act());
 }
-
