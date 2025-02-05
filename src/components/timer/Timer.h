@@ -19,8 +19,12 @@ namespace Pinetime {
 
       bool IsRunning();
 
+      uint8_t timerOverflowIntervals = 0;
+
+      TimerHandle_t timerHandle;
+
+      const uint32_t maxTimerMS = 3'600'000; // 1 hour
     private:
-      TimerHandle_t timer;
     };
   }
 }
