@@ -17,8 +17,8 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-Timer::Timer(Controllers::Timer& timerController, Controllers::MotorController& motorController)
-  : timer {timerController}, motorController {motorController} {
+Timer::Timer(Controllers::Timer& timerController, Controllers::MotorController& motorController, System::SystemTask& systemTask)
+  : timer {timerController}, motorController {motorController}, wakeLock(systemTask) {
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -108,9 +108,15 @@ void Timer::UpdateMask() {
 void Timer::Refresh() {
   if (isRinging) {
     DisplayTime();
-    // Stop buzzing after 10 seconds, but continue the counter
-    if (motorController.IsRinging() && displaySeconds.Get().count() > 10) {
-      motorController.StopRinging();
+    if (motorController.IsRinging()) {
+      if (displaySeconds.Get().count() > 10) {
+        // Stop buzzing after 10 seconds, but continue the counter
+        motorController.StopRinging();
+        wakeLock.Release();
+      } else {
+        // Keep the screen awake during the first 10 seconds
+        wakeLock.Lock();
+      }
     }
     // Reset timer after 1 minute
     if (displaySeconds.Get().count() > 60) {
