@@ -49,7 +49,7 @@ Weather::Weather(Controllers::Settings& settingsController,
 
   lastUpdated = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lastUpdated, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
-  lv_label_set_text_fmt(lastUpdated, "");
+  lv_label_set_text(lastUpdated, "");
 
   minTemperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(minTemperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
@@ -150,20 +150,30 @@ void Weather::Refresh() {
       int8_t minutesSinceWeatherUpdate = secondsSinceWeatherUpdate / 60;
       int8_t hoursSinceWeatherUpdate = secondsSinceWeatherUpdate / 3600;
 
-      lv_obj_align(lastUpdated, nullptr, LV_ALIGN_CENTER, -31, -1);
-      if ((secondsSinceWeatherUpdate > 9 && secondsSinceWeatherUpdate < 60) ||
-          (minutesSinceWeatherUpdate > 9 && minutesSinceWeatherUpdate < 60) || hoursSinceWeatherUpdate > 9) {
-        lv_obj_align(lastUpdated, nullptr, LV_ALIGN_CENTER, -41, -1);
-      }
+      constexpr uint8_t Y_POSITION = 108;
+      constexpr uint8_t X_SINGLE_DIGIT_POSITION = 90;
+      constexpr uint8_t X_TWO_DIGIT_POSITION = 78;
+      constexpr uint8_t X_NOW_POSITION = 102;
+
+      lv_obj_set_pos(lastUpdated, X_SINGLE_DIGIT_POSITION, Y_POSITION);
 
       if (hoursSinceWeatherUpdate > 0) {
+        if (hoursSinceWeatherUpdate > 9) {
+          lv_obj_set_pos(lastUpdated, X_TWO_DIGIT_POSITION, Y_POSITION);
+        }
         lv_label_set_text_fmt(lastUpdated, "%dh ago", hoursSinceWeatherUpdate);
       } else if (minutesSinceWeatherUpdate > 0) {
+        if (minutesSinceWeatherUpdate > 9 && minutesSinceWeatherUpdate < 60) {
+          lv_obj_set_pos(lastUpdated, X_TWO_DIGIT_POSITION, Y_POSITION);
+        }
         lv_label_set_text_fmt(lastUpdated, "%dm ago", minutesSinceWeatherUpdate);
       } else if (secondsSinceWeatherUpdate > 30) {
+        if (secondsSinceWeatherUpdate > 9 && secondsSinceWeatherUpdate < 60) {
+          lv_obj_set_pos(lastUpdated, X_TWO_DIGIT_POSITION, Y_POSITION);
+        }
         lv_label_set_text_fmt(lastUpdated, "%ds ago", secondsSinceWeatherUpdate);
       } else if (secondsSinceWeatherUpdate < 31) {
-        lv_obj_align(lastUpdated, nullptr, LV_ALIGN_CENTER, -18, -1);
+        lv_obj_set_pos(lastUpdated, X_NOW_POSITION, Y_POSITION);
         lv_label_set_text_fmt(lastUpdated, "Now", secondsSinceWeatherUpdate);
       }
     } else {
