@@ -30,3 +30,8 @@ void PageIndicator::Create() {
   lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
 }
+
+void PageIndicator::Delete() {
+  lv_obj_del(pageIndicatorBase);
+  lv_obj_del(pageIndicator);
+}
