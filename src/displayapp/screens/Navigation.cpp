@@ -213,7 +213,7 @@ Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navServi
   txtManDist = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtManDist, LV_LABEL_LONG_BREAK);
   lv_obj_set_style_local_text_color(txtManDist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
-  lv_obj_set_style_local_text_font(txtManDist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_font(txtManDist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &noto_sans_42);
   lv_obj_set_width(txtManDist, LV_HOR_RES);
   lv_label_set_text_static(txtManDist, "--M");
   lv_label_set_align(txtManDist, LV_LABEL_ALIGN_CENTER);

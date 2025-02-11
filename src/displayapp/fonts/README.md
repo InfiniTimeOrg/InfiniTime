@@ -1,6 +1,6 @@
 # Fonts
 
-- [Jetbrains Mono](https://www.jetbrains.com/lp/mono/)
+- [Noto sans](https://fonts.google.com/noto/specimen/Noto+Sans)
 - [Font Awesome](https://fontawesome.com/v5/cheatsheet/free/solid)
 - [Open Sans Light](https://fonts.google.com/specimen/Open+Sans)
 - [Material Symbols](https://fonts.google.com/icons)

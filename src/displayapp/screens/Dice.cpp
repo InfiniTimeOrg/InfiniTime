@@ -49,7 +49,7 @@ Dice::Dice(Controllers::MotionController& motionController,
                       static_cast<uint32_t>(motionController.Z())};
   gen.seed(sseq);
 
-  lv_obj_t* nCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
+  lv_obj_t* nCounterLabel = MakeLabel(&noto_sans_bold_20,
                                       LV_COLOR_WHITE,
                                       LV_LABEL_LONG_EXPAND,
                                       0,
@@ -60,7 +60,7 @@ Dice::Dice(Controllers::MotionController& motionController,
                                       0,
                                       0);
 
-  lv_obj_t* dCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
+  lv_obj_t* dCounterLabel = MakeLabel(&noto_sans_bold_20,
                                       LV_COLOR_WHITE,
                                       LV_LABEL_LONG_EXPAND,
                                       0,
@@ -82,7 +82,7 @@ Dice::Dice(Controllers::MotionController& motionController,
   std::uniform_int_distribution<> distrib(0, resultColors.size() - 1);
   currentColorIndex = distrib(gen);
 
-  resultTotalLabel = MakeLabel(&jetbrains_mono_42,
+  resultTotalLabel = MakeLabel(&noto_sans_42,
                                resultColors[currentColorIndex],
                                LV_LABEL_LONG_BREAK,
                                120,
@@ -92,7 +92,7 @@ Dice::Dice(Controllers::MotionController& motionController,
                                LV_ALIGN_IN_TOP_RIGHT,
                                11,
                                38);
-  resultIndividualLabel = MakeLabel(&jetbrains_mono_bold_20,
+  resultIndividualLabel = MakeLabel(&noto_sans_bold_20,
                                     resultColors[currentColorIndex],
                                     LV_LABEL_LONG_BREAK,
                                     90,
@@ -112,7 +112,7 @@ Dice::Dice(Controllers::MotionController& motionController,
   lv_obj_set_size(btnRoll, 240, 50);
   lv_obj_align(btnRoll, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
-  btnRollLabel = MakeLabel(&jetbrains_mono_bold_20,
+  btnRollLabel = MakeLabel(&noto_sans_bold_20,
                            LV_COLOR_WHITE,
                            LV_LABEL_LONG_EXPAND,
                            0,

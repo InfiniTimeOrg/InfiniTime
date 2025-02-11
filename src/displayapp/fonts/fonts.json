@@ -2,7 +2,7 @@
    "jetbrains_mono_bold_20": {
       "sources": [
          {
-            "file": "JetBrainsMono-Bold.ttf",
+            "file": "NotoSans-Bold.ttf",
             "range": "0x20-0x7e, 0x410-0x44f, 0xB0"
          },
          {
@@ -11,13 +11,12 @@
          }
       ],
       "bpp": 1,
-      "size": 20,
-      "patches": ["jetbrains_mono_bold_20.c_zero.patch", "jetbrains_mono_bold_20.c_M.patch"]
+      "size": 20
    },
    "jetbrains_mono_42": {
       "sources": [
          {
-            "file": "JetBrainsMono-Regular.ttf",
+            "file": "NotoSans-Regular.ttf",
             "range": "0x25, 0x2b, 0x2d, 0x2e, 0x30-0x3a, 0x43, 0x46, 0x4b-0x4d, 0x66, 0x69, 0x6b, 0x6d, 0x74, 0xb0"
          }
       ],
@@ -27,7 +26,7 @@
    "jetbrains_mono_76": {
       "sources": [
          {
-            "file": "JetBrainsMono-Light.ttf",
+            "file": "NotoSans-Light.ttf",
             "range": "0x25, 0x2D, 0x2F, 0x30-0x3a, 0x43, 0x46, 0xb0"
          }
       ],
@@ -37,7 +36,7 @@
    "jetbrains_mono_extrabold_compressed": {
       "sources": [
          {
-            "file": "JetBrainsMono-ExtraBold.ttf",
+            "file": "NotoSans-ExtraBold.ttf",
             "range": "0x30-0x3a"
          }
       ],

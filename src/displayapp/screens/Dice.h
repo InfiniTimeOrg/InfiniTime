@@ -35,8 +35,8 @@ namespace Pinetime {
         uint8_t currentColorIndex;
         void NextColor();
 
-        Widgets::Counter nCounter = Widgets::Counter(1, 9, jetbrains_mono_42);
-        Widgets::Counter dCounter = Widgets::Counter(2, 99, jetbrains_mono_42);
+        Widgets::Counter nCounter = Widgets::Counter(1, 9, noto_sans_42);
+        Widgets::Counter dCounter = Widgets::Counter(2, 99, noto_sans_42);
 
         bool openingRoll = true;
         uint8_t currentRollHysteresis = 0;

@@ -63,7 +63,7 @@ List::List(uint8_t screenID,
 
       lv_obj_t* text = lv_label_create(itemApps[i], nullptr);
       lv_label_set_text_fmt(text, "%s", applications[i].name);
-      lv_obj_align(text, icon, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+      lv_obj_align(text, icon, LV_ALIGN_OUT_RIGHT_MID, -8, 0);
     }
   }
 }

@@ -27,7 +27,7 @@ BatteryInfo::BatteryInfo(const Pinetime::Controllers::Battery& batteryController
   lv_obj_align(status, charging_bar, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
 
   percent = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(percent, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_font(percent, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &noto_sans_76);
   lv_label_set_text_fmt(percent, "%02i%%", batteryPercent);
   lv_label_set_align(percent, LV_LABEL_ALIGN_LEFT);
   lv_obj_align(percent, nullptr, LV_ALIGN_CENTER, 0, -60);
