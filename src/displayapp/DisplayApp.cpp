@@ -478,6 +478,12 @@ void DisplayApp::Refresh() {
       case Messages::OnChargingEvent:
         motorController.RunForDuration(15);
         break;
+      case Messages::ShowIgnoreTouchPopup:
+        popupMessage.SetHidden(false);
+        break;
+      case Messages::HideIgnoreTouchPopup:
+        popupMessage.SetHidden(true);
+        break;
     }
   }
 
@@ -603,7 +609,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::SettingWeatherFormat>(settingsController);
       break;
     case Apps::SettingWakeUp:
-      currentScreen = std::make_unique<Screens::SettingWakeUp>(settingsController);
+      currentScreen = std::make_unique<Screens::SettingWakeUp>(this, settingsController);
       break;
     case Apps::SettingDisplay:
       currentScreen = std::make_unique<Screens::SettingDisplay>(settingsController);
