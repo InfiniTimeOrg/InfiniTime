@@ -1,5 +1,7 @@
 #include "displayapp/screens/WatchFaceMixed.h"
 #include <cmath>
+#include <cstdint>
+#include <limits>
 #include <lvgl/lvgl.h>
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/WeatherSymbols.h"
@@ -157,7 +159,7 @@ WatchFaceMixed::WatchFaceMixed(Controllers::DateTime& dateTimeController,
   lv_label_set_align(label_time_ampm, LV_LABEL_ALIGN_RIGHT);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
+  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 20);
   lv_label_set_align(label_date, LV_LABEL_ALIGN_CENTER);
 
   // Notification
@@ -173,13 +175,13 @@ WatchFaceMixed::WatchFaceMixed(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
   lv_label_set_text(weatherIcon, "");
-  lv_obj_align(weatherIcon, lv_scr_act(), LV_ALIGN_IN_TOP_MID, -20, 50);
+  lv_obj_align(weatherIcon, lv_scr_act(), LV_ALIGN_CENTER, -23, 50);
   lv_obj_set_auto_realign(weatherIcon, true);
 
   temperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
   lv_label_set_text(temperature, "");
-  lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 20, 50);
+  lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_CENTER, 22, 50);
 
   // HeartBeat
 
@@ -324,20 +326,89 @@ void WatchFaceMixed::UpdateSteps() {
   lv_obj_realign(stepIcon);
 }
 
+uint32_t linear_color_gradient(uint32_t startingColor, uint32_t endingColor, uint8_t progress){
+  constexpr decltype(progress) maxProgress = std::numeric_limits<decltype(progress)>::max();
+  uint32_t res = 0;
+  res += ((maxProgress-progress)*((startingColor&0xff0000) >> 16) + progress*((endingColor&0xff0000) >> 16)) / maxProgress;
+  res <<= 8;
+  res += ((maxProgress - progress) * ((startingColor&0x00ff00) >> 8) + progress * ((endingColor&0x00ff00) >> 8)) / maxProgress;
+  res <<= 8;
+  res += ((maxProgress - progress) * (startingColor&0x0000ff) + progress * (endingColor&0x0000ff)) / maxProgress;
+
+  return res;
+}
+
 void WatchFaceMixed::UpdateWeather() {
   auto optCurrentWeather = currentWeather.Get();
   if (optCurrentWeather) {
     int16_t temp = optCurrentWeather->temperature.Celsius();
     char tempUnit = 'C';
+
+    enum TempColor : uint32_t {
+      VeryCold = 0x6495ed,
+      Freezing = 0x00ffff,
+      Cold = 0x808080,
+      Hot = 0xfafd0f,
+      VeryHot = 0xff0000
+    };
+    if(temp < -30) {
+      lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(TempColor::VeryCold));
+    } else if(-30 <= temp && temp < 0) {
+      lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(linear_color_gradient(TempColor::VeryCold, TempColor::Freezing, 255*(temp+30)/30)));
+    } else if(0 <= temp && temp < 10) {
+      lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(linear_color_gradient(TempColor::Freezing, TempColor::Cold, 255*temp/10)));
+    } else if(10 <= temp && temp < 18) {
+      lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(linear_color_gradient(TempColor::Cold, TempColor::Hot, 255*(temp-10)/8)));
+    } else if(18 <= temp && temp < 50) {
+      lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(linear_color_gradient(TempColor::Hot, TempColor::VeryHot, 255*(temp-18)/32)));
+    } else if(temp >= 50) {
+      lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(TempColor::VeryHot));
+    }
     if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
       temp = optCurrentWeather->temperature.Fahrenheit();
       tempUnit = 'F';
     }
     lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
+
     lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
+    using Icons = Pinetime::Controllers::SimpleWeatherService::Icons;
+    switch(optCurrentWeather->iconId){
+      case Icons::Sun:
+        lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xfafd0f));
+        break;
+      case Icons::CloudsSun:
+        lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xc4c745));
+        break;
+      case Icons::Clouds:
+        lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xcbd0d2));
+        break;
+      case Icons::BrokenClouds:
+        lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x7e8796));
+        break;
+      case Icons::CloudShowerHeavy:
+        lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000080));
+        break;
+      case Icons::CloudSunRain:
+        lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xbfddea));
+        break;
+      case Icons::Thunderstorm:
+        lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xC4893D));
+        break;
+      case Icons::Snow:
+        lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xffffff));
+        break;
+      case Icons::Smog:
+        lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x697379));
+        break;
+      default:
+        lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+        break;
+    }
   } else {
     lv_label_set_text_static(temperature, "");
+    lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
     lv_label_set_text(weatherIcon, "");
+    lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
   }
   lv_obj_realign(temperature);
   lv_obj_realign(weatherIcon);
