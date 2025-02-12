@@ -548,7 +548,7 @@ void WatchFacePineTimeStyle::Refresh() {
         temp = optCurrentWeather->temperature.Fahrenheit();
       }
       lv_label_set_text_fmt(temperature, "%d°", temp);
-      lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
+      lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId, weatherService.IsNight()));
     } else {
       lv_label_set_text(temperature, "--");
       lv_label_set_text(weatherIcon, Symbols::ban);
