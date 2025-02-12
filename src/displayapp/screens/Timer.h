@@ -1,10 +1,10 @@
 #pragma once
 
 #include "displayapp/screens/Screen.h"
-#include "components/datetime/DateTimeController.h"
 #include "systemtask/SystemTask.h"
 #include "displayapp/LittleVgl.h"
 #include "displayapp/widgets/Counter.h"
+#include "utility/DirtyValue.h"
 #include <lvgl/lvgl.h>
 
 #include "components/timer/Timer.h"
@@ -26,6 +26,7 @@ namespace Pinetime::Applications {
       void SetTimerRunning();
       void SetTimerStopped();
       void UpdateMask();
+      void DisplayTime();
       Pinetime::Controllers::Timer& timer;
 
       lv_obj_t* btnPlayPause;
@@ -43,6 +44,7 @@ namespace Pinetime::Applications {
       bool buttonPressing = false;
       lv_coord_t maskPosition = 0;
       TickType_t pressTime = 0;
+      Utility::DirtyValue<std::chrono::seconds> displaySeconds;
     };
   }
 

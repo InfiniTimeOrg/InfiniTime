@@ -478,6 +478,7 @@ list(APPEND SOURCE_FILES
 
         systemtask/SystemTask.cpp
         systemtask/SystemMonitor.cpp
+        systemtask/WakeLock.cpp
         drivers/TwiMaster.cpp
 
         heartratetask/HeartRateTask.cpp
@@ -542,6 +543,7 @@ list(APPEND RECOVERY_SOURCE_FILES
 
         systemtask/SystemTask.cpp
         systemtask/SystemMonitor.cpp
+        systemtask/WakeLock.cpp
         drivers/TwiMaster.cpp
         components/rle/RleDecoder.cpp
         components/heartrate/HeartRateController.cpp
@@ -660,6 +662,7 @@ set(INCLUDE_FILES
         displayapp/InfiniTimeTheme.h
         systemtask/SystemTask.h
         systemtask/SystemMonitor.h
+        systemtask/WakeLock.h
         displayapp/screens/Symbols.h
         drivers/TwiMaster.h
         heartratetask/HeartRateTask.h
@@ -785,6 +788,10 @@ add_definitions(-DFREERTOS)
 add_definitions(-D__STACK_SIZE=1024)
 add_definitions(-D__HEAP_SIZE=0)
 add_definitions(-DMYNEWT_VAL_BLE_LL_RFMGMT_ENABLE_TIME=1500)
+add_definitions(-DLFS_CONFIG=libs/lfs_config.h)
+
+# _sbrk is purposefully not implemented so that builds fail when it is used
+add_link_options(-Wl,-wrap=malloc -Wl,-wrap=free -Wl,-wrap=calloc -Wl,-wrap=realloc -Wl,-wrap=_malloc_r -Wl,-wrap=_sbrk)
 
 # Note: Only use this for debugging
 # Derive the low frequency clock from the main clock (SYNT)
@@ -860,7 +867,6 @@ target_compile_options(nrf-sdk PRIVATE
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        -O3
         )
 
 # NimBLE

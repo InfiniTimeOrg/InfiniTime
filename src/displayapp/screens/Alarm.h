@@ -22,6 +22,7 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
 #include "displayapp/Controllers.h"
+#include "systemtask/WakeLock.h"
 #include "Symbols.h"
 
 namespace Pinetime {
@@ -43,7 +44,7 @@ namespace Pinetime {
 
       private:
         Controllers::AlarmController& alarmController;
-        System::SystemTask& systemTask;
+        System::WakeLock wakeLock;
         Controllers::MotorController& motorController;
 
         lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch;

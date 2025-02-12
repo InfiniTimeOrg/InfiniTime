@@ -38,15 +38,16 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
                        const Pinetime::Controllers::Ble& bleController,
                        const Pinetime::Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::MotionController& motionController,
-                       const Pinetime::Drivers::Cst816S& touchPanel)
-  : app {app},
-    dateTimeController {dateTimeController},
+                       const Pinetime::Drivers::Cst816S& touchPanel,
+                       const Pinetime::Drivers::SpiNorFlash& spiNorFlash)
+  : dateTimeController {dateTimeController},
     batteryController {batteryController},
     brightnessController {brightnessController},
     bleController {bleController},
     watchdog {watchdog},
     motionController {motionController},
     touchPanel {touchPanel},
+    spiNorFlash {spiNorFlash},
     screens {app,
              0,
              {[this]() -> std::unique_ptr<Screen> {
@@ -186,13 +187,15 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
   const auto& bleAddr = bleController.Address();
+  auto spiFlashId = spiNorFlash.GetIdentification();
   lv_label_set_text_fmt(label,
                         "#808080 BLE MAC#\n"
-                        " %02x:%02x:%02x:%02x:%02x:%02x"
+                        " %02x:%02x:%02x:%02x:%02x:%02x\n"
                         "\n"
+                        "#808080 SPI Flash# %02x-%02x-%02x\n"
                         "\n"
                         "#808080 Memory heap#\n"
-                        " #808080 Free# %d\n"
+                        " #808080 Free# %d/%d\n"
                         " #808080 Min free# %d\n"
                         " #808080 Alloc err# %d\n"
                         " #808080 Ovrfl err# %d\n",
@@ -202,7 +205,11 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         bleAddr[2],
                         bleAddr[1],
                         bleAddr[0],
+                        spiFlashId.manufacturer,
+                        spiFlashId.type,
+                        spiFlashId.density,
                         xPortGetFreeHeapSize(),
+                        xPortGetHeapSize(),
                         xPortGetMinimumEverFreeHeapSize(),
                         mallocFailedCount,
                         stackOverflowCount);
