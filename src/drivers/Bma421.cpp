@@ -45,12 +45,14 @@ Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}
 }
 
 void Bma421::Init() {
-  if (not isResetOk)
+  if (not isResetOk) {
     return; // Call SoftReset (and reset TWI device) first!
+  }
 
   auto ret = bma423_init(&bma);
-  if (ret != BMA4_OK)
+  if (ret != BMA4_OK) {
     return;
+  }
 
   switch (bma.chip_id) {
     case BMA423_CHIP_ID:
@@ -65,32 +67,38 @@ void Bma421::Init() {
   }
 
   ret = bma423_write_config_file(&bma);
-  if (ret != BMA4_OK)
+  if (ret != BMA4_OK) {
     return;
+  }
 
   ret = bma4_set_interrupt_mode(BMA4_LATCH_MODE, &bma);
-  if (ret != BMA4_OK)
+  if (ret != BMA4_OK) {
     return;
+  }
 
   ret = bma423_feature_enable(BMA423_STEP_CNTR, 1, &bma);
-  if (ret != BMA4_OK)
+  if (ret != BMA4_OK) {
     return;
+  }
 
   ret = bma423_step_detector_enable(0, &bma);
-  if (ret != BMA4_OK)
+  if (ret != BMA4_OK) {
     return;
+  }
 
   ret = bma4_set_accel_enable(1, &bma);
-  if (ret != BMA4_OK)
+  if (ret != BMA4_OK) {
     return;
+  }
 
   accel_conf.odr = BMA4_OUTPUT_DATA_RATE_100HZ;
   accel_conf.range = BMA4_ACCEL_RANGE_2G;
   accel_conf.bandwidth = BMA4_ACCEL_NORMAL_AVG4;
   accel_conf.perf_mode = BMA4_CIC_AVG_MODE;
   ret = bma4_set_accel_config(&accel_conf, &bma);
-  if (ret != BMA4_OK)
+  if (ret != BMA4_OK) {
     return;
+  }
 
   isOk = true;
 }
@@ -109,8 +117,9 @@ void Bma421::Write(uint8_t registerAddress, const uint8_t* data, size_t size) {
 }
 
 Bma421::Values Bma421::Process() {
-  if (not isOk)
+  if (not isOk) {
     return {};
+  }
   struct bma4_accel rawData;
   struct bma4_accel data;
   bma4_read_accel_xyz(&rawData, &bma);

@@ -152,8 +152,9 @@ int main(void) {
   logger.Init();
   nrf_drv_clock_init();
 
-  if (pdPASS != xTaskCreate(Process, "MAIN", 512, nullptr, 0, &taskHandle))
+  if (pdPASS != xTaskCreate(Process, "MAIN", 512, nullptr, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+  }
 
   vTaskStartScheduler();
 

@@ -92,7 +92,7 @@ namespace Pinetime {
                                              controllers.heartRateController,
                                              controllers.motionController,
                                              *controllers.weatherController);
-      };
+      }
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
         return true;
