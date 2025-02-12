@@ -10,6 +10,7 @@ namespace Pinetime {
     class Settings {
     public:
       enum class ClockType : uint8_t { H24, H12 };
+      enum class DateFormat : uint8_t { YYYYMMDD, DDMMYYYY, MMDDYYYY, DayDDMonthYYYY };
       enum class WeatherFormat : uint8_t { Metric, Imperial };
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
@@ -181,6 +182,17 @@ namespace Pinetime {
         return settings.clockType;
       };
 
+      void SetDateFormat(DateFormat dateFormat) {
+        if (dateFormat != settings.dateFormat) {
+          settingsChanged = true;
+        }
+        settings.dateFormat = dateFormat;
+      };
+
+      DateFormat GetDateFormat() const {
+        return settings.dateFormat;
+      };
+
       void SetWeatherFormat(WeatherFormat weatherFormat) {
         if (weatherFormat != settings.weatherFormat) {
           settingsChanged = true;
@@ -311,6 +323,7 @@ namespace Pinetime {
         bool alwaysOnDisplay = false;
 
         ClockType clockType = ClockType::H24;
+        DateFormat dateFormat = DateFormat::DayDDMonthYYYY;
         WeatherFormat weatherFormat = WeatherFormat::Metric;
         Notification notificationStatus = Notification::On;
 
