@@ -15,10 +15,14 @@ Based on Ubuntu 22.04 with the following build dependencies:
 
 Before building, local repository must be fully initialized.
 
-```
+```sh
 git clone https://github.com/InfiniTimeOrg/InfiniTime.git
 cd InfiniTime
 git submodule update --init
+
+# configure git to apply whitespace fixes automatically
+git config set core.whitespace trailing-space,space-before-tab
+git config set apply.whitespace fix
 ```
 
 ## Run a container to build the project
