@@ -33,7 +33,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     heartRateController {heartRateController},
     motionController {motionController},
     weatherService {weatherService},
-    statusIcons(batteryController, bleController, alarmController, timer) {
+    statusIcons(batteryController, bleController, alarmController, timer, settingsController) {
 
   statusIcons.Create();
 
