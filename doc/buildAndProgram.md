@@ -24,15 +24,10 @@ To build this project, you'll need:
 
 ### Clone the repo
 
-```sh
+```
 git clone https://github.com/InfiniTimeOrg/InfiniTime.git
 cd InfiniTime
 git submodule update --init
-
-# configure git to apply whitespace fixes automatically
-git config set core.whitespace trailing-space,space-before-tab
-git config set apply.whitespace fix
-
 mkdir build
 cd build
 ```
