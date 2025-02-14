@@ -78,6 +78,7 @@ void StatusIcons::Update() {
 
   if (timer.IsRunning()) {
     uint8_t activeIconCounter = 0;
+    uint8_t maxIcons = 0;
     lv_obj_t* child = lv_obj_get_child(container, NULL);
 
     while (child != NULL) {
@@ -100,17 +101,21 @@ void StatusIcons::Update() {
       activeIconCounter--;
     }
 
-    // more than 2 icons (plus the batteryIcon) make the timerContainer collide
-    // with other text, so replace it with a timer icon
-    if (activeIconCounter > 2) {
+    std::chrono::seconds secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
+    uint8_t timerMinutes = (secondsRemaining.count() % 3600) / 60;
+    uint8_t timerSeconds = secondsRemaining.count() % 60;
+    if (timerMinutes > 0) {
+      maxIcons = 2;
+      lv_label_set_text_fmt(timeRemaining, "%02d:%02d", timerMinutes, timerSeconds);
+    } else {
+      maxIcons = 3;
+      lv_label_set_text_fmt(timeRemaining, ":%02d", timerSeconds);
+    }
+
+    if (activeIconCounter > maxIcons) {
       lv_obj_set_hidden(timerContainer, true);
       lv_obj_set_hidden(soloTimerIcon, false);
     } else {
-      auto secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
-      uint8_t minutes = secondsRemaining.count() / 60;
-      uint8_t seconds = secondsRemaining.count() % 60;
-      lv_label_set_text_fmt(timeRemaining, "%02d:%02d", minutes, seconds);
-
       lv_obj_set_hidden(soloTimerIcon, true);
       lv_obj_set_hidden(timerContainer, false);
     }
