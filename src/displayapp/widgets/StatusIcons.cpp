@@ -37,7 +37,6 @@ void StatusIcons::Create() {
   timeRemaining = lv_label_create(timerContainer, nullptr);
   lv_obj_set_style_local_text_color(timeRemaining, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
   lv_obj_set_style_local_text_letter_space(timeRemaining, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, -1);
-  lv_label_set_text(timeRemaining, "00:00");
 
   bleIcon = lv_label_create(container, nullptr);
   lv_label_set_text_static(bleIcon, Screens::Symbols::bluetooth);
