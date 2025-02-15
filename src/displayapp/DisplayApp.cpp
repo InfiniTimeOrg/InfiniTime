@@ -316,8 +316,11 @@ void DisplayApp::Refresh() {
             currentApp == Apps::Settings) {
           LoadScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
           // Wait for the clock app to load before moving on.
-          while (!lv_task_handler()) {
-          };
+          // If Infineat is charging due to the constant charging animation, lv_task_handler will block so we will skip
+          if (settingsController.GetWatchFace() != Pinetime::Applications::WatchFace::Infineat || !batteryController.IsCharging()) {
+            while (!lv_task_handler()) {
+            }
+          }
         }
         // Clear any ongoing touch pressed events
         // Without this LVGL gets stuck in the pressed state and will keep refreshing the
