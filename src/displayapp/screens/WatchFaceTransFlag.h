@@ -23,15 +23,15 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class WatchFaceTrans : public Screen {
+      class WatchFaceTransFlag : public Screen {
       public:
-        WatchFaceTrans(Controllers::DateTime& dateTimeController,
+        WatchFaceTransFlag(Controllers::DateTime& dateTimeController,
                        const Controllers::Battery& batteryController,
                        const Controllers::Ble& bleController,
                        Controllers::NotificationManager& notificationManager,
                        Controllers::Settings& settingsController,
                        Controllers::MotionController& motionController);
-        ~WatchFaceTrans() override;
+        ~WatchFaceTransFlag() override;
 
         void Refresh() override;
 
@@ -74,12 +74,12 @@ namespace Pinetime {
     }
 
     template <>
-    struct WatchFaceTraits<WatchFace::Trans> {
-      static constexpr WatchFace watchFace = WatchFace::Trans;
+    struct WatchFaceTraits<WatchFace::TransFlag> {
+      static constexpr WatchFace watchFace = WatchFace::TransFlag;
       static constexpr const char* name = "Trans Flag";
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::WatchFaceTrans(controllers.dateTimeController,
+        return new Screens::WatchFaceTransFlag(controllers.dateTimeController,
                                            controllers.batteryController,
                                            controllers.bleController,
                                            controllers.notificationManager,

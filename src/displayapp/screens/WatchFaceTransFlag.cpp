@@ -1,5 +1,5 @@
 #include <lvgl/lvgl.h>
-#include "displayapp/screens/WatchFaceTrans.h"
+#include "displayapp/screens/WatchFaceTransFlag.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/screens/Symbols.h"
@@ -10,7 +10,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-WatchFaceTrans::WatchFaceTrans(Controllers::DateTime& dateTimeController,
+WatchFaceTransFlag::WatchFaceTransFlag(Controllers::DateTime& dateTimeController,
                                const Controllers::Battery& batteryController,
                                const Controllers::Ble& bleController,
                                Controllers::NotificationManager& notificationManager,
@@ -93,12 +93,12 @@ WatchFaceTrans::WatchFaceTrans(Controllers::DateTime& dateTimeController,
   Refresh();
 }
 
-WatchFaceTrans::~WatchFaceTrans() {
+WatchFaceTransFlag::~WatchFaceTransFlag() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-void WatchFaceTrans::Refresh() {
+void WatchFaceTransFlag::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
   bleState = bleController.IsConnected();
   batteryPercentRemaining = batteryController.PercentRemaining();
