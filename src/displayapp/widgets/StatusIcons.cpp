@@ -111,7 +111,7 @@ void StatusIcons::Update() {
       maxIcons = 2;
       lv_label_set_text_fmt(timeRemaining, "%02d:%02d", timerMinutes, timerSeconds);
     } else {
-      maxIcons = 3;
+      maxIcons = 4;
       lv_label_set_text_fmt(timeRemaining, "%02d", timerSeconds);
     }
 
