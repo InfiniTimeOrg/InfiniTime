@@ -111,7 +111,7 @@ void StatusIcons::Update() {
       lv_label_set_text_fmt(timeRemaining, "%02d:%02d", timerMinutes, timerSeconds);
     } else {
       maxIcons = 3;
-      lv_label_set_text_fmt(timeRemaining, ":%02d", timerSeconds);
+      lv_label_set_text_fmt(timeRemaining, "%02d", timerSeconds);
     }
 
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
