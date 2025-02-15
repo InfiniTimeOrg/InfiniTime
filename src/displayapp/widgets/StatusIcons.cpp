@@ -115,7 +115,10 @@ void StatusIcons::Update() {
     }
 
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-      maxIcons += 1;
+      maxIcons++;
+      if (timerMinutes > 0) {
+        maxIcons++;
+      }
     }
 
     if (activeIconCounter > maxIcons) {
