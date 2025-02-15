@@ -63,8 +63,8 @@ namespace Pinetime {
         Utility::DirtyValue<bool> notificationState {};
         Utility::DirtyValue<std::optional<Pinetime::Controllers::SimpleWeatherService::CurrentWeather>> currentWeather {};
 
-        static Pinetime::Controllers::Settings::Colors GetNext(Controllers::Settings::Colors color);
-        static Pinetime::Controllers::Settings::Colors GetPrevious(Controllers::Settings::Colors color);
+        static Colors::Color GetNext(Colors::Color color);
+        static Colors::Color GetPrevious(Colors::Color color);
 
         lv_obj_t* btnNextTime;
         lv_obj_t* btnPrevTime;
@@ -102,7 +102,7 @@ namespace Pinetime {
         lv_obj_t* btnSetOpts;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
-        lv_color_t needle_colors[1];
+        Colors::Color needle_colors;
 
         BatteryIcon batteryIcon;
 
