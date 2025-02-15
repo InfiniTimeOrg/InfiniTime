@@ -21,7 +21,7 @@ namespace Pinetime {
 
       uint8_t timerOverflowIntervals = 0;
 
-      TimerHandle_t timerHandle;
+      TimerHandle_t timer;
 
       const uint32_t maxTimerMS = 3'600'000; // 1 hour
     private:

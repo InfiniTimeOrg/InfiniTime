@@ -3,7 +3,7 @@
 using namespace Pinetime::Controllers;
 
 Timer::Timer(void* const timerData, TimerCallbackFunction_t timerCallbackFunction) {
-  timerHandle = xTimerCreate("Timer", 1, pdFALSE, timerData, timerCallbackFunction);
+  timer = xTimerCreate("Timer", 1, pdFALSE, timerData, timerCallbackFunction);
 }
 
 void Timer::StartTimer(std::chrono::milliseconds duration) {
@@ -19,25 +19,25 @@ void Timer::StartTimer(std::chrono::milliseconds duration) {
       leftoverSeconds = 60;
       timerOverflowIntervals--;
     }
-    xTimerChangePeriod(timerHandle, pdMS_TO_TICKS((leftoverMinutes * 60 * 1000) + (leftoverSeconds * 1000)), 0);
+    xTimerChangePeriod(timer, pdMS_TO_TICKS((leftoverMinutes * 60 * 1000) + (leftoverSeconds * 1000)), 0);
   } else {
-    xTimerChangePeriod(timerHandle, pdMS_TO_TICKS(duration.count()), 0);
+    xTimerChangePeriod(timer, pdMS_TO_TICKS(duration.count()), 0);
   }
-  xTimerStart(timerHandle, 0);
+  xTimerStart(timer, 0);
 }
 
 std::chrono::milliseconds Timer::GetTimeRemaining() {
   if (IsRunning()) {
-    TickType_t remainingTime = xTimerGetExpiryTime(timerHandle) - xTaskGetTickCount();
+    TickType_t remainingTime = xTimerGetExpiryTime(timer) - xTaskGetTickCount();
     return std::chrono::milliseconds((remainingTime * 1000 / configTICK_RATE_HZ) + (timerOverflowIntervals * maxTimerMS));
   }
   return std::chrono::milliseconds(0);
 }
 
 void Timer::StopTimer() {
-  xTimerStop(timerHandle, 0);
+  xTimerStop(timer, 0);
 }
 
 bool Timer::IsRunning() {
-  return (xTimerIsTimerActive(timerHandle) == pdTRUE);
+  return (xTimerIsTimerActive(timer) == pdTRUE);
 }
