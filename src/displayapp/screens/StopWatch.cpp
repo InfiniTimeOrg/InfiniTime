@@ -61,17 +61,23 @@ StopWatch::StopWatch(System::SystemTask& systemTask) : wakeLock(systemTask) {
   lv_obj_set_width(lapText, LV_HOR_RES_MAX);
   lv_obj_align(lapText, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -btnHeight);
 
-  msecTime = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(msecTime, "00");
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
-  // Position msecTime above the colon
-  lv_obj_align(msecTime, time, LV_ALIGN_CENTER, 0, -38);  // Adjust -38 based on actual font size
-
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_label_set_text_static(time, "00:00");
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
-  lv_obj_align(time, msecTime, LV_ALIGN_OUT_TOP_MID, 0, 0);
+  lv_obj_align(time, nullptr, LV_ALIGN_CENTER, 0, -20);
+
+  // Calculate position for msecTime
+  lv_coord_t fontHeight = lv_font_get_line_height(&jetbrains_mono_76);
+  // Position above the colon (which is after 2 digits)
+  int16_t horizontalOffset = lv_obj_get_width(time) / 4;  // Approximate position of colon
+  int16_t verticalOffset = -fontHeight;  // Position fully above the time
+
+  msecTime = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(msecTime, "00");
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
+  // Align relative to time, but offset to colon position
+  lv_obj_align(msecTime, time, LV_ALIGN_CENTER, horizontalOffset, verticalOffset);
 
   SetInterfaceStopped();
 
