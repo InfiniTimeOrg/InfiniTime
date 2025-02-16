@@ -11,11 +11,11 @@
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceTransFlag::WatchFaceTransFlag(Controllers::DateTime& dateTimeController,
-                               const Controllers::Battery& batteryController,
-                               const Controllers::Ble& bleController,
-                               Controllers::NotificationManager& notificationManager,
-                               Controllers::Settings& settingsController,
-                               Controllers::MotionController& motionController)
+                                       const Controllers::Battery& batteryController,
+                                       const Controllers::Ble& bleController,
+                                       Controllers::NotificationManager& notificationManager,
+                                       Controllers::Settings& settingsController,
+                                       Controllers::MotionController& motionController)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     batteryController {batteryController},
