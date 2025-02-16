@@ -147,7 +147,7 @@ void StopWatch::Start() {
 
 void StopWatch::updateLapDisplay() {
   std::string displayText;
-  displayText.reserve(maxLapCount * charactersPerLapEntry);
+  displayText.reserve(maxLapCount * 20);
 
   std::array<char, 32> buffer{};
 
