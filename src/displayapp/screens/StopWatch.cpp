@@ -191,12 +191,15 @@ void StopWatch::stopLapBtnEventHandler() {
   if (currentState == States::Running) {
     lv_label_set_text(lapText, "");
     lapsDone = std::min(lapsDone + 1, maxLapCount);
+    TickType_t lastLapTime = 0;
     for (int i = lapsDone - displayedLaps; i < lapsDone; i++) {
       if (i < 0) {
         lv_label_ins_text(lapText, LV_LABEL_POS_LAST, "\n");
         continue;
       }
-      TimeSeparated_t times = convertTicksToTimeSegments(laps[i]);
+      TickType_t lapDuration = laps[i] - lastLapTime;
+      lastLapTime = laps[i];
+      TimeSeparated_t times = convertTicksToTimeSegments(lapDuration);
       char buffer[17];
       if (times.hours == 0) {
         snprintf(buffer, sizeof(buffer), "#%2d    %2d:%02d.%02d\n", i + 1, times.mins, times.secs, times.hundredths);
