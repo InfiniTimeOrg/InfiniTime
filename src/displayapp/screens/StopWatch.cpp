@@ -70,7 +70,7 @@ StopWatch::StopWatch(System::SystemTask& systemTask) : wakeLock(systemTask) {
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(msecTime, "00");
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
-  lv_obj_align(msecTime, time, LV_ALIGN_TOP_MID, 0, 0);
+  lv_obj_align(msecTime, time, LV_ALIGN_IN_TOP_MID, 0, 0);
 
   SetInterfaceStopped();
 
