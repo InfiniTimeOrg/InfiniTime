@@ -14,7 +14,7 @@ namespace Pinetime {
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t { SingleTap = 0, DoubleTap = 1, RaiseWrist = 2, Shake = 3, LowerWrist = 4 };
-      enum class SleepOption : uint8_t { AllowAOD = 0, AllowChimes = 1, AllowNotify = 2, DisableBle = 3 };
+      enum class SleepOption : uint8_t { AllowChimes = 0, AllowNotify = 1, DisableBle = 2, EnableAOD = 3 };
       enum class Colors : uint8_t {
         White,
         Silver,
@@ -216,11 +216,7 @@ namespace Pinetime {
       };
 
       bool GetAlwaysOnDisplay() const {
-        if (isSleepOptionOn(Controllers::Settings::SleepOption::AllowAOD)) {
-          return settings.alwaysOnDisplay;
-        } else {
-          return settings.alwaysOnDisplay && GetNotificationStatus() != Notification::Sleep;
-        }
+        return settings.alwaysOnDisplay && GetNotificationStatus() != Notification::Sleep;
       };
 
       void SetAlwaysOnDisplaySetting(bool state) {

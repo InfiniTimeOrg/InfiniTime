@@ -419,11 +419,15 @@ void SystemTask::GoToSleep() {
     return;
   }
 
-  if (settingsController.GetAlwaysOnDisplay()) {
+  if (settingsController.isSleepOptionOn(Pinetime::Controllers::Settings::SleepOption::EnableAOD) &&
+      settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::Sleep) {
+    NRF_LOG_INFO("[systemtask] Always On Display Enabled For Sleep");
+    displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToAOD);
+  } else if (settingsController.GetAlwaysOnDisplay()) {
     NRF_LOG_INFO("[systemtask] Going To Always On Display");
     displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToAOD);
   } else {
-    NRF_LOG_INFO("[systemtask] Going To sleep");
+    NRF_LOG_INFO("[systemtask] Going To Sleep");
     displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
   }
   heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
