@@ -64,7 +64,8 @@ StopWatch::StopWatch(System::SystemTask& systemTask) : wakeLock(systemTask) {
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(msecTime, "00");
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
-  lv_obj_align(msecTime, lapText, LV_ALIGN_OUT_TOP_MID, 0, 0);
+  // Position msecTime above the colon
+  lv_obj_align(msecTime, time, LV_ALIGN_CENTER, 0, -38);  // Adjust -38 based on actual font size
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -144,55 +145,50 @@ void StopWatch::Start() {
   }
 }
 
-// Add new method to update lap display:
 void StopWatch::updateLapDisplay() {
-  // Pre-allocate string buffer with estimated capacity
   std::string displayText;
-  // Reserve space for maximum possible size: 2 laps × ~20 chars per lap
-  displayText.reserve(displayedLaps * 20);
+  displayText.reserve(maxLapCount * charactersPerLapEntry);
 
-  // Use std::array for safe buffer handling
   std::array<char, 32> buffer{};
 
-  for (int i = lapsDone - displayedLaps; i < lapsDone; i++) {
-    if (i < 0) {
-      displayText += '\n';
-      continue;
-    }
-
+  // Reverse loop to show newest laps first
+  for (int i = lapsDone - 1; i >= std::max(0, lapsDone - displayedLaps); i--) {
     TimeSeparated_t times;
     if (i == lapsDone - 1 && currentState == States::Running) {
       // For current lap, calculate time since last lap
       TickType_t currentLapTime = xTaskGetTickCount() - startTime;
       if (i > 0) {
-        currentLapTime += oldTimeElapsed - laps[i-1];
+        currentLapTime += oldTimeElapsed - laps[i - 1];
       }
       times = convertTicksToTimeSegments(currentLapTime);
     } else {
       // For completed laps, show the lap duration
-      TickType_t lapDuration = (i == 0) ? laps[i] : laps[i] - laps[i-1];
+      TickType_t lapDuration = (i == 0) ? laps[i] : laps[i] - laps[i - 1];
       times = convertTicksToTimeSegments(lapDuration);
     }
 
-    // Use snprintf with proper bounds checking
-    int written;
-    if (times.hours == 0) {
-      written = snprintf(buffer.data(), buffer.size(),
-                        "#%2d    %2d:%02d.%02d\n",
-                        i + 1, times.mins, times.secs, times.hundredths);
-    } else {
-      written = snprintf(buffer.data(), buffer.size(),
-                        "#%2d %2d:%02d:%02d.%02d\n",
-                        i + 1, times.hours, times.mins, times.secs, times.hundredths);
-    }
+    int written = (times.hours == 0)
+      ? snprintf(buffer.data(),
+                buffer.size(),
+                "Lap %d    %2d:%02d.%02d\n",
+                i + 1,
+                times.mins,
+                times.secs,
+                times.hundredths)
+      : snprintf(buffer.data(),
+                buffer.size(),
+                "Lap %d %2d:%02d:%02d.%02d\n",
+                i + 1,
+                times.hours,
+                times.mins,
+                times.secs,
+                times.hundredths);
 
-    // Only append if snprintf was successful
     if (written > 0 && written < static_cast<int>(buffer.size())) {
       displayText += buffer.data();
     }
   }
 
-  // Update display in one operation
   lv_label_set_text(lapText, displayText.c_str());
 }
 
