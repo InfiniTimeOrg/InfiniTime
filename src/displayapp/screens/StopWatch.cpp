@@ -37,7 +37,7 @@ namespace {
 StopWatch::StopWatch(System::SystemTask& systemTask) : wakeLock(systemTask) {
   static constexpr uint8_t btnWidth = 115;
   static constexpr uint8_t btnHeight = 80;
-  static constexpr uint8_t lapLineHeight = 27;
+  static constexpr uint8_t lapLineHeight = 30;
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
   lv_obj_set_event_cb(btnPlayPause, play_pause_event_handler);
@@ -66,12 +66,12 @@ StopWatch::StopWatch(System::SystemTask& systemTask) : wakeLock(systemTask) {
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_label_set_text_static(time, "00:00");
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 2);
+  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 5);
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(msecTime, "00");
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
-  lv_obj_align(msecTime, time, LV_ALIGN_IN_TOP_MID, 0, -1);
+  lv_obj_align(msecTime, time, LV_ALIGN_IN_TOP_MID, 0, -3);
 
   SetInterfaceStopped();
 
