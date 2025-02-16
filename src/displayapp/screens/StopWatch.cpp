@@ -135,6 +135,65 @@ void StopWatch::Start() {
   startTime = xTaskGetTickCount();
   currentState = States::Running;
   wakeLock.Lock();
+
+  // Add first lap automatically when starting
+  if (lapsDone == 0) {
+    lapsDone = 1;
+    laps[0] = 0; // Current lap starts at 0
+    updateLapDisplay();
+  }
+}
+
+// Add new method to update lap display:
+void StopWatch::updateLapDisplay() {
+  // Pre-allocate string buffer with estimated capacity
+  std::string displayText;
+  // Reserve space for maximum possible size: 2 laps × ~20 chars per lap
+  displayText.reserve(displayedLaps * 20);
+
+  // Use std::array for safe buffer handling
+  std::array<char, 32> buffer{};
+
+  for (int i = lapsDone - displayedLaps; i < lapsDone; i++) {
+    if (i < 0) {
+      displayText += '\n';
+      continue;
+    }
+
+    TimeSeparated_t times;
+    if (i == lapsDone - 1 && currentState == States::Running) {
+      // For current lap, calculate time since last lap
+      TickType_t currentLapTime = xTaskGetTickCount() - startTime;
+      if (i > 0) {
+        currentLapTime += oldTimeElapsed - laps[i-1];
+      }
+      times = convertTicksToTimeSegments(currentLapTime);
+    } else {
+      // For completed laps, show the lap duration
+      TickType_t lapDuration = (i == 0) ? laps[i] : laps[i] - laps[i-1];
+      times = convertTicksToTimeSegments(lapDuration);
+    }
+
+    // Use snprintf with proper bounds checking
+    int written;
+    if (times.hours == 0) {
+      written = snprintf(buffer.data(), buffer.size(),
+                        "#%2d    %2d:%02d.%02d\n",
+                        i + 1, times.mins, times.secs, times.hundredths);
+    } else {
+      written = snprintf(buffer.data(), buffer.size(),
+                        "#%2d %2d:%02d:%02d.%02d\n",
+                        i + 1, times.hours, times.mins, times.secs, times.hundredths);
+    }
+
+    // Only append if snprintf was successful
+    if (written > 0 && written < static_cast<int>(buffer.size())) {
+      displayText += buffer.data();
+    }
+  }
+
+  // Update display in one operation
+  lv_label_set_text(lapText, displayText.c_str());
 }
 
 void StopWatch::Pause() {
@@ -163,6 +222,9 @@ void StopWatch::Refresh() {
       }
     }
     lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
+    
+    // Update the lap display
+    updateLapDisplay();
   } else if (currentState == States::Halted) {
     const TickType_t currentTime = xTaskGetTickCount();
     if (currentTime > blinkTime) {
@@ -189,25 +251,10 @@ void StopWatch::playPauseBtnEventHandler() {
 void StopWatch::stopLapBtnEventHandler() {
   // If running, then this button is used to save laps
   if (currentState == States::Running) {
-    lv_label_set_text(lapText, "");
+    // Store the current lap time
+    laps[lapsDone-1] = oldTimeElapsed + xTaskGetTickCount() - startTime;
     lapsDone = std::min(lapsDone + 1, maxLapCount);
-    TickType_t lastLapTime = 0;
-    for (int i = lapsDone - displayedLaps; i < lapsDone; i++) {
-      if (i < 0) {
-        lv_label_ins_text(lapText, LV_LABEL_POS_LAST, "\n");
-        continue;
-      }
-      TickType_t lapDuration = laps[i] - lastLapTime;
-      lastLapTime = laps[i];
-      TimeSeparated_t times = convertTicksToTimeSegments(lapDuration);
-      char buffer[17];
-      if (times.hours == 0) {
-        snprintf(buffer, sizeof(buffer), "#%2d    %2d:%02d.%02d\n", i + 1, times.mins, times.secs, times.hundredths);
-      } else {
-        snprintf(buffer, sizeof(buffer), "#%2d %2d:%02d:%02d.%02d\n", i + 1, times.hours, times.mins, times.secs, times.hundredths);
-      }
-      lv_label_ins_text(lapText, LV_LABEL_POS_LAST, buffer);
-    }
+    updateLapDisplay();
   } else if (currentState == States::Halted) {
     Reset();
   }

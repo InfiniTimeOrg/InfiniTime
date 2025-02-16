@@ -36,6 +36,7 @@ namespace Pinetime {
         bool OnButtonPushed() override;
 
       private:
+        void updateLapDisplay();
         void SetInterfacePaused();
         void SetInterfaceRunning();
         void SetInterfaceStopped();
