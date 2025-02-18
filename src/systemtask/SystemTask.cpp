@@ -321,7 +321,6 @@ void SystemTask::Work() {
           // We might be sleeping (with TWI device disabled.
           // Remember we'll have to reset the counter next time we're awake
           stepCounterMustBeReset = true;
-          settingsController.sleepSteps = 0;
           break;
         case Messages::OnNewHour:
         case Messages::OnNewHalfHour:
@@ -447,6 +446,7 @@ void SystemTask::UpdateMotion() {
 
   if (stepCounterMustBeReset) {
     motionSensor.ResetStepCounter();
+    motionController.ResetIgnoreSteps();
     stepCounterMustBeReset = false;
   }
 

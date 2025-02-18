@@ -36,14 +36,18 @@ namespace Pinetime {
       }
 
       uint32_t NbSteps() const {
-        if (nbSteps > settingsController.sleepSteps) {
-          return nbSteps - settingsController.sleepSteps;
+        if (nbSteps > ignoreSteps) {
+          return nbSteps - ignoreSteps;
         }
         return 0;
       }
 
       void ResetTrip() {
         currentTripSteps = 0;
+      }
+
+      void ResetIgnoreSteps() {
+        ignoreSteps = 0;
       }
 
       uint32_t GetTripSteps() const {
@@ -75,6 +79,7 @@ namespace Pinetime {
     private:
       uint32_t nbSteps = 0;
       uint32_t currentTripSteps = 0;
+      uint32_t ignoreSteps = 0;
 
       TickType_t lastTime = 0;
       TickType_t time = 0;
