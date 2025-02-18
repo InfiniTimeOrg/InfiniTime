@@ -270,6 +270,7 @@ namespace Pinetime {
       }
 
       bool sleepDisabledBle = false;
+      uint32_t sleepSteps = 0;
 
       void setSleepOption(SleepOption option, bool enabled) {
         if (enabled != isSleepOptionOn(option)) {
