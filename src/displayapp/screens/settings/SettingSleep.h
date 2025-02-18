@@ -28,8 +28,8 @@ namespace Pinetime {
         static constexpr std::array<Option, 4> options = {{
           {Controllers::Settings::SleepOption::AllowChimes, "Allow Chimes"},
           {Controllers::Settings::SleepOption::AllowNotify, "Allow Notify"},
-          {Controllers::Settings::SleepOption::DisableBle, "Disable BLE"},
           {Controllers::Settings::SleepOption::EnableAOD, "Enable AOD"},
+          {Controllers::Settings::SleepOption::DisableBle, "Disable BLE"},
         }};
 
         lv_obj_t* cbOption[options.size()];
