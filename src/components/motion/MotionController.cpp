@@ -64,6 +64,11 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
     currentTripSteps += deltaSteps;
   }
   this->nbSteps = nbSteps;
+
+  if (settingsController.isSleepOptionOn(Settings::SleepOption::IgnoreSteps) &&
+      settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::Sleep) {
+    settingsController.sleepSteps += deltaSteps;
+  }
 }
 
 MotionController::AccelStats MotionController::GetAccelStats() const {
