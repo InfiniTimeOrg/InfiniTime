@@ -434,12 +434,13 @@ void WatchFaceInfineat::Refresh() {
 
   batteryPercentRemaining = batteryController.PercentRemaining();
   isCharging = batteryController.IsCharging();
-  if (batteryController.IsCharging()) { // Charging battery animation
-    chargingBatteryPercent += 1;
+  if (batteryController.IsCharging() && (uint32_t(lv_tick_get() - savedAnimationTick) > 150)) { // Charging battery animation
+    chargingBatteryPercent += 3; // 100% / pine_small height = 3
     if (chargingBatteryPercent > 100) {
       chargingBatteryPercent = batteryPercentRemaining.Get();
     }
     SetBatteryLevel(chargingBatteryPercent);
+    savedAnimationTick = lv_tick_get();
   } else if (isCharging.IsUpdated() || batteryPercentRemaining.IsUpdated()) {
     chargingBatteryPercent = batteryPercentRemaining.Get();
     SetBatteryLevel(chargingBatteryPercent);
