@@ -35,6 +35,9 @@ namespace {
   }
 }
 
+MotionController::MotionController(Controllers::Settings& settingsController) : settingsController {settingsController} {
+}
+
 void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
   if (this->nbSteps != nbSteps && service != nullptr) {
     service->OnNewStepCountValue(nbSteps);
@@ -61,6 +64,11 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
     currentTripSteps += deltaSteps;
   }
   this->nbSteps = nbSteps;
+
+  if (settingsController.isSleepOptionOn(Settings::SleepOption::IgnoreSteps) &&
+      settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::Sleep) {
+    this->ignoreSteps += deltaSteps;
+  }
 }
 
 MotionController::AccelStats MotionController::GetAccelStats() const {

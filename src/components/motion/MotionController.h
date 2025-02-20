@@ -6,12 +6,15 @@
 
 #include "drivers/Bma421.h"
 #include "components/ble/MotionService.h"
+#include "components/settings/Settings.h"
 #include "utility/CircularBuffer.h"
 
 namespace Pinetime {
   namespace Controllers {
     class MotionController {
     public:
+      MotionController(Controllers::Settings& settingsController);
+
       enum class DeviceTypes {
         Unknown,
         BMA421,
@@ -33,11 +36,18 @@ namespace Pinetime {
       }
 
       uint32_t NbSteps() const {
-        return nbSteps;
+        if (nbSteps > ignoreSteps) {
+          return nbSteps - ignoreSteps;
+        }
+        return 0;
       }
 
       void ResetTrip() {
         currentTripSteps = 0;
+      }
+
+      void ResetIgnoreSteps() {
+        ignoreSteps = 0;
       }
 
       uint32_t GetTripSteps() const {
@@ -69,6 +79,7 @@ namespace Pinetime {
     private:
       uint32_t nbSteps = 0;
       uint32_t currentTripSteps = 0;
+      uint32_t ignoreSteps = 0;
 
       TickType_t lastTime = 0;
       TickType_t time = 0;
@@ -100,6 +111,7 @@ namespace Pinetime {
 
       DeviceTypes deviceType = DeviceTypes::Unknown;
       Pinetime::Controllers::MotionService* service = nullptr;
+      Controllers::Settings& settingsController;
     };
   }
 }
