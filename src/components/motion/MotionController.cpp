@@ -60,15 +60,17 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   stats = GetAccelStats();
 
   int32_t deltaSteps = nbSteps - this->nbSteps;
-  if (deltaSteps > 0) {
-    currentTripSteps += deltaSteps;
-  }
-  this->nbSteps = nbSteps;
 
-  if (settingsController.isSleepOptionOn(Settings::SleepOption::IgnoreSteps) &&
-      settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::Sleep) {
-    ignoreSteps += deltaSteps;
+  if (deltaSteps > 0) {
+    if (settingsController.isSleepOptionOn(Settings::SleepOption::IgnoreSteps) &&
+        settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::Sleep) {
+      ignoreSteps += deltaSteps;
+    } else {
+      currentTripSteps += deltaSteps;
+    }
   }
+
+  this->nbSteps = nbSteps;
 }
 
 MotionController::AccelStats MotionController::GetAccelStats() const {
