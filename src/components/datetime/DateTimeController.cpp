@@ -134,6 +134,9 @@ void DateTime::UpdateTime(uint32_t systickCounter, bool forceUpdate) {
   } else if (hour != 0) {
     isMidnightAlreadyNotified = false;
   }
+
+  // Finally change notification status if necessary
+  settingsController.SetNotificationStatusByTime(hour, minute);
 }
 
 const char* DateTime::MonthShortToString() const {
