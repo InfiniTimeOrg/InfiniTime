@@ -46,8 +46,8 @@ namespace Pinetime {
 
       private:
         uint32_t savedTick = 0;
-        uint32_t savedAnimationTick = 0;
         uint8_t chargingBatteryPercent = 101; // not a mistake ;)
+        TickType_t chargingAnimationTick = 0;
 
         Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
         Utility::DirtyValue<bool> isCharging {};
