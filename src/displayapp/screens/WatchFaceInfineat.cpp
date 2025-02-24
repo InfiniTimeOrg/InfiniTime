@@ -434,10 +434,10 @@ void WatchFaceInfineat::Refresh() {
 
   batteryPercentRemaining = batteryController.PercentRemaining();
   isCharging = batteryController.IsCharging();
-  if (batteryController.IsCharging() && (xTaskGetTickCount() - chargingAnimationTick > pdMS_TO_TICKS(150))) { // Charging battery animation
-    chargingBatteryPercent +=
-      100 /
-      lv_obj_get_height(logoPine); // Dividing 100 by the height gives the battery percentage required to shift the animation by 1 pixel
+  // Charging battery animation
+  if (batteryController.IsCharging() && (xTaskGetTickCount() - chargingAnimationTick > pdMS_TO_TICKS(150))) {
+    // Dividing 100 by the height gives the battery percentage required to shift the animation by 1 pixel
+    chargingBatteryPercent += 100 / lv_obj_get_height(logoPine);
     if (chargingBatteryPercent > 100) {
       chargingBatteryPercent = batteryPercentRemaining.Get();
     }
