@@ -207,7 +207,9 @@ void SystemTask::Work() {
           }
           break;
         case Messages::OnNewNotification:
-          if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::On) {
+          if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::On ||
+              (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::Sleep &&
+               settingsController.isSleepOptionOn(Pinetime::Controllers::Settings::SleepOption::AllowNotify))) {
             if (IsSleeping()) {
               GoToRunning();
             }
@@ -321,19 +323,17 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnNewHour:
-          using Pinetime::Controllers::AlarmController;
-          if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
-              settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours && !alarmController.IsAlerting()) {
-            GoToRunning();
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
-          }
-          break;
         case Messages::OnNewHalfHour:
           using Pinetime::Controllers::AlarmController;
-          if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
-              settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours && !alarmController.IsAlerting()) {
-            GoToRunning();
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
+
+          if (settingsController.GetChimeOption() != Controllers::Settings::ChimesOption::None && !alarmController.IsAlerting()) {
+            if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep ||
+                settingsController.isSleepOptionOn(Pinetime::Controllers::Settings::SleepOption::AllowChimes)) {
+              if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep) {
+                GoToRunning();
+              }
+              displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
+            }
           }
           break;
         case Messages::OnChargingEvent:
@@ -418,10 +418,16 @@ void SystemTask::GoToSleep() {
   if (IsSleepDisabled()) {
     return;
   }
-  NRF_LOG_INFO("[systemtask] Going to sleep");
-  if (settingsController.GetAlwaysOnDisplay()) {
+
+  if (settingsController.isSleepOptionOn(Pinetime::Controllers::Settings::SleepOption::EnableAOD) &&
+      settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::Sleep) {
+    NRF_LOG_INFO("[systemtask] Always On Display Enabled For Sleep");
+    displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToAOD);
+  } else if (settingsController.GetAlwaysOnDisplay()) {
+    NRF_LOG_INFO("[systemtask] Going To Always On Display");
     displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToAOD);
   } else {
+    NRF_LOG_INFO("[systemtask] Going To Sleep");
     displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
   }
   heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
@@ -440,6 +446,7 @@ void SystemTask::UpdateMotion() {
 
   if (stepCounterMustBeReset) {
     motionSensor.ResetStepCounter();
+    motionController.ResetIgnoreSteps();
     stepCounterMustBeReset = false;
   }
 
