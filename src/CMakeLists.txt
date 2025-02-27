@@ -411,6 +411,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingWeatherFormat.cpp
         displayapp/screens/settings/SettingWakeUp.cpp
         displayapp/screens/settings/SettingDisplay.cpp
+        displayapp/screens/settings/SettingHeartRate.cpp
         displayapp/screens/settings/SettingSteps.cpp
         displayapp/screens/settings/SettingSetDateTime.cpp
         displayapp/screens/settings/SettingSetDate.cpp
