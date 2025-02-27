@@ -26,6 +26,7 @@ namespace Pinetime {
       StopWatch,
       Metronome,
       Motion,
+      Calculator,
       Steps,
       Dice,
       Weather,
