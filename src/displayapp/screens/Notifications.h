@@ -25,6 +25,7 @@ namespace Pinetime {
                                Pinetime::Controllers::NotificationManager& notificationManager,
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                Pinetime::Controllers::MotorController& motorController,
+                               Pinetime::Controllers::Settings& settingsController,
                                System::SystemTask& systemTask,
                                Modes mode);
         ~Notifications() override;
