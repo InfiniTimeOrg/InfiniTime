@@ -70,7 +70,11 @@ int FS::FileWrite(lfs_file_t* file_p, const uint8_t* buff, uint32_t size) {
 }
 
 int FS::FileSeek(lfs_file_t* file_p, uint32_t pos) {
-  return lfs_file_seek(&lfs, file_p, pos, LFS_SEEK_SET);
+  return FileSeek(file_p, pos, LFS_SEEK_SET);
+}
+
+int FS::FileSeek(lfs_file_t* file_p, uint32_t pos, int whence) {
+  return lfs_file_seek(&lfs, file_p, pos, whence);
 }
 
 int FS::FileDelete(const char* fileName) {
