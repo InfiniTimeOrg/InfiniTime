@@ -14,6 +14,8 @@ This page describes the BLE implementation and API built in this firmware.
 - [BLE Services](#ble-services)
   - [CTS](#cts)
   - [ANS](#ans)
+- [BLE Clients](#ble-clients)
+  - [IAC](#iac)
 - [Getting Information](#getting-information)
   - [Firmware Version](#firmware-version)
   - [Battery Level](#battery-level)
@@ -113,6 +115,16 @@ The following custom services are implemented in InfiniTime:
 
 ![ANS sequence diagram](./ble/ans_sequence.png "ANS sequence diagram")
 
+## BLE clients
+
+### IAC
+
+InfiniTime implements an Immediate Alert Service client, which can be used to send alerts to the companion app.
+This is useful for "Find my Phone" functionality.
+
+More documentation about this service can be found here.
+
+[Immediate Alert Service](https://www.bluetooth.com/specifications/specs/immediate-alert-service-1-0/)
 ---
 
 ### Getting Information
