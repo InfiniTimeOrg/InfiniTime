@@ -52,6 +52,7 @@ namespace Pinetime {
       Terminal,
       Infineat,
       CasioStyleG7710,
+      Maze,
     };
 
     template <Apps>
