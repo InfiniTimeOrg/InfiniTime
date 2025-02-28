@@ -324,6 +324,9 @@ void DisplayApp::Refresh() {
         // display activity timer causing the screen to never sleep after timeout
         lvgl.ClearTouchState();
         if (msg == Messages::GoToAOD) {
+          currentScreen->OnLCDSleep(true); // prepare for low power while still fast
+          lv_task_handler();
+          vTaskDelay(100);
           lcd.LowPowerOn();
           // Record idle entry time
           alwaysOnFrameCount = 0;
@@ -331,6 +334,9 @@ void DisplayApp::Refresh() {
           PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskAOD);
           state = States::AOD;
         } else {
+          currentScreen->OnLCDSleep(false);
+          lv_task_handler(); // call to update display, will not be called again in Idle mode
+          vTaskDelay(100);   // give time for display refresh
           lcd.Sleep();
           PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
           state = States::Idle;
@@ -354,6 +360,7 @@ void DisplayApp::Refresh() {
         lv_disp_trig_activity(nullptr);
         ApplyBrightness();
         state = States::Running;
+        currentScreen->OnLCDWakeup(settingsController.GetAlwaysOnDisplay());
         break;
       case Messages::UpdateBleConnection:
         // Only used for recovery firmware
