@@ -36,6 +36,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/fs/FS.h"
+#include "components/firmwarevalidator/FirmwareValidator.h"
 #include "drivers/Spi.h"
 #include "drivers/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
@@ -98,6 +99,7 @@ Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateCon
 
 Pinetime::Controllers::FS fs {spiNorFlash};
 Pinetime::Controllers::Settings settingsController {fs};
+Pinetime::Controllers::FirmwareValidator validator {fs};
 Pinetime::Controllers::MotorController motorController {};
 
 Pinetime::Controllers::DateTime dateTimeController {settingsController};
@@ -118,6 +120,7 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               notificationManager,
                                               heartRateController,
                                               settingsController,
+                                              validator,
                                               motorController,
                                               motionController,
                                               alarmController,
@@ -140,6 +143,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         motionController,
                                         motionSensor,
                                         settingsController,
+                                        validator,
                                         heartRateController,
                                         displayApp,
                                         heartRateApp,

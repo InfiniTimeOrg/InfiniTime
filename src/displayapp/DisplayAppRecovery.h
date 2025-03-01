@@ -23,6 +23,7 @@ namespace Pinetime {
 
   namespace Controllers {
     class Settings;
+    class FirmwareValidator;
     class Battery;
     class Ble;
     class DateTime;
@@ -55,6 +56,7 @@ namespace Pinetime {
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Controllers::Settings& settingsController,
+                 Pinetime::Controllers::FirmwareValidator& validator,
                  Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::AlarmController& alarmController,
