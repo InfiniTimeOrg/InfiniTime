@@ -32,7 +32,7 @@ Steps::Steps(Controllers::MotionController& motionController, Controllers::Setti
 
   lSteps = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
-  lv_obj_set_style_local_text_font(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_font(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &noto_sans_42);
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
