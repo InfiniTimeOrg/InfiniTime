@@ -31,7 +31,7 @@ namespace {
       }
     }
     return optionArray;
-  };
+  }
 }
 
 SettingBluetooth::SettingBluetooth(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)

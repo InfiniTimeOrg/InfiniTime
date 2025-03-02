@@ -31,8 +31,9 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
 
 void DisplayApp::Start() {
   msgQueue = xQueueCreate(queueSize, itemSize);
-  if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 512, this, 0, &taskHandle))
+  if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 512, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+  }
 }
 
 void DisplayApp::Process(void* instance) {
