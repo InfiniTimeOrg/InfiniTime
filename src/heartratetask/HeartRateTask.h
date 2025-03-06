@@ -7,58 +7,6 @@
 
 #define DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED pdMS_TO_TICKS(30 * 1000)
 
-/*
-               *** Background Measurement deactivated ***
-
-
-
-┌─────────────────────────┐                       ┌─────────────────────────┐
-│                         ├───StartMeasurement───►│                         │
-│   ScreenOnAndStopped    │                       │   ScreenOnAndMeasuring  │
-│                         │◄──StopMeasurement     │                         │
-└──▲────────────────┬─────┘                       └──▲──────────────────┬───┘
-   │                │                                │                  │
- WakeUp         GoToSleep                          WakeUp          GoToSleep
-   │                │                                │                  │
-┌──┴────────────────▼─────┐                       ┌──┴──────────────────▼───┐
-│                         │                       │                         │
-│   ScreenOffAndStopped   │                       │   ScreenOffAndWaiting   │
-│                         │                       │                         │
-└─────────────────────────┘                       └─────────────────────────┘
-
-
-
-
-
-               *** Background Measurement activated ***
-
-
-
-┌─────────────────────────┐                       ┌─────────────────────────┐
-│                         ├───StartMeasurement───►│                         │
-│   ScreenOnAndStopped    │                       │   ScreenOnAndMeasuring  │
-│                         │◄──StopMeasurement     │                         │
-└──▲────────────────┬─────┘                       └──▲──────────────────┬───┘
-   │                │                        ┌───────┘                  │
- WakeUp         GoToSleep                    │     WakeUp          GoToSleep
-   │                │                        │       │                  │
-┌──┴────────────────▼─────┐                  │    ┌──┴──────────────────▼───┐
-│                         │                  │    │                         │
-│   ScreenOffAndStopped   │                  │    │   ScreenOffAndWating    │
-│                         │                  │    │                         │
-└─────────────────────────┘                  │    └───┬──────────────────▲──┘
-                                             │        │                  │
-                                             │     Waited           Got sensor
-                                             │    interval             data
-                                             │      time                 │
-                                             │        │                  │
-                                          WakeUp  ┌───▼──────────────────┴──┐
-                                             │    │                         │
-                                             └────┤  ScreenOffAndMeasuring  │
-                                                  │                         │
-                                                  └─────────────────────────┘
- */
-
 namespace Pinetime {
   namespace Drivers {
     class Hrs3300;
@@ -73,8 +21,6 @@ namespace Pinetime {
     public:
       enum class Messages : uint8_t { GoToSleep, WakeUp, StartMeasurement, StopMeasurement };
 
-      enum class States { ScreenOnAndStopped, ScreenOnAndMeasuring, ScreenOffAndStopped, ScreenOffAndWaiting, ScreenOffAndMeasuring };
-
       explicit HeartRateTask(Drivers::Hrs3300& heartRateSensor,
                              Controllers::HeartRateController& controller,
                              Controllers::Settings& settings);
@@ -84,15 +30,15 @@ namespace Pinetime {
 
     private:
       static void Process(void* instance);
-      void StartMeasurement();
-      void StopMeasurement();
+      void StartSensor();
+      void StopSensor();
 
       void HandleGoToSleep();
       void HandleWakeUp();
       void HandleStartMeasurement(int* lastBpm);
       void HandleStopMeasurement();
 
-      void HandleBackgroundWaiting();
+      void HandleWaiting();
       void HandleSensorData(int* lastBpm);
 
       TickType_t GetBackgroundIntervalInTicks();
@@ -105,11 +51,16 @@ namespace Pinetime {
 
       TaskHandle_t taskHandle;
       QueueHandle_t messageQueue;
-      States state = States::ScreenOnAndStopped;
+
+      bool isBackgroundMeasuring = false;
+      bool isScreenOn = true;
+      bool isMeasurementActivated = false;
+
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
       Controllers::Settings& settings;
       Controllers::Ppg ppg;
+
       TickType_t measurementStart = 0;
     };
 
