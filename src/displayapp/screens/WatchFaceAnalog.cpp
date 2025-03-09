@@ -67,11 +67,13 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   minor_scales = lv_linemeter_create(lv_scr_act(), nullptr);
   if (settingsController.GetAClockStyle() == Pinetime::Controllers::Settings::AClockStyle::H24) {
     lv_linemeter_set_scale(minor_scales, 360, 61);
+    lv_linemeter_set_angle_offset(minor_scales, 180);
+    lv_obj_set_size(minor_scales, 236, 236);
   } else {
     lv_linemeter_set_scale(minor_scales, 300, 51);
+    lv_linemeter_set_angle_offset(minor_scales, 180);
+    lv_obj_set_size(minor_scales, 240, 240);
   }
-  lv_linemeter_set_angle_offset(minor_scales, 180);
-  lv_obj_set_size(minor_scales, 240, 240);
   lv_obj_align(minor_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_bg_opa(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
   lv_obj_set_style_local_scale_width(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
@@ -82,140 +84,95 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   if (settingsController.GetAClockStyle() == Pinetime::Controllers::Settings::AClockStyle::H24) {
     lv_linemeter_set_scale(major_scales, 360, 13);
     lv_linemeter_set_angle_offset(major_scales, 30);
-    lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
-    lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 2);
   } else {
     lv_linemeter_set_scale(major_scales, 300, 11);
     lv_linemeter_set_angle_offset(major_scales, 180);
-    lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 6);
-    lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
   }
+  lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 6);
+  lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
   lv_obj_set_size(major_scales, 240, 240);
   lv_obj_align(major_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_bg_opa(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
   lv_obj_set_style_local_scale_end_color(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
+  // create 12 hour style scales
+  large_scales_12 = lv_linemeter_create(lv_scr_act(), nullptr);
+  lv_linemeter_set_scale(large_scales_12, 180, 3);
+  lv_linemeter_set_angle_offset(large_scales_12, 180);
+  lv_obj_set_size(large_scales_12, 240, 240);
+  lv_obj_align(large_scales_12, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_scale_width(large_scales_12, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 20);
+  lv_obj_set_style_local_scale_end_line_width(large_scales_12, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
+  lv_obj_set_style_local_bg_opa(large_scales_12, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_scale_end_color(large_scales_12, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
 
-  large_scales = lv_linemeter_create(lv_scr_act(), nullptr);
+  // create 24 hour style left hand scales
+  large_scales_24_a = lv_linemeter_create(lv_scr_act(), nullptr);
+  lv_linemeter_set_scale(large_scales_24_a, 150, 11);
+  lv_linemeter_set_angle_offset(large_scales_24_a, 270);
+  lv_obj_set_size(large_scales_24_a, 200, 200);
+  lv_obj_align(large_scales_24_a, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_scale_width(large_scales_24_a, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 10);
+  lv_obj_set_style_local_scale_end_line_width(large_scales_24_a, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 2);
+  lv_obj_set_style_local_bg_opa(large_scales_24_a, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_scale_end_color(large_scales_24_a, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+
+  // create 24 hour style right hand scales
+  large_scales_24_b = lv_linemeter_create(lv_scr_act(), nullptr);
+  lv_linemeter_set_scale(large_scales_24_b, 150, 11);
+  lv_linemeter_set_angle_offset(large_scales_24_b, 90);
+  lv_obj_set_size(large_scales_24_b, 200, 200);
+  lv_obj_align(large_scales_24_b, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_scale_width(large_scales_24_b, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 10);
+  lv_obj_set_style_local_scale_end_line_width(large_scales_24_b, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 2);
+  lv_obj_set_style_local_bg_opa(large_scales_24_b, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_scale_end_color(large_scales_24_b, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+
   if (settingsController.GetAClockStyle() == Pinetime::Controllers::Settings::AClockStyle::H24) {
-    lv_linemeter_set_scale(large_scales, 360, 13);
-    lv_linemeter_set_angle_offset(large_scales, 15);
-    lv_obj_set_size(large_scales, 225, 225);
-    lv_obj_align(large_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 10);
-    lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 3);
+    lv_obj_set_hidden(large_scales_24_a, false);
+    lv_obj_set_hidden(large_scales_24_b, false);
+    lv_obj_set_hidden(large_scales_12, true);
   } else {
-    lv_linemeter_set_scale(large_scales, 180, 3);
-    lv_linemeter_set_angle_offset(large_scales, 180);
-    lv_obj_set_size(large_scales, 240, 240);
-    lv_obj_align(large_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 20);
-    lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
+    lv_obj_set_hidden(large_scales_24_a, true);
+    lv_obj_set_hidden(large_scales_24_b, true);
+    lv_obj_set_hidden(large_scales_12, false);
   }
-  lv_obj_set_style_local_bg_opa(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_style_local_scale_end_color(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
 
+  // create minute scales separation circle
+  circle = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_opa(circle, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_radius(circle, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 102);
+  lv_obj_set_size(circle, 204, 204);
+  lv_obj_align(circle, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_border_width(circle, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 1);
+  lv_obj_set_style_local_border_color(circle, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+
+  // create digits
   zero = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_align(zero, LV_LABEL_ALIGN_CENTER);
-  lv_label_set_text_static(zero, "24");
-  lv_obj_set_pos(zero, 107, 17);
+  lv_label_set_text_static(zero, "0");
+  lv_obj_set_pos(zero, 113, 25);
   lv_obj_set_style_local_text_color(zero, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
-
-  /* two = lv_label_create(lv_scr_act(), nullptr); */
-  /* lv_label_set_align(two, LV_LABEL_ALIGN_CENTER); */
-  /* lv_label_set_text_static(two, "2"); */
-  /* lv_obj_set_pos(two, 160, 30); */
-  /* lv_obj_set_style_local_text_color(two, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
-
-  /* four = lv_label_create(lv_scr_act(), nullptr); */
-  /* lv_label_set_align(four, LV_LABEL_ALIGN_CENTER); */
-  /* lv_label_set_text_static(four, "4"); */
-  /* lv_obj_set_pos(four, 192, 60); */
-  /* lv_obj_set_style_local_text_color(four, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
-
-  /* six = lv_label_create(lv_scr_act(), nullptr); */
-  /* lv_label_set_align(six, LV_LABEL_ALIGN_CENTER); */
-  /* lv_label_set_text_static(six, "6"); */
-  /* lv_obj_set_pos(six, 206, 107); */
-  /* lv_obj_set_style_local_text_color(six, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
-
-  /* eight = lv_label_create(lv_scr_act(), nullptr); */
-  /* lv_label_set_align(eight, LV_LABEL_ALIGN_CENTER); */
-  /* lv_label_set_text_static(eight, "8"); */
-  /* lv_obj_set_pos(eight, 192, 154); */
-  /* lv_obj_set_style_local_text_color(eight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
-
-  /* ten = lv_label_create(lv_scr_act(), nullptr); */
-  /* lv_label_set_align(ten, LV_LABEL_ALIGN_CENTER); */
-  /* lv_label_set_text_static(ten, "10"); */
-  /* lv_obj_set_pos(ten, 153, 184); */
-  /* lv_obj_set_style_local_text_color(ten, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
 
   twelve = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_align(twelve, LV_LABEL_ALIGN_CENTER);
   lv_label_set_text_static(twelve, "12");
   if (settingsController.GetAClockStyle() == Pinetime::Controllers::Settings::AClockStyle::H24) {
-    lv_obj_set_pos(twelve, 107, 198);
+    lv_obj_set_pos(twelve, 107, 188);
   } else {
     lv_obj_set_pos(twelve, 107, 10);
   }
   lv_obj_set_style_local_text_color(twelve, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
 
-  /* fourteen = lv_label_create(lv_scr_act(), nullptr); */
-  /* lv_label_set_align(fourteen, LV_LABEL_ALIGN_CENTER); */
-  /* lv_label_set_text_static(fourteen, "14"); */
-  /* lv_obj_set_pos(fourteen, 62, 184); */
-  /* lv_obj_set_style_local_text_color(fourteen, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
-
-  /* sixteen = lv_label_create(lv_scr_act(), nullptr); */
-  /* lv_label_set_align(sixteen, LV_LABEL_ALIGN_CENTER); */
-  /* lv_label_set_text_static(sixteen, "16"); */
-  /* lv_obj_set_pos(sixteen, 32, 152); */
-  /* lv_obj_set_style_local_text_color(sixteen, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
-
-  /* eighteen = lv_label_create(lv_scr_act(), nullptr); */
-  /* lv_label_set_align(eighteen, LV_LABEL_ALIGN_CENTER); */
-  /* lv_label_set_text_static(eighteen, "18"); */
-  /* lv_obj_set_pos(eighteen, 20, 107); */
-  /* lv_obj_set_style_local_text_color(eighteen, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
-
-  /* twenty = lv_label_create(lv_scr_act(), nullptr); */
-  /* lv_label_set_align(twenty, LV_LABEL_ALIGN_CENTER); */
-  /* lv_label_set_text_static(twenty, "20"); */
-  /* lv_obj_set_pos(twenty, 32, 62); */
-  /* lv_obj_set_style_local_text_color(twenty, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
-
-  /* twentytwo = lv_label_create(lv_scr_act(), nullptr); */
-  /* lv_label_set_align(twentytwo, LV_LABEL_ALIGN_CENTER); */
-  /* lv_label_set_text_static(twentytwo, "22"); */
-  /* lv_obj_set_pos(twentytwo, 62, 30); */
-  /* lv_obj_set_style_local_text_color(twentytwo, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
-
   if (settingsController.GetAClockStyle() == Pinetime::Controllers::Settings::AClockStyle::H24) {
+    lv_obj_set_hidden(circle, false);
     lv_obj_set_hidden(zero, false);
-    /* lv_obj_set_hidden(two, false); */
-    /* lv_obj_set_hidden(four, false); */
-    /* lv_obj_set_hidden(six, false); */
-    /* lv_obj_set_hidden(eight, false); */
-    /* lv_obj_set_hidden(ten, false); */
-    /* lv_obj_set_hidden(fourteen, false); */
-    /* lv_obj_set_hidden(sixteen, false); */
-    /* lv_obj_set_hidden(eighteen, false); */
-    /* lv_obj_set_hidden(twenty, false); */
-    /* lv_obj_set_hidden(twentytwo, false); */
+    lv_obj_set_pos(twelve, 107, 188);
     tfHourEnable = true;
   } else {
+    lv_obj_set_hidden(circle, true);
     lv_obj_set_hidden(zero, true);
-    /* lv_obj_set_hidden(two, true); */
-    /* lv_obj_set_hidden(four, true); */
-    /* lv_obj_set_hidden(six, true); */
-    /* lv_obj_set_hidden(eight, true); */
-    /* lv_obj_set_hidden(ten, true); */
-    /* lv_obj_set_hidden(fourteen, true); */
-    /* lv_obj_set_hidden(sixteen, true); */
-    /* lv_obj_set_hidden(eighteen, true); */
-    /* lv_obj_set_hidden(twenty, true); */
-    /* lv_obj_set_hidden(twentytwo, true); */
+    lv_obj_set_pos(twelve, 107, 10);
     tfHourEnable = false;
   }
 
@@ -236,17 +193,18 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   // Date - Day / Week day
-
   label_date_day = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_date_day, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
   lv_label_set_text_fmt(label_date_day, "%s\n%02i", dateTimeController.DayOfWeekShortToString(), dateTimeController.Day());
   lv_label_set_align(label_date_day, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label_date_day, nullptr, LV_ALIGN_CENTER, 50, 0);
+  if (settingsController.GetAClockStyle() == Pinetime::Controllers::Settings::AClockStyle::H24) {
+    lv_obj_align(label_date_day, nullptr, LV_ALIGN_CENTER, 40, 0);
+  } else {
+    lv_obj_align(label_date_day, nullptr, LV_ALIGN_CENTER, 50, 0);
+  }
 
   minute_body = lv_line_create(lv_scr_act(), nullptr);
-  /* minute_body_trace = lv_line_create(lv_scr_act(), nullptr); */
   hour_body = lv_line_create(lv_scr_act(), nullptr);
-  /* hour_body_trace = lv_line_create(lv_scr_act(), nullptr); */
   second_body = lv_line_create(lv_scr_act(), nullptr);
 
   lv_style_init(&second_line_style);
@@ -266,23 +224,11 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_style_set_line_rounded(&minute_line_style, LV_STATE_DEFAULT, true);
   lv_obj_add_style(minute_body, LV_LINE_PART_MAIN, &minute_line_style);
 
-  /* lv_style_init(&minute_line_style_trace); */
-  /* lv_style_set_line_width(&minute_line_style_trace, LV_STATE_DEFAULT, 3); */
-  /* lv_style_set_line_color(&minute_line_style_trace, LV_STATE_DEFAULT, LV_COLOR_WHITE); */
-  /* lv_style_set_line_rounded(&minute_line_style_trace, LV_STATE_DEFAULT, false); */
-  /* lv_obj_add_style(minute_body_trace, LV_LINE_PART_MAIN, &minute_line_style_trace); */
-
   lv_style_init(&hour_line_style);
   lv_style_set_line_width(&hour_line_style, LV_STATE_DEFAULT, 5);
   lv_style_set_line_color(&hour_line_style, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_style_set_line_rounded(&hour_line_style, LV_STATE_DEFAULT, true);
   lv_obj_add_style(hour_body, LV_LINE_PART_MAIN, &hour_line_style);
-
-  /* lv_style_init(&hour_line_style_trace); */
-  /* lv_style_set_line_width(&hour_line_style_trace, LV_STATE_DEFAULT, 3); */
-  /* lv_style_set_line_color(&hour_line_style_trace, LV_STATE_DEFAULT, LV_COLOR_WHITE); */
-  /* lv_style_set_line_rounded(&hour_line_style_trace, LV_STATE_DEFAULT, false); */
-  /* lv_obj_add_style(hour_body_trace, LV_LINE_PART_MAIN, &hour_line_style_trace); */
 
   btnClose = lv_btn_create(lv_scr_act(), nullptr);
   btnClose->user_data = this;
@@ -323,15 +269,12 @@ WatchFaceAnalog::~WatchFaceAnalog() {
   lv_task_del(taskRefresh);
 
   lv_style_reset(&hour_line_style);
-  /* lv_style_reset(&hour_line_style_trace); */
   lv_style_reset(&minute_line_style);
-  /* lv_style_reset(&minute_line_style_trace); */
   lv_style_reset(&second_line_style);
 
   lv_obj_clean(lv_scr_act());
 }
 
-/* Begin Settings */
 bool WatchFaceAnalog::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnClose)) {
     lv_obj_set_hidden(btnClose, false);
@@ -360,7 +303,6 @@ bool WatchFaceAnalog::OnButtonPushed() {
   }
   return false;
 }
-/* End Settings */
 
 void WatchFaceAnalog::UpdateClock() {
   uint8_t hour = dateTimeController.Hours();
@@ -372,11 +314,7 @@ void WatchFaceAnalog::UpdateClock() {
     minute_point[0] = CoordinateRelocate(-15, angle);
     minute_point[1] = CoordinateRelocate(MinuteLength, angle);
 
-    /* minute_point_trace[0] = CoordinateRelocate(5, angle); */
-    /* minute_point_trace[1] = CoordinateRelocate(31, angle); */
-
     lv_line_set_points(minute_body, minute_point, 2);
-    /* lv_line_set_points(minute_body_trace, minute_point_trace, 2); */
   }
 
   if (sHour != hour || sMinute != minute || sTfHourEnable != tfHourEnable) {
@@ -393,11 +331,7 @@ void WatchFaceAnalog::UpdateClock() {
     hour_point[0] = CoordinateRelocate(-10, angle);
     hour_point[1] = CoordinateRelocate(HourLength, angle);
 
-    /* hour_point_trace[0] = CoordinateRelocate(5, angle); */
-    /* hour_point_trace[1] = CoordinateRelocate(31, angle); */
-
     lv_line_set_points(hour_body, hour_point, 2);
-    /* lv_line_set_points(hour_body_trace, hour_point_trace, 2); */
   }
 
   if (sSecond != second) {
@@ -468,48 +402,56 @@ void WatchFaceAnalog::UpdateSelected(lv_obj_t* object, lv_event_t event) {
 
     if (object == btnClockStyle) {
       if (tfHourEnable == false) {
-        // set mode to 24 hours
+        // set clockstyle to 24 hours
         tfHourEnable = true;
-        // digits
-        lv_obj_set_pos(twelve, 107, 198);
+
+        // (un)hide clockstyle elements
+        lv_obj_set_hidden(large_scales_12, true);
+        lv_obj_set_hidden(large_scales_24_a, false);
+        lv_obj_set_hidden(large_scales_24_b, false);
+        lv_obj_set_hidden(circle, false);
         lv_obj_set_hidden(zero, false);
-        // scales
+
+        // reposition 12
+        lv_obj_set_pos(twelve, 107, 188);
+        // reposition date
+        lv_obj_align(label_date_day, nullptr, LV_ALIGN_CENTER, 40, 0);
+
+        // changes to minor and major scales
         lv_linemeter_set_scale(minor_scales, 360, 61);
+        lv_obj_set_size(minor_scales, 236, 236);
+        lv_obj_align(minor_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
 
         lv_linemeter_set_scale(major_scales, 360, 13);
         lv_linemeter_set_angle_offset(major_scales, 30);
-        lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
-        lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 2);
 
-        lv_linemeter_set_scale(large_scales, 360, 13);
-        lv_linemeter_set_angle_offset(large_scales, 15);
-        lv_obj_set_size(large_scales, 225, 225);
-        lv_obj_align(large_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 10);
-        lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 3);
-
+        // save settings
         settingsController.SetAClockStyle(Controllers::Settings::AClockStyle::H24);
       } else {
-        // set mode to 12 hours
+        // set clockstyle to 12 hours
         tfHourEnable = false;
-        // digits
-        lv_obj_set_pos(twelve, 107, 10);
+
+        // (un)hide clockstyle elements
+        lv_obj_set_hidden(large_scales_12, false);
+        lv_obj_set_hidden(large_scales_24_a, true);
+        lv_obj_set_hidden(large_scales_24_b, true);
+        lv_obj_set_hidden(circle, true);
         lv_obj_set_hidden(zero, true);
-        // scales
+
+        // reposition 12
+        lv_obj_set_pos(twelve, 107, 10);
+        // reposition date
+        lv_obj_align(label_date_day, nullptr, LV_ALIGN_CENTER, 50, 0);
+
+        // changes to minor and major scales
         lv_linemeter_set_scale(minor_scales, 300, 51);
+        lv_obj_set_size(minor_scales, 240, 240);
+        lv_obj_align(minor_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
 
         lv_linemeter_set_scale(major_scales, 300, 11);
         lv_linemeter_set_angle_offset(major_scales, 180);
-        lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 6);
-        lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
 
-        lv_linemeter_set_scale(large_scales, 180, 3);
-        lv_linemeter_set_angle_offset(large_scales, 180);
-        lv_obj_set_size(large_scales, 240, 240);
-        lv_obj_align(large_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 20);
-        lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
-
+        // save settings
         settingsController.SetAClockStyle(Controllers::Settings::AClockStyle::H12);
       }
     }
