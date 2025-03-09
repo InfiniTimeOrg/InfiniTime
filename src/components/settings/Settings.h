@@ -36,7 +36,7 @@ namespace Pinetime {
       };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
-      enum class A24HourMode : uint8_t { On, Off };
+      enum class AClockStyle : uint8_t { H24, H12 };
       enum class ASecondHand : uint8_t { On, Off };
 
       struct PineTimeStyle {
@@ -48,7 +48,7 @@ namespace Pinetime {
       };
 
       struct Analog {
-        A24HourMode tfHourEnable = A24HourMode::Off;
+        AClockStyle tfHourEnable = AClockStyle::H12;
         ASecondHand secondHandEnable = ASecondHand::On;
       };
 
@@ -161,13 +161,13 @@ namespace Pinetime {
         return settings.PTS.weatherEnable;
       };
 
-      void SetA24HourMode(A24HourMode tfHourEnable) {
+      void SetAClockStyle(AClockStyle tfHourEnable) {
         if (tfHourEnable != settings.A.tfHourEnable)
           settingsChanged = true;
         settings.A.tfHourEnable = tfHourEnable;
       };
 
-      A24HourMode GetA24HourMode() const {
+      AClockStyle GetAClockStyle() const {
         return settings.A.tfHourEnable;
       };
 

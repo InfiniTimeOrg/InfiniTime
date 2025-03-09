@@ -65,7 +65,7 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   sTfHourEnable = true;
 
   minor_scales = lv_linemeter_create(lv_scr_act(), nullptr);
-  if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
+  if (settingsController.GetAClockStyle() == Pinetime::Controllers::Settings::AClockStyle::H24) {
     lv_linemeter_set_scale(minor_scales, 360, 61);
   } else {
     lv_linemeter_set_scale(minor_scales, 300, 51);
@@ -79,7 +79,7 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_scale_end_color(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
   major_scales = lv_linemeter_create(lv_scr_act(), nullptr);
-  if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
+  if (settingsController.GetAClockStyle() == Pinetime::Controllers::Settings::AClockStyle::H24) {
     lv_linemeter_set_scale(major_scales, 360, 13);
     lv_linemeter_set_angle_offset(major_scales, 30);
     lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
@@ -97,7 +97,7 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
 
 
   large_scales = lv_linemeter_create(lv_scr_act(), nullptr);
-  if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
+  if (settingsController.GetAClockStyle() == Pinetime::Controllers::Settings::AClockStyle::H24) {
     lv_linemeter_set_scale(large_scales, 360, 13);
     lv_linemeter_set_angle_offset(large_scales, 15);
     lv_obj_set_size(large_scales, 225, 225);
@@ -154,7 +154,7 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   twelve = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_align(twelve, LV_LABEL_ALIGN_CENTER);
   lv_label_set_text_static(twelve, "12");
-  if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
+  if (settingsController.GetAClockStyle() == Pinetime::Controllers::Settings::AClockStyle::H24) {
     lv_obj_set_pos(twelve, 107, 198);
   } else {
     lv_obj_set_pos(twelve, 107, 10);
@@ -191,7 +191,7 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   /* lv_obj_set_pos(twentytwo, 62, 30); */
   /* lv_obj_set_style_local_text_color(twentytwo, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
 
-  if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
+  if (settingsController.GetAClockStyle() == Pinetime::Controllers::Settings::AClockStyle::H24) {
     lv_obj_set_hidden(zero, false);
     /* lv_obj_set_hidden(two, false); */
     /* lv_obj_set_hidden(four, false); */
@@ -294,15 +294,15 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_obj_set_event_cb(btnClose, event_handler);
   lv_obj_set_hidden(btnClose, true);
 
-  btn24HourMode = lv_btn_create(lv_scr_act(), nullptr);
-  btn24HourMode->user_data = this;
-  lv_obj_set_size(btn24HourMode, 160, 60);
-  lv_obj_align(btn24HourMode, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
-  lv_obj_set_style_local_bg_opa(btn24HourMode, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_t* lbl24HourMode = lv_label_create(btn24HourMode, nullptr);
-  lv_label_set_text_static(lbl24HourMode, "Toggle 24h");
-  lv_obj_set_event_cb(btn24HourMode, event_handler);
-  lv_obj_set_hidden(btn24HourMode, true);
+  btnClockStyle = lv_btn_create(lv_scr_act(), nullptr);
+  btnClockStyle->user_data = this;
+  lv_obj_set_size(btnClockStyle, 160, 60);
+  lv_obj_align(btnClockStyle, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
+  lv_obj_set_style_local_bg_opa(btnClockStyle, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_obj_t* lblClockStyle = lv_label_create(btnClockStyle, nullptr);
+  lv_label_set_text_static(lblClockStyle, "Toggle 24h");
+  lv_obj_set_event_cb(btnClockStyle, event_handler);
+  lv_obj_set_hidden(btnClockStyle, true);
 
   btnSecondHand = lv_btn_create(lv_scr_act(), nullptr);
   btnSecondHand->user_data = this;
@@ -335,7 +335,7 @@ WatchFaceAnalog::~WatchFaceAnalog() {
 bool WatchFaceAnalog::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnClose)) {
     lv_obj_set_hidden(btnClose, false);
-    lv_obj_set_hidden(btn24HourMode, false);
+    lv_obj_set_hidden(btnClockStyle, false);
     lv_obj_set_hidden(btnSecondHand, false);
     savedTick = lv_tick_get();
     return true;
@@ -349,7 +349,7 @@ bool WatchFaceAnalog::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 void WatchFaceAnalog::CloseMenu() {
   settingsController.SaveSettings();
   lv_obj_set_hidden(btnClose, true);
-  lv_obj_set_hidden(btn24HourMode, true);
+  lv_obj_set_hidden(btnClockStyle, true);
   lv_obj_set_hidden(btnSecondHand, true);
 }
 
@@ -466,7 +466,7 @@ void WatchFaceAnalog::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       CloseMenu();
     }
 
-    if (object == btn24HourMode) {
+    if (object == btnClockStyle) {
       if (tfHourEnable == false) {
         // set mode to 24 hours
         tfHourEnable = true;
@@ -488,7 +488,7 @@ void WatchFaceAnalog::UpdateSelected(lv_obj_t* object, lv_event_t event) {
         lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 10);
         lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 3);
 
-        settingsController.SetA24HourMode(Controllers::Settings::A24HourMode::On);
+        settingsController.SetAClockStyle(Controllers::Settings::AClockStyle::H24);
       } else {
         // set mode to 12 hours
         tfHourEnable = false;
@@ -510,7 +510,7 @@ void WatchFaceAnalog::UpdateSelected(lv_obj_t* object, lv_event_t event) {
         lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 20);
         lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
 
-        settingsController.SetA24HourMode(Controllers::Settings::A24HourMode::Off);
+        settingsController.SetAClockStyle(Controllers::Settings::AClockStyle::H12);
       }
     }
 

@@ -54,7 +54,7 @@ namespace Pinetime {
         bool tfHourEnable, sTfHourEnable;
 
         lv_obj_t* btnClose;
-        lv_obj_t* btn24HourMode;
+        lv_obj_t* btnClockStyle;
         lv_obj_t* btnSecondHand;
         lv_obj_t* minor_scales;
         lv_obj_t* major_scales;
