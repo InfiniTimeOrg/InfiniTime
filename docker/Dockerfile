@@ -37,6 +37,13 @@ RUN apt-get update -qq \
       libpangocairo-1.0-0 \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
+# Add the necessary apt-gets for the devcontainer
+RUN apt-get update -qq \
+    && apt-get install -y \
+        clang-format-14 \
+        clang-tidy \
+        libncurses5
+
 # Git needed for PROJECT_GIT_COMMIT_HASH variable setting
 
 RUN pip3 install adafruit-nrfutil
@@ -54,6 +61,12 @@ RUN bash -c "source /opt/build.sh; GetGcc;"
 RUN bash -c "source /opt/build.sh; GetNrfSdk;"
 # McuBoot
 RUN bash -c "source /opt/build.sh; GetMcuBoot;"
+
+# Add the infinitime user for connecting devcontainer
+RUN adduser infinitime
+
+# Configure Git to accept the /sources directory as safe
+RUN git config --global --add safe.directory /sources
 
 ENV SOURCES_DIR /sources
 CMD ["/opt/build.sh"]

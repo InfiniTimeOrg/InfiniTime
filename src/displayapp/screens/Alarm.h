@@ -17,11 +17,12 @@
 */
 #pragma once
 
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
 #include "displayapp/Controllers.h"
+#include "systemtask/WakeLock.h"
 #include "Symbols.h"
 
 namespace Pinetime {
@@ -43,7 +44,7 @@ namespace Pinetime {
 
       private:
         Controllers::AlarmController& alarmController;
-        System::SystemTask& systemTask;
+        System::WakeLock wakeLock;
         Controllers::MotorController& motorController;
 
         lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch;
@@ -69,7 +70,7 @@ namespace Pinetime {
     template <>
     struct AppTraits<Apps::Alarm> {
       static constexpr Apps app = Apps::Alarm;
-      static constexpr const char* icon = Screens::Symbols::clock;
+      static constexpr const char* icon = Screens::Symbols::bell;
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Alarm(controllers.alarmController,

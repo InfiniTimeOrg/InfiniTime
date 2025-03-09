@@ -5,13 +5,12 @@
 #include <drivers/SpiMaster.h>
 #include <bits/unique_ptr.h>
 #include <queue.h>
-#include "components/gfx/Gfx.h"
 #include "drivers/Cst816s.h"
 #include <drivers/Watchdog.h>
 #include <components/motor/MotorController.h>
 #include "BootErrors.h"
 #include "displayapp/TouchEvents.h"
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "displayapp/Messages.h"
 
 namespace Pinetime {
@@ -19,6 +18,7 @@ namespace Pinetime {
     class St7789;
     class Cst816S;
     class Watchdog;
+    class SpiNorFlash;
   }
 
   namespace Controllers {
@@ -34,7 +34,7 @@ namespace Pinetime {
     class AlarmController;
     class BrightnessController;
     class FS;
-    class WeatherService;
+    class SimpleWeatherService;
     class MusicService;
     class NavigationService;
   }
@@ -60,7 +60,8 @@ namespace Pinetime {
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
-                 Pinetime::Controllers::FS& filesystem);
+                 Pinetime::Controllers::FS& filesystem,
+                 Pinetime::Drivers::SpiNorFlash& spiNorFlash);
       void Start();
 
       void Start(Pinetime::System::BootErrors) {
@@ -69,7 +70,7 @@ namespace Pinetime {
 
       void PushMessage(Pinetime::Applications::Display::Messages msg);
       void Register(Pinetime::System::SystemTask* systemTask);
-      void Register(Pinetime::Controllers::WeatherService* weatherService);
+      void Register(Pinetime::Controllers::SimpleWeatherService* weatherService);
       void Register(Pinetime::Controllers::MusicService* musicService);
       void Register(Pinetime::Controllers::NavigationService* NavigationService);
 

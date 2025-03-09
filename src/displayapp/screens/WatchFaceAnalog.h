@@ -49,8 +49,7 @@ namespace Pinetime {
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
         Utility::DirtyValue<bool> notificationState {false};
-        using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
         bool tfHourEnable, sTfHourEnable;
 
@@ -98,7 +97,7 @@ namespace Pinetime {
 
         BatteryIcon batteryIcon;
 
-        const Controllers::DateTime& dateTimeController;
+        Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
@@ -111,5 +110,23 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct WatchFaceTraits<WatchFace::Analog> {
+      static constexpr WatchFace watchFace = WatchFace::Analog;
+      static constexpr const char* name = "Analog face";
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::WatchFaceAnalog(controllers.dateTimeController,
+                                            controllers.batteryController,
+                                            controllers.bleController,
+                                            controllers.notificationManager,
+                                            controllers.settingsController);
+      };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      }
+    };
   }
 }

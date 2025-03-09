@@ -3,13 +3,14 @@
 #include <bitset>
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
-#include "displayapp/WatchFaces.h"
+#include "displayapp/apps/Apps.h"
 
 namespace Pinetime {
   namespace Controllers {
     class Settings {
     public:
       enum class ClockType : uint8_t { H24, H12 };
+      enum class WeatherFormat : uint8_t { Metric, Imperial };
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t { SingleTap = 0, DoubleTap = 1, RaiseWrist = 2, Shake = 3, LowerWrist = 4 };
@@ -207,6 +208,17 @@ namespace Pinetime {
         return settings.clockType;
       };
 
+      void SetWeatherFormat(WeatherFormat weatherFormat) {
+        if (weatherFormat != settings.weatherFormat) {
+          settingsChanged = true;
+        }
+        settings.weatherFormat = weatherFormat;
+      };
+
+      WeatherFormat GetWeatherFormat() const {
+        return settings.weatherFormat;
+      };
+
       void SetNotificationStatus(Notification status) {
         if (status != settings.notificationStatus) {
           settingsChanged = true;
@@ -228,6 +240,21 @@ namespace Pinetime {
       uint32_t GetScreenTimeOut() const {
         return settings.screenTimeOut;
       };
+
+      bool GetAlwaysOnDisplay() const {
+        return settings.alwaysOnDisplay && GetNotificationStatus() != Notification::Sleep;
+      };
+
+      void SetAlwaysOnDisplaySetting(bool state) {
+        if (state != settings.alwaysOnDisplay) {
+          settingsChanged = true;
+        }
+        settings.alwaysOnDisplay = state;
+      }
+
+      bool GetAlwaysOnDisplaySetting() const {
+        return settings.alwaysOnDisplay;
+      }
 
       void SetShakeThreshold(uint16_t thresh) {
         if (settings.shakeWakeThreshold != thresh) {
@@ -301,14 +328,17 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0006;
+      static constexpr uint32_t settingsVersion = 0x0008;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
         uint32_t screenTimeOut = 15000;
 
+        bool alwaysOnDisplay = false;
+
         ClockType clockType = ClockType::H24;
+        WeatherFormat weatherFormat = WeatherFormat::Metric;
         Notification notificationStatus = Notification::On;
 
         Pinetime::Applications::WatchFace watchFace = Pinetime::Applications::WatchFace::Digital;

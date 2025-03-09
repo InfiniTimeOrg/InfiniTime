@@ -423,22 +423,26 @@ void WatchFaceInfineat::Refresh() {
       lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
     }
 
-    currentDate = std::chrono::time_point_cast<days>(currentDateTime.Get());
+    currentDate = std::chrono::time_point_cast<std::chrono::days>(currentDateTime.Get());
     if (currentDate.IsUpdated()) {
       uint8_t day = dateTimeController.Day();
-      lv_label_set_text_fmt(labelDate, "%s %02d", dateTimeController.DayOfWeekShortToStringLow(), day);
+      Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
+      lv_label_set_text_fmt(labelDate, "%s %02d", dateTimeController.DayOfWeekShortToStringLow(dayOfWeek), day);
       lv_obj_realign(labelDate);
     }
   }
 
   batteryPercentRemaining = batteryController.PercentRemaining();
   isCharging = batteryController.IsCharging();
-  if (batteryController.IsCharging()) { // Charging battery animation
-    chargingBatteryPercent += 1;
+  // Charging battery animation
+  if (batteryController.IsCharging() && (xTaskGetTickCount() - chargingAnimationTick > pdMS_TO_TICKS(150))) {
+    // Dividing 100 by the height gives the battery percentage required to shift the animation by 1 pixel
+    chargingBatteryPercent += 100 / lv_obj_get_height(logoPine);
     if (chargingBatteryPercent > 100) {
       chargingBatteryPercent = batteryPercentRemaining.Get();
     }
     SetBatteryLevel(chargingBatteryPercent);
+    chargingAnimationTick = xTaskGetTickCount();
   } else if (isCharging.IsUpdated() || batteryPercentRemaining.IsUpdated()) {
     chargingBatteryPercent = batteryPercentRemaining.Get();
     SetBatteryLevel(chargingBatteryPercent);

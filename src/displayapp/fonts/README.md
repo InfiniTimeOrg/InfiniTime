@@ -16,7 +16,7 @@
 - Define the new symbols in `src/displayapp/screens/Symbols.h`:
 
 ```
-static constexpr const char* newSymbol = "\xEF\x86\x85";
+static constexpr const char* newSymbol = "\xEF\x99\x81";
 ```
 
 ### the config file format:

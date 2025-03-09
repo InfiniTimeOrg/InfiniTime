@@ -2,7 +2,7 @@
 
 #include <array>
 #include <memory>
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "Screen.h"
 #include "ScreenList.h"
 #include "displayapp/Controllers.h"
@@ -18,6 +18,7 @@ namespace Pinetime {
                                  Pinetime::Controllers::Settings& settingsController,
                                  const Pinetime::Controllers::Battery& batteryController,
                                  const Pinetime::Controllers::Ble& bleController,
+                                 const Pinetime::Controllers::AlarmController& alarmController,
                                  Controllers::DateTime& dateTimeController,
                                  Pinetime::Controllers::FS& filesystem,
                                  std::array<Tile::Applications, UserAppTypes::Count>&& apps);
@@ -32,14 +33,14 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         const Pinetime::Controllers::Battery& batteryController;
         const Pinetime::Controllers::Ble& bleController;
+        const Pinetime::Controllers::AlarmController& alarmController;
         Controllers::DateTime& dateTimeController;
         Pinetime::Controllers::FS& filesystem;
         std::array<Tile::Applications, UserAppTypes::Count> apps;
 
         static constexpr int appsPerScreen = 6;
 
-        // Increment this when more space is needed
-        static constexpr int nScreens = (UserAppTypes::Count / appsPerScreen) + 1;
+        static constexpr int nScreens = UserAppTypes::Count > 0 ? (UserAppTypes::Count - 1) / appsPerScreen + 1 : 1;
 
         ScreenList<nScreens> screens;
       };
