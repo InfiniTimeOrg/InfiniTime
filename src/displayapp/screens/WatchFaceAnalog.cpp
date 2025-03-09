@@ -246,7 +246,7 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_obj_align(btnClockStyle, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
   lv_obj_set_style_local_bg_opa(btnClockStyle, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
   lv_obj_t* lblClockStyle = lv_label_create(btnClockStyle, nullptr);
-  lv_label_set_text_static(lblClockStyle, "Toggle 24h");
+  lv_label_set_text_static(lblClockStyle, "12h/24h");
   lv_obj_set_event_cb(btnClockStyle, event_handler);
   lv_obj_set_hidden(btnClockStyle, true);
 
@@ -256,7 +256,7 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_obj_align(btnSecondHand, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
   lv_obj_set_style_local_bg_opa(btnSecondHand, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
   lv_obj_t* lblSecondHand = lv_label_create(btnSecondHand, nullptr);
-  lv_label_set_text_static(lblSecondHand, "Seconds");
+  lv_label_set_text_static(lblSecondHand, "seconds");
   lv_obj_set_event_cb(btnSecondHand, event_handler);
   lv_obj_set_hidden(btnSecondHand, true);
 
