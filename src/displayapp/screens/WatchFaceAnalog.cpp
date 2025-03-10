@@ -43,7 +43,6 @@ namespace {
     auto* screen = static_cast<WatchFaceAnalog*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
-
 }
 
 WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
