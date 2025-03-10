@@ -458,8 +458,10 @@ void WatchFaceAnalog::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     if (object == btnSecondHand) {
       if (lv_obj_get_hidden(second_body)) {
         lv_obj_set_hidden(second_body, false);
+        settingsController.SetASecondHand(Controllers::Settings::ASecondHand::On);
       } else {
         lv_obj_set_hidden(second_body, true);
+        settingsController.SetASecondHand(Controllers::Settings::ASecondHand::Off);
       }
     }
   }
