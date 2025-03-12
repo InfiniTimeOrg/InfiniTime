@@ -2,10 +2,15 @@
 
 #include <cstdint>
 #include <lvgl/lvgl.h>
-#include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
-#include <components/motion/MotionController.h>
-#include "systemtask/SystemTask.h"
+
+namespace Pinetime::Controllers {
+  class Settings;
+  class MotionController;
+}
+namespace Pinetime::System {
+  class SystemTask;
+}
 
 namespace Pinetime {
 
@@ -26,11 +31,20 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;
         System::SystemTask& systemTask;
-        uint8_t calibrating;
-        bool EnableForCal;
-        uint32_t vDecay, vCalTime;
-        lv_obj_t *positionArc, *animArc, *calButton, *calLabel;
-        lv_task_t* refreshTask;
+
+        enum class CalibrationStep {
+          NotCalibrated = 0,
+          GettingReady = 1,
+          Calibrating = 2,
+          // Special case for disabled calibration due to sleep mode
+          Disabled = 255,
+        };
+
+        CalibrationStep currentCalibrationStep = CalibrationStep::NotCalibrated;
+        bool oldWakeupModeShake = false;
+        uint32_t vDecay = 0, vCalTime = 0;
+        lv_obj_t *positionArc = nullptr, *animArc = nullptr, *calButton = nullptr, *calLabel = nullptr;
+        lv_task_t* refreshTask = nullptr;
       };
     }
   }
