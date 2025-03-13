@@ -2,7 +2,7 @@ name: Code formatting
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, ghoelian ]
     paths:
       - '**.cpp'
       - '**.h'
