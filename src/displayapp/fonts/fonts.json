@@ -14,16 +14,6 @@
       "size": 20,
       "patches": ["jetbrains_mono_bold_20.c_zero.patch", "jetbrains_mono_bold_20.c_M.patch"]
    },
-   "jetbrains_mono_16": {
-      "sources": [
-         {
-            "file": "JetBrainsMono-Regular.ttf",
-            "range": "0x20-0x7e, 0x410-0x44f, 0xB0"
-         }
-      ],
-      "bpp": 1,
-      "size": 16
-   },
    "jetbrains_mono_42": {
       "sources": [
          {
