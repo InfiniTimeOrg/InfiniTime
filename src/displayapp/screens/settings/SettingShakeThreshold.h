@@ -8,6 +8,7 @@ namespace Pinetime::Controllers {
   class Settings;
   class MotionController;
 }
+
 namespace Pinetime::System {
   class SystemTask;
 }

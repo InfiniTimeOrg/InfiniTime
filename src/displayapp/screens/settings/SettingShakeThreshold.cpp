@@ -127,8 +127,7 @@ void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   switch (event) {
     case LV_EVENT_VALUE_CHANGED: {
       if (object == calButton) {
-        if (lv_btn_get_state(calButton) == LV_BTN_STATE_CHECKED_RELEASED 
-            && currentCalibrationStep == CalibrationStep::NotCalibrated) {
+        if (lv_btn_get_state(calButton) == LV_BTN_STATE_CHECKED_RELEASED && currentCalibrationStep == CalibrationStep::NotCalibrated) {
           lv_arc_set_value(positionArc, 0);
           currentCalibrationStep = CalibrationStep::GettingReady;
           vCalTime = xTaskGetTickCount();
