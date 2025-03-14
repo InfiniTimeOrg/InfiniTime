@@ -12,7 +12,7 @@ namespace Pinetime {
       enum class ClockType : uint8_t { H24, H12 };
       enum class WeatherFormat : uint8_t { Metric, Imperial };
       enum class Notification : uint8_t { On, Off, Sleep };
-      enum class ChimesOption : uint8_t { None, Hours, HalfHours };
+      enum class ChimesOption : uint8_t { None, Hours, HalfHours, QuarterHours };
       enum class WakeUpMode : uint8_t { SingleTap = 0, DoubleTap = 1, RaiseWrist = 2, Shake = 3, LowerWrist = 4 };
       enum class Colors : uint8_t {
         White,
