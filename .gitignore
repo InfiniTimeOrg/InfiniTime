@@ -12,6 +12,7 @@ Makefile
 build
 tools
 
+
 # Resulting binary files
 *.a
 *.so

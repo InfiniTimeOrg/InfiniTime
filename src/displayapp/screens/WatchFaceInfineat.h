@@ -28,6 +28,7 @@ namespace Pinetime {
         WatchFaceInfineat(Controllers::DateTime& dateTimeController,
                           const Controllers::Battery& batteryController,
                           const Controllers::Ble& bleController,
+                          Controllers::AlarmController& alarmController,
                           Controllers::NotificationManager& notificationManager,
                           Controllers::Settings& settingsController,
                           Controllers::MotionController& motionController,
@@ -53,6 +54,7 @@ namespace Pinetime {
         Utility::DirtyValue<bool> isCharging {};
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<bool> bleRadioEnabled {};
+        Utility::DirtyValue<bool> isAlarmSet {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<bool> notificationState {};
@@ -72,22 +74,28 @@ namespace Pinetime {
         lv_obj_t* dateContainer;
         lv_obj_t* labelDate;
         lv_obj_t* bleIcon;
+        lv_obj_t* labelAlarm;
+        lv_obj_t* labelTimeAmPmAlarm;
+        lv_obj_t* alarmIcon;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
         lv_obj_t* btnClose;
         lv_obj_t* btnNextColor;
         lv_obj_t* btnToggleCover;
+        lv_obj_t* btnToggleAlarm;
         lv_obj_t* btnPrevColor;
         lv_obj_t* btnSettings;
         lv_obj_t* labelBtnSettings;
         lv_obj_t* lblToggle;
+        lv_obj_t* lblAlarm;
 
         lv_obj_t* lines[nLines];
 
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;
+        Controllers::AlarmController& alarmController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;
@@ -110,6 +118,7 @@ namespace Pinetime {
         return new Screens::WatchFaceInfineat(controllers.dateTimeController,
                                               controllers.batteryController,
                                               controllers.bleController,
+                                              controllers.alarmController,
                                               controllers.notificationManager,
                                               controllers.settingsController,
                                               controllers.motionController,
