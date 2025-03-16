@@ -47,11 +47,22 @@ namespace Pinetime {
 
         void UpdateLength();
 
+        void UpdateButtons();
+
+        typedef enum {
+          BTN_NEXT_PREV,
+          BTN_VOL,
+          BTN_FOR_REWIND,
+          BTN_MAX
+        } MusicButtons;
+
         lv_obj_t* btnPrev;
         lv_obj_t* btnPlayPause;
         lv_obj_t* btnNext;
         lv_obj_t* btnVolDown;
         lv_obj_t* btnVolUp;
+        lv_obj_t* btnForward;
+        lv_obj_t* btnRewind;
         lv_obj_t* txtArtist;
         lv_obj_t* txtTrack;
         lv_obj_t* txtPlayPause;
@@ -81,6 +92,9 @@ namespace Pinetime {
         bool playing;
 
         lv_task_t* taskRefresh;
+
+        /** For knowing which buttons should be shown */
+        int currentButton = 0;
 
         /** Watchapp */
       };
