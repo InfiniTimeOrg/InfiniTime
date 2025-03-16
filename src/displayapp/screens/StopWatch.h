@@ -16,17 +16,17 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      enum class States { Init, Running, Halted };
-
-      struct TimeSeparated_t {
-        int hours;
-        int mins;
-        int secs;
-        int hundredths;
-      };
-
       class StopWatch : public Screen {
       public:
+        enum class States { Init, Running, Halted };
+
+        struct TimeSeparated_t {
+          int hours;
+          int mins;
+          int secs;
+          int hundredths;
+        };
+
         explicit StopWatch(System::SystemTask& systemTask);
         ~StopWatch() override;
         void Refresh() override;
