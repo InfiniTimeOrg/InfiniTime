@@ -35,47 +35,35 @@ namespace Colors {
 
   class Color {
   public:
-    constexpr Color(uint32_t color) {
-      data.hexcode = color;
+    constexpr Color(uint32_t color) : data {color} {
     }
 
     operator uint32_t() const {
-      return data.hexcode;
+      return data;
     }
 
-    constexpr Color(uint8_t r, uint8_t g, uint8_t b) {
-      data.argb.red = r;
-      data.argb.green = g;
-      data.argb.blue = b;
+    constexpr Color(uint8_t r, uint8_t g, uint8_t b)
+      : data {(static_cast<uint32_t>(r) << 16) | (static_cast<uint32_t>(g) << 8) | static_cast<uint32_t>(b)} {
     }
 
     operator lv_color_t() const {
-      return lv_color_hex(data.hexcode);
+      return lv_color_hex(data);
     }
 
     uint8_t red() const {
-      return data.argb.red;
+      return (data & 0xFF0000) >> 16;
     }
 
     uint8_t green() const {
-      return data.argb.green;
+      return (data & 0x00FF00) >> 8;
     }
 
     uint8_t blue() const {
-      return data.argb.blue;
+      return (data & 0x0000FF);
     }
 
   private:
-    union {
-      uint32_t hexcode = 0;
-
-      struct {
-        uint8_t blue = 0;
-        uint8_t green = 0;
-        uint8_t red = 0;
-        uint8_t alpha = 0;
-      } argb;
-    } data;
+    uint32_t data;
   };
 
   Color linear_gradient(Color startingColor, Color endingColor, uint8_t progress);
