@@ -75,6 +75,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
                                                Controllers::MotionController& motionController,
                                                Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
+    needle_colors {Colors::Named::White},
     batteryIcon(false),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
@@ -82,8 +83,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
     notificationManager {notificationManager},
     settingsController {settingsController},
     motionController {motionController},
-    weatherService {weatherService},
-    needle_colors {Colors::Named::White} {
+    weatherService {weatherService} {
 
   // Create a 200px wide background rectangle
   timebar = lv_obj_create(lv_scr_act(), nullptr);
