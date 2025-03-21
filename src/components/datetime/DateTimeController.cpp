@@ -129,8 +129,9 @@ void DateTime::UpdateTime(uint32_t systickCounter, bool forceUpdate) {
   // Notify new day to SystemTask
   if (hour == 0 and not isMidnightAlreadyNotified) {
     isMidnightAlreadyNotified = true;
-    if (systemTask != nullptr)
+    if (systemTask != nullptr) {
       systemTask->PushMessage(System::Messages::OnNewDay);
+    }
   } else if (hour != 0) {
     isMidnightAlreadyNotified = false;
   }

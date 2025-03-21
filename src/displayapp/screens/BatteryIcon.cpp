@@ -46,8 +46,9 @@ void BatteryIcon::SetColor(lv_color_t color) {
 }
 
 const char* BatteryIcon::GetPlugIcon(bool isCharging) {
-  if (isCharging)
+  if (isCharging) {
     return Symbols::plug;
-  else
+  } else {
     return "";
+  }
 }

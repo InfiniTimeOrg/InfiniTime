@@ -6,7 +6,7 @@ if [ -z "$(command -v "git-$name")" ]; then
   name="$(basename -a $(find $(echo "$PATH" | tr ':' ' ') -maxdepth 1 -type f -executable -name 'git-clang-format*') | sort | tail -n 1 | sed 's/^git-//')"
 fi
 
-minVersion="14.0.0"
+minVersion="16.0.0"
 
 for file in $(find $(echo "$PATH" | tr ':' ' ') -maxdepth 1 -type f -executable -name 'clang-format*'); do
   curBin="$file"
@@ -23,7 +23,7 @@ if [ -z "$name" ] || [ -z "$bin" ]; then
   exit 1
 fi
 
-args="--binary $bin -q --extensions cpp,h --style file --staged -- :!src/FreeRTOS :!src/libs"
+args="--binary $bin -q --extensions cpp,h --style file --staged -- src :!src/FreeRTOS :!src/libs"
 
 changedFiles="$(git "$name" --diffstat $args)"
 git "$name" $args

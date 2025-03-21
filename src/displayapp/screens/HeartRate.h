@@ -47,7 +47,7 @@ namespace Pinetime {
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::HeartRate(controllers.heartRateController, *controllers.systemTask);
-      };
+      }
     };
   }
 }

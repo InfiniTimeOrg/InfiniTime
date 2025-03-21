@@ -28,9 +28,10 @@ void RleDecoder::DecodeNext(uint8_t* output, size_t maxBytes) {
     }
     processedCount = 0;
 
-    if (color == backgroundColor)
+    if (color == backgroundColor) {
       color = foregroundColor;
-    else
+    } else {
       color = backgroundColor;
+    }
   }
 }

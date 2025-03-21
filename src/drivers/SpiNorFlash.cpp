@@ -92,13 +92,15 @@ void SpiNorFlash::SectorErase(uint32_t sectorAddress) {
                           static_cast<uint8_t>(sectorAddress)};
 
   WriteEnable();
-  while (!WriteEnabled())
+  while (!WriteEnabled()) {
     vTaskDelay(1);
+  }
 
   spi.Read(reinterpret_cast<uint8_t*>(&cmd), cmdSize, nullptr, 0);
 
-  while (WriteInProgress())
+  while (WriteInProgress()) {
     vTaskDelay(1);
+  }
 }
 
 uint8_t SpiNorFlash::ReadSecurityRegister() {
@@ -132,13 +134,15 @@ void SpiNorFlash::Write(uint32_t address, const uint8_t* buffer, size_t size) {
                             static_cast<uint8_t>(addr)};
 
     WriteEnable();
-    while (!WriteEnabled())
+    while (!WriteEnabled()) {
       vTaskDelay(1);
+    }
 
     spi.WriteCmdAndBuffer(cmd, cmdSize, b, toWrite);
 
-    while (WriteInProgress())
+    while (WriteInProgress()) {
       vTaskDelay(1);
+    }
 
     addr += toWrite;
     b += toWrite;
