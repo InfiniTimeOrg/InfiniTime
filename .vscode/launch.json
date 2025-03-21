@@ -53,7 +53,7 @@
                 "continue"
             ],
             // Only use armToolchainPath if your arm-none-eabi-gdb is not in your path (some GCC packages does not contain arm-none-eabi-gdb)
-            "armToolchainPath": "${workspaceRoot}/../gcc-arm-none-eabi-10.3-2021.10/bin",
+            "armToolchainPath": "${workspaceRoot}/../arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi/bin",
             "svdFile": "${workspaceRoot}/nrf52.svd",
             "configFiles": [
                 "interface/stlink.cfg",
