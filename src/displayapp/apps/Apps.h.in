@@ -50,6 +50,7 @@ namespace Pinetime {
       Analog,
       PineTimeStyle,
       Terminal,
+      PhotoStyle,
       Infineat,
       CasioStyleG7710,
     };
