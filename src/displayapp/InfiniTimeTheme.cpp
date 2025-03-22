@@ -251,7 +251,22 @@ static void theme_apply(lv_obj_t* obj, lv_theme_style_t name) {
       lv_obj_clean_style_list(obj, LV_OBJ_PART_MAIN);
       list = lv_obj_get_style_list(obj, LV_OBJ_PART_MAIN);
       _lv_style_list_add_style(list, &style_box);
-      break;src/displayapp/InfiniTimeTheme.cppobj, LV_BTNMATRIX_PART_BG);
+      break;
+
+    case LV_THEME_CONT:
+      lv_obj_clean_style_list(obj, LV_OBJ_PART_MAIN);
+      list = lv_obj_get_style_list(obj, LV_CONT_PART_MAIN);
+      _lv_style_list_add_style(list, &style_box);
+      break;
+
+    case LV_THEME_BTN:
+      lv_obj_clean_style_list(obj, LV_BTN_PART_MAIN);
+      list = lv_obj_get_style_list(obj, LV_BTN_PART_MAIN);
+      _lv_style_list_add_style(list, &style_btn);
+      break;
+
+    case LV_THEME_BTNMATRIX:
+      list = lv_obj_get_style_list(obj, LV_BTNMATRIX_PART_BG);
       _lv_style_list_add_style(list, &style_bg);
       _lv_style_list_add_style(list, &style_pad_small);
 
