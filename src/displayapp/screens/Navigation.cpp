@@ -199,7 +199,7 @@ Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navServi
   lv_img_set_offset_x(imgFlag, 0);
   lv_img_set_offset_y(imgFlag, image.offset);
   lv_obj_set_style_local_image_recolor_opa(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_obj_set_style_local_image_recolor(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
+  lv_obj_set_style_local_image_recolor(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Cyan));
   lv_obj_align(imgFlag, nullptr, LV_ALIGN_CENTER, 0, -60);
 
   txtNarrative = lv_label_create(lv_scr_act(), nullptr);
@@ -212,7 +212,7 @@ Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navServi
 
   txtManDist = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtManDist, LV_LABEL_LONG_BREAK);
-  lv_obj_set_style_local_text_color(txtManDist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+  lv_obj_set_style_local_text_color(txtManDist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Green));
   lv_obj_set_style_local_text_font(txtManDist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_obj_set_width(txtManDist, LV_HOR_RES);
   lv_label_set_text_static(txtManDist, "--M");
@@ -223,8 +223,8 @@ Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navServi
   barProgress = lv_bar_create(lv_scr_act(), nullptr);
   lv_obj_set_size(barProgress, 200, 20);
   lv_obj_align(barProgress, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
-  lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_BG, LV_STATE_DEFAULT, lv_color_hex(0x222222));
-  lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+  lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_BG, LV_STATE_DEFAULT, Colors::Color(0x222222));
+  lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Orange));
   lv_bar_set_anim_time(barProgress, 500);
   lv_bar_set_range(barProgress, 0, 100);
   lv_bar_set_value(barProgress, 0, LV_ANIM_OFF);
@@ -243,7 +243,7 @@ void Navigation::Refresh() {
     const auto& image = GetIcon(flag);
     lv_img_set_src(imgFlag, image.fileName);
     lv_obj_set_style_local_image_recolor_opa(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
-    lv_obj_set_style_local_image_recolor(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
+    lv_obj_set_style_local_image_recolor(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Cyan));
     lv_img_set_offset_y(imgFlag, image.offset);
   }
 
@@ -261,9 +261,9 @@ void Navigation::Refresh() {
     progress = navService.getProgress();
     lv_bar_set_value(barProgress, progress, LV_ANIM_OFF);
     if (progress > 90) {
-      lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
+      lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Red));
     } else {
-      lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, Colors::orange);
+      lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Orange));
     }
   }
 }

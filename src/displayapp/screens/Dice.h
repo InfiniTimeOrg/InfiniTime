@@ -4,6 +4,7 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
 #include "displayapp/Controllers.h"
+#include "displayapp/Colors.h"
 #include "Symbols.h"
 
 #include <array>
@@ -31,7 +32,7 @@ namespace Pinetime {
 
         std::mt19937 gen;
 
-        std::array<lv_color_t, 3> resultColors = {LV_COLOR_YELLOW, LV_COLOR_MAGENTA, LV_COLOR_AQUA};
+        std::array<Colors::Color, 3> resultColors = {Colors::Named::Yellow, Colors::Named::Magenta, Colors::Named::Aqua};
         uint8_t currentColorIndex;
         void NextColor();
 

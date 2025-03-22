@@ -1,7 +1,7 @@
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
-#include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/Colors.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -52,13 +52,13 @@ FlashLight::FlashLight(System::SystemTask& systemTask, Controllers::BrightnessCo
 
 FlashLight::~FlashLight() {
   lv_obj_clean(lv_scr_act());
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Black));
   brightnessController.Set(previousBrightnessLevel);
 }
 
 void FlashLight::SetColors() {
-  lv_color_t bgColor = isOn ? LV_COLOR_WHITE : LV_COLOR_BLACK;
-  lv_color_t fgColor = isOn ? Colors::lightGray : LV_COLOR_WHITE;
+  Colors::Color bgColor = isOn ? Colors::Named::White : Colors::Named::Black;
+  Colors::Color fgColor = isOn ? Colors::Named::LightGray : Colors::Named::White;
 
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, bgColor);
   lv_obj_set_style_local_text_color(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, fgColor);

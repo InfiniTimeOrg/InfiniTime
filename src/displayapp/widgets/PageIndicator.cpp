@@ -1,5 +1,6 @@
 #include "displayapp/widgets/PageIndicator.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/Colors.h"
 
 using namespace Pinetime::Applications::Widgets;
 
@@ -14,7 +15,7 @@ void PageIndicator::Create() {
 
   pageIndicatorBase = lv_line_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-  lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+  lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, InfiniTimeTheme::Colors::bgDark);
   lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints, 2);
 
   const int16_t indicatorSize = LV_VER_RES / nScreens;
@@ -27,6 +28,6 @@ void PageIndicator::Create() {
 
   pageIndicator = lv_line_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-  lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::LightGray));
   lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
 }

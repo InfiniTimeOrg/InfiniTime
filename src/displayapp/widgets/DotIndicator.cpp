@@ -19,10 +19,10 @@ void DotIndicator::Create() {
   for (int i = 0; i < nScreens; i++) {
     dotIndicator[i] = lv_obj_create(container, nullptr);
     lv_obj_set_size(dotIndicator[i], dotSize, dotSize);
-    lv_obj_set_style_local_bg_color(dotIndicator[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+    lv_obj_set_style_local_bg_color(dotIndicator[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Gray));
   }
 
-  lv_obj_set_style_local_bg_color(dotIndicator[nCurrentScreen], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_bg_color(dotIndicator[nCurrentScreen], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::White));
 
   lv_obj_align(container, nullptr, LV_ALIGN_IN_RIGHT_MID, 0, 0);
 }
