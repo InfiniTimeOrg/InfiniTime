@@ -15,6 +15,13 @@ namespace Colors {
   static constexpr lv_color_t highlight = green;
 };
 
+namespace Fonts {
+  static lv_font_t * small = &jetbrains_mono_bold_20;
+  static lv_font_t * normal = &jetbrains_mono_42;
+  static lv_font_t * large = &jetbrains_mono_76;
+  static lv_font_t * xlarge = &jetbrains_mono_extrabold_compressed;
+}
+
 /**
  * Initialize the default
  * @param color_primary the primary color of the theme

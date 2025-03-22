@@ -56,7 +56,7 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
     hourCounter.EnableTwelveHourMode();
 
     lblampm = lv_label_create(lv_scr_act(), nullptr);
-    lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+    lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::normal);
     lv_label_set_text_static(lblampm, "AM");
     lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
     lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
@@ -70,7 +70,7 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
   minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::large);
   lv_label_set_text_static(colonLabel, ":");
   lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
 

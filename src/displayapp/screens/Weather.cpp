@@ -40,7 +40,7 @@ Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleW
 
   temperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_obj_set_style_local_text_font(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_font(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::normal);
   lv_label_set_text(temperature, "---");
   lv_obj_align(temperature, nullptr, LV_ALIGN_CENTER, 0, -30);
   lv_obj_set_auto_realign(temperature, true);

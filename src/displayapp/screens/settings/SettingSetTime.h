@@ -4,6 +4,7 @@
 #include <lvgl/lvgl.h>
 #include "components/datetime/DateTimeController.h"
 #include "components/settings/Settings.h"
+#include "displayapp/InfiniTimeTheme.h"
 #include "displayapp/widgets/Counter.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/DotIndicator.h"
@@ -30,8 +31,8 @@ namespace Pinetime {
         lv_obj_t* lblampm;
         lv_obj_t* btnSetTime;
         lv_obj_t* lblSetTime;
-        Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_42);
-        Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_42);
+        Widgets::Counter hourCounter = Widgets::Counter(0, 23, *Fonts::normal);
+        Widgets::Counter minuteCounter = Widgets::Counter(0, 59, *Fonts::normal);
       };
     }
   }

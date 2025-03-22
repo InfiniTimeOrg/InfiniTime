@@ -218,10 +218,10 @@ static void basic_init() {
 lv_theme_t* lv_pinetime_theme_init() {
   theme.color_primary = LV_COLOR_WHITE;
   theme.color_secondary = LV_COLOR_GRAY;
-  theme.font_small = &jetbrains_mono_bold_20;
-  theme.font_normal = &jetbrains_mono_bold_20;
-  theme.font_subtitle = &jetbrains_mono_bold_20;
-  theme.font_title = &jetbrains_mono_bold_20;
+  theme.font_small = Fonts::small;
+  theme.font_normal = Fonts::small;
+  theme.font_subtitle = Fonts::small;
+  theme.font_title = Fonts::small;
   theme.flags = 0;
 
   basic_init();
@@ -251,22 +251,7 @@ static void theme_apply(lv_obj_t* obj, lv_theme_style_t name) {
       lv_obj_clean_style_list(obj, LV_OBJ_PART_MAIN);
       list = lv_obj_get_style_list(obj, LV_OBJ_PART_MAIN);
       _lv_style_list_add_style(list, &style_box);
-      break;
-
-    case LV_THEME_CONT:
-      lv_obj_clean_style_list(obj, LV_OBJ_PART_MAIN);
-      list = lv_obj_get_style_list(obj, LV_CONT_PART_MAIN);
-      _lv_style_list_add_style(list, &style_box);
-      break;
-
-    case LV_THEME_BTN:
-      lv_obj_clean_style_list(obj, LV_BTN_PART_MAIN);
-      list = lv_obj_get_style_list(obj, LV_BTN_PART_MAIN);
-      _lv_style_list_add_style(list, &style_btn);
-      break;
-
-    case LV_THEME_BTNMATRIX:
-      list = lv_obj_get_style_list(obj, LV_BTNMATRIX_PART_BG);
+      break;src/displayapp/InfiniTimeTheme.cppobj, LV_BTNMATRIX_PART_BG);
       _lv_style_list_add_style(list, &style_bg);
       _lv_style_list_add_style(list, &style_pad_small);
 

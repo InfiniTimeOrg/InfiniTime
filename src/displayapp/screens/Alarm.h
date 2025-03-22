@@ -22,6 +22,7 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
 #include "displayapp/Controllers.h"
+#include "displayapp/InfiniTimeTheme.h"
 #include "systemtask/WakeLock.h"
 #include "Symbols.h"
 
@@ -62,8 +63,8 @@ namespace Pinetime {
         void HideInfo();
         void ToggleRecurrence();
         void UpdateAlarmTime();
-        Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
-        Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
+        Widgets::Counter hourCounter = Widgets::Counter(0, 23, *Fonts::large);
+        Widgets::Counter minuteCounter = Widgets::Counter(0, 59, *Fonts::large);
       };
     }
 

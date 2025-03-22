@@ -67,7 +67,7 @@ StopWatch::StopWatch(System::SystemTask& systemTask) : wakeLock(systemTask) {
   lv_obj_align(msecTime, lapText, LV_ALIGN_OUT_TOP_MID, 0, 0);
 
   time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::large);
   lv_label_set_text_static(time, "00:00");
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
   lv_obj_align(time, msecTime, LV_ALIGN_OUT_TOP_MID, 0, 0);
@@ -111,7 +111,7 @@ void StopWatch::SetInterfaceStopped() {
   lv_label_set_text_static(msecTime, "00");
 
   if (isHoursLabelUpdated) {
-    lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+    lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::large);
     lv_obj_realign(time);
     isHoursLabelUpdated = false;
   }
@@ -157,7 +157,7 @@ void StopWatch::Refresh() {
     } else {
       lv_label_set_text_fmt(time, "%02d:%02d:%02d", currentTimeSeparated.hours, currentTimeSeparated.mins, currentTimeSeparated.secs);
       if (!isHoursLabelUpdated) {
-        lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+        lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::large);
         lv_obj_realign(time);
         isHoursLabelUpdated = true;
       }

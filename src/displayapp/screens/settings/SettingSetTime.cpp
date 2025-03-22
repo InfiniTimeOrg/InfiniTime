@@ -41,7 +41,7 @@ SettingSetTime::SettingSetTime(Pinetime::Controllers::DateTime& dateTimeControll
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
   lv_obj_t* staticLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(staticLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_font(staticLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::normal);
   lv_label_set_text_static(staticLabel, "00:00:00");
   lv_obj_align(staticLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, POS_Y_TEXT);
 
@@ -59,7 +59,7 @@ SettingSetTime::SettingSetTime(Pinetime::Controllers::DateTime& dateTimeControll
   minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   lblampm = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::small);
   lv_label_set_text_static(lblampm, "  ");
   lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 75, -50);
 
