@@ -14,6 +14,7 @@ namespace Pinetime {
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t { SingleTap = 0, DoubleTap = 1, RaiseWrist = 2, Shake = 3, LowerWrist = 4 };
+      enum class SleepOption : uint8_t { AllowChimes = 0, AllowNotify = 1, EnableAOD = 2, DisableBle = 3, IgnoreSteps = 4 };
       enum class Colors : uint8_t {
         White,
         Silver,
@@ -268,6 +269,37 @@ namespace Pinetime {
         return getWakeUpModes()[static_cast<size_t>(mode)];
       }
 
+      bool sleepDisabledBle = false;
+
+      void setSleepOption(SleepOption option, bool enabled) {
+        if (enabled != isSleepOptionOn(option)) {
+          settingsChanged = true;
+        }
+        settings.sleepOption.set(static_cast<size_t>(option), enabled);
+
+        // Handle special behavior
+        if (enabled) {
+          switch (option) {
+            case SleepOption::AllowNotify:
+              settings.sleepOption.set(static_cast<size_t>(SleepOption::DisableBle), false);
+              break;
+            case SleepOption::DisableBle:
+              settings.sleepOption.set(static_cast<size_t>(SleepOption::AllowNotify), false);
+              break;
+            default:
+              break;
+          }
+        }
+      };
+
+      std::bitset<5> getSleepOptions() const {
+        return settings.sleepOption;
+      }
+
+      bool isSleepOptionOn(const SleepOption option) const {
+        return getSleepOptions()[static_cast<size_t>(option)];
+      }
+
       void SetBrightness(Controllers::BrightnessController::Levels level) {
         if (level != settings.brightLevel) {
           settingsChanged = true;
@@ -301,7 +333,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0008;
+      static constexpr uint32_t settingsVersion = 0x0009;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -323,6 +355,8 @@ namespace Pinetime {
 
         std::bitset<5> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
+
+        std::bitset<5> sleepOption {0};
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
       };

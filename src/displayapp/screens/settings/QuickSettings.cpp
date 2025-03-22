@@ -146,20 +146,43 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object) {
     settingsController.SetBrightness(brightness.Level());
 
   } else if (object == btn3) {
-
+    // Turn notifications off
     if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::On) {
       settingsController.SetNotificationStatus(Controllers::Settings::Notification::Off);
       lv_label_set_text_static(btn3_lvl, Symbols::notificationsOff);
       lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::NotificationsOff));
+      // Turn sleep on
     } else if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::Off) {
       settingsController.SetNotificationStatus(Controllers::Settings::Notification::Sleep);
       lv_label_set_text_static(btn3_lvl, Symbols::sleep);
       lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::Sleep));
-    } else {
+
+      if (settingsController.isSleepOptionOn(Controllers::Settings::SleepOption::DisableBle)) {
+        if (settingsController.GetBleRadioEnabled()) {
+          settingsController.SetBleRadioEnabled(false);
+          app->PushMessage(Pinetime::Applications::Display::Messages::BleRadioEnableToggle);
+          settingsController.sleepDisabledBle = true;
+        }
+      }
+      // Turn notifications on
+    } else if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::Sleep) {
       settingsController.SetNotificationStatus(Controllers::Settings::Notification::On);
       lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
       lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::NotificationsOn));
       motorController.RunForDuration(35);
+    }
+
+    // Re-enable Bluetooth settings for all notification statuses except Sleep
+    // (Prevents the need to modify logic if additional statuses are added)
+    if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep) {
+      // Enable Ble if previously disabled
+      if (settingsController.sleepDisabledBle == true) {
+        if (!settingsController.GetBleRadioEnabled()) {
+          settingsController.SetBleRadioEnabled(true);
+          this->app->PushMessage(Pinetime::Applications::Display::Messages::BleRadioEnableToggle);
+        }
+        settingsController.sleepDisabledBle = false;
+      }
     }
 
   } else if (object == btn4) {
