@@ -37,7 +37,6 @@ WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController
 
   batteryValue = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(batteryValue, true);
-  lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -96);
   lv_label_set_align(batteryValue, LV_LABEL_ALIGN_CENTER);
   lv_obj_set_auto_realign(batteryValue, true);
 
@@ -256,9 +255,10 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
       lv_obj_set_style_local_bg_color(backgroundSections[3], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
       lv_obj_set_style_local_bg_color(backgroundSections[4], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLUE);
       lv_obj_set_style_local_bg_color(backgroundSections[5], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_PURPLE);
-      lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -58);
-      lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 58);
-      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 96);
+      lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -99);
+      lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -60);
+      lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
+      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 99);
       break;
     case 1:
       numBackgrounds = 5;
@@ -275,6 +275,7 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
       lv_obj_set_style_local_bg_color(backgroundSections[2], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
       lv_obj_set_style_local_bg_color(backgroundSections[3], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightPink);
       lv_obj_set_style_local_bg_color(backgroundSections[4], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightBlue);
+      lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -96);
       lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -48);
       lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 48);
       lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 96);
@@ -294,6 +295,7 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
       lv_obj_set_style_local_bg_color(backgroundSections[2], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, grayPurple);
       lv_obj_set_style_local_bg_color(backgroundSections[3], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, darkBlue);
       lv_obj_set_style_local_bg_color(backgroundSections[4], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, darkBlue);
+      lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -96);
       lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -48);
       lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 48);
       lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 96);
@@ -315,9 +317,10 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
       lv_obj_set_style_local_bg_color(backgroundSections[4], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightPurple);
       lv_obj_set_style_local_bg_color(backgroundSections[5], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, darkPurple);
       lv_obj_set_style_local_bg_color(backgroundSections[6], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, magenta);
-      lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -50);
-      lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 50);
-      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 96);
+      lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -102);
+      lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -51);
+      lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 51);
+      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 102);
       break;
   }
 }
