@@ -31,7 +31,6 @@ WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController
     settingsController {settingsController},
     motionController {motionController} {
 
-
   bluetoothStatus = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(bluetoothStatus, "");
   lv_obj_align(bluetoothStatus, nullptr, LV_ALIGN_IN_TOP_RIGHT, -16, 0);

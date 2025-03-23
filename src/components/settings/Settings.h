@@ -36,7 +36,7 @@ namespace Pinetime {
       };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
-      enum class PrideFlag: uint8_t {Rainbow, Trans, Bi, Lesbian};
+      enum class PrideFlag : uint8_t { Rainbow, Trans, Bi, Lesbian };
 
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;

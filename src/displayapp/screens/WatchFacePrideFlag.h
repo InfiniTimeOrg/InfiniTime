@@ -56,7 +56,6 @@ namespace Pinetime {
         static Pinetime::Controllers::Settings::PrideFlag GetNext(Controllers::Settings::PrideFlag prideFlag);
         static Pinetime::Controllers::Settings::PrideFlag GetPrevious(Controllers::Settings::PrideFlag prideFlag);
 
-
         uint32_t savedTick = 0;
         bool initialized = false;
 
