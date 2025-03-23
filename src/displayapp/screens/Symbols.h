@@ -17,7 +17,7 @@ namespace Pinetime {
         static constexpr const char* sun = "\xEF\x86\x85";
         static constexpr const char* check = "\xEF\x95\xA0";
         static constexpr const char* music = "\xEF\x80\x81";
-        static constexpr const char* tachometer = "\xEF\x8F\xBD";
+        static constexpr const char* tachometer = "\xEF\x98\xA5";
         static constexpr const char* paintbrush = "\xEF\x87\xBC";
         static constexpr const char* paddle = "\xEF\x91\x9D";
         static constexpr const char* map = "\xEF\x96\xa0";
@@ -37,7 +37,7 @@ namespace Pinetime {
         static constexpr const char* drum = "\xEF\x95\xA9";
         static constexpr const char* dice = "\xEF\x94\xA2";
         static constexpr const char* eye = "\xEF\x81\xAE";
-        static constexpr const char* home = "\xEF\x80\x95";
+        static constexpr const char* home = "\xEE\x8E\xAF";
         static constexpr const char* sleep = "\xEE\xBD\x84";
 
         // fontawesome_weathericons.c
