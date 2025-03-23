@@ -23,17 +23,24 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class WatchFaceTransFlag : public Screen {
+      class WatchFacePrideFlag : public Screen {
       public:
-        WatchFaceTransFlag(Controllers::DateTime& dateTimeController,
+        WatchFacePrideFlag(Controllers::DateTime& dateTimeController,
                            const Controllers::Battery& batteryController,
                            const Controllers::Ble& bleController,
                            Controllers::NotificationManager& notificationManager,
                            Controllers::Settings& settingsController,
                            Controllers::MotionController& motionController);
-        ~WatchFaceTransFlag() override;
+        ~WatchFacePrideFlag() override;
+
+        bool OnTouchEvent(TouchEvents event) override;
+        bool OnButtonPushed() override;
 
         void Refresh() override;
+
+        void UpdateSelected(lv_obj_t* object, lv_event_t event);
+
+        void UpdateScreen(Pinetime::Controllers::Settings::PrideFlag);
 
       private:
         Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
@@ -46,11 +53,15 @@ namespace Pinetime {
         // Must be wrapped in a dirty value, since it is displayed in the day but is updated twice a day
         Utility::DirtyValue<const char*> ampmChar {"AM"};
 
-        lv_obj_t* topBlueBackground;
-        lv_obj_t* topPinkBackground;
-        lv_obj_t* whiteBackground;
-        lv_obj_t* bottomPinkBackground;
-        lv_obj_t* bottomBlueBackground;
+        static Pinetime::Controllers::Settings::PrideFlag GetNext(Controllers::Settings::PrideFlag prideFlag);
+        static Pinetime::Controllers::Settings::PrideFlag GetPrevious(Controllers::Settings::PrideFlag prideFlag);
+
+
+        uint32_t savedTick = 0;
+        bool initialized = false;
+
+        lv_obj_t** backgroundSections;
+        uint8_t numBackgrounds;
         lv_obj_t* bluetoothStatus;
         lv_obj_t* labelTime;
         lv_obj_t* labelDate;
@@ -58,9 +69,20 @@ namespace Pinetime {
         lv_obj_t* batteryValue;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
+        lv_obj_t* btnClose;
+        lv_obj_t* btnNextFlag;
+        lv_obj_t* btnPrevFlag;
 
         static constexpr lv_color_t lightBlue = LV_COLOR_MAKE(0x00, 0xbf, 0xf3);
         static constexpr lv_color_t lightPink = LV_COLOR_MAKE(0xf4, 0x9a, 0xc1);
+        static constexpr lv_color_t hotPink = LV_COLOR_MAKE(0xd6, 0x02, 0x70);
+        static constexpr lv_color_t grayPurple = LV_COLOR_MAKE(0x9b, 0x4f, 0x96);
+        static constexpr lv_color_t darkBlue = LV_COLOR_MAKE(0x00, 0x38, 0xa8);
+        static constexpr lv_color_t orange = LV_COLOR_MAKE(0xef, 0x76, 0x27);
+        static constexpr lv_color_t lightOrange = LV_COLOR_MAKE(0xff, 0x9b, 0x55);
+        static constexpr lv_color_t lightPurple = LV_COLOR_MAKE(0xd4, 0x61, 0xa6);
+        static constexpr lv_color_t darkPurple = LV_COLOR_MAKE(0xb5, 0x56, 0x90);
+        static constexpr lv_color_t magenta = LV_COLOR_MAKE(0xa5, 0x00, 0x62);
 
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
@@ -70,16 +92,17 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
 
         lv_task_t* taskRefresh;
+        void CloseMenu();
       };
     }
 
     template <>
-    struct WatchFaceTraits<WatchFace::TransFlag> {
-      static constexpr WatchFace watchFace = WatchFace::TransFlag;
-      static constexpr const char* name = "Trans Flag";
+    struct WatchFaceTraits<WatchFace::PrideFlag> {
+      static constexpr WatchFace watchFace = WatchFace::PrideFlag;
+      static constexpr const char* name = "Pride Flag";
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::WatchFaceTransFlag(controllers.dateTimeController,
+        return new Screens::WatchFacePrideFlag(controllers.dateTimeController,
                                                controllers.batteryController,
                                                controllers.bleController,
                                                controllers.notificationManager,
