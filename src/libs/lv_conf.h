@@ -71,7 +71,7 @@ typedef int16_t lv_coord_t;
  * The graphical objects and other related data are stored here. */
 
 /* 1: use custom malloc/free, 0: use the built-in `lv_mem_alloc` and `lv_mem_free` */
-#define LV_MEM_CUSTOM      0
+#define LV_MEM_CUSTOM      1
 #if LV_MEM_CUSTOM == 0
 /* Size of the memory used by `lv_mem_alloc` in bytes (>= 2kB)*/
 #define LV_MEM_SIZE    (14U * 1024U)
@@ -86,9 +86,9 @@ typedef int16_t lv_coord_t;
 /* Automatically defrag. on free. Defrag. means joining the adjacent free cells. */
 #define LV_MEM_AUTO_DEFRAG  1
 #else       /*LV_MEM_CUSTOM*/
-#define LV_MEM_CUSTOM_INCLUDE <stdlib.h>   /*Header for the dynamic memory function*/
-#define LV_MEM_CUSTOM_ALLOC   malloc       /*Wrapper to malloc*/
-#define LV_MEM_CUSTOM_FREE    free         /*Wrapper to free*/
+#define LV_MEM_CUSTOM_INCLUDE <FreeRTOS.h>   /*Header for the dynamic memory function*/
+#define LV_MEM_CUSTOM_ALLOC   pvPortMalloc       /*Wrapper to malloc*/
+#define LV_MEM_CUSTOM_FREE    vPortFree         /*Wrapper to free*/
 #endif     /*LV_MEM_CUSTOM*/
 
 /* Use the standard memcpy and memset instead of LVGL's own functions.
@@ -164,7 +164,7 @@ typedef void* lv_anim_user_data_t;
 #define LV_USE_PATTERN  1
 
 /*1: enable value string drawing on rectangles*/
-#define LV_USE_VALUE_STR    1
+#define LV_USE_VALUE_STR    0
 
 /* 1: Use other blend modes than normal (`LV_BLEND_MODE_...`)*/
 #define LV_USE_BLEND_MODES      0
@@ -418,6 +418,7 @@ typedef void* lv_indev_drv_user_data_t;            /*Type of user data in the in
                                LV_FONT_DECLARE(jetbrains_mono_42) \
                                LV_FONT_DECLARE(jetbrains_mono_76) \
                                LV_FONT_DECLARE(open_sans_light) \
+                               LV_FONT_DECLARE(fontawesome_weathericons) \
                                LV_FONT_DECLARE(lv_font_sys_48)
 
 /* Enable it if you have fonts with a lot of characters.
@@ -728,7 +729,9 @@ typedef void* lv_obj_user_data_t;
 #define LV_USE_TABLE    1
 #if LV_USE_TABLE
 #define LV_TABLE_COL_MAX    12
-#define LV_TABLE_CELL_STYLE_CNT 5
+#define LV_TABLE_CELL_STYLE_CNT 6
+#define LV_TABLE_PART_CELL5 5
+#define LV_TABLE_PART_CELL6 6
 #endif
 
 

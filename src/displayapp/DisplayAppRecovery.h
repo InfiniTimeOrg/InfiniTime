@@ -5,23 +5,22 @@
 #include <drivers/SpiMaster.h>
 #include <bits/unique_ptr.h>
 #include <queue.h>
-#include "components/gfx/Gfx.h"
 #include "drivers/Cst816s.h"
-#include <date/date.h>
 #include <drivers/Watchdog.h>
 #include <components/motor/MotorController.h>
 #include "BootErrors.h"
 #include "displayapp/TouchEvents.h"
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "displayapp/Messages.h"
-#include "displayapp/DummyLittleVgl.h"
 
 namespace Pinetime {
   namespace Drivers {
     class St7789;
     class Cst816S;
-    class WatchdogView;
+    class Watchdog;
+    class SpiNorFlash;
   }
+
   namespace Controllers {
     class Settings;
     class Battery;
@@ -32,9 +31,12 @@ namespace Pinetime {
     class MotionController;
     class TouchHandler;
     class MotorController;
-    class TimerController;
     class AlarmController;
     class BrightnessController;
+    class FS;
+    class SimpleWeatherService;
+    class MusicService;
+    class NavigationService;
   }
 
   namespace System {
@@ -45,27 +47,32 @@ namespace Pinetime {
     class DisplayApp {
     public:
       DisplayApp(Drivers::St7789& lcd,
-                 Components::LittleVgl& lvgl,
-                 Drivers::Cst816S&,
-                 Controllers::Battery& batteryController,
-                 Controllers::Ble& bleController,
+                 const Drivers::Cst816S&,
+                 const Controllers::Battery& batteryController,
+                 const Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
-                 Drivers::WatchdogView& watchdog,
+                 const Drivers::Watchdog& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Controllers::Settings& settingsController,
                  Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController,
-                 Pinetime::Controllers::TimerController& timerController,
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
-                 Pinetime::Controllers::TouchHandler& touchHandler);
+                 Pinetime::Controllers::TouchHandler& touchHandler,
+                 Pinetime::Controllers::FS& filesystem,
+                 Pinetime::Drivers::SpiNorFlash& spiNorFlash);
       void Start();
+
       void Start(Pinetime::System::BootErrors) {
         Start();
       };
+
       void PushMessage(Pinetime::Applications::Display::Messages msg);
       void Register(Pinetime::System::SystemTask* systemTask);
+      void Register(Pinetime::Controllers::SimpleWeatherService* weatherService);
+      void Register(Pinetime::Controllers::MusicService* musicService);
+      void Register(Pinetime::Controllers::NavigationService* NavigationService);
 
     private:
       TaskHandle_t taskHandle;
@@ -75,7 +82,7 @@ namespace Pinetime {
       void InitHw();
       void Refresh();
       Pinetime::Drivers::St7789& lcd;
-      Controllers::Ble& bleController;
+      const Controllers::Ble& bleController;
 
       static constexpr uint8_t queueSize = 10;
       static constexpr uint8_t itemSize = 1;

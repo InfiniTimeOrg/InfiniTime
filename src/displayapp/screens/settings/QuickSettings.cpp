@@ -28,18 +28,19 @@ namespace {
 }
 
 QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
-                             Pinetime::Controllers::Battery& batteryController,
+                             const Pinetime::Controllers::Battery& batteryController,
                              Controllers::DateTime& dateTimeController,
                              Controllers::BrightnessController& brightness,
                              Controllers::MotorController& motorController,
                              Pinetime::Controllers::Settings& settingsController,
-                             Controllers::Ble& bleController)
-  : Screen(app),
+                             const Controllers::Ble& bleController,
+                             const Controllers::AlarmController& alarmController)
+  : app {app},
     dateTimeController {dateTimeController},
     brightness {brightness},
     motorController {motorController},
     settingsController {settingsController},
-    statusIcons(batteryController, bleController) {
+    statusIcons(batteryController, bleController, alarmController) {
 
   statusIcons.Create();
 

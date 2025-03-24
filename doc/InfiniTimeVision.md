@@ -17,7 +17,7 @@ InfiniTime is not to be used for medical or other health tracking purposes.
 - Easy and simple navigation
 - Behaviour should be predictable and easy to understand
 - Prefer solid default experience over customization
-- Personalization is achieved through custom watchfaces.
+- Personalization is achieved through custom watch faces.
   More options may be available through a companion app.
 - Use standard protocols and methods
 
@@ -25,7 +25,7 @@ InfiniTime is not to be used for medical or other health tracking purposes.
 
 The perfect version of InfiniTime would include:
 
-- Capability to sideload apps and watchfaces
+- Capability to sideload apps and watch faces
 - Only a minimal feature set in the flashed firmware.
   Users would add the features they want.
 - Ports to other devices

@@ -1,7 +1,13 @@
 FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_MAJOR=20
 RUN apt-get update -qq \
+    && apt-get install -y ca-certificates curl gnupg \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
+    && apt-get update -qq \
     && apt-get install -y \
 # x86_64 / generic packages
       bash \
@@ -9,22 +15,34 @@ RUN apt-get update -qq \
       cmake \
       git \
       make \
+      nodejs \
       python3 \
       python3-pip \
+      python3-pil \
       python-is-python3 \
       tar \
       unzip \
       wget \
-      curl \
       # aarch64 packages
       libffi-dev \
       libssl-dev \
       python3-dev \
       git \
       apt-utils \
-    && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs \
+      pkg-config \
+      libpixman-1-dev \
+      libcairo2-dev \
+      libpango-1.0-0 \
+      ibpango1.0-dev \
+      libpangocairo-1.0-0 \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
+
+# Add the necessary apt-gets for the devcontainer
+RUN apt-get update -qq \
+    && apt-get install -y \
+        clang-format-14 \
+        clang-tidy \
+        libncurses5
 
 # Git needed for PROJECT_GIT_COMMIT_HASH variable setting
 
@@ -43,6 +61,12 @@ RUN bash -c "source /opt/build.sh; GetGcc;"
 RUN bash -c "source /opt/build.sh; GetNrfSdk;"
 # McuBoot
 RUN bash -c "source /opt/build.sh; GetMcuBoot;"
+
+# Add the infinitime user for connecting devcontainer
+RUN adduser infinitime
+
+# Configure Git to accept the /sources directory as safe
+RUN git config --global --add safe.directory /sources
 
 ENV SOURCES_DIR /sources
 CMD ["/opt/build.sh"]

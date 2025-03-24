@@ -1,20 +1,18 @@
-  {
+{
     "version": "0.1.0",
     "configurations": [
         {
             "name": "Debug - Openocd docker Remote",
-            "type":"cortex-debug",
-            "cortex-debug.armToolchainPath":"${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin",
+            "type": "cortex-debug",
             "cwd": "${workspaceRoot}",
             "executable": "${command:cmake.launchTargetPath}",
             "request": "launch",
             "servertype": "external",
-            // This may need to be arm-none-eabi-gdb depending on your system
-            "gdbPath" : "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gdb",
+            "gdbPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gdb",
             // Connect to an already running OpenOCD instance
             "gdbTarget": "host.docker.internal:3333",
             "svdFile": "${workspaceRoot}/nrf52.svd",
-            "runToMain": true,
+            "runToEntryPoint": "main",
             // Work around for stopping at main on restart
             "postRestartCommands": [
                 "break main",
@@ -23,18 +21,16 @@
         },
         {
             "name": "Debug - Openocd Local",
-            "type":"cortex-debug",
-            "cortex-debug.armToolchainPath":"${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin",
+            "type": "cortex-debug",
             "cwd": "${workspaceRoot}",
             "executable": "${command:cmake.launchTargetPath}",
             "request": "launch",
             "servertype": "openocd",
-            // This may need to be arm-none-eabi-gdb depending on your system
-            "gdbPath" : "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gdb",
+            "gdbPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gdb",
             // Connect to an already running OpenOCD instance
             "gdbTarget": "localhost:3333",
             "svdFile": "${workspaceRoot}/nrf52.svd",
-            "runToMain": true,
+            "runToEntryPoint": "main",
             // Work around for stopping at main on restart
             "postRestartCommands": [
                 "break main",
@@ -51,6 +47,11 @@
             "showDevDebugOutput": false,
             "servertype": "openocd",
             "runToMain": true,
+            // Work around for stopping at main on restart
+            "postRestartCommands": [
+                "break main",
+                "continue"
+            ],
             // Only use armToolchainPath if your arm-none-eabi-gdb is not in your path (some GCC packages does not contain arm-none-eabi-gdb)
             "armToolchainPath": "${workspaceRoot}/../gcc-arm-none-eabi-10.3-2021.10/bin",
             "svdFile": "${workspaceRoot}/nrf52.svd",
@@ -58,7 +59,25 @@
                 "interface/stlink.cfg",
                 "target/nrf52.cfg"
             ],
-        }
-
+        },
+        {
+            "name": "Debug - Openocd Devcontainer",
+            "type": "cortex-debug",
+            "cwd": "${workspaceRoot}",
+            "executable": "${command:cmake.launchTargetPath}",
+            "request": "launch",
+            "servertype": "external",
+            // FIXME: This is hardcoded. I have no idea how to use the values set in build.sh here
+            "gdbPath": "/opt/gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gdb",
+            // Connect to an already running OpenOCD instance
+            "gdbTarget": "host.docker.internal:3333",
+            "svdFile": "${workspaceRoot}/nrf52.svd",
+            "runToEntryPoint": "main",
+            // Work around for stopping at main on restart
+            "postRestartCommands": [
+                "break main",
+                "continue"
+            ]
+        },
     ]
 }

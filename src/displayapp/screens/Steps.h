@@ -4,6 +4,9 @@
 #include <lvgl/lvgl.h>
 #include "displayapp/screens/Screen.h"
 #include <components/motion/MotionController.h>
+#include "displayapp/apps/Apps.h"
+#include "displayapp/Controllers.h"
+#include "Symbols.h"
 
 namespace Pinetime {
 
@@ -16,7 +19,7 @@ namespace Pinetime {
 
       class Steps : public Screen {
       public:
-        Steps(DisplayApp* app, Controllers::MotionController& motionController, Controllers::Settings& settingsController);
+        Steps(Controllers::MotionController& motionController, Controllers::Settings& settingsController);
         ~Steps() override;
 
         void Refresh() override;
@@ -29,7 +32,6 @@ namespace Pinetime {
         uint32_t currentTripSteps = 0;
 
         lv_obj_t* lSteps;
-        lv_obj_t* lStepsIcon;
         lv_obj_t* stepsArc;
         lv_obj_t* resetBtn;
         lv_obj_t* resetButtonLabel;
@@ -40,5 +42,15 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct AppTraits<Apps::Steps> {
+      static constexpr Apps app = Apps::Steps;
+      static constexpr const char* icon = Screens::Symbols::shoe;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Steps(controllers.motionController, controllers.settingsController);
+      };
+    };
   }
 }

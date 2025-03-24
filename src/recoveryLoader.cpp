@@ -10,7 +10,6 @@
 #include <libraries/gpiote/app_gpiote.h>
 #include <hal/nrf_wdt.h>
 #include <cstring>
-#include <components/gfx/Gfx.h>
 #include <drivers/St7789.h>
 #include <components/brightness/BrightnessController.h>
 #include <algorithm>
@@ -46,9 +45,8 @@ Pinetime::Drivers::Spi flashSpi {spi, Pinetime::PinMap::SpiFlashCsn};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
 
 Pinetime::Drivers::Spi lcdSpi {spi, Pinetime::PinMap::SpiLcdCsn};
-Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
+Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand, Pinetime::PinMap::LcdReset};
 
-Pinetime::Components::Gfx gfx {lcd};
 Pinetime::Controllers::BrightnessController brightnessController;
 
 void DisplayProgressBar(uint8_t percent, uint16_t color);
@@ -81,7 +79,8 @@ void RefreshWatchdog() {
 }
 
 uint8_t displayBuffer[displayWidth * bytesPerPixel];
-void Process(void* instance) {
+
+void Process(void* /*instance*/) {
   RefreshWatchdog();
   APP_GPIOTE_INIT(2);
 
@@ -91,7 +90,6 @@ void Process(void* instance) {
   spiNorFlash.Wakeup();
   brightnessController.Init();
   lcd.Init();
-  gfx.Init();
 
   NRF_LOG_INFO("Display logo")
   DisplayLogo();
@@ -123,7 +121,6 @@ void DisplayLogo() {
   Pinetime::Tools::RleDecoder rleDecoder(infinitime_nb, sizeof(infinitime_nb));
   for (int i = 0; i < displayWidth; i++) {
     rleDecoder.DecodeNext(displayBuffer, displayWidth * bytesPerPixel);
-    ulTaskNotifyTake(pdTRUE, 500);
     lcd.DrawBuffer(0, i, displayWidth, 1, reinterpret_cast<const uint8_t*>(displayBuffer), displayWidth * bytesPerPixel);
   }
 }
@@ -132,10 +129,21 @@ void DisplayProgressBar(uint8_t percent, uint16_t color) {
   static constexpr uint8_t barHeight = 20;
   std::fill(displayBuffer, displayBuffer + (displayWidth * bytesPerPixel), color);
   for (int i = 0; i < barHeight; i++) {
-    ulTaskNotifyTake(pdTRUE, 500);
     uint16_t barWidth = std::min(static_cast<float>(percent) * 2.4f, static_cast<float>(displayWidth));
     lcd.DrawBuffer(0, displayWidth - barHeight + i, barWidth, 1, reinterpret_cast<const uint8_t*>(displayBuffer), barWidth * bytesPerPixel);
   }
+}
+
+int mallocFailedCount = 0;
+int stackOverflowCount = 0;
+extern "C" {
+void vApplicationMallocFailedHook() {
+  mallocFailedCount++;
+}
+
+void vApplicationStackOverflowHook(TaskHandle_t /*xTask*/, char* /*pcTaskName*/) {
+  stackOverflowCount++;
+}
 }
 
 int main(void) {

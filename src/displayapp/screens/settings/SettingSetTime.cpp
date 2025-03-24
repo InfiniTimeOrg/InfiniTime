@@ -1,6 +1,5 @@
 #include "displayapp/screens/settings/SettingSetTime.h"
 #include <lvgl/lvgl.h>
-#include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
@@ -18,16 +17,17 @@ namespace {
       screen->SetTime();
     }
   }
+
   void ValueChangedHandler(void* userData) {
     auto* screen = static_cast<SettingSetTime*>(userData);
     screen->UpdateScreen();
   }
 }
 
-SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
-                               Pinetime::Controllers::DateTime& dateTimeController,
-                               Pinetime::Controllers::Settings& settingsController)
-  : Screen(app), dateTimeController {dateTimeController}, settingsController {settingsController} {
+SettingSetTime::SettingSetTime(Pinetime::Controllers::DateTime& dateTimeController,
+                               Pinetime::Controllers::Settings& settingsController,
+                               Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime)
+  : dateTimeController {dateTimeController}, settingsController {settingsController}, settingSetDateTime {settingSetDateTime} {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Set current time");
@@ -67,13 +67,13 @@ SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
   btnSetTime->user_data = this;
   lv_obj_set_size(btnSetTime, 120, 50);
   lv_obj_align(btnSetTime, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_obj_set_style_local_value_str(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Set");
+  lblSetTime = lv_label_create(btnSetTime, nullptr);
+  lv_label_set_text_static(lblSetTime, "Set");
   lv_obj_set_style_local_bg_color(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_obj_set_style_local_value_color(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DISABLED, LV_COLOR_GRAY);
+  lv_obj_set_style_local_text_color(lblSetTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, LV_COLOR_GRAY);
   lv_obj_set_event_cb(btnSetTime, SetTimeEventHandler);
 
   UpdateScreen();
-  lv_obj_set_state(btnSetTime, LV_STATE_DISABLED);
 }
 
 SettingSetTime::~SettingSetTime() {
@@ -88,7 +88,6 @@ void SettingSetTime::UpdateScreen() {
       lv_label_set_text_static(lblampm, "AM");
     }
   }
-  lv_obj_set_state(btnSetTime, LV_STATE_DEFAULT);
 }
 
 void SettingSetTime::SetTime() {
@@ -98,10 +97,8 @@ void SettingSetTime::SetTime() {
   dateTimeController.SetTime(dateTimeController.Year(),
                              static_cast<uint8_t>(dateTimeController.Month()),
                              dateTimeController.Day(),
-                             static_cast<uint8_t>(dateTimeController.DayOfWeek()),
                              static_cast<uint8_t>(hoursValue),
                              static_cast<uint8_t>(minutesValue),
-                             0,
-                             nrf_rtc_counter_get(portNRF_RTC_REG));
-  lv_obj_set_state(btnSetTime, LV_STATE_DISABLED);
+                             0);
+  settingSetDateTime.Quit();
 }

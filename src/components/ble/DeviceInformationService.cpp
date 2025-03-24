@@ -10,9 +10,9 @@ constexpr ble_uuid16_t DeviceInformationService::deviceInfoUuid;
 constexpr ble_uuid16_t DeviceInformationService::hwRevisionUuid;
 constexpr ble_uuid16_t DeviceInformationService::swRevisionUuid;
 
-int DeviceInformationCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+int DeviceInformationCallback(uint16_t /*conn_handle*/, uint16_t /*attr_handle*/, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   auto deviceInformationService = static_cast<DeviceInformationService*>(arg);
-  return deviceInformationService->OnDeviceInfoRequested(conn_handle, attr_handle, ctxt);
+  return deviceInformationService->OnDeviceInfoRequested(ctxt);
 }
 
 void DeviceInformationService::Init() {
@@ -24,7 +24,7 @@ void DeviceInformationService::Init() {
   ASSERT(res == 0);
 }
 
-int DeviceInformationService::OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+int DeviceInformationService::OnDeviceInfoRequested(struct ble_gatt_access_ctxt* ctxt) {
   const char* str;
 
   switch (ble_uuid_u16(ctxt->chr->uuid)) {

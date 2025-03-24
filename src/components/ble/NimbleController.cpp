@@ -1,7 +1,6 @@
 #include "components/ble/NimbleController.h"
 #include <cstring>
 
-#include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #define min // workaround: nimble's min/max macros conflict with libstdc++
 #define max
@@ -43,13 +42,12 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     anService {systemTask, notificationManager},
     alertNotificationClient {systemTask, notificationManager},
     currentTimeService {dateTimeController},
-    musicService {systemTask},
-    weatherService {systemTask, dateTimeController},
-    navService {systemTask},
+    musicService {*this},
+    weatherService {dateTimeController},
     batteryInformationService {batteryController},
     immediateAlertService {systemTask, notificationManager},
-    heartRateService {systemTask, heartRateController},
-    motionService {systemTask, motionController},
+    heartRateService {*this, heartRateController},
+    motionService {*this, motionController},
     fsService {systemTask, fs},
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }
@@ -160,7 +158,10 @@ void NimbleController::StartAdvertising() {
   }
 
   fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
-  fields.uuids128 = &dfuServiceUuid;
+  fields.uuids16 = &HeartRateService::heartRateServiceUuid;
+  fields.num_uuids16 = 1;
+  fields.uuids16_is_complete = 1;
+  fields.uuids128 = &DfuService::serviceUuid;
   fields.num_uuids128 = 1;
   fields.uuids128_is_complete = 1;
   fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
@@ -322,14 +323,14 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
                    event->subscribe.prev_indicate);
 
       if (event->subscribe.reason == BLE_GAP_SUBSCRIBE_REASON_TERM) {
-        heartRateService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
-        motionService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+        heartRateService.UnsubscribeNotification(event->subscribe.attr_handle);
+        motionService.UnsubscribeNotification(event->subscribe.attr_handle);
       } else if (event->subscribe.prev_notify == 0 && event->subscribe.cur_notify == 1) {
-        heartRateService.SubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
-        motionService.SubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+        heartRateService.SubscribeNotification(event->subscribe.attr_handle);
+        motionService.SubscribeNotification(event->subscribe.attr_handle);
       } else if (event->subscribe.prev_notify == 1 && event->subscribe.cur_notify == 0) {
-        heartRateService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
-        motionService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+        heartRateService.UnsubscribeNotification(event->subscribe.attr_handle);
+        motionService.UnsubscribeNotification(event->subscribe.attr_handle);
       }
       break;
 
@@ -453,9 +454,15 @@ void NimbleController::PersistBond(struct ble_gap_conn_desc& desc) {
     /* Wakeup Spi and SpiNorFlash before accessing the file system
      * This should be fixed in the FS driver
      */
-    systemTask.PushMessage(Pinetime::System::Messages::GoToRunning);
     systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
-    vTaskDelay(10);
+
+    // This isn't quite correct
+    // SystemTask could receive EnableSleeping right after passing this check
+    // We need some guarantee that the SystemTask has processed the above message
+    // before we can continue
+    while (!systemTask.IsSleepDisabled()) {
+      vTaskDelay(pdMS_TO_TICKS(5));
+    }
 
     lfs_file_t file_p;
 

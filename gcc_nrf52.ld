@@ -1,11 +1,46 @@
-/* Linker script to configure memory regions. */
+/****************************************************************
+ * Memory map configuration for using application with MCU-boot *
+ ****************************************************************/
+/*
+ * Internal nRF52 flash memory:
+ * 0x00000000: MCUBoot(28 kB)
+ * 0x00007000: Reboot logs (4 kB)
+ * 0x00008000: MCUBoot header (32 bytes)
+ * 0x00008020: Application (463+ kB)
+ * 0x0007be50: MCUBoot image trailer (432 bytes)
+ * 0x0007c000: MCUBoot Scratch partition (4 kB)
+ * 0x0007d000: unused (12 kB)
+ *
+ * SPI flash:
+ * 0x00000000: Bootloader Assets, like Boot Graphic (256 kB)
+ * 0x00040000: Application 2 (including MCUBoot header) (464 kB)
+ * 0x000b4000: User files - littlefs (3376 kB)
+ *
+ * This linker script sets the origin of the application at 0x00
+ * which means that the application must be linked with a start
+ * address at 0x00 and that it'll overwrite the bootloader.
+ * This is very practical when debugging and testing on
+ * the hardware with a SWD probe.
+ */
 
 SEARCH_DIR(.)
 GROUP(-lgcc -lc -lnosys)
 
+MCUBOOT_SIZE = 0x8000;
+SCRATCH_SIZE = 0x1000;
+TLV_SIZE =  0x28; /* Metadata added by imgtool at the end of the image */
+SCRATCH_OFFSET = 0x7c000;
+MCUBOOT_APP_IMAGE_HEADER_SIZE = 0x20;
+MCUBOOT_APP_IMAGE_TRAILER_SIZE = 0x1b0;
+APP_OFFSET = 0x00;
+APP_SIZE = SCRATCH_OFFSET - MCUBOOT_SIZE - MCUBOOT_APP_IMAGE_HEADER_SIZE - MCUBOOT_APP_IMAGE_TRAILER_SIZE - TLV_SIZE;
+
 MEMORY
 {
-  FLASH (rx) : ORIGIN = 0x00000, LENGTH = 0x78000
+  /* MCUBOOT (r) : ORIGIN = 0x0, LENGTH = MCUBOOT_SIZE */
+  FLASH (rx) : ORIGIN = APP_OFFSET, LENGTH = APP_SIZE
+  /* SCRATCH (r) : ORIGIN = SCRATCH_OFFSET, LENGTH = SCRATCH_SIZE */
+  SPARE_SPACE (r) : ORIGIN = SCRATCH_OFFSET + SCRATCH_SIZE, LENGTH = 12K
   RAM (rwx) :  ORIGIN = 0x20000000, LENGTH = 64K
 }
 

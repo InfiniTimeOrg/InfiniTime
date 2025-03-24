@@ -4,15 +4,18 @@
 namespace Pinetime {
   namespace Drivers {
     class TwiMaster;
+
     class Bma421 {
     public:
       enum class DeviceTypes : uint8_t { Unknown, BMA421, BMA425 };
+
       struct Values {
         uint32_t steps;
         int16_t x;
         int16_t y;
         int16_t z;
       };
+
       Bma421(TwiMaster& twiMaster, uint8_t twiAddress);
       Bma421(const Bma421&) = delete;
       Bma421& operator=(const Bma421&) = delete;
@@ -38,6 +41,7 @@ namespace Pinetime {
       TwiMaster& twiMaster;
       uint8_t deviceAddress = 0x18;
       struct bma4_dev bma;
+      struct bma4_accel_config accel_conf; // Store the device configuration for later reference.
       bool isOk = false;
       bool isResetOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;

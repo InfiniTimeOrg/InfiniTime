@@ -5,7 +5,7 @@
 #include <array>
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/PageIndicator.h"
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "components/settings/Settings.h"
 
 #define MAXLISTITEMS 4
@@ -31,6 +31,7 @@ namespace Pinetime {
         void OnButtonEvent(lv_obj_t* object, lv_event_t event);
 
       private:
+        DisplayApp* app;
         Controllers::Settings& settingsController;
         Pinetime::Applications::Apps apps[MAXLISTITEMS];
 

@@ -180,6 +180,7 @@ __STATIC_INLINE uint32_t ulPortRaiseBASEPRI( void )
 
 /*-----------------------------------------------------------*/
 
+size_t xPortGetHeapSize(void);
 
 #ifdef __cplusplus
 }

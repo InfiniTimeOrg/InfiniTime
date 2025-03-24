@@ -1,6 +1,6 @@
 #include "components/ble/HeartRateService.h"
 #include "components/heartrate/HeartRateController.h"
-#include "systemtask/SystemTask.h"
+#include "components/ble/NimbleController.h"
 #include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
@@ -9,15 +9,15 @@ constexpr ble_uuid16_t HeartRateService::heartRateServiceUuid;
 constexpr ble_uuid16_t HeartRateService::heartRateMeasurementUuid;
 
 namespace {
-  int HeartRateServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+  int HeartRateServiceCallback(uint16_t /*conn_handle*/, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
     auto* heartRateService = static_cast<HeartRateService*>(arg);
-    return heartRateService->OnHeartRateRequested(conn_handle, attr_handle, ctxt);
+    return heartRateService->OnHeartRateRequested(attr_handle, ctxt);
   }
 }
 
 // TODO Refactoring - remove dependency to SystemTask
-HeartRateService::HeartRateService(Pinetime::System::SystemTask& system, Controllers::HeartRateController& heartRateController)
-  : system {system},
+HeartRateService::HeartRateService(NimbleController& nimble, Controllers::HeartRateController& heartRateController)
+  : nimble {nimble},
     heartRateController {heartRateController},
     characteristicDefinition {{.uuid = &heartRateMeasurementUuid.u,
                                .access_cb = HeartRateServiceCallback,
@@ -45,7 +45,7 @@ void HeartRateService::Init() {
   ASSERT(res == 0);
 }
 
-int HeartRateService::OnHeartRateRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
+int HeartRateService::OnHeartRateRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
   if (attributeHandle == heartRateMeasurementHandle) {
     NRF_LOG_INFO("HEARTRATE : handle = %d", heartRateMeasurementHandle);
     uint8_t buffer[2] = {0, heartRateController.HeartRate()}; // [0] = flags, [1] = hr value
@@ -60,10 +60,10 @@ void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
   if (!heartRateMeasurementNotificationEnable)
     return;
 
-  uint8_t buffer[2] = {0, heartRateController.HeartRate()}; // [0] = flags, [1] = hr value
+  uint8_t buffer[2] = {0, heartRateValue}; // [0] = flags, [1] = hr value
   auto* om = ble_hs_mbuf_from_flat(buffer, 2);
 
-  uint16_t connectionHandle = system.nimble().connHandle();
+  uint16_t connectionHandle = nimble.connHandle();
 
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return;
@@ -72,12 +72,12 @@ void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
   ble_gattc_notify_custom(connectionHandle, heartRateMeasurementHandle, om);
 }
 
-void HeartRateService::SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) {
+void HeartRateService::SubscribeNotification(uint16_t attributeHandle) {
   if (attributeHandle == heartRateMeasurementHandle)
     heartRateMeasurementNotificationEnable = true;
 }
 
-void HeartRateService::UnsubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) {
+void HeartRateService::UnsubscribeNotification(uint16_t attributeHandle) {
   if (attributeHandle == heartRateMeasurementHandle)
     heartRateMeasurementNotificationEnable = false;
 }

@@ -24,6 +24,7 @@ namespace Pinetime {
       void StopFirmwareUpdate();
       void FirmwareUpdateTotalBytes(uint32_t totalBytes);
       void FirmwareUpdateCurrentBytes(uint32_t currentBytes);
+
       void State(FirmwareUpdateStates state) {
         firmwareUpdateState = state;
       }
@@ -31,12 +32,15 @@ namespace Pinetime {
       bool IsFirmwareUpdating() const {
         return isFirmwareUpdating;
       }
+
       uint32_t FirmwareUpdateTotalBytes() const {
         return firmwareUpdateTotalBytes;
       }
+
       uint32_t FirmwareUpdateCurrentBytes() const {
         return firmwareUpdateCurrentBytes;
       }
+
       FirmwareUpdateStates State() const {
         return firmwareUpdateState;
       }
@@ -44,15 +48,19 @@ namespace Pinetime {
       void Address(BleAddress&& addr) {
         address = addr;
       }
+
       const BleAddress& Address() const {
         return address;
       }
+
       void AddressType(AddressTypes t) {
         addressType = t;
       }
+
       void SetPairingKey(uint32_t k) {
         pairingKey = k;
       }
+
       uint32_t GetPairingKey() const {
         return pairingKey;
       }

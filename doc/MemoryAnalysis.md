@@ -104,7 +104,7 @@ In Infinitime 1.1, the biggest buffers are the buffers allocated for LVGL (14KB)
 
 ### Stack
 
-The stack will be used for everything except tasks, which have their own stack allocated by FreeRTOS. The stack is 8192B and is allocated in the [linker script](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/nrf_common.ld#L148).
+The stack will be used for everything except tasks, which have their own stack allocated by FreeRTOS. The stack is 8192B and is allocated in the [linker script](https://github.com/InfiniTimeOrg/InfiniTime/blob/main/nrf_common.ld#L148).
 An easy way to monitor its usage is by filling the section with a known pattern at boot time, then use the firmware and dump the memory. You can then check the maximum stack usage by checking the address from the beginning of the stack that were overwritten.
 
 #### Fill the stack section by a known pattern:
@@ -216,7 +216,7 @@ According to my experimentations, we don't use the stack that much, and 8192 byt
 
 ### Heap
 
-The heap is declared in the [linker script](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/nrf_common.ld#L136) and its current size is 8192 bytes. The heap is used for dynamic memory allocation(`malloc()`, `new`...).
+The heap is declared in the [linker script](https://github.com/InfiniTimeOrg/InfiniTime/blob/main/nrf_common.ld#L136) and its current size is 8192 bytes. The heap is used for dynamic memory allocation(`malloc()`, `new`...).
 
 Heap monitoring is not easy, but it seems that we can use the following code to know the current usage of the heap:
 
@@ -245,7 +245,7 @@ void* __wrap_malloc(size_t size) {
 
 Now, your function `__wrap_malloc()` will be called instead of `malloc()`. You can call the actual malloc from the stdlib by calling `__real_malloc()`.
 
-Using this technique, I was able to trace all malloc calls at boot (boot -> digital watchface):
+Using this technique, I was able to trace all malloc calls at boot (boot -> digital watch face):
 
 - system task = 3464 bytes (SystemTask could potentially be declared as a global variable to avoid heap allocation here)
 - string music = 31 (maybe we should not use std::string when not needed, as it does heap allocation)

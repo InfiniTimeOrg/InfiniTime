@@ -229,40 +229,12 @@ macro(nRF5x_setup)
       "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_twi.c"
       )
 
-    # adds target for erasing
-    if(USE_JLINK)
-        add_custom_target(FLASH_ERASE
-                COMMAND ${NRFJPROG} --eraseall -f ${NRF_TARGET}
-                COMMENT "erasing flashing"
-                )
-    elseif(USE_GDB_CLIENT)
-        add_custom_target(FLASH_ERASE
-          COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'mon erase_mass'
-          COMMENT "erasing flashing"
-          )
-    elseif(USE_OPENOCD)
-        add_custom_target(FLASH_ERASE
-            COMMAND ${OPENOCD_BIN_PATH}  -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c init -c halt -c 'nrf5 mass_erase' -c reset -c shutdown
-            COMMENT "erasing flashing"
-            )
-    endif()
-
     if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Darwin")
         set(TERMINAL "open")
     elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
         set(TERMINAL "sh")
     else()
         set(TERMINAL "gnome-terminal")
-    endif()
-
-    if(USE_JLINK)
-        add_custom_target(START_JLINK
-                COMMAND ${TERMINAL} "${DIR_OF_nRF5x_CMAKE}/runJLinkGDBServer-${NRF_TARGET}"
-                COMMAND ${TERMINAL} "${DIR_OF_nRF5x_CMAKE}/runJLinkExe-${NRF_TARGET}"
-                COMMAND sleep 2s
-                COMMAND ${TERMINAL} "${DIR_OF_nRF5x_CMAKE}/runJLinkRTTClient"
-                COMMENT "started JLink commands"
-                )
     endif()
 
 endmacro(nRF5x_setup)
@@ -281,29 +253,6 @@ macro(nRF5x_addExecutable EXECUTABLE_NAME SOURCE_FILES)
             COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_NAME}.out "${EXECUTABLE_NAME}.bin"
             COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_NAME}.out "${EXECUTABLE_NAME}.hex"
             COMMENT "post build steps for ${EXECUTABLE_NAME}")
-
-    # custom target for flashing the board
-    if(USE_JLINK)
-        add_custom_target("FLASH_${EXECUTABLE_NAME}"
-                DEPENDS ${EXECUTABLE_NAME}
-                COMMAND ${NRFJPROG} --program ${EXECUTABLE_NAME}.hex -f ${NRF_TARGET} --sectorerase
-                COMMAND sleep 0.5s
-                COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
-                COMMENT "flashing ${EXECUTABLE_NAME}.hex"
-                )
-    elseif(USE_GDB_CLIENT)
-        add_custom_target("FLASH_${EXECUTABLE_NAME}"
-          DEPENDS ${EXECUTABLE_NAME}
-          COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill'  ${EXECUTABLE_NAME}.hex
-          COMMENT "flashing ${EXECUTABLE_NAME}.hex"
-          )
-    elseif(USE_OPENOCD)
-        add_custom_target("FLASH_${EXECUTABLE_NAME}"
-                DEPENDS ${EXECUTABLE_NAME}
-                COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_NAME}.hex\""  -c reset -c shutdown
-                COMMENT "flashing ${EXECUTABLE_NAME}.hex"
-        )
-    endif()
 
 endmacro()
 

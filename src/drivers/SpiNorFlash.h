@@ -5,6 +5,7 @@
 namespace Pinetime {
   namespace Drivers {
     class Spi;
+
     class SpiNorFlash {
     public:
       explicit SpiNorFlash(Spi& spi);
@@ -19,7 +20,6 @@ namespace Pinetime {
         uint8_t density = 0;
       };
 
-      Identification ReadIdentificaion();
       uint8_t ReadStatusRegister();
       bool WriteInProgress();
       bool WriteEnabled();
@@ -32,6 +32,8 @@ namespace Pinetime {
       bool ProgramFailed();
       bool EraseFailed();
 
+      Identification GetIdentification() const;
+
       void Init();
       void Uninit();
 
@@ -39,6 +41,8 @@ namespace Pinetime {
       void Wakeup();
 
     private:
+      Identification ReadIdentification();
+
       enum class Commands : uint8_t {
         PageProgram = 0x02,
         Read = 0x03,

@@ -4,8 +4,10 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <displayapp/Controllers.h>
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
+#include "utility/DirtyValue.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -22,11 +24,10 @@ namespace Pinetime {
 
       class WatchFaceTerminal : public Screen {
       public:
-        WatchFaceTerminal(DisplayApp* app,
-                          Controllers::DateTime& dateTimeController,
-                          Controllers::Battery& batteryController,
-                          Controllers::Ble& bleController,
-                          Controllers::NotificationManager& notificatioManager,
+        WatchFaceTerminal(Controllers::DateTime& dateTimeController,
+                          const Controllers::Battery& batteryController,
+                          const Controllers::Ble& bleController,
+                          Controllers::NotificationManager& notificationManager,
                           Controllers::Settings& settingsController,
                           Controllers::HeartRateController& heartRateController,
                           Controllers::MotionController& motionController);
@@ -35,25 +36,16 @@ namespace Pinetime {
         void Refresh() override;
 
       private:
-        uint8_t displayedHour = -1;
-        uint8_t displayedMinute = -1;
-        uint8_t displayedSecond = -1;
-
-        uint16_t currentYear = 1970;
-        Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
-        Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
-        uint8_t currentDay = 0;
-
-        DirtyValue<int> batteryPercentRemaining {};
-        DirtyValue<bool> powerPresent {};
-        DirtyValue<bool> bleState {};
-        DirtyValue<bool> bleRadioEnabled {};
-        DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
-        DirtyValue<bool> motionSensorOk {};
-        DirtyValue<uint32_t> stepCount {};
-        DirtyValue<uint8_t> heartbeat {};
-        DirtyValue<bool> heartbeatRunning {};
-        DirtyValue<bool> notificationState {};
+        Utility::DirtyValue<int> batteryPercentRemaining {};
+        Utility::DirtyValue<bool> powerPresent {};
+        Utility::DirtyValue<bool> bleState {};
+        Utility::DirtyValue<bool> bleRadioEnabled {};
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>> currentDateTime {};
+        Utility::DirtyValue<uint32_t> stepCount {};
+        Utility::DirtyValue<uint8_t> heartbeat {};
+        Utility::DirtyValue<bool> heartbeatRunning {};
+        Utility::DirtyValue<bool> notificationState {};
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
         lv_obj_t* label_time;
         lv_obj_t* label_date;
@@ -66,9 +58,9 @@ namespace Pinetime {
         lv_obj_t* connectState;
 
         Controllers::DateTime& dateTimeController;
-        Controllers::Battery& batteryController;
-        Controllers::Ble& bleController;
-        Controllers::NotificationManager& notificatioManager;
+        const Controllers::Battery& batteryController;
+        const Controllers::Ble& bleController;
+        Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
@@ -76,5 +68,25 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct WatchFaceTraits<WatchFace::Terminal> {
+      static constexpr WatchFace watchFace = WatchFace::Terminal;
+      static constexpr const char* name = "Terminal";
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::WatchFaceTerminal(controllers.dateTimeController,
+                                              controllers.batteryController,
+                                              controllers.bleController,
+                                              controllers.notificationManager,
+                                              controllers.settingsController,
+                                              controllers.heartRateController,
+                                              controllers.motionController);
+      };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      }
+    };
   }
 }

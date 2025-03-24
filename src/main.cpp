@@ -1,5 +1,4 @@
 // nrf
-#include <hal/nrf_rtc.h>
 #include <hal/nrf_wdt.h>
 #include <legacy/nrf_drv_clock.h>
 #include <libraries/gpiote/app_gpiote.h>
@@ -45,7 +44,6 @@
 #include "drivers/Cst816s.h"
 #include "drivers/PinMap.h"
 #include "systemtask/SystemTask.h"
-#include "drivers/PinMap.h"
 #include "touchhandler/TouchHandler.h"
 #include "buttonhandler/ButtonHandler.h"
 
@@ -70,7 +68,7 @@ Pinetime::Drivers::SpiMaster spi {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,
                                    Pinetime::PinMap::SpiMiso}};
 
 Pinetime::Drivers::Spi lcdSpi {spi, Pinetime::PinMap::SpiLcdCsn};
-Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
+Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand, Pinetime::PinMap::LcdReset};
 
 Pinetime::Drivers::Spi flashSpi {spi, Pinetime::PinMap::SpiFlashCsn};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
@@ -82,14 +80,11 @@ static constexpr uint32_t MaxTwiFrequencyWithoutHardwareBug {0x06200000};
 Pinetime::Drivers::TwiMaster twiMaster {NRF_TWIM1, MaxTwiFrequencyWithoutHardwareBug, Pinetime::PinMap::TwiSda, Pinetime::PinMap::TwiScl};
 Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 #ifdef PINETIME_IS_RECOVERY
-  #include "displayapp/DummyLittleVgl.h"
   #include "displayapp/DisplayAppRecovery.h"
 #else
-  #include "displayapp/LittleVgl.h"
   #include "displayapp/DisplayApp.h"
+  #include "main.h"
 #endif
-Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
-
 Pinetime::Drivers::Bma421 motionSensor {twiMaster, motionSensorTwiAddress};
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
 
@@ -107,46 +102,40 @@ Pinetime::Controllers::MotorController motorController {};
 
 Pinetime::Controllers::DateTime dateTimeController {settingsController};
 Pinetime::Drivers::Watchdog watchdog;
-Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
-Pinetime::Controllers::TimerController timerController;
-Pinetime::Controllers::AlarmController alarmController {dateTimeController};
-Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
+Pinetime::Controllers::AlarmController alarmController {dateTimeController, fs};
+Pinetime::Controllers::TouchHandler touchHandler;
 Pinetime::Controllers::ButtonHandler buttonHandler;
 Pinetime::Controllers::BrightnessController brightnessController {};
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
-                                              lvgl,
                                               touchPanel,
                                               batteryController,
                                               bleController,
                                               dateTimeController,
-                                              watchdogView,
+                                              watchdog,
                                               notificationManager,
                                               heartRateController,
                                               settingsController,
                                               motorController,
                                               motionController,
-                                              timerController,
                                               alarmController,
                                               brightnessController,
-                                              touchHandler);
+                                              touchHandler,
+                                              fs,
+                                              spiNorFlash);
 
 Pinetime::System::SystemTask systemTask(spi,
-                                        lcd,
                                         spiNorFlash,
                                         twiMaster,
                                         touchPanel,
-                                        lvgl,
                                         batteryController,
                                         bleController,
                                         dateTimeController,
-                                        timerController,
                                         alarmController,
                                         watchdog,
                                         notificationManager,
-                                        motorController,
                                         heartRateSensor,
                                         motionController,
                                         motionSensor,
@@ -157,7 +146,17 @@ Pinetime::System::SystemTask systemTask(spi,
                                         fs,
                                         touchHandler,
                                         buttonHandler);
+int mallocFailedCount = 0;
+int stackOverflowCount = 0;
+extern "C" {
+void vApplicationMallocFailedHook() {
+  mallocFailedCount++;
+}
 
+void vApplicationStackOverflowHook(TaskHandle_t /*xTask*/, char* /*pcTaskName*/) {
+  stackOverflowCount++;
+}
+}
 /* Variable Declarations for variables in noinit SRAM
    Increment NoInit_MagicValue upon adding variables to this area
 */
@@ -169,7 +168,7 @@ std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoI
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == Pinetime::PinMap::Cst816sIrq) {
-    systemTask.OnTouchEvent();
+    systemTask.PushMessage(Pinetime::System::Messages::OnTouchEvent);
     return;
   }
 
@@ -209,29 +208,29 @@ void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
   }
 }
 
-static void (*radio_isr_addr)(void);
-static void (*rng_isr_addr)(void);
-static void (*rtc0_isr_addr)(void);
+static void (*radio_isr_addr)();
+static void (*rng_isr_addr)();
+static void (*rtc0_isr_addr)();
 
 /* Some interrupt handlers required for NimBLE radio driver */
 extern "C" {
 void RADIO_IRQHandler(void) {
-  ((void (*)(void)) radio_isr_addr)();
+  ((void (*)()) radio_isr_addr)();
 }
 
 void RNG_IRQHandler(void) {
-  ((void (*)(void)) rng_isr_addr)();
+  ((void (*)()) rng_isr_addr)();
 }
 
 void RTC0_IRQHandler(void) {
-  ((void (*)(void)) rtc0_isr_addr)();
+  ((void (*)()) rtc0_isr_addr)();
 }
 
 void WDT_IRQHandler(void) {
   nrf_wdt_event_clear(NRF_WDT_EVENT_TIMEOUT);
 }
 
-void npl_freertos_hw_set_isr(int irqn, void (*addr)(void)) {
+void npl_freertos_hw_set_isr(int irqn, void (*addr)()) {
   switch (irqn) {
     case RADIO_IRQn:
       radio_isr_addr = addr;
@@ -241,6 +240,8 @@ void npl_freertos_hw_set_isr(int irqn, void (*addr)(void)) {
       break;
     case RTC0_IRQn:
       rtc0_isr_addr = addr;
+      break;
+    default:
       break;
   }
 }
@@ -252,7 +253,7 @@ uint32_t npl_freertos_hw_enter_critical(void) {
 }
 
 void npl_freertos_hw_exit_critical(uint32_t ctx) {
-  if (!ctx) {
+  if (ctx == 0) {
     __enable_irq();
   }
 }
@@ -264,15 +265,14 @@ struct ble_npl_eventq* nimble_port_get_dflt_eventq(void) {
 }
 
 void nimble_port_run(void) {
-  struct ble_npl_event* ev;
-
-  while (1) {
-    ev = ble_npl_eventq_get(&g_eventq_dflt, BLE_NPL_TIME_FOREVER);
-    ble_npl_event_run(ev);
+  struct ble_npl_event* event;
+  while (true) {
+    event = ble_npl_eventq_get(&g_eventq_dflt, BLE_NPL_TIME_FOREVER);
+    ble_npl_event_run(event);
   }
 }
 
-void BleHost(void*) {
+void BleHost(void* /*unused*/) {
   nimble_port_run();
 }
 
@@ -284,8 +284,7 @@ void nimble_port_init(void) {
   ble_hs_init();
   ble_store_ram_init();
 
-  int res;
-  res = hal_timer_init(5, NULL);
+  int res = hal_timer_init(5, nullptr);
   ASSERT(res == 0);
   res = os_cputime_init(32768);
   ASSERT(res == 0);
@@ -300,17 +299,22 @@ void nimble_port_ll_task_func(void* args) {
 }
 }
 
-void calibrate_lf_clock_rc(nrf_drv_clock_evt_type_t event) {
+void calibrate_lf_clock_rc(nrf_drv_clock_evt_type_t /*event*/) {
   // 16 * 0.25s = 4s calibration cycle
   // Not recursive, call is deferred via internal calibration timer
   nrf_drv_clock_calibration_start(16, calibrate_lf_clock_rc);
 }
 
-int main(void) {
+void enable_dcdc_regulator() {
+  NRF_POWER->DCDCEN = 1;
+}
+
+int main() {
+  enable_dcdc_regulator();
   logger.Init();
 
   nrf_drv_clock_init();
-  nrf_drv_clock_lfclk_request(NULL);
+  nrf_drv_clock_lfclk_request(nullptr);
 
   // When loading the firmware via the Wasp-OS reloader-factory, which uses the used internal LF RC oscillator,
   // the LF clock has to be explicitly restarted because InfiniTime uses the external crystal oscillator if available.
@@ -351,8 +355,6 @@ int main(void) {
     memset(&__start_noinit_data, 0, (uintptr_t) &__stop_noinit_data - (uintptr_t) &__start_noinit_data);
     NoInit_MagicWord = NoInit_MagicValue;
   }
-
-  lvgl.Init();
 
   systemTask.Start();
 

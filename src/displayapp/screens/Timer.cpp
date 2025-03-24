@@ -17,7 +17,7 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : Screen(app), timerController {timerController} {
+Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -62,7 +62,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : S
   txtPlayPause = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(txtPlayPause, btnPlayPause, LV_ALIGN_CENTER, 0, 0);
 
-  if (timerController.IsRunning()) {
+  if (timer.IsRunning()) {
     SetTimerRunning();
   } else {
     SetTimerStopped();
@@ -85,7 +85,7 @@ void Timer::MaskReset() {
   buttonPressing = false;
   // A click event is processed before a release event,
   // so the release event would override the "Pause" text without this check
-  if (!timerController.IsRunning()) {
+  if (!timer.IsRunning()) {
     lv_label_set_text_static(txtPlayPause, "Start");
   }
   maskPosition = 0;
@@ -103,10 +103,8 @@ void Timer::UpdateMask() {
 }
 
 void Timer::Refresh() {
-  if (timerController.IsRunning()) {
-    uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-    minuteCounter.SetValue(seconds / 60);
-    secondCounter.SetValue(seconds % 60);
+  if (timer.IsRunning()) {
+    DisplayTime();
   } else if (buttonPressing && xTaskGetTickCount() > pressTime + pdMS_TO_TICKS(150)) {
     lv_label_set_text_static(txtPlayPause, "Reset");
     maskPosition += 15;
@@ -116,6 +114,14 @@ void Timer::Refresh() {
     } else {
       UpdateMask();
     }
+  }
+}
+
+void Timer::DisplayTime() {
+  displaySeconds = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
+  if (displaySeconds.IsUpdated()) {
+    minuteCounter.SetValue(displaySeconds.Get().count() / 60);
+    secondCounter.SetValue(displaySeconds.Get().count() % 60);
   }
 }
 
@@ -132,21 +138,19 @@ void Timer::SetTimerStopped() {
 }
 
 void Timer::ToggleRunning() {
-  if (timerController.IsRunning()) {
-    uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-    minuteCounter.SetValue(seconds / 60);
-    secondCounter.SetValue(seconds % 60);
-    timerController.StopTimer();
+  if (timer.IsRunning()) {
+    DisplayTime();
+    timer.StopTimer();
     SetTimerStopped();
   } else if (secondCounter.GetValue() + minuteCounter.GetValue() > 0) {
-    timerController.StartTimer((secondCounter.GetValue() + minuteCounter.GetValue() * 60) * 1000);
+    auto timerDuration = std::chrono::minutes(minuteCounter.GetValue()) + std::chrono::seconds(secondCounter.GetValue());
+    timer.StartTimer(timerDuration);
     Refresh();
     SetTimerRunning();
   }
 }
 
 void Timer::Reset() {
-  minuteCounter.SetValue(0);
-  secondCounter.SetValue(0);
+  DisplayTime();
   SetTimerStopped();
 }

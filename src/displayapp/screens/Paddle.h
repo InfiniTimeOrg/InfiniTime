@@ -3,17 +3,21 @@
 #include <lvgl/lvgl.h>
 #include <cstdint>
 #include "displayapp/screens/Screen.h"
+#include "displayapp/apps/Apps.h"
+#include "displayapp/Controllers.h"
+#include "Symbols.h"
 
 namespace Pinetime {
   namespace Components {
     class LittleVgl;
   }
+
   namespace Applications {
     namespace Screens {
 
       class Paddle : public Screen {
       public:
-        Paddle(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl);
+        Paddle(Pinetime::Components::LittleVgl& lvgl);
         ~Paddle() override;
 
         void Refresh() override;
@@ -44,5 +48,15 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct AppTraits<Apps::Paddle> {
+      static constexpr Apps app = Apps::Paddle;
+      static constexpr const char* icon = Screens::Symbols::paddle;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Paddle(controllers.lvgl);
+      };
+    };
   }
 }

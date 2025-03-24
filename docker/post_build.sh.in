@@ -15,6 +15,8 @@ cp "$BUILD_DIR/src/pinetime-mcuboot-app-dfu-$PROJECT_VERSION.zip" "$OUTPUT_DIR/p
 cp "$BUILD_DIR/src/pinetime-mcuboot-recovery-loader-image-$PROJECT_VERSION.bin" "$OUTPUT_DIR/pinetime-mcuboot-recovery-loader-image-$PROJECT_VERSION.bin"
 cp "$BUILD_DIR/src/pinetime-mcuboot-recovery-loader-dfu-$PROJECT_VERSION.zip" "$OUTPUT_DIR/pinetime-mcuboot-recovery-loader-dfu-$PROJECT_VERSION.zip"
 
+cp "$BUILD_DIR/src/resources/infinitime-resources-$PROJECT_VERSION.zip" "$OUTPUT_DIR/infinitime-resources-$PROJECT_VERSION.zip"
+
 mkdir -p "$OUTPUT_DIR/src"
 cp $BUILD_DIR/src/*.bin "$OUTPUT_DIR/src/"
 cp $BUILD_DIR/src/*.hex "$OUTPUT_DIR/src/"

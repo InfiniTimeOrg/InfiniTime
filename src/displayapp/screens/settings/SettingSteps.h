@@ -12,7 +12,7 @@ namespace Pinetime {
 
       class SettingSteps : public Screen {
       public:
-        SettingSteps(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
+        SettingSteps(Pinetime::Controllers::Settings& settingsController);
         ~SettingSteps() override;
 
         void UpdateSelected(lv_obj_t* object, lv_event_t event);

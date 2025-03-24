@@ -6,7 +6,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Paddle::Paddle(Pinetime::Applications::DisplayApp* app, Pinetime::Components::LittleVgl& lvgl) : Screen(app), lvgl {lvgl} {
+Paddle::Paddle(Pinetime::Components::LittleVgl& lvgl) : lvgl {lvgl} {
   background = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(background, LV_HOR_RES + 1, LV_VER_RES);
   lv_obj_set_pos(background, -1, 0);
@@ -79,11 +79,11 @@ void Paddle::Refresh() {
   lv_label_set_text_fmt(points, "%04d", score);
 }
 
-bool Paddle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+bool Paddle::OnTouchEvent(Pinetime::Applications::TouchEvents /*event*/) {
   return true;
 }
 
-bool Paddle::OnTouchEvent(uint16_t x, uint16_t y) {
+bool Paddle::OnTouchEvent(uint16_t /*x*/, uint16_t y) {
   // sets the center paddle pos. (30px offset) with the the y_coordinate of the finger
   // but clamp it such that the paddle never clips off screen
   if (y < 31) {

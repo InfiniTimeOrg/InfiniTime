@@ -14,7 +14,10 @@
 # limitations under the License.
 
 from enum import Enum
-import cbor
+try:
+    import cbor2 as cbor
+except:
+    import cbor
 
 
 class SwComponent(int, Enum):

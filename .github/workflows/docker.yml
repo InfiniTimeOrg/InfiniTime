@@ -2,11 +2,11 @@ name: Build and push Docker image
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ main ]
     paths:
       - 'docker/**'
   pull_request:
-    branches: [ develop ]
+    branches: [ main ]
     paths:
       - 'docker/**'
   # Allows you to run this workflow manually from the Actions tab
@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       USERNAME: infinitime
     steps:

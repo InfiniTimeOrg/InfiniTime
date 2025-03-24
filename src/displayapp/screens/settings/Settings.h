@@ -20,6 +20,7 @@ namespace Pinetime {
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
       private:
+        DisplayApp* app;
         auto CreateScreenList() const;
         std::unique_ptr<Screen> CreateScreen(unsigned int screenNum) const;
 
@@ -37,8 +38,8 @@ namespace Pinetime {
           {Symbols::home, "Watch face", Apps::SettingWatchFace},
 
           {Symbols::shoe, "Steps", Apps::SettingSteps},
-          {Symbols::clock, "Set date", Apps::SettingSetDate},
-          {Symbols::clock, "Set time", Apps::SettingSetTime},
+          {Symbols::clock, "Date & Time", Apps::SettingSetDateTime},
+          {Symbols::cloudSunRain, "Weather", Apps::SettingWeatherFormat},
           {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
 
           {Symbols::clock, "Chimes", Apps::SettingChimes},
@@ -47,9 +48,12 @@ namespace Pinetime {
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
 
           {Symbols::list, "About", Apps::SysInfo},
-          {Symbols::none, "None", Apps::None},
-          {Symbols::none, "None", Apps::None},
-          {Symbols::none, "None", Apps::None},
+
+          // {Symbols::none, "None", Apps::None},
+          // {Symbols::none, "None", Apps::None},
+          // {Symbols::none, "None", Apps::None},
+          // {Symbols::none, "None", Apps::None},
+
         }};
         ScreenList<nScreens> screens;
       };

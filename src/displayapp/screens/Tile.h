@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <memory>
 #include "displayapp/screens/Screen.h"
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"
@@ -19,14 +19,16 @@ namespace Pinetime {
         struct Applications {
           const char* icon;
           Pinetime::Applications::Apps application;
+          bool enabled;
         };
 
         explicit Tile(uint8_t screenID,
                       uint8_t numScreens,
                       DisplayApp* app,
                       Controllers::Settings& settingsController,
-                      Controllers::Battery& batteryController,
-                      Controllers::Ble& bleController,
+                      const Controllers::Battery& batteryController,
+                      const Controllers::Ble& bleController,
+                      const Controllers::AlarmController& alarmController,
                       Controllers::DateTime& dateTimeController,
                       std::array<Applications, 6>& applications);
 
@@ -36,6 +38,7 @@ namespace Pinetime {
         void OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId);
 
       private:
+        DisplayApp* app;
         Controllers::DateTime& dateTimeController;
 
         lv_task_t* taskUpdate;

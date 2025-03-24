@@ -35,9 +35,9 @@ namespace {
     return client->OnDescriptorDiscoveryEventCallback(conn_handle, error, chr_val_handle, dsc);
   }
 
-  int NewAlertSubcribeCallback(uint16_t conn_handle, const struct ble_gatt_error* error, struct ble_gatt_attr* attr, void* arg) {
+  int NewAlertSubcribeCallback(uint16_t conn_handle, const struct ble_gatt_error* error, struct ble_gatt_attr* /*attr*/, void* arg) {
     auto client = static_cast<AlertNotificationClient*>(arg);
-    return client->OnNewAlertSubcribe(conn_handle, error, attr);
+    return client->OnNewAlertSubcribe(conn_handle, error);
   }
 }
 
@@ -107,7 +107,7 @@ int AlertNotificationClient::OnCharacteristicsDiscoveryEvent(uint16_t connection
   return 0;
 }
 
-int AlertNotificationClient::OnNewAlertSubcribe(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* attribute) {
+int AlertNotificationClient::OnNewAlertSubcribe(uint16_t connectionHandle, const ble_gatt_error* error) {
   if (error->status == 0) {
     NRF_LOG_INFO("ANS New alert subscribe OK");
   } else {

@@ -7,6 +7,7 @@ namespace Pinetime {
     namespace Screens {
       class BatteryIcon {
       public:
+        explicit BatteryIcon(bool colorOnLowBattery);
         void Create(lv_obj_t* parent);
 
         void SetColor(lv_color_t);
@@ -19,6 +20,7 @@ namespace Pinetime {
       private:
         lv_obj_t* batteryImg;
         lv_obj_t* batteryJuice;
+        bool colorOnLowBattery = false;
       };
     }
   }

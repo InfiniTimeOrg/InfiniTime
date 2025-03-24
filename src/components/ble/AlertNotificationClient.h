@@ -25,7 +25,7 @@ namespace Pinetime {
 
       bool OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_svc* service);
       int OnCharacteristicsDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_chr* characteristic);
-      int OnNewAlertSubcribe(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* attribute);
+      int OnNewAlertSubcribe(uint16_t connectionHandle, const ble_gatt_error* error);
       int OnDescriptorDiscoveryEventCallback(uint16_t connectionHandle,
                                              const ble_gatt_error* error,
                                              uint16_t characteristicValueHandle,

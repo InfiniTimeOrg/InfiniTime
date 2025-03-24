@@ -1,32 +1,45 @@
 #include "components/datetime/DateTimeController.h"
-#include <date/date.h>
 #include <libraries/log/nrf_log.h>
 #include <systemtask/SystemTask.h>
+#include <hal/nrf_rtc.h>
+#include "nrf_assert.h"
 
 using namespace Pinetime::Controllers;
 
 namespace {
-  char const* DaysStringShort[] = {"--", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
-  char const* MonthsString[] = {"--", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-  char const* MonthsStringLow[] = {"--", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  constexpr const char* const DaysStringShort[] = {"--", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
+  constexpr const char* const DaysStringShortLow[] = {"--", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+  constexpr const char* const MonthsString[] = {"--", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+  constexpr const char* const MonthsStringLow[] =
+    {"--", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+  constexpr int compileTimeAtoi(const char* str) {
+    int result = 0;
+    while (*str >= '0' && *str <= '9') {
+      result = result * 10 + *str - '0';
+      str++;
+    }
+    return result;
+  }
 }
 
 DateTime::DateTime(Controllers::Settings& settingsController) : settingsController {settingsController} {
+  mutex = xSemaphoreCreateMutex();
+  ASSERT(mutex != nullptr);
+  xSemaphoreGive(mutex);
+
+  // __DATE__ is a string of the format "MMM DD YYYY", so an offset of 7 gives the start of the year
+  SetTime(compileTimeAtoi(&__DATE__[7]), 1, 1, 0, 0, 0);
 }
 
 void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> t) {
+  xSemaphoreTake(mutex, portMAX_DELAY);
   this->currentDateTime = t;
-  UpdateTime(previousSystickCounter); // Update internal state without updating the time
+  UpdateTime(previousSystickCounter, true); // Update internal state without updating the time
+  xSemaphoreGive(mutex);
 }
 
-void DateTime::SetTime(uint16_t year,
-                       uint8_t month,
-                       uint8_t day,
-                       uint8_t dayOfWeek,
-                       uint8_t hour,
-                       uint8_t minute,
-                       uint8_t second,
-                       uint32_t systickCounter) {
+void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second) {
   std::tm tm = {
     /* .tm_sec  = */ second,
     /* .tm_min  = */ minute,
@@ -35,56 +48,65 @@ void DateTime::SetTime(uint16_t year,
     /* .tm_mon  = */ month - 1,
     /* .tm_year = */ year - 1900,
   };
-  tm.tm_isdst = -1; // Use DST value from local time zone
-  currentDateTime = std::chrono::system_clock::from_time_t(std::mktime(&tm));
 
   NRF_LOG_INFO("%d %d %d ", day, month, year);
   NRF_LOG_INFO("%d %d %d ", hour, minute, second);
-  previousSystickCounter = systickCounter;
 
-  UpdateTime(systickCounter);
-  NRF_LOG_INFO("* %d %d %d ", this->hour, this->minute, this->second);
-  NRF_LOG_INFO("* %d %d %d ", this->day, this->month, this->year);
+  tm.tm_isdst = -1; // Use DST value from local time zone
 
-  systemTask->PushMessage(System::Messages::OnNewTime);
+  xSemaphoreTake(mutex, portMAX_DELAY);
+  currentDateTime = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+  UpdateTime(previousSystickCounter, true);
+  xSemaphoreGive(mutex);
+
+  if (systemTask != nullptr) {
+    systemTask->PushMessage(System::Messages::OnNewTime);
+  }
 }
 
-void DateTime::UpdateTime(uint32_t systickCounter) {
+void DateTime::SetTimeZone(int8_t timezone, int8_t dst) {
+  tzOffset = timezone;
+  dstOffset = dst;
+}
+
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> DateTime::CurrentDateTime() {
+  xSemaphoreTake(mutex, portMAX_DELAY);
+  UpdateTime(nrf_rtc_counter_get(portNRF_RTC_REG), false);
+  xSemaphoreGive(mutex);
+  return currentDateTime;
+}
+
+void DateTime::UpdateTime(uint32_t systickCounter, bool forceUpdate) {
   // Handle systick counter overflow
   uint32_t systickDelta = 0;
   if (systickCounter < previousSystickCounter) {
-    systickDelta = 0xffffff - previousSystickCounter;
+    systickDelta = static_cast<uint32_t>(portNRF_RTC_MAXTICKS) - previousSystickCounter;
     systickDelta += systickCounter + 1;
   } else {
     systickDelta = systickCounter - previousSystickCounter;
   }
 
-  /*
-   * 1000 ms = 1024 ticks
-   */
-  auto correctedDelta = systickDelta / 1024;
-  auto rest = (systickDelta - (correctedDelta * 1024));
+  auto correctedDelta = systickDelta / configTICK_RATE_HZ;
+  // If a second hasn't passed, there is nothing to do
+  // If the time has been changed, set forceUpdate to trigger internal state updates
+  if (correctedDelta == 0 && !forceUpdate) {
+    return;
+  }
+  auto rest = systickDelta % configTICK_RATE_HZ;
   if (systickCounter >= rest) {
     previousSystickCounter = systickCounter - rest;
   } else {
-    previousSystickCounter = 0xffffff - (rest - systickCounter);
+    previousSystickCounter = static_cast<uint32_t>(portNRF_RTC_MAXTICKS) - (rest - systickCounter - 1);
   }
 
   currentDateTime += std::chrono::seconds(correctedDelta);
   uptime += std::chrono::seconds(correctedDelta);
 
-  auto dp = date::floor<date::days>(currentDateTime);
-  auto time = date::make_time(currentDateTime - dp);
-  auto yearMonthDay = date::year_month_day(dp);
+  std::time_t currentTime = std::chrono::system_clock::to_time_t(currentDateTime);
+  localTime = *std::localtime(&currentTime);
 
-  year = static_cast<int>(yearMonthDay.year());
-  month = static_cast<Months>(static_cast<unsigned>(yearMonthDay.month()));
-  day = static_cast<unsigned>(yearMonthDay.day());
-  dayOfWeek = static_cast<Days>(date::weekday(yearMonthDay).iso_encoding());
-
-  hour = time.hours().count();
-  minute = time.minutes().count();
-  second = time.seconds().count();
+  auto minute = Minutes();
+  auto hour = Hours();
 
   if (minute == 0 && !isHourAlreadyNotified) {
     isHourAlreadyNotified = true;
@@ -115,15 +137,19 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
 }
 
 const char* DateTime::MonthShortToString() const {
-  return MonthsString[static_cast<uint8_t>(month)];
+  return MonthsString[static_cast<uint8_t>(Month())];
 }
 
 const char* DateTime::DayOfWeekShortToString() const {
-  return DaysStringShort[static_cast<uint8_t>(dayOfWeek)];
+  return DaysStringShort[static_cast<uint8_t>(DayOfWeek())];
 }
 
 const char* DateTime::MonthShortToStringLow(Months month) {
   return MonthsStringLow[static_cast<uint8_t>(month)];
+}
+
+const char* DateTime::DayOfWeekShortToStringLow(Days day) {
+  return DaysStringShortLow[static_cast<uint8_t>(day)];
 }
 
 void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
@@ -131,7 +157,10 @@ void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
 }
 
 using ClockType = Pinetime::Controllers::Settings::ClockType;
+
 std::string DateTime::FormattedTime() {
+  auto hour = Hours();
+  auto minute = Minutes();
   // Return time as a string in 12- or 24-hour format
   char buff[9];
   if (settingsController.GetClockType() == ClockType::H12) {
@@ -144,9 +173,9 @@ std::string DateTime::FormattedTime() {
       hour12 = (hour == 12) ? 12 : hour - 12;
       amPmStr = "PM";
     }
-    sprintf(buff, "%i:%02i %s", hour12, minute, amPmStr);
+    snprintf(buff, sizeof(buff), "%i:%02i %s", hour12, minute, amPmStr);
   } else {
-    sprintf(buff, "%02i:%02i", hour, minute);
+    snprintf(buff, sizeof(buff), "%02i:%02i", hour, minute);
   }
   return std::string(buff);
 }

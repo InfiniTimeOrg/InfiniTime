@@ -1,7 +1,7 @@
 #include "displayapp/screens/settings/Settings.h"
 #include <lvgl/lvgl.h>
 #include <functional>
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "displayapp/DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -19,7 +19,7 @@ auto Settings::CreateScreenList() const {
 }
 
 Settings::Settings(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
-  : Screen(app),
+  : app {app},
     settingsController {settingsController},
     screens {app, settingsController.GetSettingsMenu(), CreateScreenList(), Screens::ScreenListModes::UpDown} {
 }

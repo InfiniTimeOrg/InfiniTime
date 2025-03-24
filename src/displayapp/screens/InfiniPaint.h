@@ -5,17 +5,21 @@
 #include <algorithm> // std::fill
 #include "displayapp/screens/Screen.h"
 #include "components/motor/MotorController.h"
+#include "Symbols.h"
+#include "displayapp/apps/Apps.h"
+#include <displayapp/Controllers.h>
 
 namespace Pinetime {
   namespace Components {
     class LittleVgl;
   }
+
   namespace Applications {
     namespace Screens {
 
       class InfiniPaint : public Screen {
       public:
-        InfiniPaint(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl, Controllers::MotorController& motor);
+        InfiniPaint(Pinetime::Components::LittleVgl& lvgl, Controllers::MotorController& motor);
 
         ~InfiniPaint() override;
 
@@ -34,5 +38,15 @@ namespace Pinetime {
         uint8_t color = 2;
       };
     }
+
+    template <>
+    struct AppTraits<Apps::Paint> {
+      static constexpr Apps app = Apps::Paint;
+      static constexpr const char* icon = Screens::Symbols::paintbrush;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::InfiniPaint(controllers.lvgl, controllers.motorController);
+      };
+    };
   }
 }

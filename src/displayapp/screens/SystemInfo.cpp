@@ -1,4 +1,5 @@
 #include <FreeRTOS.h>
+#include <algorithm>
 #include <task.h>
 #include "displayapp/screens/SystemInfo.h"
 #include <lvgl/lvgl.h>
@@ -32,20 +33,21 @@ namespace {
 
 SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
                        Pinetime::Controllers::DateTime& dateTimeController,
-                       Pinetime::Controllers::Battery& batteryController,
+                       const Pinetime::Controllers::Battery& batteryController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
-                       Pinetime::Controllers::Ble& bleController,
-                       Pinetime::Drivers::WatchdogView& watchdog,
+                       const Pinetime::Controllers::Ble& bleController,
+                       const Pinetime::Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::MotionController& motionController,
-                       Pinetime::Drivers::Cst816S& touchPanel)
-  : Screen(app),
-    dateTimeController {dateTimeController},
+                       const Pinetime::Drivers::Cst816S& touchPanel,
+                       const Pinetime::Drivers::SpiNorFlash& spiNorFlash)
+  : dateTimeController {dateTimeController},
     batteryController {batteryController},
     brightnessController {brightnessController},
     bleController {bleController},
     watchdog {watchdog},
     motionController {motionController},
     touchPanel {touchPanel},
+    spiNorFlash {spiNorFlash},
     screens {app,
              0,
              {[this]() -> std::unique_ptr<Screen> {
@@ -94,30 +96,30 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
                         BootloaderVersion::VersionString());
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(0, 5, app, label);
+  return std::make_unique<Screens::Label>(0, 5, label);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   auto batteryPercent = batteryController.PercentRemaining();
-  auto resetReason = [this]() {
-    switch (watchdog.ResetReason()) {
-      case Drivers::Watchdog::ResetReasons::Watchdog:
+  const auto* resetReason = [this]() {
+    switch (watchdog.GetResetReason()) {
+      case Drivers::Watchdog::ResetReason::Watchdog:
         return "wtdg";
-      case Drivers::Watchdog::ResetReasons::HardReset:
+      case Drivers::Watchdog::ResetReason::HardReset:
         return "hardr";
-      case Drivers::Watchdog::ResetReasons::NFC:
+      case Drivers::Watchdog::ResetReason::NFC:
         return "nfc";
-      case Drivers::Watchdog::ResetReasons::SoftReset:
+      case Drivers::Watchdog::ResetReason::SoftReset:
         return "softr";
-      case Drivers::Watchdog::ResetReasons::CpuLockup:
+      case Drivers::Watchdog::ResetReason::CpuLockup:
         return "cpulock";
-      case Drivers::Watchdog::ResetReasons::SystemOff:
+      case Drivers::Watchdog::ResetReason::SystemOff:
         return "off";
-      case Drivers::Watchdog::ResetReasons::LpComp:
+      case Drivers::Watchdog::ResetReason::LpComp:
         return "lpcomp";
-      case Drivers::Watchdog::ResetReasons::DebugInterface:
+      case Drivers::Watchdog::ResetReason::DebugInterface:
         return "dbg";
-      case Drivers::Watchdog::ResetReasons::ResetPin:
+      case Drivers::Watchdog::ResetReason::ResetPin:
         return "rst";
       default:
         return "?";
@@ -173,38 +175,46 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         touchPanel.GetFwVersion(),
                         TARGET_DEVICE_NAME);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(1, 5, app, label);
+  return std::make_unique<Screens::Label>(1, 5, label);
 }
 
+extern int mallocFailedCount;
+extern int stackOverflowCount;
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
   lv_mem_monitor_t mon;
   lv_mem_monitor(&mon);
 
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
-  auto& bleAddr = bleController.Address();
+  const auto& bleAddr = bleController.Address();
+  auto spiFlashId = spiNorFlash.GetIdentification();
   lv_label_set_text_fmt(label,
                         "#808080 BLE MAC#\n"
-                        " %02x:%02x:%02x:%02x:%02x:%02x"
+                        " %02x:%02x:%02x:%02x:%02x:%02x\n"
                         "\n"
-                        "#808080 LVGL Memory#\n"
-                        " #808080 used# %d (%d%%)\n"
-                        " #808080 max used# %lu\n"
-                        " #808080 frag# %d%%\n"
-                        " #808080 free# %d",
+                        "#808080 SPI Flash# %02x-%02x-%02x\n"
+                        "\n"
+                        "#808080 Memory heap#\n"
+                        " #808080 Free# %d/%d\n"
+                        " #808080 Min free# %d\n"
+                        " #808080 Alloc err# %d\n"
+                        " #808080 Ovrfl err# %d\n",
                         bleAddr[5],
                         bleAddr[4],
                         bleAddr[3],
                         bleAddr[2],
                         bleAddr[1],
                         bleAddr[0],
-                        static_cast<int>(mon.total_size - mon.free_size),
-                        mon.used_pct,
-                        mon.max_used,
-                        mon.frag_pct,
-                        static_cast<int>(mon.free_biggest_size));
+                        spiFlashId.manufacturer,
+                        spiFlashId.type,
+                        spiFlashId.density,
+                        xPortGetFreeHeapSize(),
+                        xPortGetHeapSize(),
+                        xPortGetMinimumEverFreeHeapSize(),
+                        mallocFailedCount,
+                        stackOverflowCount);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(2, 5, app, label);
+  return std::make_unique<Screens::Label>(2, 5, label);
 }
 
 bool SystemInfo::sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
@@ -231,11 +241,16 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   lv_table_set_col_width(infoTask, 3, 90);
 
   auto nb = uxTaskGetSystemState(tasksStatus, maxTaskCount, nullptr);
+// g++ emits a spurious warning (and thus error because we compile with -Werror)
+// due to the way std::sort is implemented
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
   std::sort(tasksStatus, tasksStatus + nb, sortById);
+#pragma GCC diagnostic pop
   for (uint8_t i = 0; i < nb && i < maxTaskCount; i++) {
-    char buffer[7] = {0};
+    char buffer[11] = {0};
 
-    sprintf(buffer, "%lu", tasksStatus[i].xTaskNumber);
+    snprintf(buffer, sizeof(buffer), "%lu", tasksStatus[i].xTaskNumber);
     lv_table_set_cell_value(infoTask, i + 1, 0, buffer);
     switch (tasksStatus[i].eCurrentState) {
       case eReady:
@@ -259,13 +274,13 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
     lv_table_set_cell_value(infoTask, i + 1, 1, buffer);
     lv_table_set_cell_value(infoTask, i + 1, 2, tasksStatus[i].pcTaskName);
     if (tasksStatus[i].usStackHighWaterMark < 20) {
-      sprintf(buffer, "%d low", tasksStatus[i].usStackHighWaterMark);
+      snprintf(buffer, sizeof(buffer), "%" PRIu16 " low", tasksStatus[i].usStackHighWaterMark);
     } else {
-      sprintf(buffer, "%d", tasksStatus[i].usStackHighWaterMark);
+      snprintf(buffer, sizeof(buffer), "%" PRIu16, tasksStatus[i].usStackHighWaterMark);
     }
     lv_table_set_cell_value(infoTask, i + 1, 3, buffer);
   }
-  return std::make_unique<Screens::Label>(3, 5, app, infoTask);
+  return std::make_unique<Screens::Label>(3, 5, infoTask);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
@@ -282,5 +297,5 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
                            "#FFFF00 InfiniTime#");
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(4, 5, app, label);
+  return std::make_unique<Screens::Label>(4, 5, label);
 }

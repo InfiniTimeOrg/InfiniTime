@@ -18,6 +18,7 @@ void debugpins_init() {
   nrf_gpio_cfg_output(DebugPin4);
   nrf_gpio_pin_clear(DebugPin4);
 }
+
 void debugpins_set(debugpins_pins pin) {
   nrf_gpio_pin_set(static_cast<uint32_t>(pin));
 }
@@ -33,6 +34,7 @@ void debugpins_pulse(debugpins_pins pin) {
 #else
 void debugpins_init() {
 }
+
 void debugpins_set(debugpins_pins pin) {
 }
 

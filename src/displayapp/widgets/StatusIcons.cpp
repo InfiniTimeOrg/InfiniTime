@@ -1,10 +1,13 @@
 #include "displayapp/widgets/StatusIcons.h"
 #include "displayapp/screens/Symbols.h"
+#include "components/alarm/AlarmController.h"
 
 using namespace Pinetime::Applications::Widgets;
 
-StatusIcons::StatusIcons(Controllers::Battery& batteryController, Controllers::Ble& bleController)
-  : batteryController {batteryController}, bleController {bleController} {
+StatusIcons::StatusIcons(const Controllers::Battery& batteryController,
+                         const Controllers::Ble& bleController,
+                         const Controllers::AlarmController& alarmController)
+  : batteryIcon(true), batteryController {batteryController}, bleController {bleController}, alarmController {alarmController} {
 }
 
 void StatusIcons::Create() {
@@ -15,12 +18,13 @@ void StatusIcons::Create() {
   lv_obj_set_style_local_bg_opa(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
 
   bleIcon = lv_label_create(container, nullptr);
-  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0082FC));
   lv_label_set_text_static(bleIcon, Screens::Symbols::bluetooth);
 
   batteryPlug = lv_label_create(container, nullptr);
-  lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   lv_label_set_text_static(batteryPlug, Screens::Symbols::plug);
+
+  alarmIcon = lv_label_create(container, nullptr);
+  lv_label_set_text_static(alarmIcon, Screens::Symbols::bell);
 
   batteryIcon.Create(container);
 
@@ -37,6 +41,11 @@ void StatusIcons::Update() {
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
     batteryIcon.SetBatteryPercentage(batteryPercent);
+  }
+
+  alarmEnabled = alarmController.IsEnabled();
+  if (alarmEnabled.IsUpdated()) {
+    lv_obj_set_hidden(alarmIcon, !alarmEnabled.Get());
   }
 
   bleState = bleController.IsConnected();

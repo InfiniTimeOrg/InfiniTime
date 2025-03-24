@@ -11,9 +11,9 @@ constexpr ble_uuid16_t AlertNotificationService::ansUuid;
 constexpr ble_uuid16_t AlertNotificationService::ansCharUuid;
 constexpr ble_uuid128_t AlertNotificationService::notificationEventUuid;
 
-int AlertNotificationCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+int AlertNotificationCallback(uint16_t /*conn_handle*/, uint16_t /*attr_handle*/, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   auto anService = static_cast<AlertNotificationService*>(arg);
-  return anService->OnAlert(conn_handle, attr_handle, ctxt);
+  return anService->OnAlert(ctxt);
 }
 
 void AlertNotificationService::Init() {
@@ -44,7 +44,7 @@ AlertNotificationService::AlertNotificationService(System::SystemTask& systemTas
     notificationManager {notificationManager} {
 }
 
-int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+int AlertNotificationService::OnAlert(struct ble_gatt_access_ctxt* ctxt) {
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     constexpr size_t stringTerminatorSize = 1; // end of string '\0'
     constexpr size_t headerSize = 3;

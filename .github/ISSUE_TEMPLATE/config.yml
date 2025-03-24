@@ -1,5 +1,8 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Feature request
+    url: https://github.com/InfiniTimeOrg/InfiniTime/discussions/categories/ideas
+    about: Request a feature or share your ideas
   - name: PineTime community chat (Matrix)
     url: https://app.element.io/#/room/#pinetime:matrix.org
     about: Please ask questions about PineTime here.

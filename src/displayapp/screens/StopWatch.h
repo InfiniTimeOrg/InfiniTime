@@ -7,43 +7,68 @@
 #include "portmacro_cmsis.h"
 
 #include "systemtask/SystemTask.h"
+#include "systemtask/WakeLock.h"
+#include "displayapp/apps/Apps.h"
+#include "displayapp/Controllers.h"
+#include "Symbols.h"
 
-namespace Pinetime::Applications::Screens {
+namespace Pinetime {
+  namespace Applications {
+    namespace Screens {
 
-  enum class States { Init, Running, Halted };
+      enum class States { Init, Running, Halted };
 
-  struct TimeSeparated_t {
-    int mins;
-    int secs;
-    int hundredths;
-  };
+      struct TimeSeparated_t {
+        int hours;
+        int mins;
+        int secs;
+        int hundredths;
+      };
 
-  class StopWatch : public Screen {
-  public:
-    StopWatch(DisplayApp* app, System::SystemTask& systemTask);
-    ~StopWatch() override;
-    void Refresh() override;
+      class StopWatch : public Screen {
+      public:
+        explicit StopWatch(System::SystemTask& systemTask);
+        ~StopWatch() override;
+        void Refresh() override;
 
-    void playPauseBtnEventHandler(lv_event_t event);
-    void stopLapBtnEventHandler(lv_event_t event);
-    bool OnButtonPushed() override;
+        void playPauseBtnEventHandler();
+        void stopLapBtnEventHandler();
+        bool OnButtonPushed() override;
 
-    void Reset();
-    void Start();
-    void Pause();
+      private:
+        void SetInterfacePaused();
+        void SetInterfaceRunning();
+        void SetInterfaceStopped();
 
-  private:
-    Pinetime::System::SystemTask& systemTask;
-    States currentState = States::Init;
-    TickType_t startTime;
-    TickType_t oldTimeElapsed = 0;
-    static constexpr int maxLapCount = 20;
-    TickType_t laps[maxLapCount + 1];
-    static constexpr int displayedLaps = 2;
-    int lapsDone = 0;
-    lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
-    lv_obj_t* lapText;
+        void Reset();
+        void Start();
+        void Pause();
 
-    lv_task_t* taskRefresh;
-  };
+        Pinetime::System::WakeLock wakeLock;
+        States currentState = States::Init;
+        TickType_t startTime;
+        TickType_t oldTimeElapsed = 0;
+        TickType_t blinkTime = 0;
+        static constexpr int maxLapCount = 20;
+        TickType_t laps[maxLapCount + 1];
+        static constexpr int displayedLaps = 2;
+        int lapsDone = 0;
+        lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
+        lv_obj_t* lapText;
+        bool isHoursLabelUpdated = false;
+
+        lv_task_t* taskRefresh;
+      };
+    }
+
+    template <>
+    struct AppTraits<Apps::StopWatch> {
+      static constexpr Apps app = Apps::StopWatch;
+      static constexpr const char* icon = Screens::Symbols::stopWatch;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::StopWatch(*controllers.systemTask);
+      };
+    };
+  }
 }
