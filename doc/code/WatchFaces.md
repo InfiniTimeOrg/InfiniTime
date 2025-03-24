@@ -8,12 +8,13 @@ This example uses the existing Digital Watch Face, copies this to a new watch fa
 
 ## Files 
 
-- WatchFaceNew.cpp 
-- WatchFaceNew.h 
-- Clock.cpp
-- Clock.h
-- SettingWatchFace.h
-- CMakeLists.cpp
+- displayapp/UserApps.h
+- displayapp/apps/Apps.h.in
+- displayapp/apps/CMakeLists.txt
+- displayapp/screens/WatchFaceNew.cpp 
+- displayapp/screens/WatchFaceNew.h 
+- components/settings/Settings.h
+- CMakeLists.txt
 
 ### Check out and Branch and Copy 
 
@@ -30,90 +31,59 @@ cp ./src/displayapp/screens/WatchFaceDigital.h ./src/displayapp/screens/WatchFac
 
 ### Amend Files
 
-Include reference to the new Watch Face
+In UserApps.h add include for the new Watch Face.
 
-./src/displayapp/screens/Clock.cpp:
+./src/displayapp/UserApps.h:
 
 ```cpp
 
-#include "displayapp/screens/WatchFacePineTimeStyle.h"
+#include "displayapp/screens/WatchFaceTerminal.h"
 #include "displayapp/screens/WatchFaceNew.h"
 ```
 
+In Apps.h.in add the type from WatchFaceNew.h.
 
-Add to clock.cpp a WatchFaceNew
+./src/displayapp/apps/Apps.h.in:
 
-./src/displayapp/screens/Clock.cpp:
+```cpp
+
+enum class WatchFace : uint8_t {
+...
+CasioStyleG7710,
+NewType,
+```
+
+In CMakeLists.txt add the type to the DEFAULT_WATCHFACE_TYPES.
+
+./src/displayapp/apps/CMakeLists.txt:
+
+```cmake
+
+...
+set(DEFAULT_WATCHFACE_TYPES "${DEFAULT_WATCHFACE_TYPES}, WatchFace::CasioStyleG7710")
+set(DEFAULT_WATCHFACE_TYPES "${DEFAULT_WATCHFACE_TYPES}, WatchFace::NewType")
+```
+
+To make the new watchface the default.
+In Settings.h change the default value.
+
+./components/settings/Settings.h
 
 ```cpp
 
-std::unique_ptr<Screen> Clock::WatchFaceNewScreen() {
-  return std::make_unique<Screens::WatchFaceNew>(app,
-                                                     dateTimeController,
-                                                     batteryController,
-                                                     bleController,
-                                                     notificatioManager,
-                                                     settingsController,
-                                                     heartRateController,
-                                                     motionController);
-}
+Pinetime::Applications::WatchFace watchFace = Pinetime::Applications::WatchFace::NewType;
 ```
 
-Add to ~line 40 an additional case to select the new screen
-
-```cpp
-        case 3:
-          return WatchFaceTerminalScreen();
-          break;
-        case 4:
-          return WatchFaceNewScreen();
-          break;
-      }
-      return WatchFaceDigitalScreen();
-```
-
-Add these reference to the head files
-
-./src/displayapp/screens/Clock.h:
-
-```cpp
-        std::unique_ptr<Screen> WatchFacePineTimeStyleScreen();
-        std::unique_ptr<Screen> WatchFaceTerminalScreen();
-        std::unique_ptr<Screen> WatchFaceNewScreen();
-      };
-}
-```
-
-Amend the setting file to allow this watch face to be selected, by incrementing  the number of options and adding the name.
-
-./src/displayapp/screens/settings/SettingWatchFace.h
-
-```cpp
-      private:
-        static constexpr std::array<const char*, 5> options = {"Digital face", "Analog face", "PineTimeStyle", "Terminal", "New"};
-        Controllers::Settings& settingsController;
-```
-
-./src/displayapp/screens/settings/SettingWatchFace.cpp
-
-```cpp
-constexpr std::array<const char*, 5> SettingWatchFace::options;
-
-```
-
-
-Add a referenace to WatchFaceAccurateWords.cpp 
+In CMakeLists.txt include the WatchFaceNew.cpp source file.
 
 ./src/CMakeLists.txt:
 
 ```cpp
-        ## Watch faces
-        displayapp/icons/bg_clock.c
-        displayapp/screens/WatchFaceAnalog.cpp
-        displayapp/screens/WatchFaceDigital.cpp
-        displayapp/screens/WatchFaceTerminal.cpp
-        displayapp/screens/WatchFacePineTimeStyle.cpp
-        displayapp/screens/WatchFaceNew.cpp
+
+...
+displayapp/screens/WatchFacePineTimeStyle.cpp
+displayapp/screens/WatchFaceCasioStyleG7710.cpp
+displayapp/screens/WatchFaceNew.cpp
 ```
 
 Then finally amened WatchFaceNew.cpp and .h with the new names rather than the old WatchFaceDigital
@@ -123,45 +93,36 @@ Then finally amened WatchFaceNew.cpp and .h with the new names rather than the o
 ```cpp
 #include "displayapp/screens/WatchFaceNew.h
 ...
-WatchFaceAccurateWords::WatchFaceNew(DisplayApp* app,
-                                   Controllers::DateTime& dateTimeController,
+WatchFaceNew::WatchFaceNew(Controllers::DateTime& dateTimeController
 ...
 WatchFaceNew::~WatchFaceNew() {
-  lv_task_del(taskRefresh);
 ...
 void WatchFaceNew::Refresh() {
-  statusIcons.Update();
 ```
 
-./src/displayapp/screens/WatchFaceNew.cpp:
+./src/displayapp/screens/WatchFaceNew.h:
 
 ```cpp
 ...
-  namespace Applications {
-    namespace Screens {
-
-      class WatchFaceNew : public Screen {
-      public:
-        WatchFaceNew(DisplayApp* app,
-                         Controllers::DateTime& dateTimeController,
-                         Controllers::Battery& batteryController,
-                         Controllers::Ble& bleController,
-                         Controllers::NotificationManager& notificatioManager,
-                         Controllers::Settings& settingsController,
-                         Controllers::HeartRateController& heartRateController,
-                         Controllers::MotionController& motionController);
-        ~WatchFaceNew() override;
+class WatchFaceNew : public Screen {
 ...
+WatchFaceNew(Controllers::DateTime& dateTimeController,
+...
+ ~WatchFaceNew() override;
+...
+struct WatchFaceTraits<WatchFace::NewType> {
+      static constexpr WatchFace watchFace = WatchFace::NewType;
+...
+return new Screens::WatchFaceNew(controllers.dateTimeController,
 ```
-
 
 ## Test Copied Watch Face
 
 At this point - assuming you have [InfiniTime simulator](https://github.com/InfiniTimeOrg/InfiniSim) locally installed. It is a good time to test. 
 
+If you already have a `build/CMakeCache.txt` it will prevent your new watch face from being included in the build, so you will need to use the `--fresh` option to `cmake` or remove it before building. (The value of DEFAULT_WATCHFACE_TYPES is cached.)
 
 ## Amending the Watch Face to Suit 
-
 
 Start editing and ammended WatchFaceNew.cpp to suit your tastes. To save space on the firmware, use existing fonts. 
 
