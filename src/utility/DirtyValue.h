@@ -18,6 +18,10 @@ namespace Pinetime {
         return false;
       }
 
+      void MarkUpdated() {
+        this->isUpdated = true;
+      }
+
       T const& Get() {
         this->isUpdated = false;
         return value;
