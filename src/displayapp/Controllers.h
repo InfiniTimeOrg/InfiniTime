@@ -19,6 +19,7 @@ namespace Pinetime {
     class MotorController;
     class MotionController;
     class AlarmController;
+    class StopWatchController;
     class BrightnessController;
     class SimpleWeatherService;
     class FS;
@@ -42,6 +43,7 @@ namespace Pinetime {
       Pinetime::Controllers::MotorController& motorController;
       Pinetime::Controllers::MotionController& motionController;
       Pinetime::Controllers::AlarmController& alarmController;
+      Pinetime::Controllers::StopWatchController& stopWatchController;
       Pinetime::Controllers::BrightnessController& brightnessController;
       Pinetime::Controllers::SimpleWeatherService* weatherController;
       Pinetime::Controllers::FS& filesystem;

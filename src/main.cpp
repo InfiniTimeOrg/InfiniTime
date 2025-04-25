@@ -105,6 +105,7 @@ Pinetime::Drivers::Watchdog watchdog;
 Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::AlarmController alarmController {dateTimeController, fs};
+Pinetime::Controllers::StopWatchController stopWatchController;
 Pinetime::Controllers::TouchHandler touchHandler;
 Pinetime::Controllers::ButtonHandler buttonHandler;
 Pinetime::Controllers::BrightnessController brightnessController {};
@@ -121,6 +122,7 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               motorController,
                                               motionController,
                                               alarmController,
+                                              stopWatchController,
                                               brightnessController,
                                               touchHandler,
                                               fs,
@@ -134,6 +136,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         bleController,
                                         dateTimeController,
                                         alarmController,
+                                        stopWatchController,
                                         watchdog,
                                         notificationManager,
                                         heartRateSensor,
