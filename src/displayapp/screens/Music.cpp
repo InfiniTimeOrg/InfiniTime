@@ -25,7 +25,6 @@
 #include "displayapp/icons/music/disc_f_2.c"
 #include "displayapp/InfiniTimeTheme.h"
 
-
 using namespace Pinetime::Applications::Screens;
 
 static void event_handler(lv_obj_t* obj, lv_event_t event) {
