@@ -6,7 +6,6 @@ namespace Pinetime {
   namespace Controllers {
     class TouchHandler {
     public:
-
       struct TouchPoint {
         int x;
         int y;
@@ -33,7 +32,6 @@ namespace Pinetime {
       Pinetime::Applications::TouchEvents gesture;
       TouchPoint currentTouchPoint = {};
       bool gestureReleased = true;
-
     };
   }
 }
