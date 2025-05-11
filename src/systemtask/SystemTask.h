@@ -53,11 +53,6 @@ namespace Pinetime {
     class SystemTask {
     public:
       enum class SystemTaskState { Sleeping, Running, GoingToSleep, AODSleeping };
-      // Enum describes how the watch was woken:
-      //  * WakeUpAction: The actions selected in the wakeup settings, single/double tap, raise, shake
-      //  * Button: The hardware button
-      //  * Other: Other things that can wake the watch up, eg. apps and notifications.
-      enum class WokenBy { WakeUpAction, Button, Other };
       SystemTask(Drivers::SpiMaster& spi,
                  Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                  Drivers::TwiMaster& twiMaster,
@@ -138,6 +133,10 @@ namespace Pinetime {
       void UpdateMotion();
       bool stepCounterMustBeReset = false;
       static constexpr TickType_t batteryMeasurementPeriod = pdMS_TO_TICKS(10 * 60 * 1000);
+
+      // button unlock state and helper
+      bool ignoreTouchPopupHidden = true;
+      bool unlockedByButton = true;
 
       SystemMonitor monitor;
     };
