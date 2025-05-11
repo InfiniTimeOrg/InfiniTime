@@ -106,7 +106,6 @@ namespace Pinetime {
       Pinetime::Applications::Widgets::PopupMessage popupMessage;
 
       AppControllers controllers;
-
       TaskHandle_t taskHandle;
 
       States state = States::Running;
