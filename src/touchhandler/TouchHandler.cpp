@@ -61,5 +61,6 @@ bool TouchHandler::ProcessTouchInfo(Drivers::Cst816S::TouchInfos info) {
   }
 
   currentTouchPoint = {info.x, info.y, info.touching};
+
   return true;
 }
