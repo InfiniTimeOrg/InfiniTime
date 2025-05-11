@@ -251,7 +251,12 @@ void SystemTask::Work() {
             break;
           }
           if (state == SystemTaskState::Running) {
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
+            if (unlockedByButton) {
+              displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
+            } else if (ignoreTouchPopupHidden) {
+              ignoreTouchPopupHidden = false;
+              displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowIgnoreTouchPopup);
+            }
           } else {
             // If asleep, check for touch panel wake triggers
             auto gesture = touchHandler.GestureGet();
@@ -266,19 +271,27 @@ void SystemTask::Work() {
           }
           break;
         case Messages::HandleButtonEvent: {
-          Controllers::ButtonActions action = Controllers::ButtonActions::None;
-          if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
-            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Release);
+          // if the IgnoreTouchPopup is active the first button event unlocks the device
+          if (!ignoreTouchPopupHidden) {
+            unlockedByButton = true;
+            ignoreTouchPopupHidden = true;
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::HideIgnoreTouchPopup);
           } else {
-            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Press);
-            // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
-            if (IsSleeping()) {
-              fastWakeUpDone = true;
-              GoToRunning();
-              break;
+            Controllers::ButtonActions action = Controllers::ButtonActions::None;
+            if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
+              action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Release);
+            } else {
+              action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Press);
+              // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
+              if (IsSleeping()) {
+                unlockedByButton = true;
+                fastWakeUpDone = true;
+                GoToRunning();
+                break;
+              }
             }
+            HandleButtonAction(action);
           }
-          HandleButtonAction(action);
         } break;
         case Messages::HandleButtonTimerEvent: {
           auto action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Timer);
@@ -314,6 +327,8 @@ void SystemTask::Work() {
           } else {
             state = SystemTaskState::AODSleeping;
           }
+          // lock when going to sleep
+          unlockedByButton = false;
           break;
         case Messages::OnNewDay:
           // We might be sleeping (with TWI device disabled.
@@ -425,6 +440,9 @@ void SystemTask::GoToSleep() {
     displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
   }
   heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
+  unlockedByButton = false;
+  ignoreTouchPopupHidden = true;
+  displayApp.PushMessage(Pinetime::Applications::Display::Messages::HideIgnoreTouchPopup);
 
   state = SystemTaskState::GoingToSleep;
 };

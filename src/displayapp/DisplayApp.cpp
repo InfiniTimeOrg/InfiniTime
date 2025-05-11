@@ -478,6 +478,12 @@ void DisplayApp::Refresh() {
       case Messages::OnChargingEvent:
         motorController.RunForDuration(15);
         break;
+      case Messages::ShowIgnoreTouchPopup:
+        popupMessage.SetHidden(false);
+        break;
+      case Messages::HideIgnoreTouchPopup:
+        popupMessage.SetHidden(true);
+        break;
     }
   }
 
