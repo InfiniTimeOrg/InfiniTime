@@ -32,6 +32,7 @@
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/brightness/BrightnessController.h"
+#include "components/sleeptracking/SleepTrackingController.h"
 #include "components/motor/MotorController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/heartrate/HeartRateController.h"
@@ -108,6 +109,11 @@ Pinetime::Controllers::AlarmController alarmController {dateTimeController, fs};
 Pinetime::Controllers::TouchHandler touchHandler;
 Pinetime::Controllers::ButtonHandler buttonHandler;
 Pinetime::Controllers::BrightnessController brightnessController {};
+Pinetime::Controllers::SleepTrackingController sleeptrackingController {fs,
+                                                                        dateTimeController,
+                                                                        motionSensor,
+                                                                        heartRateController,
+                                                                        motorController};
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               touchPanel,
@@ -122,6 +128,7 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               motionController,
                                               alarmController,
                                               brightnessController,
+                                              sleeptrackingController,
                                               touchHandler,
                                               fs,
                                               spiNorFlash);
@@ -134,6 +141,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         bleController,
                                         dateTimeController,
                                         alarmController,
+                                        sleeptrackingController,
                                         watchdog,
                                         notificationManager,
                                         heartRateSensor,
