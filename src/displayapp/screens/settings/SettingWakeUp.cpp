@@ -8,17 +8,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-constexpr std::array<SettingWakeUp::Option, SettingWakeUp::numOptions> SettingWakeUp::options;
-
-auto SettingWakeUp::CreateScreenList() {
-  std::array<std::function<std::unique_ptr<Screen>()>, nScreens> screens;
-  for (size_t i = 0; i < screens.size(); i++) {
-    screens[i] = [this, i]() -> std::unique_ptr<Screen> {
-      return CreateScreen(i);
-    };
-  }
-  return screens;
-}
+constexpr std::array<SettingWakeUp::Option, 5> SettingWakeUp::options;
 
 namespace {
   void event_handler(lv_obj_t* obj, lv_event_t event) {
@@ -29,16 +19,7 @@ namespace {
   }
 }
 
-SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
-  : settingsController {settingsController}, screens {app, 0, CreateScreenList(), Screens::ScreenListModes::UpDown} {
-}
-
-SettingWakeUp::~SettingWakeUp() {
-  lv_obj_clean(lv_scr_act());
-  settingsController.SaveSettings();
-}
-
-std::unique_ptr<Screen> SettingWakeUp::CreateScreen(size_t screenNum) {
+SettingWakeUp::SettingWakeUp(Pinetime::Controllers::Settings& settingsController) : settingsController {settingsController} {
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
 
   lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
@@ -62,29 +43,20 @@ std::unique_ptr<Screen> SettingWakeUp::CreateScreen(size_t screenNum) {
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  // cleanup any old pointers
-  cbOption.fill(nullptr);
-
-  // only loop as far as the list size aĺlows
-  unsigned int loopMax = screenNum * optionsPerScreen + optionsPerScreen;
-  if (loopMax > options.size()) {
-    loopMax = options.size();
-  }
-
-  for (unsigned int i = screenNum * optionsPerScreen; i < loopMax; i++) {
+  for (unsigned int i = 0; i < options.size(); i++) {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
     lv_checkbox_set_text(cbOption[i], options[i].name);
-    if (settingsController.isWakeUpModeOn(options[i].wakeUpMode)) {
+    if (settingsController.isWakeUpModeOn(static_cast<Controllers::Settings::WakeUpMode>(i))) {
       lv_checkbox_set_checked(cbOption[i], true);
     }
     cbOption[i]->user_data = this;
     lv_obj_set_event_cb(cbOption[i], event_handler);
   }
-  return std::make_unique<Screens::Page>(screenNum, nScreens, container1);
 }
 
-bool SettingWakeUp::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  return screens.OnTouchEvent(event);
+SettingWakeUp::~SettingWakeUp() {
+  lv_obj_clean(lv_scr_act());
+  settingsController.SaveSettings();
 }
 
 void SettingWakeUp::UpdateSelected(lv_obj_t* object) {
@@ -102,8 +74,6 @@ void SettingWakeUp::UpdateSelected(lv_obj_t* object) {
   // for example, when setting SingleTap, DoubleTap is unset and vice versa.
   auto modes = settingsController.getWakeUpModes();
   for (size_t i = 0; i < options.size(); ++i) {
-    if (cbOption[i]) {
-      lv_checkbox_set_checked(cbOption[i], modes[i]);
-    }
+    lv_checkbox_set_checked(cbOption[i], modes[i]);
   }
 }
