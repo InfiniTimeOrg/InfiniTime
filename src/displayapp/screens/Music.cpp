@@ -48,9 +48,8 @@ inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
  *
  * TODO: Investigate Apple Media Service and AVRCPv1.6 support for seamless integration
  */
-Music::Music(Pinetime::Controllers::MusicService& music,
-             Pinetime::Controllers::MotorController& motor)
-    : musicService(music), motor(motor) {
+Music::Music(Pinetime::Controllers::MusicService& music, Pinetime::Controllers::MotorController& motor)
+: musicService(music), motor(motor) {
   lv_obj_t* label;
 
   lv_style_init(&btn_style);
@@ -252,11 +251,11 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  static bool isVolumeMode = false;  // T-flip-flop state
+  static bool isVolumeMode = false; // T-flip-flop state
 
   switch (event) {
     case TouchEvents::DoubleTap: {
-      isVolumeMode = !isVolumeMode;  // Toggle state
+      isVolumeMode = !isVolumeMode; // Toggle state
 
       if (isVolumeMode) {
         motor.RunForDuration(35);
