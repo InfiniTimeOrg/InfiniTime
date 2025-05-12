@@ -48,7 +48,9 @@ inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
  *
  * TODO: Investigate Apple Media Service and AVRCPv1.6 support for seamless integration
  */
-Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
+Music::Music(Pinetime::Controllers::MusicService& music,
+             Pinetime::Controllers::MotorController& motor)
+    : musicService(music), motor(motor) {
   lv_obj_t* label;
 
   lv_style_init(&btn_style);
@@ -118,7 +120,7 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
   lv_obj_align(txtArtist, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 2 * FONT_HEIGHT + LINE_PAD);
   lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtArtist, LV_HOR_RES - 12);
-  lv_label_set_text_static(txtArtist, "Artist Name");
+  lv_label_set_text_static(txtArtist, "");
   lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
@@ -126,7 +128,7 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
   lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrack, LV_HOR_RES - 12);
-  lv_label_set_text_static(txtTrack, "This is a very long getTrack name");
+  lv_label_set_text_static(txtTrack, "");
 
   /** Init animation */
   imgDisc = lv_img_create(lv_scr_act(), nullptr);
@@ -250,24 +252,28 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  switch (event) {
-    case TouchEvents::SwipeUp: {
-      lv_obj_set_hidden(btnVolDown, false);
-      lv_obj_set_hidden(btnVolUp, false);
+  static bool isVolumeMode = false;  // T-flip-flop state
 
-      lv_obj_set_hidden(btnNext, true);
-      lv_obj_set_hidden(btnPrev, true);
-      return true;
-    }
-    case TouchEvents::SwipeDown: {
-      if (lv_obj_get_hidden(btnNext)) {
+  switch (event) {
+    case TouchEvents::DoubleTap: {
+      isVolumeMode = !isVolumeMode;  // Toggle state
+
+      if (isVolumeMode) {
+        motor.RunForDuration(35);
+        // Show volume controls, hide track controls
+        lv_obj_set_hidden(btnVolDown, false);
+        lv_obj_set_hidden(btnVolUp, false);
+        lv_obj_set_hidden(btnNext, true);
+        lv_obj_set_hidden(btnPrev, true);
+      } else {
+        motor.RunForDuration(35);
+        // Show track controls, hide volume controls
         lv_obj_set_hidden(btnNext, false);
         lv_obj_set_hidden(btnPrev, false);
         lv_obj_set_hidden(btnVolDown, true);
         lv_obj_set_hidden(btnVolUp, true);
-        return true;
       }
-      return false;
+      return true;
     }
     case TouchEvents::SwipeLeft: {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);

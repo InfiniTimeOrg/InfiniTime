@@ -34,7 +34,8 @@ namespace Pinetime {
     namespace Screens {
       class Music : public Screen {
       public:
-        Music(Pinetime::Controllers::MusicService& music);
+        Music(Pinetime::Controllers::MusicService& music,
+              Pinetime::Controllers::MotorController& motor);
 
         ~Music() override;
 
@@ -82,6 +83,9 @@ namespace Pinetime {
 
         lv_task_t* taskRefresh;
 
+        Controllers::MotorController& motor;
+
+
         /** Watchapp */
       };
     }
@@ -92,7 +96,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::music;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Music(*controllers.musicService);
+        return new Screens::Music(*controllers.musicService, controllers.motorController);
       };
     };
   }
