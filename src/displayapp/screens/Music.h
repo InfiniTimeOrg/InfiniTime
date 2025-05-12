@@ -84,7 +84,6 @@ namespace Pinetime {
 
         Controllers::MotorController& motor;
 
-
         /** Watchapp */
       };
     }
