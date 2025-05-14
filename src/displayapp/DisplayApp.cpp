@@ -564,6 +564,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                notificationManager,
                                                                systemTask->nimble().alertService(),
                                                                motorController,
+                                                               dateTimeController,
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Normal);
       break;
@@ -572,6 +573,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                notificationManager,
                                                                systemTask->nimble().alertService(),
                                                                motorController,
+                                                               dateTimeController,
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Preview);
       break;

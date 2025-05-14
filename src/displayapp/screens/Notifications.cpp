@@ -14,12 +14,14 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::MotorController& motorController,
+                             Pinetime::Controllers::DateTime& dateTimeController,
                              System::SystemTask& systemTask,
                              Modes mode)
   : app {app},
     notificationManager {notificationManager},
     alertNotificationService {alertNotificationService},
     motorController {motorController},
+    dateTimeController {dateTimeController},
     wakeLock(systemTask),
     mode {mode} {
 
@@ -31,6 +33,8 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.Message(),
                                                      1,
                                                      notification.category,
+                                                     notification.timeArrived,
+                                                     std::chrono::system_clock::to_time_t(this->dateTimeController.CurrentDateTime()),
                                                      notificationManager.NbNotifications(),
                                                      alertNotificationService,
                                                      motorController);
@@ -107,6 +111,8 @@ void Notifications::Refresh() {
                                                        notification.Message(),
                                                        currentIdx + 1,
                                                        notification.category,
+                                                       notification.timeArrived,
+                                                       std::chrono::system_clock::to_time_t(this->dateTimeController.CurrentDateTime()),
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
                                                        motorController);
@@ -200,6 +206,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        previousNotification.Message(),
                                                        currentIdx + 1,
                                                        previousNotification.category,
+                                                       previousNotification.timeArrived,
+                                                       std::chrono::system_clock::to_time_t(dateTimeController.CurrentDateTime()),
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
                                                        motorController);
@@ -227,6 +235,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        nextNotification.Message(),
                                                        currentIdx + 1,
                                                        nextNotification.category,
+                                                       nextNotification.timeArrived,
+                                                       std::chrono::system_clock::to_time_t(dateTimeController.CurrentDateTime()),
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
                                                        motorController);
@@ -251,6 +261,8 @@ Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNo
                      0,
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
+                     0,
+                     0,
                      alertNotificationService,
                      motorController) {
 }
@@ -259,6 +271,8 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   const char* msg,
                                                   uint8_t notifNr,
                                                   Controllers::NotificationManager::Categories category,
+                                                  std::time_t timeArrived,
+                                                  std::time_t timeNow,
                                                   uint8_t notifNb,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                                   Pinetime::Controllers::MotorController& motorController)
@@ -324,8 +338,8 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       bt_accept = lv_btn_create(container, nullptr);
       bt_accept->user_data = this;
       lv_obj_set_event_cb(bt_accept, CallEventHandler);
-      lv_obj_set_size(bt_accept, 76, 76);
-      lv_obj_align(bt_accept, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+      lv_obj_set_size(bt_accept, 76, 38);
+      lv_obj_align(bt_accept, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, -34);
       label_accept = lv_label_create(bt_accept, nullptr);
       lv_label_set_text_static(label_accept, Symbols::phone);
       lv_obj_set_style_local_bg_color(bt_accept, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
@@ -333,8 +347,8 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       bt_reject = lv_btn_create(container, nullptr);
       bt_reject->user_data = this;
       lv_obj_set_event_cb(bt_reject, CallEventHandler);
-      lv_obj_set_size(bt_reject, 76, 76);
-      lv_obj_align(bt_reject, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+      lv_obj_set_size(bt_reject, 76, 38);
+      lv_obj_align(bt_reject, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -34);
       label_reject = lv_label_create(bt_reject, nullptr);
       lv_label_set_text_static(label_reject, Symbols::phoneSlash);
       lv_obj_set_style_local_bg_color(bt_reject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
@@ -342,12 +356,36 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       bt_mute = lv_btn_create(container, nullptr);
       bt_mute->user_data = this;
       lv_obj_set_event_cb(bt_mute, CallEventHandler);
-      lv_obj_set_size(bt_mute, 76, 76);
-      lv_obj_align(bt_mute, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+      lv_obj_set_size(bt_mute, 76, 38);
+      lv_obj_align(bt_mute, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -34);
       label_mute = lv_label_create(bt_mute, nullptr);
       lv_label_set_text_static(label_mute, Symbols::volumMute);
       lv_obj_set_style_local_bg_color(bt_mute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
     } break;
+  }
+  AddAlertAgeLabel(timeArrived, timeNow);
+}
+
+void Notifications::NotificationItem::AddAlertAgeLabel(std::time_t timeArrived, std::time_t timeNow) {
+  // almost impossible to receive a real notification at time 0, so skip because it is the "no notifications" notification
+  if (timeNow != 0) {
+    auto diff = std::chrono::system_clock::from_time_t(timeNow) - std::chrono::system_clock::from_time_t(timeArrived);
+    std::chrono::minutes age = std::chrono::duration_cast<std::chrono::minutes>(diff);
+    uint32_t ageInt = static_cast<uint32_t>(age.count());
+    char timeUnit;
+    if (ageInt / (60 * 24) >= 1) {
+      ageInt /= (60 * 24);
+      timeUnit = 'd';
+    } else if (ageInt >= 60) {
+      ageInt /= 60;
+      timeUnit = 'h';
+    } else {
+      timeUnit = 'm';
+    }
+    lv_obj_t* alertAge = lv_label_create(container, nullptr);
+    lv_label_set_text_fmt(alertAge, "%d%c ago", ageInt, timeUnit);
+    // same format as alert_count
+    lv_obj_align(alertAge, container, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -10);
   }
 }
 
