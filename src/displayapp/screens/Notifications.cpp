@@ -258,8 +258,8 @@ namespace {
 Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                                   Pinetime::Controllers::AppleNotificationCenterClient& ancsClient,
                                                   Pinetime::Controllers::MotorController& motorController)
-  : NotificationItem("Notification",
-                     "No notification to display",
+  : NotificationItem("Notifications",
+                     "No notifications to display",
                      0,
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
