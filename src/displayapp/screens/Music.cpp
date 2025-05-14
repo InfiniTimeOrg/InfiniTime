@@ -251,28 +251,24 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  static bool isVolumeMode = false; // T-flip-flop state
-
   switch (event) {
-    case TouchEvents::DoubleTap: {
-      isVolumeMode = !isVolumeMode; // Toggle state
+    case TouchEvents::SwipeUp: {
+      lv_obj_set_hidden(btnVolDown, false);
+      lv_obj_set_hidden(btnVolUp, false);
 
-      if (isVolumeMode) {
-        motor.RunForDuration(35);
-        // Show volume controls, hide track controls
-        lv_obj_set_hidden(btnVolDown, false);
-        lv_obj_set_hidden(btnVolUp, false);
-        lv_obj_set_hidden(btnNext, true);
-        lv_obj_set_hidden(btnPrev, true);
-      } else {
-        motor.RunForDuration(35);
-        // Show track controls, hide volume controls
+      lv_obj_set_hidden(btnNext, true);
+      lv_obj_set_hidden(btnPrev, true);
+      return true;
+    }
+    case TouchEvents::SwipeDown: {
+      if (lv_obj_get_hidden(btnNext)) {
         lv_obj_set_hidden(btnNext, false);
         lv_obj_set_hidden(btnPrev, false);
         lv_obj_set_hidden(btnVolDown, true);
         lv_obj_set_hidden(btnVolUp, true);
+        return true;
       }
-      return true;
+      return false;
     }
     case TouchEvents::SwipeLeft: {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);
