@@ -2,6 +2,7 @@
 #include "displayapp/apps/Apps.h"
 #include "Controllers.h"
 
+#include "displayapp/screens/ASM.h"
 #include "displayapp/screens/Alarm.h"
 #include "displayapp/screens/Dice.h"
 #include "displayapp/screens/Timer.h"
