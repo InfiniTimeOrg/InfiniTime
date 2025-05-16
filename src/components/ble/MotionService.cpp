@@ -64,7 +64,7 @@ int MotionService::OnStepCountRequested(uint16_t attributeHandle, ble_gatt_acces
     NRF_LOG_INFO("Motion-stepcount : handle = %d", stepCountHandle);
     uint32_t buffer = motionController.NbSteps();
 
-    int res = os_mbuf_append(context->om, &buffer, 4);
+    int res = os_mbuf_append(context->om, &buffer, sizeof(buffer));
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
   } else if (attributeHandle == motionValuesHandle) {
     int16_t buffer[3] = {motionController.X(), motionController.Y(), motionController.Z()};
@@ -80,7 +80,7 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
     return;
 
   uint32_t buffer = stepCount;
-  auto* om = ble_hs_mbuf_from_flat(&buffer, 4);
+  auto* om = ble_hs_mbuf_from_flat(&buffer, sizeof(buffer));
 
   uint16_t connectionHandle = nimble.connHandle();
 
