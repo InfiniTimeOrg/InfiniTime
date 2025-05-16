@@ -39,7 +39,9 @@ jobs:
           apt-get -y install --no-install-recommends python3-pil
       - name: Build
         shell: bash
-        run: /opt/build.sh all
+        run: |
+          git config --global --add safe.directory /__w/InfiniTime/InfiniTime
+          /opt/build.sh all
       - name: Output build size
         id: output-sizes
         run: |
