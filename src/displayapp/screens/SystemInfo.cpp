@@ -198,7 +198,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         " #808080 Free# %d/%d\n"
                         " #808080 Min free# %d\n"
                         " #808080 Alloc err# %d\n"
-                        " #808080 Ovrfl err# %d\n",
+                        " #808080 Ovrfl err# %d",
                         bleAddr[5],
                         bleAddr[4],
                         bleAddr[3],
