@@ -25,7 +25,7 @@ namespace Pinetime {
 
         lv_obj_t* GetObject() const {
           return counterContainer;
-        };
+        }
 
       private:
         void UpdateLabel();

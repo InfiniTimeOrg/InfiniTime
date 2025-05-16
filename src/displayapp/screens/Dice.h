@@ -55,7 +55,7 @@ namespace Pinetime {
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Dice(controllers.motionController, controllers.motorController, controllers.settingsController);
-      };
+      }
     };
   }
 }

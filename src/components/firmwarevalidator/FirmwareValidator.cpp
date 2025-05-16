@@ -11,8 +11,9 @@ bool FirmwareValidator::IsValidated() const {
 }
 
 void FirmwareValidator::Validate() {
-  if (!IsValidated())
+  if (!IsValidated()) {
     Pinetime::Drivers::InternalFlash::WriteWord(validBitAdress, validBitValue);
+  }
 }
 
 void FirmwareValidator::Reset() {

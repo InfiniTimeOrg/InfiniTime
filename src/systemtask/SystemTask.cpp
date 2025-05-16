@@ -408,7 +408,7 @@ void SystemTask::GoToRunning() {
   }
 
   state = SystemTaskState::Running;
-};
+}
 
 void SystemTask::GoToSleep() {
   if (IsSleeping()) {
@@ -426,7 +426,7 @@ void SystemTask::GoToSleep() {
   heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
 
   state = SystemTaskState::GoingToSleep;
-};
+}
 
 void SystemTask::UpdateMotion() {
   // Only consider disabling motion updates specifically in the Sleeping state
