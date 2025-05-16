@@ -196,7 +196,8 @@ void WatchFacePrideFlag::Refresh() {
   if (stepCount.IsUpdated() || themeChanged) {
     lv_label_set_text_fmt(stepValue, "%s %lu steps#", defaultLabelColour, stepCount.Get());
   }
-  if (themeChanged) themeChanged = false;
+  if (themeChanged)
+    themeChanged = false;
 }
 
 void WatchFacePrideFlag::UpdateSelected(lv_obj_t* object, lv_event_t event) {
