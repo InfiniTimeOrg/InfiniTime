@@ -5,8 +5,22 @@
 
 using namespace Pinetime::Applications;
 
-HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor, Controllers::HeartRateController& controller)
-  : heartRateSensor {heartRateSensor}, controller {controller} {
+TickType_t CurrentTaskDelay(bool isMeasurmentActivated, bool isScreenOn, bool isBackgroundMeasuring, TickType_t ppgDeltaTms) {
+  if (!isMeasurmentActivated) {
+    return portMAX_DELAY;
+  }
+
+  if (isScreenOn || isBackgroundMeasuring) {
+    return ppgDeltaTms;
+  }
+
+  return pdMS_TO_TICKS(100);
+}
+
+HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor,
+                             Controllers::HeartRateController& controller,
+                             Controllers::Settings& settings)
+  : heartRateSensor {heartRateSensor}, controller {controller}, settings {settings} {
 }
 
 void HeartRateTask::Start() {
@@ -25,78 +39,36 @@ void HeartRateTask::Process(void* instance) {
 
 void HeartRateTask::Work() {
   int lastBpm = 0;
-  while (true) {
-    Messages msg;
-    uint32_t delay;
-    if (state == States::Running) {
-      if (measurementStarted) {
-        delay = ppg.deltaTms;
-      } else {
-        delay = 100;
-      }
-    } else {
-      delay = portMAX_DELAY;
-    }
 
-    if (xQueueReceive(messageQueue, &msg, delay)) {
+  while (true) {
+    TickType_t delay = CurrentTaskDelay(isMeasurementActivated, isScreenOn, isBackgroundMeasuring, ppg.deltaTms);
+    Messages msg;
+
+    if (xQueueReceive(messageQueue, &msg, delay) == pdTRUE) {
       switch (msg) {
         case Messages::GoToSleep:
-          StopMeasurement();
-          state = States::Idle;
+          HandleGoToSleep();
           break;
         case Messages::WakeUp:
-          state = States::Running;
-          if (measurementStarted) {
-            lastBpm = 0;
-            StartMeasurement();
-          }
+          HandleWakeUp();
           break;
         case Messages::StartMeasurement:
-          if (measurementStarted) {
-            break;
-          }
-          lastBpm = 0;
-          StartMeasurement();
-          measurementStarted = true;
+          HandleStartMeasurement(&lastBpm);
           break;
         case Messages::StopMeasurement:
-          if (!measurementStarted) {
-            break;
-          }
-          StopMeasurement();
-          measurementStarted = false;
+          HandleStopMeasurement();
           break;
       }
     }
 
-    if (measurementStarted) {
-      auto sensorData = heartRateSensor.ReadHrsAls();
-      int8_t ambient = ppg.Preprocess(sensorData.hrs, sensorData.als);
-      int bpm = ppg.HeartRate();
+    if (!isMeasurementActivated) {
+      continue;
+    }
 
-      // If ambient light detected or a reset requested (bpm < 0)
-      if (ambient > 0) {
-        // Reset all DAQ buffers
-        ppg.Reset(true);
-        // Force state to NotEnoughData (below)
-        lastBpm = 0;
-        bpm = 0;
-      } else if (bpm < 0) {
-        // Reset all DAQ buffers except HRS buffer
-        ppg.Reset(false);
-        // Set HR to zero and update
-        bpm = 0;
-        controller.Update(Controllers::HeartRateController::States::Running, bpm);
-      }
-
-      if (lastBpm == 0 && bpm == 0) {
-        controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
-      }
-
-      if (bpm != 0) {
-        lastBpm = bpm;
-        controller.Update(Controllers::HeartRateController::States::Running, lastBpm);
-      }
+    if (isScreenOn || isBackgroundMeasuring) {
+      HandleSensorData(&lastBpm);
+    } else if (!isBackgroundMeasuring) {
+      HandleWaiting();
     }
   }
 }
@@ -107,14 +79,118 @@ void HeartRateTask::PushMessage(HeartRateTask::Messages msg) {
   portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-void HeartRateTask::StartMeasurement() {
+void HeartRateTask::StartSensor() {
   heartRateSensor.Enable();
   ppg.Reset(true);
   vTaskDelay(100);
 }
 
-void HeartRateTask::StopMeasurement() {
+void HeartRateTask::StopSensor() {
   heartRateSensor.Disable();
   ppg.Reset(true);
   vTaskDelay(100);
+}
+
+void HeartRateTask::HandleGoToSleep() {
+  isScreenOn = false;
+}
+
+void HeartRateTask::HandleWakeUp() {
+  if (isMeasurementActivated) {
+    StartSensor();
+  }
+  isScreenOn = true;
+}
+
+void HeartRateTask::HandleStartMeasurement(int* lastBpm) {
+  isMeasurementActivated = true;
+  *lastBpm = 0;
+  StartSensor();
+}
+
+void HeartRateTask::HandleStopMeasurement() {
+  isMeasurementActivated = false;
+  StopSensor();
+}
+
+void HeartRateTask::HandleWaiting() {
+  if (!IsBackgroundMeasurementActivated() || !isMeasurementActivated) {
+    StopSensor();
+    return;
+  }
+
+  if (ShouldStartBackgroundMeasuring()) {
+    isBackgroundMeasuring = true;
+    StartSensor();
+  }
+}
+
+void HeartRateTask::HandleSensorData(int* lastBpm) {
+  auto sensorData = heartRateSensor.ReadHrsAls();
+  int8_t ambient = ppg.Preprocess(sensorData.hrs, sensorData.als);
+  int bpm = ppg.HeartRate();
+
+  // If ambient light detected or a reset requested (bpm < 0)
+  if (ambient > 0) {
+    // Reset all DAQ buffers
+    ppg.Reset(true);
+  } else if (bpm < 0) {
+    // Reset all DAQ buffers except HRS buffer
+    ppg.Reset(false);
+    // Set HR to zero and update
+    bpm = 0;
+  }
+
+  bool notEnoughData = *lastBpm == 0 && bpm == 0;
+  if (notEnoughData) {
+    controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
+  }
+
+  if (bpm != 0) {
+    *lastBpm = bpm;
+    controller.Update(Controllers::HeartRateController::States::Running, bpm);
+  }
+
+  if (isScreenOn || IsContinuousModeActivated()) {
+    return;
+  }
+
+  if (ShouldStartBackgroundMeasuring()) {
+    // This doesn't change the state but resets the measurment timer, which basically starts the next measurment without resetting the
+    // sensor. This is basically a fall back to continuous mode, when measurments take too long.
+    measurementStart = xTaskGetTickCount();
+    return;
+  }
+
+  bool noDataWithinTimeLimit = bpm == 0 && ShoudStopTryingToGetData();
+  bool dataWithinTimeLimit = bpm != 0;
+  if (dataWithinTimeLimit || noDataWithinTimeLimit) {
+    isBackgroundMeasuring = false;
+    StopSensor();
+  }
+}
+
+TickType_t HeartRateTask::GetBackgroundIntervalInTicks() {
+  int ms = settings.GetHeartRateBackgroundMeasurementInterval() * 1000;
+  return pdMS_TO_TICKS(ms);
+}
+
+bool HeartRateTask::IsContinuousModeActivated() {
+  return settings.GetHeartRateBackgroundMeasurementInterval() == 0;
+}
+
+bool HeartRateTask::IsBackgroundMeasurementActivated() {
+  return settings.IsHeartRateBackgroundMeasurementActivated();
+}
+
+TickType_t HeartRateTask::GetTicksSinceLastMeasurementStarted() {
+  return xTaskGetTickCount() - measurementStart;
+}
+
+bool HeartRateTask::ShoudStopTryingToGetData() {
+  return GetTicksSinceLastMeasurementStarted() >= DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED;
+}
+
+bool HeartRateTask::ShouldStartBackgroundMeasuring() {
+  return GetTicksSinceLastMeasurementStarted() >= GetBackgroundIntervalInTicks();
 }
