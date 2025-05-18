@@ -433,7 +433,7 @@ void SystemTask::UpdateMotion() {
   // AOD needs motion on to show up to date step counts
   if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
                                               settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) ||
-                                              motionController.GetService()->IsMotionNotificationSubscribed())) {
+                                              motionController.GetService()->IsAnyNotificationSubscribed())) {
     return;
   }
 
