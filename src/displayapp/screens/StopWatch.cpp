@@ -3,8 +3,6 @@
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
 
-#include "systemtask/SystemTask.h"
-
 using namespace Pinetime::Applications::Screens;
 
 namespace {
