@@ -1,6 +1,7 @@
 #include "displayapp/screens/StopWatch.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include <timers.h>
 #include <algorithm>
 
 using namespace Pinetime::Applications::Screens;
