@@ -1,7 +1,7 @@
 #include "components/ble/AppleNotificationCenterClient.h"
-#include <algorithm>
 #include "components/ble/NotificationManager.h"
 #include "systemtask/SystemTask.h"
+#include <algorithm>
 
 using namespace Pinetime::Controllers;
 
@@ -84,8 +84,7 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
     if (isCharacteristicDiscovered == isControlCharacteristicDiscovered && isCharacteristicDiscovered == isDataCharacteristicDiscovered) {
       onServiceDiscovered(connectionHandle);
     }
-  } else {
-    if (characteristic != nullptr) {
+  } else if (characteristic != nullptr) {
       if (ble_uuid_cmp(&notificationSourceChar.u, &characteristic->uuid.u) == 0) {
         NRF_LOG_INFO("ANCS Characteristic discovered: Notification Source");
         notificationSourceHandle = characteristic->val_handle;
@@ -95,13 +94,10 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
         controlPointHandle = characteristic->val_handle;
         isControlCharacteristicDiscovered = true;
       } else if (ble_uuid_cmp(&dataSourceChar.u, &characteristic->uuid.u) == 0) {
-        char msg[55];
-        snprintf(msg, sizeof(msg), "ANCS Characteristic discovered: Data Source\n%d", characteristic->val_handle);
-        NRF_LOG_INFO(msg);
+        NRF_LOG_INFO("ANCS Characteristic discovered: Data Source");
         dataSourceHandle = characteristic->val_handle;
         isDataCharacteristicDiscovered = true;
       }
-    }
   }
   return 0;
 }
@@ -177,64 +173,58 @@ int AppleNotificationCenterClient::OnControlPointWrite(uint16_t /*connectionHand
 void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
   if (event->notify_rx.attr_handle == notificationSourceHandle || event->notify_rx.attr_handle == notificationSourceDescriptorHandle) {
     NRF_LOG_INFO("ANCS Notification received");
-    uint8_t eventId;
-    uint8_t eventFlags;
-    uint8_t category;
-    uint8_t categoryCount;
-    uint32_t notificationUuid;
 
-    os_mbuf_copydata(event->notify_rx.om, 0, 1, &eventId);
-    os_mbuf_copydata(event->notify_rx.om, 1, 1, &eventFlags);
-    os_mbuf_copydata(event->notify_rx.om, 2, 1, &category);
-    os_mbuf_copydata(event->notify_rx.om, 3, 1, &categoryCount);
-    os_mbuf_copydata(event->notify_rx.om, 4, 4, &notificationUuid);
+    AncsNotification ancsNotif;
 
-    bool silent = (eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0;
+    os_mbuf_copydata(event->notify_rx.om, 0, 1, &ancsNotif.eventId);
+    os_mbuf_copydata(event->notify_rx.om, 1, 1, &ancsNotif.eventFlags);
+    os_mbuf_copydata(event->notify_rx.om, 2, 1, &ancsNotif.category);
+    // Can be used to see how many grouped notifications are present
+    // os_mbuf_copydata(event->notify_rx.om, 3, 1, &categoryCount);
+    os_mbuf_copydata(event->notify_rx.om, 4, 4, &ancsNotif.uuid);
+
+    bool silent = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0;
     // bool important = eventFlags & static_cast<uint8_t>(EventFlags::Important);
-    bool preExisting = (eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) != 0;
+    bool preExisting = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) != 0;
     // bool positiveAction = eventFlags & static_cast<uint8_t>(EventFlags::PositiveAction);
     // bool negativeAction = eventFlags & static_cast<uint8_t>(EventFlags::NegativeAction);
 
-    AncsNotification ancsNotif;
-    ancsNotif.eventId = eventId;
-    ancsNotif.eventFlags = eventFlags;
-    ancsNotif.category = category;
-    ancsNotif.uuid = notificationUuid;
-
+    // The 6 is from TotalNbNotifications in NotificationManager.h + 1
     while (notifications.size() > 6) {
       notifications.erase(notifications.begin());
     }
 
-    if (notifications.contains(notificationUuid)) {
-      notifications[notificationUuid] = ancsNotif;
+    if (notifications.contains(ancsNotif.uuid)) {
+      notifications[ancsNotif.uuid] = ancsNotif;
     } else if (!silent) {
-      notifications.insert({notificationUuid, ancsNotif});
+      notifications.insert({ancsNotif.uuid, ancsNotif});
     }
 
-    if (preExisting || eventId != static_cast<uint8_t>(EventIds::Added) || silent) {
+    if (preExisting || ancsNotif.eventId != static_cast<uint8_t>(EventIds::Added) || silent) {
       return;
     }
 
     // Request ANCS more info
+    // The +4 is for the "..." at the end of the string
     uint8_t titleSize = maxTitleSize + 4;
     uint8_t subTitleSize = maxSubtitleSize + 4;
     uint8_t messageSize = maxMessageSize + 4;
     BYTE request[14];
     request[0] = 0x00; // Command ID: Get Notification Attributes
-    request[1] = (uint8_t) (notificationUuid & 0xFF);
-    request[2] = (uint8_t) ((notificationUuid >> 8) & 0xFF);
-    request[3] = (uint8_t) ((notificationUuid >> 16) & 0xFF);
-    request[4] = (uint8_t) ((notificationUuid >> 24) & 0xFF);
+    request[1] = static_cast<uint8_t>(ancsNotif.uuid & 0xFF);
+    request[2] = static_cast<uint8_t>((ancsNotif.uuid >> 8) & 0xFF);
+    request[3] = static_cast<uint8_t>((ancsNotif.uuid >> 16) & 0xFF);
+    request[4] = static_cast<uint8_t>((ancsNotif.uuid >> 24) & 0xFF);
     request[5] = 0x01; // Attribute ID: Title
     // request[6] = 0x00;
-    request[6] = (titleSize & 0xFF);
-    request[7] = ((titleSize >> 8) & 0xFF);
+    request[6] = static_cast<uint8_t>(titleSize & 0xFF);
+    request[7] = static_cast<uint8_t>((titleSize >> 8) & 0xFF);
     request[8] = 0x02; // Attribute ID: Subtitle
-    request[9] = (subTitleSize & 0xFF);
-    request[10] = ((subTitleSize >> 8) & 0xFF);
+    request[9] = static_cast<uint8_t>(subTitleSize & 0xFF);
+    request[10] = static_cast<uint8_t>((subTitleSize >> 8) & 0xFF);
     request[11] = 0x03; // Attribute ID: Message
-    request[12] = (messageSize & 0xFF);
-    request[13] = ((messageSize >> 8) & 0xFF);
+    request[12] = static_cast<uint8_t>(messageSize & 0xFF);
+    request[13] = static_cast<uint8_t>((messageSize >> 8) & 0xFF);
 
     ble_gattc_write_flat(event->notify_rx.conn_handle, controlPointHandle, request, sizeof(request), OnControlPointWriteCallback, this);
   } else if (event->notify_rx.attr_handle == dataSourceHandle || event->notify_rx.attr_handle == dataSourceDescriptorHandle) {
@@ -287,11 +277,6 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
         decodedSubTitle.resize(maxSubtitleSize - 3);
         decodedSubTitle += "...";
       }
-
-      // if (messageSize > maxMessageSize) {
-      //   decodedMessage.resize(maxMessageSize - 3);
-      //   decodedMessage += "...";
-      // }
     }
 
     titleSize = static_cast<uint16_t>(decodedTitle.size());
@@ -316,20 +301,21 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     }
 
     // Adjust notification if too long
-    if (notifStr.size() > 100) {
+    if (notifStr.size() > NotificationManager::MessageSize) {
       notifStr.resize(97);
       notifStr += "...";
     }
 
-    notif.message = std::array<char, 101> {};
+    notif.message = std::array<char, NotificationManager::MessageSize + 1> {};
     std::strncpy(notif.message.data(), notifStr.c_str(), notif.message.size() - 1);
 
-    if (incomingCall)
+    if (incomingCall) {
       notif.message[13] = '\0'; // Separate Title and Message
-    else if (!decodedSubTitle.empty())
+    } else if (!decodedSubTitle.empty()) {
       notif.message[titleSize + subTitleSize] = '\0'; // Separate Title and Message
-    else
+    } else {
       notif.message[titleSize - 1] = '\0'; // Separate Title and Message
+    }
 
     notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
     notif.size = std::min(std::strlen(notifStr.c_str()), notif.message.size());
@@ -345,9 +331,8 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 }
 
 void AppleNotificationCenterClient::AcceptIncomingCall(uint32_t uuid) {
-  AncsNotification ancsNotif;
   if (notifications.contains(uuid)) {
-    ancsNotif = notifications[uuid];
+    const AncsNotification ancsNotif = notifications[uuid];
     if (ancsNotif.category != static_cast<uint8_t>(Categories::IncomingCall)) {
       return;
     }
@@ -357,10 +342,10 @@ void AppleNotificationCenterClient::AcceptIncomingCall(uint32_t uuid) {
 
   uint8_t value[6];
   value[0] = 0x02; // Command ID: Perform Notification Action
-  value[1] = (uint8_t) (uuid & 0xFF);
-  value[2] = (uint8_t) ((uuid >> 8) & 0xFF);
-  value[3] = (uint8_t) ((uuid >> 16) & 0xFF);
-  value[4] = (uint8_t) ((uuid >> 24) & 0xFF);
+  value[1] = static_cast<uint8_t>((uuid & 0xFF));
+  value[2] = static_cast<uint8_t>((uuid >> 8) & 0xFF);
+  value[3] = static_cast<uint8_t>((uuid >> 16) & 0xFF);
+  value[4] = static_cast<uint8_t>((uuid >> 24) & 0xFF);
   value[5] = 0x00; // Action ID: Positive Action
 
   ble_gattc_write_flat(systemTask.nimble().connHandle(), controlPointHandle, value, sizeof(value), OnControlPointWriteCallback, this);
@@ -379,10 +364,10 @@ void AppleNotificationCenterClient::RejectIncomingCall(uint32_t uuid) {
 
   uint8_t value[6];
   value[0] = 0x02; // Command ID: Perform Notification Action
-  value[1] = (uint8_t) (uuid & 0xFF);
-  value[2] = (uint8_t) ((uuid >> 8) & 0xFF);
-  value[3] = (uint8_t) ((uuid >> 16) & 0xFF);
-  value[4] = (uint8_t) ((uuid >> 24) & 0xFF);
+  value[1] = static_cast<uint8_t>(uuid & 0xFF);
+  value[2] = static_cast<uint8_t>((uuid >> 8) & 0xFF);
+  value[3] = static_cast<uint8_t>((uuid >> 16) & 0xFF);
+  value[4] = static_cast<uint8_t>((uuid >> 24) & 0xFF);
   value[5] = 0x01; // Action ID: Negative Action
 
   ble_gattc_write_flat(systemTask.nimble().connHandle(), controlPointHandle, value, sizeof(value), OnControlPointWriteCallback, this);
@@ -421,6 +406,8 @@ void AppleNotificationCenterClient::Discover(uint16_t connectionHandle, std::fun
   ble_gattc_disc_svc_by_uuid(connectionHandle, &ancsUuid.u, OnDiscoveryEventCallback, this);
 }
 
+// This function is used for debugging purposes to log a message and push a notification
+// Used to test BLE debugging on production devices
 void AppleNotificationCenterClient::DebugNotification(const char* msg) const {
   NRF_LOG_INFO("[ANCS DEBUG] %s", msg);
 
@@ -446,7 +433,7 @@ std::string AppleNotificationCenterClient::DecodeUtf8String(os_mbuf* om, uint16_
   };
 
   for (uint16_t i = 0; i < size;) {
-    uint8_t byte;
+    uint8_t byte = 0;
     if (os_mbuf_copydata(om, offset + i, 1, &byte) != 0) {
       break; // Handle error in copying data (e.g., log or terminate processing)
     }
@@ -461,12 +448,13 @@ std::string AppleNotificationCenterClient::DecodeUtf8String(os_mbuf* om, uint16_
     } else { // Multi-byte UTF-8
       // Determine sequence length based on leading byte
       int sequenceLength = 0;
-      if ((byte & 0xE0) == 0xC0)
+      if ((byte & 0xE0) == 0xC0) {
         sequenceLength = 2; // 2-byte sequence
-      else if ((byte & 0xF0) == 0xE0)
+      } else if ((byte & 0xF0) == 0xE0) {
         sequenceLength = 3; // 3-byte sequence
-      else if ((byte & 0xF8) == 0xF0)
+      } else if ((byte & 0xF8) == 0xF0) {
         sequenceLength = 4; // 4-byte sequence
+      }
 
       if (i + sequenceLength > size) {
         decoded.append("�"); // Incomplete sequence, replace
@@ -479,18 +467,19 @@ std::string AppleNotificationCenterClient::DecodeUtf8String(os_mbuf* om, uint16_
       uint32_t codepoint = 0;
 
       for (int j = 0; j < sequenceLength; ++j) {
-        uint8_t nextByte;
+        uint8_t nextByte = 0;
         os_mbuf_copydata(om, offset + i + j, 1, &nextByte);
         utf8Char.push_back(static_cast<char>(nextByte));
 
         if (j == 0) {
           // Leading byte contributes significant bits
-          if (sequenceLength == 2)
+          if (sequenceLength == 2) {
             codepoint = nextByte & 0x1F;
-          else if (sequenceLength == 3)
+          } else if (sequenceLength == 3) {
             codepoint = nextByte & 0x0F;
-          else if (sequenceLength == 4)
+          } else if (sequenceLength == 4) {
             codepoint = nextByte & 0x07;
+          }
         } else {
           // Continuation bytes contribute lower bits
           if ((nextByte & 0xC0) != 0x80) {
