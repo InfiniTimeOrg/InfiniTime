@@ -30,6 +30,7 @@
 #include "displayapp/screens/Weather.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
+#include "displayapp/screens/Calculator.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -475,9 +476,6 @@ void DisplayApp::Refresh() {
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
         break;
-      case Messages::OnChargingEvent:
-        motorController.RunForDuration(15);
-        break;
     }
   }
 
@@ -526,6 +524,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                  settingsController,
                                                                  batteryController,
                                                                  bleController,
+                                                                 alarmController,
                                                                  dateTimeController,
                                                                  filesystem,
                                                                  std::move(apps));
@@ -580,7 +579,8 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                brightnessController,
                                                                motorController,
                                                                settingsController,
-                                                               bleController);
+                                                               bleController,
+                                                               alarmController);
       break;
     case Apps::Settings:
       currentScreen = std::make_unique<Screens::Settings>(this, settingsController);
