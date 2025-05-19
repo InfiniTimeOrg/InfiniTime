@@ -163,7 +163,6 @@ void NimbleController::StartAdvertising() {
   fields.num_uuids16 = 1;
   fields.uuids16_is_complete = 1;
   const ble_uuid128_t uuids128[2] = {DfuService::serviceUuid, AppleNotificationCenterClient::ancsUuid};
-  // fields.uuids128 = &DfuService::serviceUuid;
   fields.uuids128 = uuids128;
   fields.num_uuids128 = 2;
   fields.uuids128_is_complete = 1;
@@ -213,7 +212,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
         bleController.Connect();
         systemTask.PushMessage(Pinetime::System::Messages::BleConnected);
         // Service discovery is deferred via systemtask
-        ble_gap_security_initiate(event->connect.conn_handle);
+        // ble_gap_security_initiate(event->connect.conn_handle);
       }
       break;
 
