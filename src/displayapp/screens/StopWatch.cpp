@@ -2,6 +2,7 @@
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
 #include <timers.h>
+#include <task.h>
 #include <algorithm>
 
 using namespace Pinetime::Applications::Screens;
