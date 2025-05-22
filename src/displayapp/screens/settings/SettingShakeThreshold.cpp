@@ -43,7 +43,7 @@ SettingShakeThreshold::SettingShakeThreshold(Controllers::Settings& settingsCont
   lv_obj_set_style_local_line_opa(animArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_line_opa(animArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_OPA_70);
   lv_obj_set_style_local_line_opa(animArc, LV_ARC_PART_KNOB, LV_STATE_DEFAULT, LV_OPA_0);
-  lv_obj_set_style_local_line_color(animArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
+  lv_obj_set_style_local_line_color(animArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Red));
   lv_obj_set_style_local_bg_color(animArc, LV_ARC_PART_BG, LV_STATE_CHECKED, LV_COLOR_TRANSP);
 
   animArc->user_data = this;
@@ -89,8 +89,8 @@ void SettingShakeThreshold::Refresh() {
     if (xTaskGetTickCount() - vCalTime > pdMS_TO_TICKS(2000)) {
       vCalTime = xTaskGetTickCount();
       calibrating = 2;
-      lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_RED);
-      lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_RED);
+      lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, Colors::Color(Colors::Named::Red));
+      lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, Colors::Color(Colors::Named::Red));
       lv_label_set_text_static(calLabel, "Shake!");
     }
   }
@@ -123,7 +123,7 @@ void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
           vCalTime = xTaskGetTickCount();
           lv_label_set_text_static(calLabel, "Ready!");
           lv_obj_set_click(positionArc, false);
-          lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, Colors::highlight);
+          lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, InfiniTimeTheme::Colors::highlight);
         } else if (lv_btn_get_state(calButton) == LV_BTN_STATE_RELEASED) {
           calibrating = 0;
           lv_obj_set_click(positionArc, true);

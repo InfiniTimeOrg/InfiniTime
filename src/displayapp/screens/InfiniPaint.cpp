@@ -1,7 +1,7 @@
 #include "displayapp/screens/InfiniPaint.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/LittleVgl.h"
-#include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/Colors.h"
 
 #include <algorithm> // std::fill
 
@@ -9,7 +9,7 @@ using namespace Pinetime::Applications::Screens;
 
 InfiniPaint::InfiniPaint(Pinetime::Components::LittleVgl& lvgl, Pinetime::Controllers::MotorController& motor)
   : lvgl {lvgl}, motor {motor} {
-  std::fill(b, b + bufferSize, selectColor);
+  std::fill(b, b + bufferSize, static_cast<lv_color_t>(selectColor));
 }
 
 InfiniPaint::~InfiniPaint() {
@@ -22,28 +22,28 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       color = (color + 1) % 8;
       switch (color) {
         case 0:
-          selectColor = LV_COLOR_MAGENTA;
+          selectColor = Colors::Named::Magenta;
           break;
         case 1:
-          selectColor = Colors::green;
+          selectColor = Colors::Named::Green;
           break;
         case 2:
-          selectColor = LV_COLOR_WHITE;
+          selectColor = Colors::Named::White;
           break;
         case 3:
-          selectColor = LV_COLOR_RED;
+          selectColor = Colors::Named::Red;
           break;
         case 4:
-          selectColor = LV_COLOR_CYAN;
+          selectColor = Colors::Named::Cyan;
           break;
         case 5:
-          selectColor = LV_COLOR_YELLOW;
+          selectColor = Colors::Named::Yellow;
           break;
         case 6:
-          selectColor = LV_COLOR_BLUE;
+          selectColor = Colors::Named::Blue;
           break;
         case 7:
-          selectColor = LV_COLOR_BLACK;
+          selectColor = Colors::Named::Black;
           break;
 
         default:
@@ -51,7 +51,7 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
           break;
       }
 
-      std::fill(b, b + bufferSize, selectColor);
+      std::fill(b, b + bufferSize, static_cast<lv_color_t>(selectColor));
       motor.RunForDuration(35);
       return true;
     default:

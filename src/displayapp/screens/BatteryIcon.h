@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <lvgl/src/lv_core/lv_obj.h>
+#include "displayapp/Colors.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -10,7 +11,7 @@ namespace Pinetime {
         explicit BatteryIcon(bool colorOnLowBattery);
         void Create(lv_obj_t* parent);
 
-        void SetColor(lv_color_t);
+        void SetColor(Colors::Color);
         void SetBatteryPercentage(uint8_t percentage);
         lv_obj_t* GetObject();
 

@@ -7,6 +7,7 @@
 #include "components/motor/MotorController.h"
 #include "Symbols.h"
 #include "displayapp/apps/Apps.h"
+#include "displayapp/Colors.h"
 #include <displayapp/Controllers.h>
 
 namespace Pinetime {
@@ -34,7 +35,7 @@ namespace Pinetime {
         static constexpr uint16_t height = 10;
         static constexpr uint16_t bufferSize = width * height;
         lv_color_t b[bufferSize];
-        lv_color_t selectColor = LV_COLOR_WHITE;
+        Colors::Color selectColor = Colors::Named::White;
         uint8_t color = 2;
       };
     }
