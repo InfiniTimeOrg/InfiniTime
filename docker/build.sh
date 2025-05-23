@@ -17,7 +17,7 @@ export npm_config_cache="${NPM_DIR}"
 
 export BUILD_TYPE=${BUILD_TYPE:=Release}
 export GCC_ARM_VER=${GCC_ARM_VER:="10.3-2021.10"}
-export NRF_SDK_VER=${NRF_SDK_VER:="nrf5sdk153059ac345"}
+export NRF_SDK_VER=${NRF_SDK_VER:="nRF5_SDK_15.3.0_59ac345"}
 
 MACHINE="$(uname -m)"
 [ "$MACHINE" = "arm64" ] && MACHINE="aarch64"
