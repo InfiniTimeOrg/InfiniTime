@@ -200,7 +200,7 @@ Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navServi
   lv_img_set_offset_y(imgFlag, image.offset);
   lv_obj_set_style_local_image_recolor_opa(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_obj_set_style_local_image_recolor(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
-  lv_obj_align(imgFlag, nullptr, LV_ALIGN_CENTER, 0, -60);
+  lv_obj_align(imgFlag, nullptr, LV_ALIGN_IN_TOP_MID, 0, 2);
 
   txtNarrative = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtNarrative, LV_LABEL_LONG_DOT);
