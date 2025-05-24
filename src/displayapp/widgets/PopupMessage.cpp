@@ -4,9 +4,6 @@
 
 using namespace Pinetime::Applications::Widgets;
 
-PopupMessage::PopupMessage() {
-}
-
 void PopupMessage::Create() {
   popup = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(popup, 90, 90);
@@ -37,7 +34,7 @@ void PopupMessage::Create() {
   lv_obj_set_hidden(popup, isHidden);
 }
 
-void PopupMessage::SetHidden(bool hidden) {
+void PopupMessage::SetHidden(const bool hidden) {
   if (isHidden == hidden) {
     return;
   }
@@ -51,6 +48,6 @@ void PopupMessage::SetHidden(bool hidden) {
   }
 }
 
-bool PopupMessage::IsHidden() {
+bool PopupMessage::IsHidden() const {
   return isHidden;
 }
