@@ -32,20 +32,8 @@ main() {
   mkdir -p "$TOOLS_DIR"
 
   [ ! -d "$TOOLS_DIR/$GCC_ARM_PATH" ] && GetGcc
-  if [ ! -d "$TOOLS_DIR/$GCC_ARM_PATH" ]; then
-    echo "missing GCC path: $TOOLS_DIR/$GCC_ARM_PATH"
-    return 1
-  fi
   [ ! -d "$TOOLS_DIR/$NRF_SDK_VER" ] && GetNrfSdk
-  if [ ! -d "$TOOLS_DIR/$NRF_SDK_VER" ]; then
-    echo "missing NRF_SDK path: $TOOLS_DIR/$NRF_SDK_VER"
-    return 1
-  fi
   [ ! -d "$TOOLS_DIR/mcuboot" ] && GetMcuBoot
-  if [ ! -d "$TOOLS_DIR/mcuboot" ]; then
-    echo "missing mcuboot path: $TOOLS_DIR/mcuboot"
-    return 1
-  fi
 
   mkdir -p "$BUILD_DIR"
 
@@ -61,17 +49,29 @@ main() {
 
 GetGcc() {
   wget -q https://developer.arm.com/-/media/Files/downloads/gnu-rm/$GCC_ARM_VER/$GCC_ARM_PATH-$MACHINE-linux.tar.bz2 -O - | tar -xj -C $TOOLS_DIR/
+  if [ ! -d "$TOOLS_DIR/$GCC_ARM_PATH" ]; then
+    echo "missing GCC path: $TOOLS_DIR/$GCC_ARM_PATH"
+    return 1
+  fi
 }
 
 GetMcuBoot() {
   git clone https://github.com/mcu-tools/mcuboot.git "$TOOLS_DIR/mcuboot"
   pip3 install -r "$TOOLS_DIR/mcuboot/scripts/requirements.txt"
+  if [ ! -d "$TOOLS_DIR/mcuboot" ]; then
+    echo "missing mcuboot path: $TOOLS_DIR/mcuboot"
+    return 1
+  fi
 }
 
 GetNrfSdk() {
   wget -q "https://nsscprodmedia.blob.core.windows.net/prod/software-and-other-downloads/sdks/nrf5/binaries/$NRF_SDK_VER_SLUG.zip" -O /tmp/$NRF_SDK_VER
   unzip -q /tmp/$NRF_SDK_VER -d "$TOOLS_DIR/"
   rm /tmp/$NRF_SDK_VER
+  if [ ! -d "$TOOLS_DIR/$NRF_SDK_VER" ]; then
+    echo "missing NRF_SDK path: $TOOLS_DIR/$NRF_SDK_VER"
+    return 1
+  fi
 }
 
 CmakeGenerate() {
