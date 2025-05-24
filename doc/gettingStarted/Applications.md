@@ -16,6 +16,7 @@ InfiniTime has 13 apps on the `main` branch at the time of writing.
 - Metronome
 - Maps
 - Weather
+- Sleeptracking
 
 ### Stopwatch
 ![Stopwatch UI](/doc/gettingStarted/AppsScreenshots/stopwatch.png)
@@ -97,3 +98,10 @@ InfiniTime has 13 apps on the `main` branch at the time of writing.
 ![Weather UI](/doc/gettingStarted/AppsScreenshots/Weather.png)
 - This app shows weather info.
     - Please note that this app is not very useful without a device connected.
+
+### SleepTracking
+![Sleep UI](/doc/gettingStarted/AppsScreenshots/Sleeptracking.png)
+- This app records your body movement and heartrate and wakes you up at the specified time.
+- Sleeptracking files can be accessed through the files API in the `/logs/sleep` directory.
+    - Session files are comma-separated data files of the format: `%YYYY-%MM-%ddT%hh:%mm:%ss,heartrate,motionx,motiony,motionz`.
+    - To save space session files are rotated, only max 10 sessions are saved at a time.
