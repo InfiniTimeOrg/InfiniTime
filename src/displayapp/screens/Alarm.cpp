@@ -74,6 +74,13 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
   lv_label_set_text_static(colonLabel, ":");
   lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
 
+  progressStop = lv_bar_create(lv_scr_act(), nullptr);
+  lv_bar_set_range(progressStop, 0, 240);
+  lv_bar_set_value(progressStop, 0, LV_ANIM_OFF);
+  lv_obj_set_size(progressStop, 240, 50);
+  lv_obj_align(progressStop, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_bg_color(progressStop, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+
   btnStop = lv_btn_create(lv_scr_act(), nullptr);
   btnStop->user_data = this;
   lv_obj_set_event_cb(btnStop, btnEventHandler);
@@ -122,12 +129,27 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
   } else {
     SetSwitchState(LV_ANIM_OFF);
   }
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, 50, LV_TASK_PRIO_MID, this);
+}
+
+void Alarm::Refresh() {
+  if (stopBtnPressing && xTaskGetTickCount() > stopBtnPressTime + pdMS_TO_TICKS(150)) {
+    stopPosition += 15;
+    if (stopPosition > 240) {
+      ResetStopProgress();
+      StopAlerting();
+    } else {
+      UpdateStopProgress();
+    }
+  }
 }
 
 Alarm::~Alarm() {
   if (alarmController.IsAlerting()) {
     StopAlerting();
   }
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
   alarmController.SaveAlarm();
 }
@@ -139,12 +161,31 @@ void Alarm::DisableAlarm() {
   }
 }
 
+void Alarm::StopButtonPressed() {
+  stopBtnPressTime = xTaskGetTickCount();
+  stopBtnPressing = true;
+}
+
+void Alarm::ResetStopProgress() {
+  stopBtnPressing = false;
+  stopPosition = 0;
+  UpdateStopProgress();
+}
+
+void Alarm::UpdateStopProgress() {
+  lv_bar_set_value(progressStop, stopPosition, LV_ANIM_OFF);
+}
+
 void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
-  if (event == LV_EVENT_CLICKED) {
-    if (obj == btnStop) {
-      StopAlerting();
-      return;
+  if (obj == btnStop) {
+    if (event == LV_EVENT_PRESSED) {
+      StopButtonPressed();
+    } else if (event == LV_EVENT_RELEASED || event == LV_EVENT_PRESS_LOST) {
+      ResetStopProgress();
     }
+    return;
+  }
+  if (event == LV_EVENT_CLICKED) {
     if (obj == btnInfo) {
       ShowInfo();
       return;
