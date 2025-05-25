@@ -18,6 +18,7 @@ export npm_config_cache="${NPM_DIR}"
 export BUILD_TYPE=${BUILD_TYPE:=Release}
 export GCC_ARM_VER=${GCC_ARM_VER:="10.3-2021.10"}
 export NRF_SDK_VER=${NRF_SDK_VER:="nRF5_SDK_15.3.0_59ac345"}
+# convert to lower case and remove _ and . character
 NRF_SDK_VER_SLUG=${NRF_SDK_VER,,}
 export NRF_SDK_VER_SLUG=${NRF_SDK_VER_SLUG//[_.]/}
 
