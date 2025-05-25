@@ -221,8 +221,8 @@ Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navServi
 
   // Route Progress
   barProgress = lv_bar_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(barProgress, 200, 20);
-  lv_obj_align(barProgress, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
+  lv_obj_set_size(barProgress, LV_HOR_RES - 4, 20);
+  lv_obj_align(barProgress, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -2);
   lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_BG, LV_STATE_DEFAULT, lv_color_hex(0x222222));
   lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
   lv_bar_set_anim_time(barProgress, 500);
