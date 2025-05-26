@@ -19,6 +19,8 @@ export BUILD_TYPE=${BUILD_TYPE:=Release}
 export GCC_ARM_VER=${GCC_ARM_VER:="10.3-2021.10"}
 export NRF_SDK_VER=${NRF_SDK_VER:="nRF5_SDK_15.3.0_59ac345"}
 # convert to lower case and remove _ and . character
+# convert to lower case and remove _ and . character
+# the download URL uses the SLUG, but the extracted folder is named like the original value
 NRF_SDK_VER_SLUG=${NRF_SDK_VER,,}
 export NRF_SDK_VER_SLUG=${NRF_SDK_VER_SLUG//[_.]/}
 
