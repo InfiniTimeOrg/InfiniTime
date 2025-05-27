@@ -44,6 +44,7 @@ jobs:
           /opt/build.sh all
       - name: Output build size
         id: output-sizes
+        shell: bash
         run: |
           . /opt/build.sh
           .github/workflows/getSize.sh "$BUILD_DIR"/src/pinetime-app-*.out >> $GITHUB_OUTPUT
