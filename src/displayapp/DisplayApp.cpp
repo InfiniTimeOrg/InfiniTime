@@ -518,7 +518,13 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       std::array<Screens::Tile::Applications, UserAppTypes::Count> apps;
       int i = 0;
       for (const auto& userApp : userApps) {
-        apps[i++] = Screens::Tile::Applications {userApp.icon, userApp.app, true};
+        bool enabled = true;
+
+        // Right now, only the Navigation app could be missing files
+        if (userApp.app == Apps::Navigation)
+          enabled = Applications::Screens::Navigation::IsAvailable(filesystem);
+
+        apps[i++] = Screens::Tile::Applications {userApp.icon, userApp.app, enabled};
       }
       currentScreen = std::make_unique<Screens::ApplicationList>(this,
                                                                  settingsController,
