@@ -374,8 +374,9 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     }
     if (object == btnPrevColor) {
       colorIndex -= 1;
-      if (colorIndex < 0)
+      if (colorIndex < 0) {
         colorIndex = nColors - 1;
+      }
       settingsController.SetInfineatColorIndex(colorIndex);
     }
     if (object == btnNextColor || object == btnPrevColor) {

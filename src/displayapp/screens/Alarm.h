@@ -77,7 +77,7 @@ namespace Pinetime {
                                   controllers.settingsController.GetClockType(),
                                   *controllers.systemTask,
                                   controllers.motorController);
-      };
+      }
     };
   }
 }

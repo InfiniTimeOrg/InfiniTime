@@ -83,7 +83,7 @@ namespace Pinetime {
 
       Pinetime::Controllers::NimbleController& nimble() {
         return nimbleController;
-      };
+      }
 
       bool IsSleeping() const {
         return state != SystemTaskState::Running;

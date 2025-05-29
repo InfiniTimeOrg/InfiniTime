@@ -12,10 +12,11 @@ void Pinetime::System::SystemMonitor::Process() {
     auto nb = uxTaskGetSystemState(tasksStatus, 10, nullptr);
     for (uint32_t i = 0; i < nb; i++) {
       NRF_LOG_INFO("Task [%s] - %d", tasksStatus[i].pcTaskName, tasksStatus[i].usStackHighWaterMark);
-      if (tasksStatus[i].usStackHighWaterMark < 20)
+      if (tasksStatus[i].usStackHighWaterMark < 20) {
         NRF_LOG_INFO("WARNING!!! Task %s task is nearly full, only %dB available",
                      tasksStatus[i].pcTaskName,
                      tasksStatus[i].usStackHighWaterMark * 4);
+      }
     }
     lastTick = xTaskGetTickCount();
   }

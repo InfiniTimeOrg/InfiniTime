@@ -276,10 +276,12 @@ float Ppg::HeartRateAverage(float hr) {
   for (const float& value : dataAverage) {
     if (value > 0.0f) {
       avg += value;
-      if (value < min)
+      if (value < min) {
         min = value;
-      if (value > max)
+      }
+      if (value > max) {
         max = value;
+      }
       total++;
     }
   }

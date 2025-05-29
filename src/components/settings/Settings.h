@@ -65,158 +65,163 @@ namespace Pinetime {
           settingsChanged = true;
         }
         settings.watchFace = face;
-      };
+      }
 
       Pinetime::Applications::WatchFace GetWatchFace() const {
         return settings.watchFace;
-      };
+      }
 
       void SetChimeOption(ChimesOption chimeOption) {
         if (chimeOption != settings.chimesOption) {
           settingsChanged = true;
         }
         settings.chimesOption = chimeOption;
-      };
+      }
 
       ChimesOption GetChimeOption() const {
         return settings.chimesOption;
-      };
+      }
 
       void SetPTSColorTime(Colors colorTime) {
-        if (colorTime != settings.PTS.ColorTime)
+        if (colorTime != settings.PTS.ColorTime) {
           settingsChanged = true;
+        }
         settings.PTS.ColorTime = colorTime;
-      };
+      }
 
       Colors GetPTSColorTime() const {
         return settings.PTS.ColorTime;
-      };
+      }
 
       void SetPTSColorBar(Colors colorBar) {
-        if (colorBar != settings.PTS.ColorBar)
+        if (colorBar != settings.PTS.ColorBar) {
           settingsChanged = true;
+        }
         settings.PTS.ColorBar = colorBar;
-      };
+      }
 
       Colors GetPTSColorBar() const {
         return settings.PTS.ColorBar;
-      };
+      }
 
       void SetPTSColorBG(Colors colorBG) {
-        if (colorBG != settings.PTS.ColorBG)
+        if (colorBG != settings.PTS.ColorBG) {
           settingsChanged = true;
+        }
         settings.PTS.ColorBG = colorBG;
-      };
+      }
 
       Colors GetPTSColorBG() const {
         return settings.PTS.ColorBG;
-      };
+      }
 
       void SetInfineatShowSideCover(bool show) {
         if (show != settings.watchFaceInfineat.showSideCover) {
           settings.watchFaceInfineat.showSideCover = show;
           settingsChanged = true;
         }
-      };
+      }
 
       bool GetInfineatShowSideCover() const {
         return settings.watchFaceInfineat.showSideCover;
-      };
+      }
 
       void SetInfineatColorIndex(int index) {
         if (index != settings.watchFaceInfineat.colorIndex) {
           settings.watchFaceInfineat.colorIndex = index;
           settingsChanged = true;
         }
-      };
+      }
 
       int GetInfineatColorIndex() const {
         return settings.watchFaceInfineat.colorIndex;
-      };
+      }
 
       void SetPTSGaugeStyle(PTSGaugeStyle gaugeStyle) {
-        if (gaugeStyle != settings.PTS.gaugeStyle)
+        if (gaugeStyle != settings.PTS.gaugeStyle) {
           settingsChanged = true;
+        }
         settings.PTS.gaugeStyle = gaugeStyle;
-      };
+      }
 
       PTSGaugeStyle GetPTSGaugeStyle() const {
         return settings.PTS.gaugeStyle;
-      };
+      }
 
       void SetPTSWeather(PTSWeather weatherEnable) {
-        if (weatherEnable != settings.PTS.weatherEnable)
+        if (weatherEnable != settings.PTS.weatherEnable) {
           settingsChanged = true;
+        }
         settings.PTS.weatherEnable = weatherEnable;
-      };
+      }
 
       PTSWeather GetPTSWeather() const {
         return settings.PTS.weatherEnable;
-      };
+      }
 
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
-      };
+      }
 
       uint8_t GetAppMenu() const {
         return appMenu;
-      };
+      }
 
       void SetSettingsMenu(uint8_t menu) {
         settingsMenu = menu;
-      };
+      }
 
       uint8_t GetSettingsMenu() const {
         return settingsMenu;
-      };
+      }
 
       void SetClockType(ClockType clocktype) {
         if (clocktype != settings.clockType) {
           settingsChanged = true;
         }
         settings.clockType = clocktype;
-      };
+      }
 
       ClockType GetClockType() const {
         return settings.clockType;
-      };
+      }
 
       void SetWeatherFormat(WeatherFormat weatherFormat) {
         if (weatherFormat != settings.weatherFormat) {
           settingsChanged = true;
         }
         settings.weatherFormat = weatherFormat;
-      };
+      }
 
       WeatherFormat GetWeatherFormat() const {
         return settings.weatherFormat;
-      };
+      }
 
       void SetNotificationStatus(Notification status) {
         if (status != settings.notificationStatus) {
           settingsChanged = true;
         }
         settings.notificationStatus = status;
-      };
+      }
 
       Notification GetNotificationStatus() const {
         return settings.notificationStatus;
-      };
+      }
 
       void SetScreenTimeOut(uint32_t timeout) {
         if (timeout != settings.screenTimeOut) {
           settingsChanged = true;
         }
         settings.screenTimeOut = timeout;
-      };
+      }
 
       uint32_t GetScreenTimeOut() const {
         return settings.screenTimeOut;
-      };
+      }
 
       bool GetAlwaysOnDisplay() const {
         return settings.alwaysOnDisplay && GetNotificationStatus() != Notification::Sleep;
-      };
+      }
 
       void SetAlwaysOnDisplaySetting(bool state) {
         if (state != settings.alwaysOnDisplay) {
@@ -258,7 +263,7 @@ namespace Pinetime {
               break;
           }
         }
-      };
+      }
 
       std::bitset<5> getWakeUpModes() const {
         return settings.wakeUpMode;
@@ -273,30 +278,30 @@ namespace Pinetime {
           settingsChanged = true;
         }
         settings.brightLevel = level;
-      };
+      }
 
       Controllers::BrightnessController::Levels GetBrightness() const {
         return settings.brightLevel;
-      };
+      }
 
       void SetStepsGoal(uint32_t goal) {
         if (goal != settings.stepsGoal) {
           settingsChanged = true;
         }
         settings.stepsGoal = goal;
-      };
+      }
 
       uint32_t GetStepsGoal() const {
         return settings.stepsGoal;
-      };
+      }
 
       void SetBleRadioEnabled(bool enabled) {
         bleRadioEnabled = enabled;
-      };
+      }
 
       bool GetBleRadioEnabled() const {
         return bleRadioEnabled;
-      };
+      }
 
     private:
       Pinetime::Controllers::FS& fs;

@@ -66,7 +66,7 @@ namespace Pinetime {
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Navigation(*controllers.navigationService);
-      };
+      }
     };
   }
 }

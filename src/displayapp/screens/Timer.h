@@ -55,6 +55,6 @@ namespace Pinetime::Applications {
 
     static Screens::Screen* Create(AppControllers& controllers) {
       return new Screens::Timer(controllers.timer);
-    };
+    }
   };
 }

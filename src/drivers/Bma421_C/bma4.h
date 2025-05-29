@@ -52,19 +52,19 @@
  */
 
 #ifndef BMA4_H__
-#define BMA4_H__
+  #define BMA4_H__
 
 /*********************************************************************/
 /* header files */
 
-#include "bma4_defs.h"
-#ifdef AKM9916
-#include "aux_akm9916.h"
-#endif
+  #include "bma4_defs.h"
+  #ifdef AKM9916
+    #include "aux_akm9916.h"
+  #endif
 
-#ifdef BMM150
-#include "aux_bmm150.h"
-#endif
+  #ifdef BMM150
+    #include "aux_bmm150.h"
+  #endif
 
 /*********************************************************************/
 /* (extern) variable declarations */
@@ -104,7 +104,7 @@
  * affect the reference value of the parameter
  * (Better case don't change the reference value of the parameter)
  */
-int8_t bma4_init(struct bma4_dev *dev);
+int8_t bma4_init(struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -126,7 +126,7 @@ int8_t bma4_init(struct bma4_dev *dev);
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_write_config_file(struct bma4_dev *dev);
+int8_t bma4_write_config_file(struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -157,7 +157,7 @@ int8_t bma4_write_config_file(struct bma4_dev *dev);
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_write_regs(uint8_t addr, const uint8_t *data, uint32_t len, struct bma4_dev *dev);
+int8_t bma4_write_regs(uint8_t addr, const uint8_t* data, uint32_t len, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiRegisters
@@ -181,7 +181,7 @@ int8_t bma4_write_regs(uint8_t addr, const uint8_t *data, uint32_t len, struct b
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_read_regs(uint8_t addr, uint8_t *data, uint32_t len, struct bma4_dev *dev);
+int8_t bma4_read_regs(uint8_t addr, uint8_t* data, uint32_t len, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -232,7 +232,7 @@ int8_t bma4_read_regs(uint8_t addr, uint8_t *data, uint32_t len, struct bma4_dev
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_get_error_status(struct bma4_err_reg *err_reg, struct bma4_dev *dev);
+int8_t bma4_get_error_status(struct bma4_err_reg* err_reg, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -267,7 +267,7 @@ int8_t bma4_get_error_status(struct bma4_err_reg *err_reg, struct bma4_dev *dev)
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_get_status(uint8_t *status, struct bma4_dev *dev);
+int8_t bma4_get_status(uint8_t* status, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -295,7 +295,7 @@ int8_t bma4_get_status(uint8_t *status, struct bma4_dev *dev);
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_read_accel_xyz(struct bma4_accel *accel, struct bma4_dev *dev);
+int8_t bma4_read_accel_xyz(struct bma4_accel* accel, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -319,7 +319,7 @@ int8_t bma4_read_accel_xyz(struct bma4_accel *accel, struct bma4_dev *dev);
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_get_sensor_time(uint32_t *sensor_time, struct bma4_dev *dev);
+int8_t bma4_get_sensor_time(uint32_t* sensor_time, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -358,7 +358,7 @@ int8_t bma4_get_sensor_time(uint32_t *sensor_time, struct bma4_dev *dev);
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_get_temperature(int32_t *temp, uint8_t temp_unit, struct bma4_dev *dev);
+int8_t bma4_get_temperature(int32_t* temp, uint8_t temp_unit, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -426,7 +426,7 @@ int8_t bma4_get_temperature(int32_t *temp, uint8_t temp_unit, struct bma4_dev *d
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_get_accel_config(struct bma4_accel_config *accel, struct bma4_dev *dev);
+int8_t bma4_get_accel_config(struct bma4_accel_config* accel, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiAccel
@@ -490,7 +490,7 @@ int8_t bma4_get_accel_config(struct bma4_accel_config *accel, struct bma4_dev *d
  *  @retval < 0 -> Fail
  *
  */
-int8_t bma4_set_accel_config(const struct bma4_accel_config *accel, struct bma4_dev *dev);
+int8_t bma4_set_accel_config(const struct bma4_accel_config* accel, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -517,7 +517,7 @@ int8_t bma4_set_accel_config(const struct bma4_accel_config *accel, struct bma4_
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_set_advance_power_save(uint8_t adv_pwr_save, struct bma4_dev *dev);
+int8_t bma4_set_advance_power_save(uint8_t adv_pwr_save, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiAdvancedPowerMode
@@ -539,7 +539,7 @@ int8_t bma4_set_advance_power_save(uint8_t adv_pwr_save, struct bma4_dev *dev);
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_get_advance_power_save(uint8_t *adv_pwr_save, struct bma4_dev *dev);
+int8_t bma4_get_advance_power_save(uint8_t* adv_pwr_save, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -566,7 +566,7 @@ int8_t bma4_get_advance_power_save(uint8_t *adv_pwr_save, struct bma4_dev *dev);
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_set_fifo_self_wakeup(uint8_t fifo_self_wakeup, struct bma4_dev *dev);
+int8_t bma4_set_fifo_self_wakeup(uint8_t fifo_self_wakeup, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiFIFOSelfWakeUp
@@ -588,7 +588,7 @@ int8_t bma4_set_fifo_self_wakeup(uint8_t fifo_self_wakeup, struct bma4_dev *dev)
  *  @retval 0 -> Success
  *  @retval < 0 -> Fail
  */
-int8_t bma4_get_fifo_self_wakeup(uint8_t *fifo_self_wake_up, struct bma4_dev *dev);
+int8_t bma4_get_fifo_self_wakeup(uint8_t* fifo_self_wake_up, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -613,7 +613,7 @@ int8_t bma4_get_fifo_self_wakeup(uint8_t *fifo_self_wake_up, struct bma4_dev *de
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_accel_enable(uint8_t accel_en, struct bma4_dev *dev);
+int8_t bma4_set_accel_enable(uint8_t accel_en, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiAccelEnable
@@ -631,7 +631,7 @@ int8_t bma4_set_accel_enable(uint8_t accel_en, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_accel_enable(uint8_t *accel_en, struct bma4_dev *dev);
+int8_t bma4_get_accel_enable(uint8_t* accel_en, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -657,7 +657,7 @@ int8_t bma4_get_accel_enable(uint8_t *accel_en, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_mag_enable(uint8_t mag_en, struct bma4_dev *dev);
+int8_t bma4_set_mag_enable(uint8_t mag_en, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiMagEnable
@@ -676,7 +676,7 @@ int8_t bma4_set_mag_enable(uint8_t mag_en, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_mag_enable(uint8_t *mag_en, struct bma4_dev *dev);
+int8_t bma4_get_mag_enable(uint8_t* mag_en, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -709,7 +709,7 @@ int8_t bma4_get_mag_enable(uint8_t *mag_en, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_spi_interface(uint8_t *spi, struct bma4_dev *dev);
+int8_t bma4_get_spi_interface(uint8_t* spi, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiSpiInterface
@@ -735,7 +735,7 @@ int8_t bma4_get_spi_interface(uint8_t *spi, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_spi_interface(uint8_t spi, struct bma4_dev *dev);
+int8_t bma4_set_spi_interface(uint8_t spi, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -772,7 +772,7 @@ int8_t bma4_set_spi_interface(uint8_t spi, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_command_register(uint8_t command_reg, struct bma4_dev *dev);
+int8_t bma4_set_command_register(uint8_t command_reg, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -794,7 +794,7 @@ int8_t bma4_set_command_register(uint8_t command_reg, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_i2c_device_addr(struct bma4_dev *dev);
+int8_t bma4_set_i2c_device_addr(struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -828,7 +828,7 @@ int8_t bma4_set_i2c_device_addr(struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_mag_manual_enable(uint8_t mag_manual, struct bma4_dev *dev);
+int8_t bma4_set_mag_manual_enable(uint8_t mag_manual, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiMagManualEnable
@@ -856,7 +856,7 @@ int8_t bma4_set_mag_manual_enable(uint8_t mag_manual, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_mag_manual_enable(uint8_t *mag_manual, struct bma4_dev *dev);
+int8_t bma4_get_mag_manual_enable(uint8_t* mag_manual, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -888,7 +888,7 @@ int8_t bma4_get_mag_manual_enable(uint8_t *mag_manual, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_aux_if_mode(uint8_t if_mode, struct bma4_dev *dev);
+int8_t bma4_set_aux_if_mode(uint8_t if_mode, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -913,7 +913,7 @@ int8_t bma4_set_aux_if_mode(uint8_t if_mode, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_mag_read_addr(uint8_t *mag_read_addr, struct bma4_dev *dev);
+int8_t bma4_get_mag_read_addr(uint8_t* mag_read_addr, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiMagRead
@@ -932,7 +932,7 @@ int8_t bma4_get_mag_read_addr(uint8_t *mag_read_addr, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_mag_read_addr(uint8_t mag_read_addr, struct bma4_dev *dev);
+int8_t bma4_set_mag_read_addr(uint8_t mag_read_addr, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -957,7 +957,7 @@ int8_t bma4_set_mag_read_addr(uint8_t mag_read_addr, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_mag_write_addr(uint8_t *mag_write_addr, struct bma4_dev *dev);
+int8_t bma4_get_mag_write_addr(uint8_t* mag_write_addr, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiMagWrite
@@ -976,7 +976,7 @@ int8_t bma4_get_mag_write_addr(uint8_t *mag_write_addr, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_mag_write_addr(uint8_t mag_write_addr, struct bma4_dev *dev);
+int8_t bma4_set_mag_write_addr(uint8_t mag_write_addr, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1001,7 +1001,7 @@ int8_t bma4_set_mag_write_addr(uint8_t mag_write_addr, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_mag_write_data(uint8_t *mag_write_data, struct bma4_dev *dev);
+int8_t bma4_get_mag_write_data(uint8_t* mag_write_data, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiMagData
@@ -1020,7 +1020,7 @@ int8_t bma4_get_mag_write_data(uint8_t *mag_write_data, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_mag_write_data(uint8_t mag_write_data, struct bma4_dev *dev);
+int8_t bma4_set_mag_write_data(uint8_t mag_write_data, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1045,7 +1045,7 @@ int8_t bma4_set_mag_write_data(uint8_t mag_write_data, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_read_mag_xyzr(struct bma4_mag_xyzr *mag, struct bma4_dev *dev);
+int8_t bma4_read_mag_xyzr(struct bma4_mag_xyzr* mag, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1069,7 +1069,7 @@ int8_t bma4_read_mag_xyzr(struct bma4_mag_xyzr *mag, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_mag_burst(uint8_t mag_burst, struct bma4_dev *dev);
+int8_t bma4_set_mag_burst(uint8_t mag_burst, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiMagBurst
@@ -1086,7 +1086,7 @@ int8_t bma4_set_mag_burst(uint8_t mag_burst, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_mag_burst(uint8_t *mag_burst, struct bma4_dev *dev);
+int8_t bma4_get_mag_burst(uint8_t* mag_burst, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1108,7 +1108,7 @@ int8_t bma4_get_mag_burst(uint8_t *mag_burst, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_read_fifo_data(struct bma4_fifo_frame *fifo, struct bma4_dev *dev);
+int8_t bma4_read_fifo_data(struct bma4_fifo_frame* fifo, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1135,7 +1135,7 @@ int8_t bma4_read_fifo_data(struct bma4_fifo_frame *fifo, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_fifo_wm(uint16_t *fifo_wm, struct bma4_dev *dev);
+int8_t bma4_get_fifo_wm(uint16_t* fifo_wm, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiFIFOWM
@@ -1155,7 +1155,7 @@ int8_t bma4_get_fifo_wm(uint16_t *fifo_wm, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_fifo_wm(uint16_t fifo_wm, struct bma4_dev *dev);
+int8_t bma4_set_fifo_wm(uint16_t fifo_wm, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1188,7 +1188,7 @@ int8_t bma4_set_fifo_wm(uint16_t fifo_wm, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_accel_fifo_filter_data(uint8_t *accel_fifo_filter, struct bma4_dev *dev);
+int8_t bma4_get_accel_fifo_filter_data(uint8_t* accel_fifo_filter, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiAccelFIFOFilterData
@@ -1215,7 +1215,7 @@ int8_t bma4_get_accel_fifo_filter_data(uint8_t *accel_fifo_filter, struct bma4_d
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_accel_fifo_filter_data(uint8_t accel_fifo_filter, struct bma4_dev *dev);
+int8_t bma4_set_accel_fifo_filter_data(uint8_t accel_fifo_filter, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1240,7 +1240,7 @@ int8_t bma4_set_accel_fifo_filter_data(uint8_t accel_fifo_filter, struct bma4_de
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_fifo_down_accel(uint8_t *fifo_down, struct bma4_dev *dev);
+int8_t bma4_get_fifo_down_accel(uint8_t* fifo_down, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiAccelFIFOFilterData
@@ -1258,7 +1258,7 @@ int8_t bma4_get_fifo_down_accel(uint8_t *fifo_down, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_fifo_down_accel(uint8_t fifo_down, struct bma4_dev *dev);
+int8_t bma4_set_fifo_down_accel(uint8_t fifo_down, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1287,7 +1287,7 @@ int8_t bma4_set_fifo_down_accel(uint8_t fifo_down, struct bma4_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_get_fifo_length(uint16_t *fifo_length, struct bma4_dev *dev);
+int8_t bma4_get_fifo_length(uint16_t* fifo_length, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1327,7 +1327,7 @@ int8_t bma4_get_fifo_length(uint16_t *fifo_length, struct bma4_dev *dev);
  */
 int8_t bma4_second_if_mag_compensate_xyz(struct bma4_mag_fifo_data mag_fifo_data,
                                          uint8_t mag_second_if,
-                                         const struct bma4_mag *compensated_mag_data);
+                                         const struct bma4_mag* compensated_mag_data);
 
 /**
  * \ingroup bma4
@@ -1363,7 +1363,7 @@ int8_t bma4_second_if_mag_compensate_xyz(struct bma4_mag_fifo_data mag_fifo_data
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_read_mag_xyz(const struct bma4_mag *mag, uint8_t sensor_select, const struct bma4_dev *dev);
+int8_t bma4_read_mag_xyz(const struct bma4_mag* mag, uint8_t sensor_select, const struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1396,7 +1396,7 @@ int8_t bma4_read_mag_xyz(const struct bma4_mag *mag, uint8_t sensor_select, cons
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_if_mode(uint8_t *if_mode, struct bma4_dev *dev);
+int8_t bma4_get_if_mode(uint8_t* if_mode, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiIFMode
@@ -1422,7 +1422,7 @@ int8_t bma4_get_if_mode(uint8_t *if_mode, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_if_mode(uint8_t if_mode, struct bma4_dev *dev);
+int8_t bma4_set_if_mode(uint8_t if_mode, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1446,7 +1446,7 @@ int8_t bma4_set_if_mode(uint8_t if_mode, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_accel_data_rdy(uint8_t *data_rdy, struct bma4_dev *dev);
+int8_t bma4_get_accel_data_rdy(uint8_t* data_rdy, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1470,7 +1470,7 @@ int8_t bma4_get_accel_data_rdy(uint8_t *data_rdy, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_mag_data_rdy(uint8_t *data_rdy, struct bma4_dev *dev);
+int8_t bma4_get_mag_data_rdy(uint8_t* data_rdy, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1507,7 +1507,7 @@ int8_t bma4_get_mag_data_rdy(uint8_t *data_rdy, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_asic_status(struct bma4_asic_status *asic_status, struct bma4_dev *dev);
+int8_t bma4_get_asic_status(struct bma4_asic_status* asic_status, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1540,7 +1540,7 @@ int8_t bma4_get_asic_status(struct bma4_asic_status *asic_status, struct bma4_de
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_offset_comp(uint8_t offset_en, struct bma4_dev *dev);
+int8_t bma4_set_offset_comp(uint8_t offset_en, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiOffsetComp
@@ -1566,7 +1566,7 @@ int8_t bma4_set_offset_comp(uint8_t offset_en, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_get_offset_comp(uint8_t *offset_en, struct bma4_dev *dev);
+int8_t bma4_get_offset_comp(uint8_t* offset_en, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1607,10 +1607,7 @@ int8_t bma4_get_offset_comp(uint8_t *offset_en, struct bma4_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_extract_accel(struct bma4_accel *accel_data,
-                          uint16_t *accel_length,
-                          struct bma4_fifo_frame *fifo,
-                          const struct bma4_dev *dev);
+int8_t bma4_extract_accel(struct bma4_accel* accel_data, uint16_t* accel_length, struct bma4_fifo_frame* fifo, const struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1650,10 +1647,7 @@ int8_t bma4_extract_accel(struct bma4_accel *accel_data,
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_extract_mag(const struct bma4_mag *mag_data,
-                        uint16_t *mag_length,
-                        struct bma4_fifo_frame *fifo,
-                        const struct bma4_dev *dev);
+int8_t bma4_extract_mag(const struct bma4_mag* mag_data, uint16_t* mag_length, struct bma4_fifo_frame* fifo, const struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1686,7 +1680,7 @@ int8_t bma4_extract_mag(const struct bma4_mag *mag_data,
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_perform_accel_selftest(int8_t *result, struct bma4_dev *dev);
+int8_t bma4_perform_accel_selftest(int8_t* result, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiAccelSelftest
@@ -1704,7 +1698,7 @@ int8_t bma4_perform_accel_selftest(int8_t *result, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_selftest_config(uint8_t sign, struct bma4_dev *dev);
+int8_t bma4_selftest_config(uint8_t sign, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1749,7 +1743,7 @@ int8_t bma4_selftest_config(uint8_t sign, struct bma4_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_map_interrupt(uint8_t int_line, uint16_t int_map, uint8_t enable, struct bma4_dev *dev);
+int8_t bma4_map_interrupt(uint8_t int_line, uint16_t int_map, uint8_t enable, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiInterrupt
@@ -1776,7 +1770,7 @@ int8_t bma4_map_interrupt(uint8_t int_line, uint16_t int_map, uint8_t enable, st
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_set_interrupt_mode(uint8_t mode, struct bma4_dev *dev);
+int8_t bma4_set_interrupt_mode(uint8_t mode, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiInterrupt
@@ -1803,7 +1797,7 @@ int8_t bma4_set_interrupt_mode(uint8_t mode, struct bma4_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_get_interrupt_mode(uint8_t *mode, struct bma4_dev *dev);
+int8_t bma4_get_interrupt_mode(uint8_t* mode, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1853,7 +1847,7 @@ int8_t bma4_get_interrupt_mode(uint8_t *mode, struct bma4_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_set_aux_mag_config(const struct bma4_aux_mag_config *aux_mag, struct bma4_dev *dev);
+int8_t bma4_set_aux_mag_config(const struct bma4_aux_mag_config* aux_mag, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiAuxMagConfig
@@ -1898,7 +1892,7 @@ int8_t bma4_set_aux_mag_config(const struct bma4_aux_mag_config *aux_mag, struct
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_get_aux_mag_config(struct bma4_aux_mag_config *aux_mag, struct bma4_dev *dev);
+int8_t bma4_get_aux_mag_config(struct bma4_aux_mag_config* aux_mag, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -1942,7 +1936,7 @@ int8_t bma4_get_aux_mag_config(struct bma4_aux_mag_config *aux_mag, struct bma4_
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_set_fifo_config(uint8_t config, uint8_t enable, struct bma4_dev *dev);
+int8_t bma4_set_fifo_config(uint8_t config, uint8_t enable, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiFIFOConfig
@@ -1979,7 +1973,7 @@ int8_t bma4_set_fifo_config(uint8_t config, uint8_t enable, struct bma4_dev *dev
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_get_fifo_config(uint8_t *fifo_config, struct bma4_dev *dev);
+int8_t bma4_get_fifo_config(uint8_t* fifo_config, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -2039,8 +2033,7 @@ int8_t bma4_get_fifo_config(uint8_t *fifo_config, struct bma4_dev *dev);
  * @retval 0 -> Success
  * @retval < 0 -> Fail
  */
-int8_t bma4_set_int_pin_config(const struct bma4_int_pin_config *int_pin_config, uint8_t int_line,
-                               struct bma4_dev *dev);
+int8_t bma4_set_int_pin_config(const struct bma4_int_pin_config* int_pin_config, uint8_t int_line, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiIntConfig
@@ -2092,7 +2085,7 @@ int8_t bma4_set_int_pin_config(const struct bma4_int_pin_config *int_pin_config,
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_get_int_pin_config(struct bma4_int_pin_config *int_pin_config, uint8_t int_line, struct bma4_dev *dev);
+int8_t bma4_get_int_pin_config(struct bma4_int_pin_config* int_pin_config, uint8_t int_line, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -2116,7 +2109,7 @@ int8_t bma4_get_int_pin_config(struct bma4_int_pin_config *int_pin_config, uint8
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_read_int_status(uint16_t *int_status, struct bma4_dev *dev);
+int8_t bma4_read_int_status(uint16_t* int_status, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiIntStatus
@@ -2134,7 +2127,7 @@ int8_t bma4_read_int_status(uint16_t *int_status, struct bma4_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_read_int_status_0(uint8_t *int_status_0, struct bma4_dev *dev);
+int8_t bma4_read_int_status_0(uint8_t* int_status_0, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiIntStatus
@@ -2152,7 +2145,7 @@ int8_t bma4_read_int_status_0(uint8_t *int_status_0, struct bma4_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_read_int_status_1(uint8_t *int_status_1, struct bma4_dev *dev);
+int8_t bma4_read_int_status_1(uint8_t* int_status_1, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -2176,7 +2169,7 @@ int8_t bma4_read_int_status_1(uint8_t *int_status_1, struct bma4_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_aux_interface_init(struct bma4_dev *dev);
+int8_t bma4_aux_interface_init(struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiAux
@@ -2197,7 +2190,7 @@ int8_t bma4_aux_interface_init(struct bma4_dev *dev);
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_aux_read(uint8_t aux_reg_addr, uint8_t *aux_data, uint16_t len, struct bma4_dev *dev);
+int8_t bma4_aux_read(uint8_t aux_reg_addr, uint8_t* aux_data, uint16_t len, struct bma4_dev* dev);
 
 /*!
  * \ingroup bma4ApiAux
@@ -2218,7 +2211,7 @@ int8_t bma4_aux_read(uint8_t aux_reg_addr, uint8_t *aux_data, uint16_t len, stru
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_aux_write(uint8_t aux_reg_addr, const uint8_t *aux_data, uint16_t len, struct bma4_dev *dev);
+int8_t bma4_aux_write(uint8_t aux_reg_addr, const uint8_t* aux_data, uint16_t len, struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -2241,7 +2234,7 @@ int8_t bma4_aux_write(uint8_t aux_reg_addr, const uint8_t *aux_data, uint16_t le
  * @retval < 0 -> Fail
  *
  */
-int8_t bma4_soft_reset(struct bma4_dev *dev);
+int8_t bma4_soft_reset(struct bma4_dev* dev);
 
 /**
  * \ingroup bma4
@@ -2274,7 +2267,7 @@ int8_t bma4_soft_reset(struct bma4_dev *dev);
  *  @retval Any non zero value -> Fail
  *
  */
-int8_t bma4_perform_accel_foc(const struct bma4_accel_foc_g_value *accel_g_value, struct bma4_dev *dev);
+int8_t bma4_perform_accel_foc(const struct bma4_accel_foc_g_value* accel_g_value, struct bma4_dev* dev);
 
 #endif
 
