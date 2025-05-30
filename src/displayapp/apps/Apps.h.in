@@ -53,7 +53,7 @@ namespace Pinetime {
       Terminal,
       Infineat,
       CasioStyleG7710,
-      Prime,
+      PrimeTime,
     };
 
     template <Apps>

@@ -27,9 +27,9 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class WatchFacePrime : public Screen {
+      class WatchFacePrimeTime : public Screen {
       public:
-        WatchFacePrime(Controllers::DateTime& dateTimeController,
+        WatchFacePrimeTime(Controllers::DateTime& dateTimeController,
                        const Controllers::Battery& batteryController,
                        const Controllers::Ble& bleController,
                        const Controllers::AlarmController& alarmController,
@@ -38,10 +38,14 @@ namespace Pinetime {
                        Controllers::HeartRateController& heartRateController,
                        Controllers::MotionController& motionController,
                        Controllers::SimpleWeatherService& weather,
-                       Controllers::MusicService& music);
-        ~WatchFacePrime() override;
+                       Controllers::MusicService& music,
+                       Controllers::FS& filesystem);
+        ~WatchFacePrimeTime() override;
 
         void Refresh() override;
+
+        static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
+
 
       private:
         uint8_t displayedHour = -1;
@@ -80,18 +84,20 @@ namespace Pinetime {
         Controllers::SimpleWeatherService& weatherService;
         Controllers::MusicService& musicService;
 
+        lv_font_t* font_primetime = nullptr;
+
         lv_task_t* taskRefresh;
         Widgets::StatusIcons statusIcons;
       };
     }
 
     template <>
-    struct WatchFaceTraits<WatchFace::Prime> {
-      static constexpr WatchFace watchFace = WatchFace::Prime;
-      static constexpr const char* name = "Prime";
+    struct WatchFaceTraits<WatchFace::PrimeTime> {
+      static constexpr WatchFace watchFace = WatchFace::PrimeTime;
+      static constexpr const char* name = "PrimeTime";
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::WatchFacePrime(controllers.dateTimeController,
+        return new Screens::WatchFacePrimeTime(controllers.dateTimeController,
                                            controllers.batteryController,
                                            controllers.bleController,
                                            controllers.alarmController,
@@ -100,11 +106,12 @@ namespace Pinetime {
                                            controllers.heartRateController,
                                            controllers.motionController,
                                            *controllers.weatherController,
-                                           *controllers.musicService);
+                                           *controllers.musicService,
+                                           controllers.filesystem);
       };
 
-      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
-        return true;
+      static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {
+        return Screens::WatchFacePrimeTime::IsAvailable(filesystem);
       }
     };
   }

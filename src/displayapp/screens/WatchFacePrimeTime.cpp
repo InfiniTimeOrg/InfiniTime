@@ -1,4 +1,4 @@
-#include "displayapp/screens/WatchFacePrime.h"
+#include "displayapp/screens/WatchFacePrimeTime.h"
 
 #include <lvgl/lvgl.h>
 #include <cstdio>
@@ -18,7 +18,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-WatchFacePrime::WatchFacePrime(Controllers::DateTime& dateTimeController,
+WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController,
                                const Controllers::Battery& batteryController,
                                const Controllers::Ble& bleController,
                                const Controllers::AlarmController& alarmController,
@@ -27,7 +27,8 @@ WatchFacePrime::WatchFacePrime(Controllers::DateTime& dateTimeController,
                                Controllers::HeartRateController& heartRateController,
                                Controllers::MotionController& motionController,
                                Controllers::SimpleWeatherService& weatherService,
-                               Controllers::MusicService& music)
+                               Controllers::MusicService& music,
+                               Controllers::FS& filesystem)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
@@ -37,6 +38,12 @@ WatchFacePrime::WatchFacePrime(Controllers::DateTime& dateTimeController,
     weatherService {weatherService},
     musicService(music),
     statusIcons(batteryController, bleController, alarmController) {
+
+  lfs_file f = {};
+  if (filesystem.FileOpen(&f, "/fonts/primetime.bin", LFS_O_RDONLY) >= 0) {
+    filesystem.FileClose(&f);
+    font_primetime = lv_font_load("F:/fonts/primetime.bin");
+  }
 
   statusIcons.Create();
 
@@ -70,7 +77,7 @@ WatchFacePrime::WatchFacePrime(Controllers::DateTime& dateTimeController,
   lv_obj_align(label_music, lv_scr_act(), LV_ALIGN_CENTER, 0, 78);
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &prime);
+  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_primetime);
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
   label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
@@ -101,12 +108,17 @@ WatchFacePrime::WatchFacePrime(Controllers::DateTime& dateTimeController,
   Refresh();
 }
 
-WatchFacePrime::~WatchFacePrime() {
+WatchFacePrimeTime::~WatchFacePrimeTime() {
   lv_task_del(taskRefresh);
+
+  if (font_primetime != nullptr) {
+    lv_font_free(font_primetime);
+  }
+
   lv_obj_clean(lv_scr_act());
 }
 
-void WatchFacePrime::Refresh() {
+void WatchFacePrimeTime::Refresh() {
   statusIcons.Update();
 
   notificationState = notificationManager.AreNewNotificationsAvailable();
@@ -218,4 +230,15 @@ void WatchFacePrime::Refresh() {
     lv_label_set_text_fmt(label_music, "%s %s", Symbols::music, track.data());
     lv_obj_realign(label_music);
   }
+}
+
+bool WatchFacePrimeTime::IsAvailable(Pinetime::Controllers::FS& filesystem) {
+  lfs_file file = {};
+
+  if (filesystem.FileOpen(&file, "/fonts/primetime.bin", LFS_O_RDONLY) < 0) {
+    return false;
+  }
+
+  filesystem.FileClose(&file);
+  return true;
 }

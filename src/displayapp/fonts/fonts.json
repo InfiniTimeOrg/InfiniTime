@@ -73,15 +73,5 @@
       ],
       "bpp": 1,
       "size": 25
-   },
-   "prime": {
-      "sources": [
-         {
-            "file": "Karnivore.ttf",
-            "symbols": "0123456789:"
-         }
-      ],
-      "bpp": 1,
-      "size": 85
    }
 }
