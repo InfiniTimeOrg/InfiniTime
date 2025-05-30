@@ -54,8 +54,6 @@ namespace Pinetime {
       Infineat,
       CasioStyleG7710,
       PrimeTime,
-=======
->>>>>>> 74895afb (resolve conflicts)
     };
 
     template <Apps>
