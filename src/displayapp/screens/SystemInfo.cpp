@@ -198,7 +198,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         " #808080 Free# %d/%d\n"
                         " #808080 Min free# %d\n"
                         " #808080 Alloc err# %d\n"
-                        " #808080 Ovrfl err# %d\n",
+                        " #808080 Ovrfl err# %d",
                         bleAddr[5],
                         bleAddr[4],
                         bleAddr[3],
@@ -241,7 +241,12 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   lv_table_set_col_width(infoTask, 3, 90);
 
   auto nb = uxTaskGetSystemState(tasksStatus, maxTaskCount, nullptr);
+// g++ emits a spurious warning (and thus error because we compile with -Werror)
+// due to the way std::sort is implemented
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
   std::sort(tasksStatus, tasksStatus + nb, sortById);
+#pragma GCC diagnostic pop
   for (uint8_t i = 0; i < nb && i < maxTaskCount; i++) {
     char buffer[11] = {0};
 
