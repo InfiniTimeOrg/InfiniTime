@@ -19,16 +19,16 @@
 using namespace Pinetime::Applications::Screens;
 
 WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController,
-                               const Controllers::Battery& batteryController,
-                               const Controllers::Ble& bleController,
-                               const Controllers::AlarmController& alarmController,
-                               Controllers::NotificationManager& notificationManager,
-                               Controllers::Settings& settingsController,
-                               Controllers::HeartRateController& heartRateController,
-                               Controllers::MotionController& motionController,
-                               Controllers::SimpleWeatherService& weatherService,
-                               Controllers::MusicService& music,
-                               Controllers::FS& filesystem)
+                                       const Controllers::Battery& batteryController,
+                                       const Controllers::Ble& bleController,
+                                       const Controllers::AlarmController& alarmController,
+                                       Controllers::NotificationManager& notificationManager,
+                                       Controllers::Settings& settingsController,
+                                       Controllers::HeartRateController& heartRateController,
+                                       Controllers::MotionController& motionController,
+                                       Controllers::SimpleWeatherService& weatherService,
+                                       Controllers::MusicService& music,
+                                       Controllers::FS& filesystem)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},

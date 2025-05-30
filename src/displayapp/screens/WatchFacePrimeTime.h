@@ -30,22 +30,21 @@ namespace Pinetime {
       class WatchFacePrimeTime : public Screen {
       public:
         WatchFacePrimeTime(Controllers::DateTime& dateTimeController,
-                       const Controllers::Battery& batteryController,
-                       const Controllers::Ble& bleController,
-                       const Controllers::AlarmController& alarmController,
-                       Controllers::NotificationManager& notificationManager,
-                       Controllers::Settings& settingsController,
-                       Controllers::HeartRateController& heartRateController,
-                       Controllers::MotionController& motionController,
-                       Controllers::SimpleWeatherService& weather,
-                       Controllers::MusicService& music,
-                       Controllers::FS& filesystem);
+                           const Controllers::Battery& batteryController,
+                           const Controllers::Ble& bleController,
+                           const Controllers::AlarmController& alarmController,
+                           Controllers::NotificationManager& notificationManager,
+                           Controllers::Settings& settingsController,
+                           Controllers::HeartRateController& heartRateController,
+                           Controllers::MotionController& motionController,
+                           Controllers::SimpleWeatherService& weather,
+                           Controllers::MusicService& music,
+                           Controllers::FS& filesystem);
         ~WatchFacePrimeTime() override;
 
         void Refresh() override;
 
         static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
-
 
       private:
         uint8_t displayedHour = -1;
@@ -98,16 +97,16 @@ namespace Pinetime {
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::WatchFacePrimeTime(controllers.dateTimeController,
-                                           controllers.batteryController,
-                                           controllers.bleController,
-                                           controllers.alarmController,
-                                           controllers.notificationManager,
-                                           controllers.settingsController,
-                                           controllers.heartRateController,
-                                           controllers.motionController,
-                                           *controllers.weatherController,
-                                           *controllers.musicService,
-                                           controllers.filesystem);
+                                               controllers.batteryController,
+                                               controllers.bleController,
+                                               controllers.alarmController,
+                                               controllers.notificationManager,
+                                               controllers.settingsController,
+                                               controllers.heartRateController,
+                                               controllers.motionController,
+                                               *controllers.weatherController,
+                                               *controllers.musicService,
+                                               controllers.filesystem);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {

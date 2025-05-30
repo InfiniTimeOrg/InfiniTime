@@ -53,11 +53,9 @@ namespace Pinetime {
       Terminal,
       Infineat,
       CasioStyleG7710,
-<<<<<<< HEAD
       PrimeTime,
 =======
-      Prime,
->>>>>>> accbd757 (include prime watchface)
+>>>>>>> 74895afb (resolve conflicts)
     };
 
     template <Apps>
