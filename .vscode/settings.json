@@ -65,8 +65,6 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp",
-        "ios": "cpp",
-        "disc.c": "cpp"
+        "typeinfo": "cpp"
     }
 }
