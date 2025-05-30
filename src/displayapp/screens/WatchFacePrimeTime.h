@@ -59,9 +59,9 @@ namespace Pinetime {
 
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
-        lv_obj_t* label_time;
-        lv_obj_t* label_time_ampm;
-        lv_obj_t* label_date;
+        lv_obj_t* labelTime;
+        lv_obj_t* labelTimeAmPm;
+        lv_obj_t* labelDate;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
         lv_obj_t* stepIcon;
@@ -69,10 +69,8 @@ namespace Pinetime {
         lv_obj_t* notificationIcon;
         lv_obj_t* weatherIcon;
         lv_obj_t* temperature;
-        lv_obj_t* label_music;
-        lv_obj_t* icon_music;
+        lv_obj_t* labelMusic;
         lv_obj_t* weatherLabel;
-        lv_obj_t* label_battery_value;
         std::string track;
 
         Controllers::DateTime& dateTimeController;

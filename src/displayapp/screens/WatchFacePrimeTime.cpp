@@ -64,25 +64,25 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
   lv_label_set_text_static(temperature, "--°C");
   lv_obj_align(temperature, weatherIcon, LV_ALIGN_CENTER, 0, 25);
 
-  label_date = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 50);
-  lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  labelDate = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, 50);
+  lv_obj_set_style_local_text_color(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
-  label_music = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(label_music, "%s Not Playing", Symbols::music);
-  lv_obj_set_style_local_text_color(label_music, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_label_set_long_mode(label_music, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_set_width(label_music, LV_HOR_RES - 12);
-  lv_label_set_align(label_music, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label_music, lv_scr_act(), LV_ALIGN_CENTER, 0, 78);
+  labelMusic = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_fmt(labelMusic, "%s Not Playing", Symbols::music);
+  lv_obj_set_style_local_text_color(labelMusic, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_label_set_long_mode(labelMusic, LV_LABEL_LONG_SROLL_CIRC);
+  lv_obj_set_width(labelMusic, LV_HOR_RES - 12);
+  lv_label_set_align(labelMusic, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(labelMusic, lv_scr_act(), LV_ALIGN_CENTER, 0, 78);
 
-  label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_primetime);
-  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
+  labelTime = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(labelTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_primetime);
+  lv_obj_align(labelTime, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
-  label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(label_time_ampm, "");
-  lv_obj_align(label_time_ampm, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -30, -55);
+  labelTimeAmPm = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(labelTimeAmPm, "");
+  lv_obj_align(labelTimeAmPm, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -30, -55);
 
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
@@ -142,12 +142,12 @@ void WatchFacePrimeTime::Refresh() {
         hour = hour - 12;
         ampmChar[0] = 'P';
       }
-      lv_label_set_text(label_time_ampm, ampmChar);
-      lv_label_set_text_fmt(label_time, "%2d:%02d", hour, minute);
-      lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
+      lv_label_set_text(labelTimeAmPm, ampmChar);
+      lv_label_set_text_fmt(labelTime, "%2d:%02d", hour, minute);
+      lv_obj_align(labelTime, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
     } else {
-      lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
-      lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+      lv_label_set_text_fmt(labelTime, "%02d:%02d", hour, minute);
+      lv_obj_align(labelTime, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
     }
 
     currentDate = std::chrono::time_point_cast<std::chrono::days>(currentDateTime.Get());
@@ -155,21 +155,21 @@ void WatchFacePrimeTime::Refresh() {
       uint16_t year = dateTimeController.Year();
       uint8_t day = dateTimeController.Day();
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        lv_label_set_text_fmt(label_date,
+        lv_label_set_text_fmt(labelDate,
                               "%s, %02d.%02d.%d",
                               dateTimeController.DayOfWeekShortToStringLow(dateTimeController.DayOfWeek()),
                               day,
                               dateTimeController.Month(),
                               year);
       } else {
-        lv_label_set_text_fmt(label_date,
+        lv_label_set_text_fmt(labelDate,
                               "%s %s %d %d",
                               dateTimeController.DayOfWeekShortToString(),
                               dateTimeController.MonthShortToString(),
                               day,
                               year);
       }
-      lv_obj_realign(label_date);
+      lv_obj_realign(labelDate);
     }
   }
 
@@ -227,8 +227,8 @@ void WatchFacePrimeTime::Refresh() {
   }
   if (track != musicService.getTrack()) {
     track = musicService.getTrack();
-    lv_label_set_text_fmt(label_music, "%s %s", Symbols::music, track.data());
-    lv_obj_realign(label_music);
+    lv_label_set_text_fmt(labelMusic, "%s %s", Symbols::music, track.data());
+    lv_obj_realign(labelMusic);
   }
 }
 
