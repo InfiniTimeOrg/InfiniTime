@@ -9,11 +9,7 @@
 #include "displayapp/screens/Tile.h"
 #include "displayapp/screens/ApplicationList.h"
 #include "displayapp/screens/WatchFaceDigital.h"
-<<<<<<< HEAD
 #include "displayapp/screens/WatchFacePrimeTime.h"
-=======
-#include "displayapp/screens/WatchFacePrime.h"
->>>>>>> accbd757 (include prime watchface)
 #include "displayapp/screens/WatchFaceAnalog.h"
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
 #include "displayapp/screens/WatchFaceInfineat.h"

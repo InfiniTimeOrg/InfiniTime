@@ -427,11 +427,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/WatchFaceTerminal.cpp
         displayapp/screens/WatchFacePineTimeStyle.cpp
         displayapp/screens/WatchFaceCasioStyleG7710.cpp
-<<<<<<< HEAD
         displayapp/screens/WatchFacePrimeTime.cpp
-=======
-        displayapp/screens/WatchFacePrime.cpp
->>>>>>> accbd757 (include prime watchface)
 
         ##
 
