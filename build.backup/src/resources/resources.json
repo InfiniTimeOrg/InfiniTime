@@ -1,0 +1,42 @@
+{
+    "resources": [
+        {
+            "filename": "lv_font_dots_40.bin",
+            "path": "/fonts/lv_font_dots_40.bin"
+        },
+        {
+            "filename": "bebas.bin",
+            "path": "/fonts/bebas.bin"
+        },
+        {
+            "filename": "7segments_40.bin",
+            "path": "/fonts/7segments_40.bin"
+        },
+        {
+            "filename": "teko.bin",
+            "path": "/fonts/teko.bin"
+        },
+        {
+            "filename": "7segments_115.bin",
+            "path": "/fonts/7segments_115.bin"
+        },
+        {
+            "filename": "navigation1.bin",
+            "path": "/images/navigation1.bin"
+        },
+        {
+            "filename": "pine_small.bin",
+            "path": "/images/pine_small.bin"
+        },
+        {
+            "filename": "navigation0.bin",
+            "path": "/images/navigation0.bin"
+        }
+    ],
+    "obsolete_files": [
+        {
+            "path": "/example-of-obsolete-file.bin",
+            "since": "1.11.0"
+        }
+    ]
+}

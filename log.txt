@@ -1,0 +1,1072 @@
+libEGL warning: DRI3: Screen seems not DRI3 capable
+libEGL warning: DRI2: failed to authenticate
+libEGL warning: DRI3: Screen seems not DRI3 capable
+MESA: error: ZINK: failed to choose pdev
+libEGL warning: egl: failed to create dri2 screen
+[DEBUG reqwest::connect] starting new connection: https://api.github.com/
+[TRACE bluer::session] Connected to D-Bus with unique name :1.395
+[TRACE bluer::session] Starting event loop for :1.395
+[TRACE bluer::session] Adding event subscription for /org/bluez with child_objects=true
+[TRACE bluer::gatt::local] Publishing application at /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093
+[TRACE bluer::gatt::local] Publishing service at /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0: org.bluez.GattService1.UUID = Some("00001805-0000-1000-8000-00805f9b34fb")
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0: org.bluez.GattService1.Primary = Some(true)
+[TRACE bluer::gatt::local] Publishing characteristic at /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0/char0
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0/char0: org.bluez.GattCharacteristic1.NotifyAcquired = None
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0/char0: org.bluez.GattCharacteristic1.WriteAcquired = None
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0/char0: org.bluez.GattCharacteristic1.UUID = Some("00002a2b-0000-1000-8000-00805f9b34fb")
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0/char0: org.bluez.GattCharacteristic1.Flags = Some(["read"])
+[TRACE bluer::gatt::local] Registering application at /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0: org.bluez.GattService1.UUID = Some("00001805-0000-1000-8000-00805f9b34fb")
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0: org.bluez.GattService1.Primary = Some(true)
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0/char0: org.bluez.GattCharacteristic1.NotifyAcquired = None
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0/char0: org.bluez.GattCharacteristic1.WriteAcquired = None
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0/char0: org.bluez.GattCharacteristic1.UUID = Some("00002a2b-0000-1000-8000-00805f9b34fb")
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0/char0: org.bluez.GattCharacteristic1.Flags = Some(["read"])
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0: org.bluez.GattService1.Handle <- 24
+[TRACE bluer::gatt::local] /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0/char0: org.bluez.GattCharacteristic1.Handle <- 26
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Trying to connect to InfiniTime (EE:37:AC:5F:49:07)
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "UUIDs": Variant([]), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "Pattern": Variant("InfiniTime"), "UUIDs": Variant([])},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "UUIDs": Variant([]), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Pattern": Variant("InfiniTime"), "Transport": Variant("le"), "UUIDs": Variant([])},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Pattern": Variant("InfiniTime"), "UUIDs": Variant([]), "Transport": Variant("le")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "Pattern": Variant("InfiniTime"), "UUIDs": Variant([])},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "Pattern": Variant("InfiniTime"), "UUIDs": Variant([])},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "UUIDs": Variant([]), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Pattern": Variant("InfiniTime"), "Transport": Variant("le"), "UUIDs": Variant([])},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "Pattern": Variant("InfiniTime"), "UUIDs": Variant([])},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Pattern": Variant("InfiniTime"), "Transport": Variant("le"), "UUIDs": Variant([])},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Pattern": Variant("InfiniTime"), "Transport": Variant("le")},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Pattern": Variant("InfiniTime"), "UUIDs": Variant([]), "Transport": Variant("le")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "UUIDs": Variant([]), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Pattern": Variant("InfiniTime"), "UUIDs": Variant([]), "Transport": Variant("le")},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "UUIDs": Variant([]), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Pattern": Variant("InfiniTime"), "UUIDs": Variant([]), "Transport": Variant("le")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "UUIDs": Variant([]), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "Pattern": Variant("InfiniTime"), "UUIDs": Variant([])},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Pattern": Variant("InfiniTime"), "Transport": Variant("le")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "Pattern": Variant("InfiniTime"), "UUIDs": Variant([])},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "Pattern": Variant("InfiniTime"), "UUIDs": Variant([])},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "Pattern": Variant("InfiniTime"), "UUIDs": Variant([])},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "UUIDs": Variant([]), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "UUIDs": Variant([]), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Pattern": Variant("InfiniTime"), "UUIDs": Variant([]), "Transport": Variant("le")},)
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Pattern": Variant("InfiniTime"), "Transport": Variant("le")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "Pattern": Variant("InfiniTime"), "UUIDs": Variant([])},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Transport": Variant("le"), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"Transport": Variant("le"), "UUIDs": Variant([]), "Pattern": Variant("InfiniTime")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery (...) -> Ok(())
+[TRACE bluer::session] Adding event subscription for /org/bluez/hci0 with child_objects=true
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(true)} }
+[TRACE bluer::device] /org/bluez/hci0/dev_78_2B_64_CC_D7_14: org.bluez.Device1.Name = "LE-Bose NC 700 HP"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Name = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_DC_2C_26_00_05_CF: org.bluez.Device1.Name = "wavemaster MOBI 2"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connected = false
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Alias = "InfiniTime"
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.RSSI = None
+[INFO  watchmate::ui::devices_page] Device discovery stopped
+[TRACE bluer::session] Terminating single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect ()
+[TRACE bluer::device] /org/bluez/hci0/dev_EE_37_AC_5F_49_07: org.bluez.Device1.Connect (...) -> Err(D-Bus error: Operation already in progress (org.bluez.Error.Failed))
+[TRACE bluer] DBus error org.bluez.Error.Failed: Operation already in progress
+[ERROR watchmate::ui::devices_page] Connection failure: Bluetooth operation failed: Operation already in progress
+[TRACE bluer::session] Event: PropertiesChanged { object: Path("/org/bluez/hci0\0"), interface: "org.bluez.Adapter1", changed: {"Discovering": Variant(false)} }
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.StopDiscovery () -> Ok(())
+[TRACE bluer::session] Terminated single session for /org/bluez/hci0
+[INFO  watchmate::ui::devices_page] Device discovery started
+[TRACE bluer::session] Waiting for termination of previous single session for /org/bluez/hci0
+[TRACE bluer::session] Starting new single session for /org/bluez/hci0
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter ({"UUIDs": Variant([]), "Pattern": Variant("InfiniTime"), "Transport": Variant("le")},)
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.SetDiscoveryFilter (...) -> Ok(())
+[TRACE bluer::adapter] /org/bluez/hci0: org.bluez.Adapter1.StartDiscovery ()
+[TRACE bluer::gatt::local] Unregistering application at /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093
+[TRACE bluer::gatt::local] Unpublishing /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0/char0
+[TRACE bluer::gatt::local] Unpublishing /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093/service0
+[TRACE bluer::gatt::local] Unpublishing /org/bluez/bluer/gatt/app/c5ecaef649384cee9122964ac84de093

@@ -1,0 +1,62 @@
+#pragma once
+
+#include <cstdint>
+#include <lvgl/lvgl.h>
+
+#include "components/settings/Settings.h"
+#include "displayapp/screens/ScreenList.h"
+#include "displayapp/screens/Screen.h"
+#include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/CheckboxList.h"
+
+namespace Pinetime {
+
+  namespace Applications {
+    namespace Screens {
+
+      struct Option {
+<<<<<<< HEAD
+        const Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval interval;
+=======
+        const int intervalInSeconds;
+>>>>>>> e498b17a03ab92fe93c5d51782ab3152bf79428c
+        const char* name;
+      };
+
+      class SettingHeartRate : public Screen {
+      public:
+        SettingHeartRate(Pinetime::Controllers::Settings& settings);
+        ~SettingHeartRate() override;
+
+        void UpdateSelected(lv_obj_t* object, lv_event_t event);
+
+      private:
+        Pinetime::Controllers::Settings& settingsController;
+
+        static constexpr std::array<Option, 8> options = {{
+<<<<<<< HEAD
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Off, " Off"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Continuous, "Cont"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FifteenSeconds, " 15s"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtySeconds, " 30s"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::OneMinute, "  1m"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FiveMinutes, "  5m"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenMinutes, " 10m"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtyMinutes, " 30m"},
+=======
+          {-1, " Off"},
+          {0, "Cont"},
+          {15, " 15s"},
+          {30, " 30s"},
+          {60, "  1m"},
+          {5 * 60, "  5m"},
+          {10 * 60, " 10m"},
+          {30 * 60, " 30m"},
+>>>>>>> e498b17a03ab92fe93c5d51782ab3152bf79428c
+        }};
+
+        lv_obj_t* cbOption[options.size()];
+      };
+    }
+  }
+}
