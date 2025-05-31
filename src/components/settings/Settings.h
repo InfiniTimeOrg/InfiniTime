@@ -45,6 +45,13 @@ namespace Pinetime {
         PTSWeather weatherEnable = PTSWeather::Off;
       };
 
+      enum class CasioWeatherSegment : uint8_t { WeekNumber, DayCounter, DayOfWeek };
+
+      struct CasioStyleG7710 {
+        PTSWeather weatherEnable = PTSWeather::Off;
+        CasioWeatherSegment weatherSegment = CasioWeatherSegment::DayCounter;
+      };
+
       struct WatchFaceInfineat {
         bool showSideCover = true;
         int colorIndex = 0;
@@ -153,6 +160,27 @@ namespace Pinetime {
       PTSWeather GetPTSWeather() const {
         return settings.PTS.weatherEnable;
       };
+
+      void SetCasioWeather(PTSWeather weatherEnable) {
+        if (weatherEnable != settings.casio.weatherEnable)
+          settingsChanged = true;
+        settings.casio.weatherEnable = weatherEnable;
+      }
+
+      PTSWeather GetCasioWeather() const {
+        return settings.casio.weatherEnable;
+      }
+
+      void SetCasioWeatherSegment(CasioWeatherSegment weatherSegment) {
+        if (weatherSegment != settings.casio.weatherSegment)
+          settingsChanged = true;
+
+        settings.casio.weatherSegment = weatherSegment;
+      }
+
+      CasioWeatherSegment GetCasioWeatherSegment() const {
+        return settings.casio.weatherSegment;
+      }
 
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
@@ -318,6 +346,8 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
+
+        CasioStyleG7710 casio;
 
         WatchFaceInfineat watchFaceInfineat;
 
