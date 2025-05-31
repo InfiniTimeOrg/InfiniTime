@@ -46,6 +46,7 @@ namespace Pinetime {
 
         static constexpr const char* title = "Watch face";
         static constexpr const char* symbol = Symbols::home;
+        static constexpr const char* helptext = "  Resources missing! Install resource pack to use greyed out watch faces.";
 
         ScreenList<nScreens> screens;
       };
