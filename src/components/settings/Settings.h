@@ -45,6 +45,16 @@ namespace Pinetime {
         PTSWeather weatherEnable = PTSWeather::Off;
       };
 
+      enum class ContentStyle : uint8_t { Off, Date, Steps, Battery, Heart, Weather };
+
+      struct WatchFacePhoto {
+        Colors ColorTime = Colors::White;
+        bool PhotoBackground = true;
+        Colors ColorBG = Colors::Black;
+        ContentStyle contentStyleTop = ContentStyle::Date;
+        ContentStyle contentStyleBottom = ContentStyle::Steps;
+      };
+
       struct WatchFaceInfineat {
         bool showSideCover = true;
         int colorIndex = 0;
@@ -110,6 +120,57 @@ namespace Pinetime {
 
       Colors GetPTSColorBG() const {
         return settings.PTS.ColorBG;
+      };
+
+      void SetPhotoFaceColorTime(Colors colorTime) {
+        if (colorTime != settings.watchFacePhoto.ColorTime)
+          settingsChanged = true;
+        settings.watchFacePhoto.ColorTime = colorTime;
+      };
+
+      Colors GetPhotoFaceColorTime() const {
+        return settings.watchFacePhoto.ColorTime;
+      };
+
+      void SetPhotoFaceColorBG(Colors colorBG) {
+        if (colorBG != settings.watchFacePhoto.ColorBG)
+          settingsChanged = true;
+        settings.watchFacePhoto.ColorBG = colorBG;
+      };
+
+      Colors GetPhotoFaceColorBG() const {
+        return settings.watchFacePhoto.ColorBG;
+      };
+
+      void SetPhotoFaceContentTop(ContentStyle contentStyle) {
+        if (contentStyle != settings.watchFacePhoto.contentStyleTop)
+          settingsChanged = true;
+        settings.watchFacePhoto.contentStyleTop = contentStyle;
+      };
+
+      ContentStyle GetPhotoFaceContentTop() const {
+        return settings.watchFacePhoto.contentStyleTop;
+      };
+
+      void SetPhotoFaceContentBottom(ContentStyle contentStyle) {
+        if (contentStyle != settings.watchFacePhoto.contentStyleBottom)
+          settingsChanged = true;
+        settings.watchFacePhoto.contentStyleBottom = contentStyle;
+      };
+
+      ContentStyle GetPhotoFaceContentBottom() const {
+        return settings.watchFacePhoto.contentStyleBottom;
+      };
+
+      void SetPhotoFaceShowPhoto(bool show) {
+        if (show != settings.watchFacePhoto.PhotoBackground) {
+          settings.watchFacePhoto.PhotoBackground = show;
+          settingsChanged = true;
+        }
+      };
+
+      bool GetPhotoFaceShowPhoto() const {
+        return settings.watchFacePhoto.PhotoBackground;
       };
 
       void SetInfineatShowSideCover(bool show) {
@@ -320,6 +381,8 @@ namespace Pinetime {
         PineTimeStyle PTS;
 
         WatchFaceInfineat watchFaceInfineat;
+
+        WatchFacePhoto watchFacePhoto;
 
         std::bitset<5> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
