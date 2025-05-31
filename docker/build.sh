@@ -90,7 +90,7 @@ CmakeGenerate() {
 CmakeBuild() {
   local target="$1"
   [ -n "$target" ] && target="--target $target"
-  cmake --build "$BUILD_DIR" --config $BUILD_TYPE $target -- -j$(nproc)
+  cmake --build "$BUILD_DIR" --config $BUILD_TYPE --DBUILD_DFU=1 $target -- -j$(nproc)
   BUILD_RESULT=$?
   return $BUILD_RESULT
 }
