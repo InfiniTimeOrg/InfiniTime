@@ -71,6 +71,12 @@ namespace Pinetime {
         std::string album;
         std::string track;
 
+        bool musicExists = false;
+        bool musicDidExist = false;
+        static constexpr const char* artistDefault = "Waiting for";
+        static constexpr const char* trackDefault = "track information..";
+        static constexpr const char* lengthDefault = "--:--/--:--";
+
         /** Total length in seconds */
         int totalLength = 0;
         /** Current position in seconds */
