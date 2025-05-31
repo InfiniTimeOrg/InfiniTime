@@ -62,6 +62,8 @@ namespace Pinetime {
       static const char EVENT_MUSIC_PREV = 0x04;
       static const char EVENT_MUSIC_VOLUP = 0x05;
       static const char EVENT_MUSIC_VOLDOWN = 0x06;
+      static const char EVENT_MUSIC_FORWARD = 0x07;
+      static const char EVENT_MUSIC_REWIND = 0x08;
 
       enum MusicStatus { NotPlaying = 0x00, Playing = 0x01 };
 
