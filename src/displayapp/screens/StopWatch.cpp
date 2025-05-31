@@ -6,7 +6,7 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
+  StopWatch::TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
     // Centiseconds
     const int timeElapsedCentis = timeElapsed * 100 / configTICK_RATE_HZ;
 
@@ -14,7 +14,7 @@ namespace {
     const int secs = (timeElapsedCentis / 100) % 60;
     const int mins = ((timeElapsedCentis / 100) / 60) % 60;
     const int hours = ((timeElapsedCentis / 100) / 60) / 60;
-    return TimeSeparated_t {hours, mins, secs, hundredths};
+    return StopWatch::TimeSeparated_t {hours, mins, secs, hundredths};
   }
 
   void play_pause_event_handler(lv_obj_t* obj, lv_event_t event) {
