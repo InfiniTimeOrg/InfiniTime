@@ -40,6 +40,12 @@ namespace Pinetime {
           return false;
         }
 
+        virtual void OnLCDWakeup([[maybe_unused]] bool aodMode) {
+        }
+
+        virtual void OnLCDSleep([[maybe_unused]] bool aodMode) {
+        }
+
       protected:
         bool running = true;
       };
