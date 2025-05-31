@@ -37,6 +37,8 @@ main() {
   [ ! -d "$TOOLS_DIR/$NRF_SDK_VER" ] && GetNrfSdk
   [ ! -d "$TOOLS_DIR/mcuboot" ] && GetMcuBoot
 
+  npm i
+
   mkdir -p "$BUILD_DIR"
 
   CmakeGenerate
