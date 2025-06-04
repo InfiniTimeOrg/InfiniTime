@@ -213,23 +213,22 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
   // !IsContinuousModeActivated()
 
   if (ShouldStartBackgroundMeasuring()) {
-    // This doesn't change the state but resets the measurment timer, which basically starts the next measurment without resetting the
-    // sensor. This is basically a fall back to continuous mode, when measurments take too long.
+    // This doesn't change the state but resets the measurement timer, which basically starts the next measurement without resetting the
+    // sensor. This is basically a fall back to continuous mode, when measurements take too long.
     measurementStart = xTaskGetTickCount();
     return;
   }
 
-  bool noDataWithinTimeLimit = bpm == 0 && ShoudStopTryingToGetData();
-  bool dataWithinTimeLimit = bpm != 0;
-  if (dataWithinTimeLimit || noDataWithinTimeLimit) {
+  bool dataTimeout = bpm == 0 && ShouldStopTryingToGetData();
+  bool foundHeartrate = bpm != 0;
+  if (foundHeartrate || dataTimeout) {
     state = States::ScreenOffAndWaiting;
     StopMeasurement();
   }
 }
 
 TickType_t HeartRateTask::GetBackgroundIntervalInTicks() {
-  int ms = settings.GetHeartRateBackgroundMeasurementInterval() * 1000;
-  return pdMS_TO_TICKS(ms);
+  return settings.GetHeartRateBackgroundMeasurementInterval() * configTICK_RATE_HZ;
 }
 
 bool HeartRateTask::IsContinuousModeActivated() {
@@ -244,8 +243,8 @@ TickType_t HeartRateTask::GetTicksSinceLastMeasurementStarted() {
   return xTaskGetTickCount() - measurementStart;
 }
 
-bool HeartRateTask::ShoudStopTryingToGetData() {
-  return GetTicksSinceLastMeasurementStarted() >= DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED;
+bool HeartRateTask::ShouldStopTryingToGetData() {
+  return GetTicksSinceLastMeasurementStarted() >= durationUntilBackgroundMeasurementIsStopped;
 }
 
 bool HeartRateTask::ShouldStartBackgroundMeasuring() {

@@ -15,21 +15,19 @@ namespace {
   }
 }
 
-constexpr std::array<Option, 8> SettingHeartRate::options;
-
 SettingHeartRate::SettingHeartRate(Pinetime::Controllers::Settings& settingsController) : settingsController {settingsController} {
 
-  lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
+  lv_obj_t* container = lv_cont_create(lv_scr_act(), nullptr);
 
-  lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
-  lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
-  lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_bg_opa(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_pad_all(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_pad_inner(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_border_width(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
-  lv_obj_set_pos(container1, 10, 60);
-  lv_obj_set_width(container1, LV_HOR_RES - 20);
-  lv_obj_set_height(container1, LV_VER_RES - 50);
-  lv_cont_set_layout(container1, LV_LAYOUT_PRETTY_TOP);
+  lv_obj_set_pos(container, 10, 60);
+  lv_obj_set_width(container, LV_HOR_RES - 20);
+  lv_obj_set_height(container, LV_VER_RES - 50);
+  lv_cont_set_layout(container, LV_LAYOUT_PRETTY_TOP);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Backg. Interval");
@@ -47,7 +45,7 @@ SettingHeartRate::SettingHeartRate(Pinetime::Controllers::Settings& settingsCont
   unsigned int currentInterval = settingsController.GetHeartRateBackgroundMeasurementInterval();
 
   for (unsigned int i = 0; i < options.size(); i++) {
-    cbOption[i] = lv_checkbox_create(container1, nullptr);
+    cbOption[i] = lv_checkbox_create(container, nullptr);
     lv_checkbox_set_text(cbOption[i], options[i].name);
     cbOption[i]->user_data = this;
     lv_obj_set_event_cb(cbOption[i], event_handler);

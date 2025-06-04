@@ -5,7 +5,57 @@
 #include <components/heartrate/Ppg.h>
 #include "components/settings/Settings.h"
 
-#define DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED pdMS_TO_TICKS(30 * 1000)
+/*
+               *** Background Measurement deactivated ***
+
+
+
+┌─────────────────────────┐                       ┌─────────────────────────┐
+│                         ├───StartMeasurement───►│                         │
+│   ScreenOnAndStopped    │                       │   ScreenOnAndMeasuring  │
+│                         │◄──StopMeasurement     │                         │
+└──▲────────────────┬─────┘                       └──▲──────────────────┬───┘
+   │                │                                │                  │
+ WakeUp         GoToSleep                          WakeUp          GoToSleep
+   │                │                                │                  │
+┌──┴────────────────▼─────┐                       ┌──┴──────────────────▼───┐
+│                         │                       │                         │
+│   ScreenOffAndStopped   │                       │   ScreenOffAndWaiting   │
+│                         │                       │                         │
+└─────────────────────────┘                       └─────────────────────────┘
+
+
+
+
+
+               *** Background Measurement activated ***
+
+
+
+┌─────────────────────────┐                       ┌─────────────────────────┐
+│                         ├───StartMeasurement───►│                         │
+│   ScreenOnAndStopped    │                       │   ScreenOnAndMeasuring  │
+│                         │◄──StopMeasurement     │                         │
+└──▲────────────────┬─────┘                       └──▲──────────────────┬───┘
+   │                │                        ┌───────┘                  │
+ WakeUp         GoToSleep                    │     WakeUp          GoToSleep
+   │                │                        │       │                  │
+┌──┴────────────────▼─────┐                  │    ┌──┴──────────────────▼───┐
+│                         │                  │    │                         │
+│   ScreenOffAndStopped   │                  │    │   ScreenOffAndWating    │
+│                         │                  │    │                         │
+└─────────────────────────┘                  │    └───┬──────────────────▲──┘
+                                             │        │                  │
+                                             │     Waited           Got sensor
+                                             │    interval             data
+                                             │      time                 │
+                                             │        │                  │
+                                          WakeUp  ┌───▼──────────────────┴──┐
+                                             │    │                         │
+                                             └────┤  ScreenOffAndMeasuring  │
+                                                  │                         │
+                                                  └─────────────────────────┘
+ */
 
 /*
                *** Background Measurement deactivated ***
@@ -81,6 +131,7 @@ namespace Pinetime {
       void Start();
       void Work();
       void PushMessage(Messages msg);
+      static constexpr int durationUntilBackgroundMeasurementIsStopped = pdMS_TO_TICKS(30 * 1000);
 
     private:
       static void Process(void* instance);
@@ -100,7 +151,7 @@ namespace Pinetime {
       bool IsBackgroundMeasurementActivated();
 
       TickType_t GetTicksSinceLastMeasurementStarted();
-      bool ShoudStopTryingToGetData();
+      bool ShouldStopTryingToGetData();
       bool ShouldStartBackgroundMeasuring();
 
       TaskHandle_t taskHandle;
