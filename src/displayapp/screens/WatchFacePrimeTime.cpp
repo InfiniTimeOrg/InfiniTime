@@ -42,7 +42,7 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
   lfs_file f = {};
   if (filesystem.FileOpen(&f, "/fonts/primetime.bin", LFS_O_RDONLY) >= 0) {
     filesystem.FileClose(&f);
-    font_primetime = lv_font_load("F:/fonts/primetime.bin");
+    fontPrimeTime = lv_font_load("F:/fonts/primetime.bin");
   }
 
   statusIcons.Create();
@@ -77,7 +77,7 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
   lv_obj_align(labelMusic, lv_scr_act(), LV_ALIGN_CENTER, 0, 78);
 
   labelTime = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(labelTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_primetime);
+  lv_obj_set_style_local_text_font(labelTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, fontPrimeTime);
   lv_obj_align(labelTime, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
   labelTimeAmPm = lv_label_create(lv_scr_act(), nullptr);
@@ -111,8 +111,8 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
 WatchFacePrimeTime::~WatchFacePrimeTime() {
   lv_task_del(taskRefresh);
 
-  if (font_primetime != nullptr) {
-    lv_font_free(font_primetime);
+  if (fontPrimeTime != nullptr) {
+    lv_font_free(fontPrimeTime);
   }
 
   lv_obj_clean(lv_scr_act());

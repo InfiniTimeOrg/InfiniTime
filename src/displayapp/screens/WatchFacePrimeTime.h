@@ -81,7 +81,7 @@ namespace Pinetime {
         Controllers::SimpleWeatherService& weatherService;
         Controllers::MusicService& musicService;
 
-        lv_font_t* font_primetime = nullptr;
+        lv_font_t* fontPrimeTime = nullptr;
 
         lv_task_t* taskRefresh;
         Widgets::StatusIcons statusIcons;
