@@ -205,17 +205,6 @@ void WatchFacePrimeTime::Refresh() {
         temp = optCurrentWeather->temperature.Fahrenheit();
         tempUnit = 'F';
       }
-      if (temp <= 0) { // freezing
-        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
-      } else if (temp <= 5) { // near freezing
-        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
-      } else if (temp <= 15) { // early spring
-        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x4db8d1));
-      } else if (temp <= 25) { // warm
-        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
-      } else if (temp >= 25) { // hot
-        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::deepOrange);
-      }
       lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
     } else {
