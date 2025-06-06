@@ -67,7 +67,6 @@ namespace Pinetime {
         lv_obj_t* weatherIcon;
         lv_obj_t* temperature;
         lv_obj_t* labelMusic;
-        lv_obj_t* weatherLabel;
         std::string track;
 
         Controllers::DateTime& dateTimeController;
