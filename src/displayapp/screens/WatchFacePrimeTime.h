@@ -3,7 +3,6 @@
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <chrono>
 #include <cstdint>
-#include <memory>
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/SimpleWeatherService.h"
@@ -47,12 +46,12 @@ namespace Pinetime {
         static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
       private:
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
-        Utility::DirtyValue<uint32_t> stepCount {};
-        Utility::DirtyValue<uint8_t> heartbeat {};
-        Utility::DirtyValue<bool> heartbeatRunning {};
-        Utility::DirtyValue<bool> notificationState {};
-        Utility::DirtyValue<std::optional<Pinetime::Controllers::SimpleWeatherService::CurrentWeather>> currentWeather {};
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime;
+        Utility::DirtyValue<uint32_t> stepCount;
+        Utility::DirtyValue<uint8_t> heartbeat;
+        Utility::DirtyValue<bool> heartbeatRunning;
+        Utility::DirtyValue<bool> notificationState;
+        Utility::DirtyValue<std::optional<Pinetime::Controllers::SimpleWeatherService::CurrentWeather>> currentWeather;
 
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
