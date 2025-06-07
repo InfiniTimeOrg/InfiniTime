@@ -50,3 +50,13 @@ src/arm-none-eabi
 
 # clangd
 .cache/
+
+# Toolchain and External dependencies
+sdk-toolchain/
+
+# Developer files
+CMakeUserPresets.json
+compile_commands.json
+package-lock.json
+package.json
+node_modules/
