@@ -53,7 +53,7 @@ SettingHeartRate::SettingHeartRate(Pinetime::Controllers::Settings& settingsCont
 
     if (!isActivated && options[i].intervalInSeconds == -1) {
       lv_checkbox_set_checked(cbOption[i], true);
-    } else if (isActivated && options[i].intervalInSeconds == (int) currentInterval) {
+    } else if (isActivated && options[i].intervalInSeconds == static_cast<int>(currentInterval)) {
       lv_checkbox_set_checked(cbOption[i], true);
     }
   }
@@ -75,7 +75,7 @@ void SettingHeartRate::UpdateSelected(lv_obj_t* object, lv_event_t event) {
         if (optionInterval == -1) {
           settingsController.DeactivateHeartRateBackgroundMeasurement();
         } else {
-          settingsController.SetHeartRateBackgroundMeasurementInterval((unsigned int) optionInterval);
+          settingsController.SetHeartRateBackgroundMeasurementInterval(static_cast<uint16_t>(optionInterval));
         }
       } else {
         lv_checkbox_set_checked(cbOption[i], false);
