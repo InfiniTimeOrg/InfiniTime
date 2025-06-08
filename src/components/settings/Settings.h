@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <bitset>
+#include <optional>
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 #include "displayapp/apps/Apps.h"
@@ -50,10 +51,7 @@ namespace Pinetime {
         int colorIndex = 0;
       };
 
-      struct HeartRateBackgroundMeasurement {
-        bool activated = false;
-        unsigned int intervalInSeconds = 0;
-      };
+      std::optional<uint16_t> heartRateBackgroundMeasurement = 0;
 
       Settings(Pinetime::Controllers::FS& fs);
 
@@ -304,27 +302,26 @@ namespace Pinetime {
       };
 
       bool IsHeartRateBackgroundMeasurementActivated() const {
-        return settings.heartRateBackgroundMeasurement.activated;
+        return settings.heartRateBackgroundMeasurement.has_value();
       }
 
       void DeactivateHeartRateBackgroundMeasurement() {
-        if (settings.heartRateBackgroundMeasurement.activated) {
+        if (IsHeartRateBackgroundMeasurementActivated()) {
           settingsChanged = true;
         }
-        settings.heartRateBackgroundMeasurement.activated = false;
+        settings.heartRateBackgroundMeasurement = std::nullopt;
       }
 
-      unsigned int GetHeartRateBackgroundMeasurementInterval() const {
-        return settings.heartRateBackgroundMeasurement.intervalInSeconds;
+      uint16_t GetHeartRateBackgroundMeasurementInterval() const {
+        return settings.heartRateBackgroundMeasurement.value_or(0);
       }
 
-      void SetHeartRateBackgroundMeasurementInterval(unsigned int newIntervalInSeconds) {
-        if (!settings.heartRateBackgroundMeasurement.activated ||
-            newIntervalInSeconds != settings.heartRateBackgroundMeasurement.intervalInSeconds) {
+      void SetHeartRateBackgroundMeasurementInterval(uint16_t newIntervalInSeconds) {
+        if (!settings.heartRateBackgroundMeasurement.has_value() ||
+            newIntervalInSeconds != settings.heartRateBackgroundMeasurement) {
           settingsChanged = true;
         }
-        settings.heartRateBackgroundMeasurement.intervalInSeconds = newIntervalInSeconds;
-        settings.heartRateBackgroundMeasurement.activated = true;
+        settings.heartRateBackgroundMeasurement = newIntervalInSeconds;
       }
 
     private:
@@ -355,7 +352,7 @@ namespace Pinetime {
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
 
-        HeartRateBackgroundMeasurement heartRateBackgroundMeasurement;
+        std::optional<uint16_t> heartRateBackgroundMeasurement;
       };
 
       SettingsData settings;
