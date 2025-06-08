@@ -317,8 +317,7 @@ namespace Pinetime {
       }
 
       void SetHeartRateBackgroundMeasurementInterval(uint16_t newIntervalInSeconds) {
-        if (!settings.heartRateBackgroundMeasurement.has_value() ||
-            newIntervalInSeconds != settings.heartRateBackgroundMeasurement) {
+        if (!settings.heartRateBackgroundMeasurement.has_value() || newIntervalInSeconds != settings.heartRateBackgroundMeasurement) {
           settingsChanged = true;
         }
         settings.heartRateBackgroundMeasurement = newIntervalInSeconds;
