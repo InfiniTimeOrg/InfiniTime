@@ -18,6 +18,10 @@ export npm_config_cache="${NPM_DIR}"
 export BUILD_TYPE=${BUILD_TYPE:=Release}
 export GCC_ARM_VER=${GCC_ARM_VER:="10.3-2021.10"}
 export NRF_SDK_VER=${NRF_SDK_VER:="nRF5_SDK_15.3.0_59ac345"}
+# convert to lower case and remove _ and . character
+# the download URL uses the SLUG, but the extracted folder is named like the original value
+NRF_SDK_VER_SLUG=${NRF_SDK_VER,,}
+export NRF_SDK_VER_SLUG=${NRF_SDK_VER_SLUG//[_.]/}
 
 MACHINE="$(uname -m)"
 [ "$MACHINE" = "arm64" ] && MACHINE="aarch64"
@@ -47,17 +51,29 @@ main() {
 
 GetGcc() {
   wget -q https://developer.arm.com/-/media/Files/downloads/gnu-rm/$GCC_ARM_VER/$GCC_ARM_PATH-$MACHINE-linux.tar.bz2 -O - | tar -xj -C $TOOLS_DIR/
+  if [ ! -d "$TOOLS_DIR/$GCC_ARM_PATH" ]; then
+    echo "missing GCC path: $TOOLS_DIR/$GCC_ARM_PATH"
+    return 1
+  fi
 }
 
 GetMcuBoot() {
   git clone https://github.com/mcu-tools/mcuboot.git "$TOOLS_DIR/mcuboot"
   pip3 install -r "$TOOLS_DIR/mcuboot/scripts/requirements.txt"
+  if [ ! -d "$TOOLS_DIR/mcuboot" ]; then
+    echo "missing mcuboot path: $TOOLS_DIR/mcuboot"
+    return 1
+  fi
 }
 
 GetNrfSdk() {
-  wget -q "https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/$NRF_SDK_VER.zip" -O /tmp/$NRF_SDK_VER
+  wget -q "https://nsscprodmedia.blob.core.windows.net/prod/software-and-other-downloads/sdks/nrf5/binaries/$NRF_SDK_VER_SLUG.zip" -O /tmp/$NRF_SDK_VER
   unzip -q /tmp/$NRF_SDK_VER -d "$TOOLS_DIR/"
   rm /tmp/$NRF_SDK_VER
+  if [ ! -d "$TOOLS_DIR/$NRF_SDK_VER" ]; then
+    echo "missing NRF_SDK path: $TOOLS_DIR/$NRF_SDK_VER"
+    return 1
+  fi
 }
 
 CmakeGenerate() {
