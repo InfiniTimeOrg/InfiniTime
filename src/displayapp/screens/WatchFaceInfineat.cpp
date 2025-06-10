@@ -316,7 +316,7 @@ WatchFaceInfineat::~WatchFaceInfineat() {
 bool WatchFaceInfineat::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnSettings)) {
     lv_obj_set_hidden(btnSettings, false);
-    savedTick = lv_tick_get();
+    savedTick = xTaskGetTickCount();
     return true;
   }
   // Prevent screen from sleeping when double tapping with settings on
@@ -463,7 +463,7 @@ void WatchFaceInfineat::Refresh() {
   }
 
   if (!lv_obj_get_hidden(btnSettings)) {
-    if ((savedTick > 0) && (lv_tick_get() - savedTick > 3000)) {
+    if ((savedTick > 0) && (xTaskGetTickCount() - savedTick > pdMS_TO_TICKS(3000))) {
       lv_obj_set_hidden(btnSettings, true);
       savedTick = 0;
     }

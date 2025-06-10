@@ -33,7 +33,7 @@ RUN apt-get update -qq \
       libpixman-1-dev \
       libcairo2-dev \
       libpango-1.0-0 \
-      ibpango1.0-dev \
+      libpango1.0-dev \
       libpangocairo-1.0-0 \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
