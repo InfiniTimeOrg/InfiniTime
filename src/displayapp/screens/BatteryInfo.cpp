@@ -67,8 +67,8 @@ void BatteryInfo::Refresh() {
     lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
     lv_label_set_text_static(status, "Battery low");
   } else {
-  lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::deepOrange);
-  lv_label_set_text_static(status, "Battery critical");
+    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::deepOrange);
+    lv_label_set_text_static(status, "Battery critical");
   }
 
   lv_label_set_text_fmt(percent, "%i%%", batteryPercent);
