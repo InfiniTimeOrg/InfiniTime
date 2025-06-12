@@ -40,6 +40,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
                        Controllers::AlarmController& alarmController,
+                       Controllers::SleepTrackingController& sleeptrackingController,
                        Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Drivers::Hrs3300& heartRateSensor,
@@ -60,6 +61,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     bleController {bleController},
     dateTimeController {dateTimeController},
     alarmController {alarmController},
+    sleeptrackingController {sleeptrackingController},
     watchdog {watchdog},
     notificationManager {notificationManager},
     heartRateSensor {heartRateSensor},
@@ -128,6 +130,7 @@ void SystemTask::Work() {
   batteryController.Register(this);
   motionSensor.SoftReset();
   alarmController.Init(this);
+  sleeptrackingController.Init(this);
 
   // Reset the TWI device because the motion sensor chip most probably crashed it...
   twiMaster.Sleep();
@@ -217,6 +220,14 @@ void SystemTask::Work() {
         case Messages::SetOffAlarm:
           GoToRunning();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
+          break;
+        case Messages::SetOffWakeAlarm:
+          GoToRunning();
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::WakeAlarmTriggered);
+          break;
+        case Messages::OnSleepTrackingDataPoint:
+          GoToRunning();
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::SleepSaveDataPoint);
           break;
         case Messages::BleConnected:
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NotifyDeviceActivity);
