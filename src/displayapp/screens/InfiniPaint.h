@@ -47,6 +47,10 @@ namespace Pinetime {
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::InfiniPaint(controllers.lvgl, controllers.motorController);
       };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      };
     };
   }
 }

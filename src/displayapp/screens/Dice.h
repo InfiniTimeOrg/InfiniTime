@@ -56,6 +56,10 @@ namespace Pinetime {
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Dice(controllers.motionController, controllers.motorController, controllers.settingsController);
       };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      };
     };
   }
 }

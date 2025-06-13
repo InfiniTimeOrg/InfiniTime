@@ -51,6 +51,10 @@ namespace Pinetime {
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Weather(controllers.settingsController, *controllers.weatherController);
       };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      };
     };
   }
 }
