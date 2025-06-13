@@ -48,6 +48,7 @@
 #include "displayapp/screens/settings/SettingSteps.h"
 #include "displayapp/screens/settings/SettingSetDateTime.h"
 #include "displayapp/screens/settings/SettingChimes.h"
+#include "displayapp/screens/settings/SettingAutoOpen.h"
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingBluetooth.h"
 
@@ -364,6 +365,22 @@ void DisplayApp::Refresh() {
       case Messages::NewNotification:
         LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
         break;
+      case Messages::MusicStarted:
+        if (currentApp == Apps::Clock && AppAvailable(Apps::Music)) {
+          if (state != States::Running) {
+            PushMessageToSystemTask(System::Messages::GoToRunning);
+          }
+          LoadNewScreen(Apps::Music, DisplayApp::FullRefreshDirections::Up);
+        }
+        break;
+      case Messages::NavStarted:
+        if (currentApp == Apps::Clock && AppAvailable(Apps::Navigation)) {
+          if (state != States::Running) {
+            PushMessageToSystemTask(System::Messages::GoToRunning);
+          }
+          LoadNewScreen(Apps::Navigation, DisplayApp::FullRefreshDirections::Up);
+        }
+        break;
       case Messages::TimerDone:
         if (state != States::Running) {
           PushMessageToSystemTask(System::Messages::GoToRunning);
@@ -477,6 +494,23 @@ void DisplayApp::Refresh() {
       case Messages::Chime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
+        break;
+      case Messages::OnChargingEvent:
+        switch (currentApp) {
+          case Apps::Clock:
+            if (batteryController.IsCharging() && settingsController.IsAutoOpenOn(Controllers::Settings::AutoOpen::Battery)) {
+              // Open the battery app if on the clock screen
+              LoadNewScreen(Apps::BatteryInfo, DisplayApp::FullRefreshDirections::None);
+            }
+            break;
+          default:
+          case Apps::BatteryInfo:
+            if (!batteryController.IsCharging()) {
+              // Close the battery app after being unplugged
+              LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+            }
+            break;
+        }
         break;
     }
   }
@@ -615,6 +649,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::SettingChimes:
       currentScreen = std::make_unique<Screens::SettingChimes>(settingsController);
       break;
+    case Apps::SettingAutoOpen:
+      currentScreen = std::make_unique<Screens::SettingAutoOpen>(settingsController);
+      break;
     case Apps::SettingShakeThreshold:
       currentScreen = std::make_unique<Screens::SettingShakeThreshold>(settingsController, motionController, *systemTask);
       break;
@@ -651,6 +688,13 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     }
   }
   currentApp = app;
+}
+
+bool DisplayApp::AppAvailable(Apps app) {
+  const auto* d = std::find_if(userApps.begin(), userApps.end(), [app](const AppDescription& appDescription) {
+    return appDescription.app == app;
+  });
+  return d != userApps.end();
 }
 
 void DisplayApp::PushMessage(Messages msg) {
