@@ -55,6 +55,7 @@ SettingSetTime::SettingSetTime(Pinetime::Controllers::DateTime& dateTimeControll
 
   minuteCounter.Create();
   minuteCounter.SetValue(dateTimeController.Minutes());
+  minuteCounter.EnableFastMode(5);
   lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_CENTER, 0, POS_Y_TEXT);
   minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
