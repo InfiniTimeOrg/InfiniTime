@@ -91,14 +91,14 @@ jobs:
       run:  |
         sudo apt-get -y install ninja-build
 
-    - name: Install lv_font_conv
-      run:
-        npm i -g lv_font_conv@1.5.2
-
     - name: Checkout source files
       uses: actions/checkout@v3
       with:
         submodules: recursive
+
+    - name: Install npm packages
+      run:
+        npm i
 
     - name: Get InfiniSim repo
       run:  |
