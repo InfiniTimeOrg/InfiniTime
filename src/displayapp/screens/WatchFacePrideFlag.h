@@ -61,7 +61,8 @@ namespace Pinetime {
 
         lv_obj_t** backgroundSections;
         char labelTimeColour[8] = "#000000";
-        char defaultLabelColour[8] = "#ffffff";
+        char defaultTopLabelColour[8] = "#ffffff";
+        char defaultBottomLabelColour[8] = "#ffffff";
         bool themeChanged = false;
         uint8_t numBackgrounds;
         lv_obj_t* bluetoothStatus;

@@ -135,7 +135,7 @@ void WatchFacePrideFlag::Refresh() {
   bleState = bleController.IsConnected();
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated() || powerPresent.IsUpdated() || themeChanged) {
-    lv_label_set_text_fmt(batteryValue, "%s %d%%#", defaultLabelColour, batteryPercentRemaining.Get());
+    lv_label_set_text_fmt(batteryValue, "%s %d%%#", defaultTopLabelColour, batteryPercentRemaining.Get());
     if (batteryController.IsPowerPresent()) {
       lv_label_ins_text(batteryValue, LV_LABEL_POS_LAST, " Charging");
     }
@@ -183,18 +183,18 @@ void WatchFacePrideFlag::Refresh() {
       Controllers::DateTime::Months month = dateTimeController.Month();
       uint8_t day = dateTimeController.Day();
       Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
-      lv_label_set_text_fmt(labelDate, "%s %02d-%02d-%04d#", defaultLabelColour, day, static_cast<uint8_t>(month), year);
+      lv_label_set_text_fmt(labelDate, "%s %02d-%02d-%04d#", defaultTopLabelColour, day, static_cast<uint8_t>(month), year);
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-        lv_label_set_text_fmt(labelDay, "%s %s %s#", defaultLabelColour, dateTimeController.DayOfWeekToStringLow(dayOfWeek), ampmChar);
+        lv_label_set_text_fmt(labelDay, "%s %s %s#", defaultBottomLabelColour, dateTimeController.DayOfWeekToStringLow(dayOfWeek), ampmChar);
       } else {
-        lv_label_set_text_fmt(labelDay, "%s %s#", defaultLabelColour, dateTimeController.DayOfWeekToStringLow(dayOfWeek));
+        lv_label_set_text_fmt(labelDay, "%s %s#", defaultBottomLabelColour, dateTimeController.DayOfWeekToStringLow(dayOfWeek));
       }
     }
   }
 
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated() || themeChanged) {
-    lv_label_set_text_fmt(stepValue, "%s %lu steps#", defaultLabelColour, stepCount.Get());
+    lv_label_set_text_fmt(stepValue, "%s %lu steps#", defaultBottomLabelColour, stepCount.Get());
   }
   if (themeChanged)
     themeChanged = false;
@@ -264,7 +264,8 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
       lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 51);
       lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 102);
       strncpy(labelTimeColour, "#000000", 7);
-      strncpy(defaultLabelColour, "#000000", 7);
+      strncpy(defaultTopLabelColour, "#000000", 7);
+      strncpy(defaultBottomLabelColour, "#ffffff", 7);
       break;
     case 1:
       numBackgrounds = 5;
@@ -286,7 +287,8 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
       lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 48);
       lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 96);
       strncpy(labelTimeColour, "#000000", 7);
-      strncpy(defaultLabelColour, "#ffffff", 7);
+      strncpy(defaultTopLabelColour, "#ffffff", 7);
+      strncpy(defaultBottomLabelColour, "#ffffff", 7);
       break;
     case 2:
       numBackgrounds = 5;
@@ -308,7 +310,8 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
       lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 48);
       lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 96);
       strncpy(labelTimeColour, "#ffffff", 7);
-      strncpy(defaultLabelColour, "#000000", 7);
+      strncpy(defaultTopLabelColour, "#000000", 7);
+      strncpy(defaultBottomLabelColour, "#000000", 7);
       break;
     case 3:
       numBackgrounds = 7;
@@ -332,7 +335,8 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
       lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 51);
       lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 102);
       strncpy(labelTimeColour, "#000000", 7);
-      strncpy(defaultLabelColour, "#ffffff", 7);
+      strncpy(defaultTopLabelColour, "#ffffff", 7);
+      strncpy(defaultBottomLabelColour, "#ffffff", 7);
       break;
   }
 }
