@@ -85,6 +85,11 @@ namespace Pinetime {
         static constexpr lv_color_t lightPurple = LV_COLOR_MAKE(0xd4, 0x61, 0xa6);
         static constexpr lv_color_t darkPurple = LV_COLOR_MAKE(0xb5, 0x56, 0x90);
         static constexpr lv_color_t magenta = LV_COLOR_MAKE(0xa5, 0x00, 0x62);
+        static constexpr lv_color_t darkGreen = LV_COLOR_MAKE(0x07, 0x8d, 0x70);
+        static constexpr lv_color_t cyan = LV_COLOR_MAKE(0x26, 0xce, 0xaa);
+        static constexpr lv_color_t lightGreen = LV_COLOR_MAKE(0x98, 0xe8, 0xc1);
+        static constexpr lv_color_t indigo = LV_COLOR_MAKE(0x50, 0x49, 0xcc);
+        static constexpr lv_color_t steelBlue = LV_COLOR_MAKE(0x3d, 0x1a, 0x78);
 
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;

@@ -243,27 +243,28 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
   initialized = true;
   switch (prideFlagAsInt) {
     case 0:
-      numBackgrounds = 6;
+      numBackgrounds = 7;
       backgroundSections = new lv_obj_t*[numBackgrounds];
       for (int i = 0; i < numBackgrounds; i++) {
         backgroundSections[i] = lv_obj_create(lv_scr_act(), nullptr);
-        lv_obj_set_size(backgroundSections[i], LV_HOR_RES, LV_VER_RES / numBackgrounds);
+        lv_obj_set_size(backgroundSections[i], LV_HOR_RES, (LV_VER_RES / numBackgrounds) + 1);
         lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / numBackgrounds);
         lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
         lv_obj_move_background(backgroundSections[i]);
       }
-      lv_obj_set_style_local_bg_color(backgroundSections[0], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
-      lv_obj_set_style_local_bg_color(backgroundSections[1], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
-      lv_obj_set_style_local_bg_color(backgroundSections[2], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-      lv_obj_set_style_local_bg_color(backgroundSections[3], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
-      lv_obj_set_style_local_bg_color(backgroundSections[4], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLUE);
-      lv_obj_set_style_local_bg_color(backgroundSections[5], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_PURPLE);
-      lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -99);
-      lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -60);
-      lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
-      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 99);
+      lv_obj_set_style_local_bg_color(backgroundSections[0], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, darkGreen);
+      lv_obj_set_style_local_bg_color(backgroundSections[1], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, cyan);
+      lv_obj_set_style_local_bg_color(backgroundSections[2], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightGreen);
+      lv_obj_set_style_local_bg_color(backgroundSections[3], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+      lv_obj_set_style_local_bg_color(backgroundSections[4], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightBlue);
+      lv_obj_set_style_local_bg_color(backgroundSections[5], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, indigo);
+      lv_obj_set_style_local_bg_color(backgroundSections[6], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, steelBlue);
+      lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -102);
+      lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -51);
+      lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 51);
+      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 102);
       strncpy(labelTimeColour, "#000000", 7);
-      strncpy(defaultLabelColour, "#ffffff", 7);
+      strncpy(defaultLabelColour, "#000000", 7);
       break;
     case 1:
       numBackgrounds = 5;
