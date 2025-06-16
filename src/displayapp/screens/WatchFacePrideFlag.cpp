@@ -1,12 +1,6 @@
-#include <lvgl/lvgl.h>
 #include "displayapp/screens/WatchFacePrideFlag.h"
-#include "displayapp/screens/BatteryIcon.h"
-#include "displayapp/screens/NotificationIcon.h"
+#include <lvgl/lvgl.h>
 #include "displayapp/screens/Symbols.h"
-#include "components/battery/BatteryController.h"
-#include "components/ble/BleController.h"
-#include "components/motion/MotionController.h"
-#include "components/settings/Settings.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -15,6 +9,24 @@ namespace {
     auto* screen = static_cast<WatchFacePrideFlag*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
+  char labelTimeColour[8] = "#000000";
+  char defaultTopLabelColour[8] = "#ffffff";
+  char defaultBottomLabelColour[8] = "#ffffff";
+  static constexpr lv_color_t lightBlue = LV_COLOR_MAKE(0x00, 0xbf, 0xf3);
+  static constexpr lv_color_t lightPink = LV_COLOR_MAKE(0xf4, 0x9a, 0xc1);
+  static constexpr lv_color_t hotPink = LV_COLOR_MAKE(0xd6, 0x02, 0x70);
+  static constexpr lv_color_t grayPurple = LV_COLOR_MAKE(0x9b, 0x4f, 0x96);
+  static constexpr lv_color_t darkBlue = LV_COLOR_MAKE(0x00, 0x38, 0xa8);
+  static constexpr lv_color_t orange = LV_COLOR_MAKE(0xef, 0x76, 0x27);
+  static constexpr lv_color_t lightOrange = LV_COLOR_MAKE(0xff, 0x9b, 0x55);
+  static constexpr lv_color_t lightPurple = LV_COLOR_MAKE(0xd4, 0x61, 0xa6);
+  static constexpr lv_color_t darkPurple = LV_COLOR_MAKE(0xb5, 0x56, 0x90);
+  static constexpr lv_color_t magenta = LV_COLOR_MAKE(0xa5, 0x00, 0x62);
+  static constexpr lv_color_t darkGreen = LV_COLOR_MAKE(0x07, 0x8d, 0x70);
+  static constexpr lv_color_t cyan = LV_COLOR_MAKE(0x26, 0xce, 0xaa);
+  static constexpr lv_color_t lightGreen = LV_COLOR_MAKE(0x98, 0xe8, 0xc1);
+  static constexpr lv_color_t indigo = LV_COLOR_MAKE(0x50, 0x49, 0xcc);
+  static constexpr lv_color_t steelBlue = LV_COLOR_MAKE(0x3d, 0x1a, 0x78);
 }
 
 WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController,
@@ -106,7 +118,6 @@ WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController
 WatchFacePrideFlag::~WatchFacePrideFlag() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
-  delete[] backgroundSections;
 }
 
 bool WatchFacePrideFlag::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -238,19 +249,16 @@ bool WatchFacePrideFlag::OnButtonPushed() {
 void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag prideFlag) {
   themeChanged = true;
   auto prideFlagAsInt = static_cast<uint8_t>(prideFlag);
-  if (initialized) {
-    for (int i = 0; i < numBackgrounds; i++) {
-      lv_obj_del(backgroundSections[i]);
-    }
-    delete[] backgroundSections;
+  for (int i = 0; i < backgroundSections.size(); i++) {
+    lv_obj_del(backgroundSections[i]);
   }
-  initialized = true;
+  backgroundSections.clear();
   switch (prideFlagAsInt) {
     case 0:
       numBackgrounds = 7;
-      backgroundSections = new lv_obj_t*[numBackgrounds];
+      backgroundSections.reserve(numBackgrounds);
       for (int i = 0; i < numBackgrounds; i++) {
-        backgroundSections[i] = lv_obj_create(lv_scr_act(), nullptr);
+        backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
         lv_obj_set_size(backgroundSections[i], LV_HOR_RES, (LV_VER_RES / numBackgrounds) + 1);
         lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / numBackgrounds);
         lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -273,9 +281,9 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
       break;
     case 1:
       numBackgrounds = 5;
-      backgroundSections = new lv_obj_t*[numBackgrounds];
+      backgroundSections.reserve(numBackgrounds);
       for (int i = 0; i < numBackgrounds; i++) {
-        backgroundSections[i] = lv_obj_create(lv_scr_act(), nullptr);
+        backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
         lv_obj_set_size(backgroundSections[i], LV_HOR_RES, LV_VER_RES / numBackgrounds);
         lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / numBackgrounds);
         lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -296,9 +304,9 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
       break;
     case 2:
       numBackgrounds = 5;
-      backgroundSections = new lv_obj_t*[numBackgrounds];
+      backgroundSections.reserve(numBackgrounds);
       for (int i = 0; i < numBackgrounds; i++) {
-        backgroundSections[i] = lv_obj_create(lv_scr_act(), nullptr);
+        backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
         lv_obj_set_size(backgroundSections[i], LV_HOR_RES, LV_VER_RES / numBackgrounds);
         lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / numBackgrounds);
         lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -319,9 +327,9 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
       break;
     case 3:
       numBackgrounds = 7;
-      backgroundSections = new lv_obj_t*[numBackgrounds];
+      backgroundSections.reserve(numBackgrounds);
       for (int i = 0; i < numBackgrounds; i++) {
-        backgroundSections[i] = lv_obj_create(lv_scr_act(), nullptr);
+        backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
         lv_obj_set_size(backgroundSections[i], LV_HOR_RES, (LV_VER_RES / numBackgrounds) + 1);
         lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / numBackgrounds);
         lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);

@@ -2,13 +2,10 @@
 
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <chrono>
+#include <vector>
 #include <cstdint>
-#include <memory>
-#include <displayapp/Controllers.h>
+#include "displayapp/Controllers.h"
 #include "displayapp/screens/Screen.h"
-#include "displayapp/widgets/StatusIcons.h"
-#include "components/datetime/DateTimeController.h"
-#include "components/ble/BleController.h"
 #include "utility/DirtyValue.h"
 
 namespace Pinetime {
@@ -57,12 +54,8 @@ namespace Pinetime {
         static Pinetime::Controllers::Settings::PrideFlag GetPrevious(Controllers::Settings::PrideFlag prideFlag);
 
         uint32_t savedTick = 0;
-        bool initialized = false;
 
-        lv_obj_t** backgroundSections;
-        char labelTimeColour[8] = "#000000";
-        char defaultTopLabelColour[8] = "#ffffff";
-        char defaultBottomLabelColour[8] = "#ffffff";
+        std::vector<lv_obj_t*> backgroundSections;
         bool themeChanged = false;
         uint8_t numBackgrounds;
         lv_obj_t* bluetoothStatus;
@@ -75,22 +68,6 @@ namespace Pinetime {
         lv_obj_t* btnClose;
         lv_obj_t* btnNextFlag;
         lv_obj_t* btnPrevFlag;
-
-        static constexpr lv_color_t lightBlue = LV_COLOR_MAKE(0x00, 0xbf, 0xf3);
-        static constexpr lv_color_t lightPink = LV_COLOR_MAKE(0xf4, 0x9a, 0xc1);
-        static constexpr lv_color_t hotPink = LV_COLOR_MAKE(0xd6, 0x02, 0x70);
-        static constexpr lv_color_t grayPurple = LV_COLOR_MAKE(0x9b, 0x4f, 0x96);
-        static constexpr lv_color_t darkBlue = LV_COLOR_MAKE(0x00, 0x38, 0xa8);
-        static constexpr lv_color_t orange = LV_COLOR_MAKE(0xef, 0x76, 0x27);
-        static constexpr lv_color_t lightOrange = LV_COLOR_MAKE(0xff, 0x9b, 0x55);
-        static constexpr lv_color_t lightPurple = LV_COLOR_MAKE(0xd4, 0x61, 0xa6);
-        static constexpr lv_color_t darkPurple = LV_COLOR_MAKE(0xb5, 0x56, 0x90);
-        static constexpr lv_color_t magenta = LV_COLOR_MAKE(0xa5, 0x00, 0x62);
-        static constexpr lv_color_t darkGreen = LV_COLOR_MAKE(0x07, 0x8d, 0x70);
-        static constexpr lv_color_t cyan = LV_COLOR_MAKE(0x26, 0xce, 0xaa);
-        static constexpr lv_color_t lightGreen = LV_COLOR_MAKE(0x98, 0xe8, 0xc1);
-        static constexpr lv_color_t indigo = LV_COLOR_MAKE(0x50, 0x49, 0xcc);
-        static constexpr lv_color_t steelBlue = LV_COLOR_MAKE(0x3d, 0x1a, 0x78);
 
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
