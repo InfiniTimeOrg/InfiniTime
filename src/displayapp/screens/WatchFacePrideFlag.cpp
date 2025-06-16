@@ -185,7 +185,11 @@ void WatchFacePrideFlag::Refresh() {
       Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
       lv_label_set_text_fmt(labelDate, "%s %02d-%02d-%04d#", defaultTopLabelColour, day, static_cast<uint8_t>(month), year);
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-        lv_label_set_text_fmt(labelDay, "%s %s %s#", defaultBottomLabelColour, dateTimeController.DayOfWeekToStringLow(dayOfWeek), ampmChar);
+        lv_label_set_text_fmt(labelDay,
+                              "%s %s %s#",
+                              defaultBottomLabelColour,
+                              dateTimeController.DayOfWeekToStringLow(dayOfWeek),
+                              ampmChar);
       } else {
         lv_label_set_text_fmt(labelDay, "%s %s#", defaultBottomLabelColour, dateTimeController.DayOfWeekToStringLow(dayOfWeek));
       }
