@@ -1,7 +1,7 @@
 # Fonts
 
 - [Jetbrains Mono](https://www.jetbrains.com/lp/mono/)
-- [Font Awesome](https://fontawesome.com/v5/cheatsheet/free/solid)
+- [Font Awesome](https://fontawesome.com/v6/search?m=free)
 - [Open Sans Light](https://fonts.google.com/specimen/Open+Sans)
 - [Material Symbols](https://fonts.google.com/icons)
 
