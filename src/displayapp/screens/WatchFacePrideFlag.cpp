@@ -257,7 +257,7 @@ bool WatchFacePrideFlag::OnButtonPushed() {
 template <std::size_t N>
 void WatchFacePrideFlag::UseFlagData(PrideFlagData<N> flagData) {
   backgroundSections.reserve(N);
-  for (int i = 0; i < N; i++) {
+  for (uint8_t i = 0; i < N; i++) {
     backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
     lv_obj_set_style_local_bg_color(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, flagData.sectionColours[i]);
     lv_obj_set_size(backgroundSections[i], LV_HOR_RES, (LV_VER_RES / N) + 1);
