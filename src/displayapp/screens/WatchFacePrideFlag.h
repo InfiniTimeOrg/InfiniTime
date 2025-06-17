@@ -4,9 +4,12 @@
 #include <chrono>
 #include <vector>
 #include <cstdint>
-#include "displayapp/Controllers.h"
+#include <array>
+#include <FreeRTOS.h>
 #include "displayapp/screens/Screen.h"
 #include "utility/DirtyValue.h"
+#include "components/settings/Settings.h"
+#include "components/battery/BatteryController.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -30,6 +33,29 @@ namespace Pinetime {
                            Controllers::MotionController& motionController);
         ~WatchFacePrideFlag() override;
 
+        template <std::size_t N>
+        class PrideFlagData {
+        public:
+          constexpr PrideFlagData(const std::array<lv_color_t, N>& sectionColours,
+                                  lv_color_t defaultTopLabelColour,
+                                  lv_color_t labelTimeColour,
+                                  lv_color_t defaultBottomLabelColour) {
+            this->sectionColours = sectionColours;
+            this->defaultTopLabelColour = defaultTopLabelColour;
+            this->labelTimeColour = labelTimeColour;
+            this->defaultBottomLabelColour = defaultBottomLabelColour;
+            // Space between adjacent text values calculated according to the following equation
+            spacing = (uint8_t) (1.5f * ((float) N) + 40.5);
+          }
+
+          std::array<lv_color_t, N> sectionColours;
+          lv_color_t defaultTopLabelColour;
+          lv_color_t labelTimeColour;
+          lv_color_t defaultBottomLabelColour;
+          uint8_t spacing;
+          const std::size_t numSections = N;
+        };
+
         bool OnTouchEvent(TouchEvents event) override;
         bool OnButtonPushed() override;
 
@@ -37,15 +63,18 @@ namespace Pinetime {
 
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
+        template <std::size_t N>
+        void UseFlagData(PrideFlagData<N> flagData);
+
         void UpdateScreen(Pinetime::Controllers::Settings::PrideFlag);
 
       private:
-        Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
-        Utility::DirtyValue<bool> powerPresent {};
-        Utility::DirtyValue<bool> bleState {};
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>> currentDateTime {};
-        Utility::DirtyValue<uint32_t> stepCount {};
-        Utility::DirtyValue<bool> notificationState {};
+        Utility::DirtyValue<uint8_t> batteryPercentRemaining;
+        Utility::DirtyValue<bool> powerPresent;
+        Utility::DirtyValue<bool> bleState;
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>> currentDateTime;
+        Utility::DirtyValue<uint32_t> stepCount;
+        Utility::DirtyValue<bool> notificationState;
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
         // Must be wrapped in a dirty value, since it is displayed in the day but is updated twice a day
         Utility::DirtyValue<const char*> ampmChar {"AM"};
@@ -53,7 +82,7 @@ namespace Pinetime {
         static Pinetime::Controllers::Settings::PrideFlag GetNext(Controllers::Settings::PrideFlag prideFlag);
         static Pinetime::Controllers::Settings::PrideFlag GetPrevious(Controllers::Settings::PrideFlag prideFlag);
 
-        uint32_t savedTick = 0;
+        TickType_t savedTick = 0;
 
         std::vector<lv_obj_t*> backgroundSections;
         bool themeChanged = false;
@@ -71,7 +100,7 @@ namespace Pinetime {
 
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
-        const Controllers::Ble bleController;
+        const Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;

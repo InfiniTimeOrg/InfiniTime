@@ -1,32 +1,44 @@
 #include "displayapp/screens/WatchFacePrideFlag.h"
 #include <lvgl/lvgl.h>
+#include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
 #include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  void event_handler(lv_obj_t* obj, lv_event_t event) {
+  void EventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<WatchFacePrideFlag*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
-  char labelTimeColour[8] = "#000000";
-  char defaultTopLabelColour[8] = "#ffffff";
-  char defaultBottomLabelColour[8] = "#ffffff";
-  static constexpr lv_color_t lightBlue = LV_COLOR_MAKE(0x00, 0xbf, 0xf3);
-  static constexpr lv_color_t lightPink = LV_COLOR_MAKE(0xf4, 0x9a, 0xc1);
-  static constexpr lv_color_t hotPink = LV_COLOR_MAKE(0xd6, 0x02, 0x70);
-  static constexpr lv_color_t grayPurple = LV_COLOR_MAKE(0x9b, 0x4f, 0x96);
-  static constexpr lv_color_t darkBlue = LV_COLOR_MAKE(0x00, 0x38, 0xa8);
-  static constexpr lv_color_t orange = LV_COLOR_MAKE(0xef, 0x76, 0x27);
-  static constexpr lv_color_t lightOrange = LV_COLOR_MAKE(0xff, 0x9b, 0x55);
-  static constexpr lv_color_t lightPurple = LV_COLOR_MAKE(0xd4, 0x61, 0xa6);
-  static constexpr lv_color_t darkPurple = LV_COLOR_MAKE(0xb5, 0x56, 0x90);
-  static constexpr lv_color_t magenta = LV_COLOR_MAKE(0xa5, 0x00, 0x62);
-  static constexpr lv_color_t darkGreen = LV_COLOR_MAKE(0x07, 0x8d, 0x70);
-  static constexpr lv_color_t cyan = LV_COLOR_MAKE(0x26, 0xce, 0xaa);
-  static constexpr lv_color_t lightGreen = LV_COLOR_MAKE(0x98, 0xe8, 0xc1);
-  static constexpr lv_color_t indigo = LV_COLOR_MAKE(0x50, 0x49, 0xcc);
-  static constexpr lv_color_t steelBlue = LV_COLOR_MAKE(0x3d, 0x1a, 0x78);
+
+  constexpr lv_color_t lightBlue = LV_COLOR_MAKE(0x00, 0xbf, 0xf3);
+  constexpr lv_color_t lightPink = LV_COLOR_MAKE(0xf4, 0x9a, 0xc1);
+  constexpr lv_color_t hotPink = LV_COLOR_MAKE(0xd6, 0x02, 0x70);
+  constexpr lv_color_t grayPurple = LV_COLOR_MAKE(0x9b, 0x4f, 0x96);
+  constexpr lv_color_t darkBlue = LV_COLOR_MAKE(0x00, 0x38, 0xa8);
+  constexpr lv_color_t orange = LV_COLOR_MAKE(0xef, 0x76, 0x27);
+  constexpr lv_color_t lightOrange = LV_COLOR_MAKE(0xff, 0x9b, 0x55);
+  constexpr lv_color_t lightPurple = LV_COLOR_MAKE(0xd4, 0x61, 0xa6);
+  constexpr lv_color_t darkPurple = LV_COLOR_MAKE(0xb5, 0x56, 0x90);
+  constexpr lv_color_t magenta = LV_COLOR_MAKE(0xa5, 0x00, 0x62);
+  constexpr lv_color_t darkGreen = LV_COLOR_MAKE(0x07, 0x8d, 0x70);
+  constexpr lv_color_t cyan = LV_COLOR_MAKE(0x26, 0xce, 0xaa);
+  constexpr lv_color_t lightGreen = LV_COLOR_MAKE(0x98, 0xe8, 0xc1);
+  constexpr lv_color_t indigo = LV_COLOR_MAKE(0x50, 0x49, 0xcc);
+  constexpr lv_color_t steelBlue = LV_COLOR_MAKE(0x3d, 0x1a, 0x78);
+  constexpr std::array<lv_color_t, 7> gayColours {darkGreen, cyan, lightGreen, LV_COLOR_WHITE, lightBlue, indigo, steelBlue};
+  constexpr std::array<lv_color_t, 5> transColours {lightBlue, lightPink, LV_COLOR_WHITE, lightPink, lightBlue};
+  constexpr std::array<lv_color_t, 5> biColours {hotPink, hotPink, grayPurple, darkBlue, darkBlue};
+  constexpr std::array<lv_color_t, 7> lesbianColours {LV_COLOR_RED, orange, lightOrange, LV_COLOR_WHITE, lightPurple, darkPurple, magenta};
+  constexpr WatchFacePrideFlag::PrideFlagData<7> gayFlagData =
+    WatchFacePrideFlag::PrideFlagData(gayColours, LV_COLOR_BLACK, LV_COLOR_BLACK, LV_COLOR_WHITE);
+  constexpr WatchFacePrideFlag::PrideFlagData<5> transFlagData =
+    WatchFacePrideFlag::PrideFlagData(transColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
+  constexpr WatchFacePrideFlag::PrideFlagData<5> biFlagData =
+    WatchFacePrideFlag::PrideFlagData(biColours, LV_COLOR_BLACK, LV_COLOR_WHITE, LV_COLOR_BLACK);
+  constexpr WatchFacePrideFlag::PrideFlagData<7> lesbianFlagData =
+    WatchFacePrideFlag::PrideFlagData(lesbianColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
 }
 
 WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController,
@@ -63,7 +75,7 @@ WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController
   lv_obj_set_style_local_bg_opa(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
   lv_obj_t* lblClose = lv_label_create(btnClose, nullptr);
   lv_label_set_text_static(lblClose, "X");
-  lv_obj_set_event_cb(btnClose, event_handler);
+  lv_obj_set_event_cb(btnClose, EventHandler);
   lv_obj_set_hidden(btnClose, true);
 
   btnNextFlag = lv_btn_create(lv_scr_act(), nullptr);
@@ -73,7 +85,7 @@ WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController
   lv_obj_set_style_local_bg_opa(btnNextFlag, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
   lv_obj_t* lblNextBG = lv_label_create(btnNextFlag, nullptr);
   lv_label_set_text_static(lblNextBG, ">");
-  lv_obj_set_event_cb(btnNextFlag, event_handler);
+  lv_obj_set_event_cb(btnNextFlag, EventHandler);
   lv_obj_set_hidden(btnNextFlag, true);
 
   btnPrevFlag = lv_btn_create(lv_scr_act(), nullptr);
@@ -83,7 +95,7 @@ WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController
   lv_obj_set_style_local_bg_opa(btnPrevFlag, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
   lv_obj_t* lblPrevFlag = lv_label_create(btnPrevFlag, nullptr);
   lv_label_set_text_static(lblPrevFlag, "<");
-  lv_obj_set_event_cb(btnPrevFlag, event_handler);
+  lv_obj_set_event_cb(btnPrevFlag, EventHandler);
   lv_obj_set_hidden(btnPrevFlag, true);
 
   labelDate = lv_label_create(lv_scr_act(), nullptr);
@@ -125,10 +137,10 @@ bool WatchFacePrideFlag::OnTouchEvent(Pinetime::Applications::TouchEvents event)
     lv_obj_set_hidden(btnPrevFlag, false);
     lv_obj_set_hidden(btnNextFlag, false);
     lv_obj_set_hidden(btnClose, false);
-    savedTick = lv_tick_get();
+    savedTick = xTaskGetTickCount();
     return true;
   }
-  if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnClose) == false)) {
+  if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && !lv_obj_get_hidden(btnClose)) {
     return true;
   }
   return false;
@@ -146,7 +158,7 @@ void WatchFacePrideFlag::Refresh() {
   bleState = bleController.IsConnected();
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated() || powerPresent.IsUpdated() || themeChanged) {
-    lv_label_set_text_fmt(batteryValue, "%s %d%%#", defaultTopLabelColour, batteryPercentRemaining.Get());
+    lv_label_set_text_fmt(batteryValue, "%d%%", batteryPercentRemaining.Get());
     if (batteryController.IsPowerPresent()) {
       lv_label_ins_text(batteryValue, LV_LABEL_POS_LAST, " Charging");
     }
@@ -186,7 +198,7 @@ void WatchFacePrideFlag::Refresh() {
       }
     }
 
-    lv_label_set_text_fmt(labelTime, "%s %02d:%02d:%02d#", labelTimeColour, hour, minute, second);
+    lv_label_set_text_fmt(labelTime, "%02d:%02d:%02d", hour, minute, second);
 
     currentDate = std::chrono::time_point_cast<std::chrono::days>(currentDateTime.Get());
     if (currentDate.IsUpdated() || ampmChar.IsUpdated() || themeChanged) {
@@ -194,22 +206,18 @@ void WatchFacePrideFlag::Refresh() {
       Controllers::DateTime::Months month = dateTimeController.Month();
       uint8_t day = dateTimeController.Day();
       Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
-      lv_label_set_text_fmt(labelDate, "%s %02d-%02d-%04d#", defaultTopLabelColour, day, static_cast<uint8_t>(month), year);
+      lv_label_set_text_fmt(labelDate, "%02d-%02d-%04d", day, static_cast<uint8_t>(month), year);
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-        lv_label_set_text_fmt(labelDay,
-                              "%s %s %s#",
-                              defaultBottomLabelColour,
-                              dateTimeController.DayOfWeekToStringLow(dayOfWeek),
-                              ampmChar);
+        lv_label_set_text_fmt(labelDay, "%s %s", dateTimeController.DayOfWeekToStringLow(dayOfWeek), ampmChar);
       } else {
-        lv_label_set_text_fmt(labelDay, "%s %s#", defaultBottomLabelColour, dateTimeController.DayOfWeekToStringLow(dayOfWeek));
+        lv_label_set_text_fmt(labelDay, "%s", dateTimeController.DayOfWeekToStringLow(dayOfWeek));
       }
     }
   }
 
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated() || themeChanged) {
-    lv_label_set_text_fmt(stepValue, "%s %lu steps#", defaultBottomLabelColour, stepCount.Get());
+    lv_label_set_text_fmt(stepValue, "%lu steps", stepCount.Get());
   }
   if (themeChanged)
     themeChanged = false;
@@ -246,109 +254,46 @@ bool WatchFacePrideFlag::OnButtonPushed() {
   return false;
 }
 
+template <std::size_t N>
+void WatchFacePrideFlag::UseFlagData(PrideFlagData<N> flagData) {
+  backgroundSections.reserve(N);
+  for (int i = 0; i < N; i++) {
+    backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
+    lv_obj_set_style_local_bg_color(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, flagData.sectionColours[i]);
+    lv_obj_set_size(backgroundSections[i], LV_HOR_RES, (LV_VER_RES / N) + 1);
+    lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / N);
+    lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+    lv_obj_move_background(backgroundSections[i]);
+  }
+  lv_obj_set_style_local_text_color(labelTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.labelTimeColour);
+  lv_obj_set_style_local_text_color(batteryValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultTopLabelColour);
+  lv_obj_set_style_local_text_color(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultTopLabelColour);
+  lv_obj_set_style_local_text_color(labelDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultBottomLabelColour);
+  lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultBottomLabelColour);
+  lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -2 * flagData.spacing);
+  lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -1 * flagData.spacing);
+  lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, flagData.spacing);
+  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 2 * flagData.spacing);
+}
+
 void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag prideFlag) {
   themeChanged = true;
-  auto prideFlagAsInt = static_cast<uint8_t>(prideFlag);
-  for (int i = 0; i < backgroundSections.size(); i++) {
-    lv_obj_del(backgroundSections[i]);
+  for (lv_obj_t* backgroundSection : backgroundSections) {
+    lv_obj_del(backgroundSection);
   }
   backgroundSections.clear();
-  switch (prideFlagAsInt) {
-    case 0:
-      numBackgrounds = 7;
-      backgroundSections.reserve(numBackgrounds);
-      for (int i = 0; i < numBackgrounds; i++) {
-        backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
-        lv_obj_set_size(backgroundSections[i], LV_HOR_RES, (LV_VER_RES / numBackgrounds) + 1);
-        lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / numBackgrounds);
-        lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
-        lv_obj_move_background(backgroundSections[i]);
-      }
-      lv_obj_set_style_local_bg_color(backgroundSections[0], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, darkGreen);
-      lv_obj_set_style_local_bg_color(backgroundSections[1], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, cyan);
-      lv_obj_set_style_local_bg_color(backgroundSections[2], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightGreen);
-      lv_obj_set_style_local_bg_color(backgroundSections[3], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-      lv_obj_set_style_local_bg_color(backgroundSections[4], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightBlue);
-      lv_obj_set_style_local_bg_color(backgroundSections[5], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, indigo);
-      lv_obj_set_style_local_bg_color(backgroundSections[6], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, steelBlue);
-      lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -102);
-      lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -51);
-      lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 51);
-      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 102);
-      strncpy(labelTimeColour, "#000000", 7);
-      strncpy(defaultTopLabelColour, "#000000", 7);
-      strncpy(defaultBottomLabelColour, "#ffffff", 7);
+  switch (prideFlag) {
+    case Pinetime::Controllers::Settings::PrideFlag::Gay:
+      UseFlagData<gayFlagData.numSections>(gayFlagData);
       break;
-    case 1:
-      numBackgrounds = 5;
-      backgroundSections.reserve(numBackgrounds);
-      for (int i = 0; i < numBackgrounds; i++) {
-        backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
-        lv_obj_set_size(backgroundSections[i], LV_HOR_RES, LV_VER_RES / numBackgrounds);
-        lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / numBackgrounds);
-        lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
-        lv_obj_move_background(backgroundSections[i]);
-      }
-      lv_obj_set_style_local_bg_color(backgroundSections[0], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightBlue);
-      lv_obj_set_style_local_bg_color(backgroundSections[1], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightPink);
-      lv_obj_set_style_local_bg_color(backgroundSections[2], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-      lv_obj_set_style_local_bg_color(backgroundSections[3], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightPink);
-      lv_obj_set_style_local_bg_color(backgroundSections[4], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightBlue);
-      lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -96);
-      lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -48);
-      lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 48);
-      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 96);
-      strncpy(labelTimeColour, "#000000", 7);
-      strncpy(defaultTopLabelColour, "#ffffff", 7);
-      strncpy(defaultBottomLabelColour, "#ffffff", 7);
+    case Pinetime::Controllers::Settings::PrideFlag::Trans:
+      UseFlagData<transFlagData.numSections>(transFlagData);
       break;
-    case 2:
-      numBackgrounds = 5;
-      backgroundSections.reserve(numBackgrounds);
-      for (int i = 0; i < numBackgrounds; i++) {
-        backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
-        lv_obj_set_size(backgroundSections[i], LV_HOR_RES, LV_VER_RES / numBackgrounds);
-        lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / numBackgrounds);
-        lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
-        lv_obj_move_background(backgroundSections[i]);
-      }
-      lv_obj_set_style_local_bg_color(backgroundSections[0], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, hotPink);
-      lv_obj_set_style_local_bg_color(backgroundSections[1], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, hotPink);
-      lv_obj_set_style_local_bg_color(backgroundSections[2], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, grayPurple);
-      lv_obj_set_style_local_bg_color(backgroundSections[3], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, darkBlue);
-      lv_obj_set_style_local_bg_color(backgroundSections[4], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, darkBlue);
-      lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -96);
-      lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -48);
-      lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 48);
-      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 96);
-      strncpy(labelTimeColour, "#ffffff", 7);
-      strncpy(defaultTopLabelColour, "#000000", 7);
-      strncpy(defaultBottomLabelColour, "#000000", 7);
+    case Pinetime::Controllers::Settings::PrideFlag::Bi:
+      UseFlagData<biFlagData.numSections>(biFlagData);
       break;
-    case 3:
-      numBackgrounds = 7;
-      backgroundSections.reserve(numBackgrounds);
-      for (int i = 0; i < numBackgrounds; i++) {
-        backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
-        lv_obj_set_size(backgroundSections[i], LV_HOR_RES, (LV_VER_RES / numBackgrounds) + 1);
-        lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / numBackgrounds);
-        lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
-        lv_obj_move_background(backgroundSections[i]);
-      }
-      lv_obj_set_style_local_bg_color(backgroundSections[0], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
-      lv_obj_set_style_local_bg_color(backgroundSections[1], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, orange);
-      lv_obj_set_style_local_bg_color(backgroundSections[2], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightOrange);
-      lv_obj_set_style_local_bg_color(backgroundSections[3], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-      lv_obj_set_style_local_bg_color(backgroundSections[4], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lightPurple);
-      lv_obj_set_style_local_bg_color(backgroundSections[5], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, darkPurple);
-      lv_obj_set_style_local_bg_color(backgroundSections[6], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, magenta);
-      lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -102);
-      lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -51);
-      lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, 51);
-      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 102);
-      strncpy(labelTimeColour, "#000000", 7);
-      strncpy(defaultTopLabelColour, "#ffffff", 7);
-      strncpy(defaultBottomLabelColour, "#ffffff", 7);
+    case Pinetime::Controllers::Settings::PrideFlag::Lesbian:
+      UseFlagData<lesbianFlagData.numSections>(lesbianFlagData);
       break;
   }
 }
