@@ -63,9 +63,9 @@ namespace Pinetime {
 
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
+      private:
         void UpdateScreen(Pinetime::Controllers::Settings::PrideFlag);
 
-      private:
         template <std::size_t N>
         void UseFlagData(PrideFlagData<N> flagData);
 
