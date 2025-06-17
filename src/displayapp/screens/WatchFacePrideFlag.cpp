@@ -64,9 +64,9 @@ WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController
   lv_label_set_align(batteryValue, LV_LABEL_ALIGN_CENTER);
   lv_obj_set_auto_realign(batteryValue, true);
 
-  notificationIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_LEFT_MID, 0, -110);
-  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  notificationText = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(notificationText, nullptr, LV_ALIGN_IN_LEFT_MID, 0, -110);
+  lv_obj_set_style_local_text_color(notificationText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
   btnClose = lv_btn_create(lv_scr_act(), nullptr);
   btnClose->user_data = this;
@@ -174,9 +174,9 @@ void WatchFacePrideFlag::Refresh() {
   notificationState = notificationManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     if (notificationState.Get()) {
-      lv_label_set_text_static(notificationIcon, "You have\nmail!");
+      lv_label_set_text_static(notificationText, "You have\nmail!");
     } else {
-      lv_label_set_text_static(notificationIcon, "");
+      lv_label_set_text_static(notificationText, "");
     }
   }
 

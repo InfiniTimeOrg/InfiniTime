@@ -63,12 +63,12 @@ namespace Pinetime {
 
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
-        template <std::size_t N>
-        void UseFlagData(PrideFlagData<N> flagData);
-
         void UpdateScreen(Pinetime::Controllers::Settings::PrideFlag);
 
       private:
+        template <std::size_t N>
+        void UseFlagData(PrideFlagData<N> flagData);
+
         Utility::DirtyValue<uint8_t> batteryPercentRemaining;
         Utility::DirtyValue<bool> powerPresent;
         Utility::DirtyValue<bool> bleState;
@@ -93,7 +93,7 @@ namespace Pinetime {
         lv_obj_t* labelDay;
         lv_obj_t* batteryValue;
         lv_obj_t* stepValue;
-        lv_obj_t* notificationIcon;
+        lv_obj_t* notificationText;
         lv_obj_t* btnClose;
         lv_obj_t* btnNextFlag;
         lv_obj_t* btnPrevFlag;
