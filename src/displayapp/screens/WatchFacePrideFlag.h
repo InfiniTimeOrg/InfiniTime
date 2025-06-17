@@ -45,7 +45,7 @@ namespace Pinetime {
             this->labelTimeColour = labelTimeColour;
             this->defaultBottomLabelColour = defaultBottomLabelColour;
             // Space between adjacent text values calculated according to the following equation
-            spacing = (uint8_t) (1.5f * ((float) N) + 40.5);
+            spacing = static_cast<uint8_t>(1.5f * static_cast<float>(N) + 40.5f);
           }
 
           std::array<lv_color_t, N> sectionColours;
