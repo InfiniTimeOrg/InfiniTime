@@ -33,29 +33,6 @@ namespace Pinetime {
                            Controllers::MotionController& motionController);
         ~WatchFacePrideFlag() override;
 
-        template <std::size_t N>
-        class PrideFlagData {
-        public:
-          constexpr PrideFlagData(const std::array<lv_color_t, N>& sectionColours,
-                                  lv_color_t defaultTopLabelColour,
-                                  lv_color_t labelTimeColour,
-                                  lv_color_t defaultBottomLabelColour) {
-            this->sectionColours = sectionColours;
-            this->defaultTopLabelColour = defaultTopLabelColour;
-            this->labelTimeColour = labelTimeColour;
-            this->defaultBottomLabelColour = defaultBottomLabelColour;
-            // Space between adjacent text values calculated according to the following equation
-            spacing = static_cast<uint8_t>(1.5f * static_cast<float>(N) + 40.5f);
-          }
-
-          std::array<lv_color_t, N> sectionColours;
-          lv_color_t defaultTopLabelColour;
-          lv_color_t labelTimeColour;
-          lv_color_t defaultBottomLabelColour;
-          uint8_t spacing;
-          const std::size_t numSections = N;
-        };
-
         bool OnTouchEvent(TouchEvents event) override;
         bool OnButtonPushed() override;
 
@@ -65,9 +42,6 @@ namespace Pinetime {
 
       private:
         void UpdateScreen(Pinetime::Controllers::Settings::PrideFlag);
-
-        template <std::size_t N>
-        void UseFlagData(PrideFlagData<N> flagData);
 
         Utility::DirtyValue<uint8_t> batteryPercentRemaining;
         Utility::DirtyValue<bool> powerPresent;
@@ -79,14 +53,10 @@ namespace Pinetime {
         // Must be wrapped in a dirty value, since it is displayed in the day but is updated twice a day
         Utility::DirtyValue<const char*> ampmChar {"AM"};
 
-        static Pinetime::Controllers::Settings::PrideFlag GetNext(Controllers::Settings::PrideFlag prideFlag);
-        static Pinetime::Controllers::Settings::PrideFlag GetPrevious(Controllers::Settings::PrideFlag prideFlag);
-
         TickType_t savedTick = 0;
 
         std::vector<lv_obj_t*> backgroundSections;
         bool themeChanged = false;
-        uint8_t numBackgrounds;
         lv_obj_t* bluetoothStatus;
         lv_obj_t* labelTime;
         lv_obj_t* labelDate;

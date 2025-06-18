@@ -12,6 +12,50 @@ namespace {
     screen->UpdateSelected(obj, event);
   }
 
+  Pinetime::Controllers::Settings::PrideFlag GetNext(Pinetime::Controllers::Settings::PrideFlag prideFlag) {
+    const auto prideFlagAsInt = static_cast<uint8_t>(prideFlag);
+    Pinetime::Controllers::Settings::PrideFlag nextFlag;
+    if (prideFlagAsInt < 3) {
+      nextFlag = static_cast<Pinetime::Controllers::Settings::PrideFlag>(prideFlagAsInt + 1);
+    } else {
+      nextFlag = static_cast<Pinetime::Controllers::Settings::PrideFlag>(0);
+    }
+    return nextFlag;
+  }
+
+  Pinetime::Controllers::Settings::PrideFlag GetPrevious(Pinetime::Controllers::Settings::PrideFlag prideFlag) {
+    const auto prideFlagAsInt = static_cast<uint8_t>(prideFlag);
+    Pinetime::Controllers::Settings::PrideFlag prevFlag;
+    if (prideFlagAsInt > 0) {
+      prevFlag = static_cast<Pinetime::Controllers::Settings::PrideFlag>(prideFlagAsInt - 1);
+    } else {
+      prevFlag = static_cast<Pinetime::Controllers::Settings::PrideFlag>(3);
+    }
+    return prevFlag;
+  }
+
+  template <std::size_t N>
+  class PrideFlagData {
+  public:
+    constexpr PrideFlagData(const std::array<lv_color_t, N>& sectionColours,
+                            lv_color_t defaultTopLabelColour,
+                            lv_color_t labelTimeColour,
+                            lv_color_t defaultBottomLabelColour)
+      : sectionColours {sectionColours},
+        defaultTopLabelColour {defaultTopLabelColour},
+        labelTimeColour {labelTimeColour},
+        defaultBottomLabelColour {defaultBottomLabelColour} {
+      // Space between adjacent text values calculated according to the following equation
+      spacing = static_cast<uint8_t>(1.5f * static_cast<float>(N) + 40.5f);
+    }
+
+    std::array<lv_color_t, N> sectionColours;
+    lv_color_t defaultTopLabelColour;
+    lv_color_t labelTimeColour;
+    lv_color_t defaultBottomLabelColour;
+    uint8_t spacing;
+  };
+
   constexpr lv_color_t lightBlue = LV_COLOR_MAKE(0x00, 0xbf, 0xf3);
   constexpr lv_color_t lightPink = LV_COLOR_MAKE(0xf4, 0x9a, 0xc1);
   constexpr lv_color_t hotPink = LV_COLOR_MAKE(0xd6, 0x02, 0x70);
@@ -31,14 +75,10 @@ namespace {
   constexpr std::array<lv_color_t, 5> transColours {lightBlue, lightPink, LV_COLOR_WHITE, lightPink, lightBlue};
   constexpr std::array<lv_color_t, 5> biColours {hotPink, hotPink, grayPurple, darkBlue, darkBlue};
   constexpr std::array<lv_color_t, 7> lesbianColours {LV_COLOR_RED, orange, lightOrange, LV_COLOR_WHITE, lightPurple, darkPurple, magenta};
-  constexpr WatchFacePrideFlag::PrideFlagData<7> gayFlagData =
-    WatchFacePrideFlag::PrideFlagData(gayColours, LV_COLOR_BLACK, LV_COLOR_BLACK, LV_COLOR_WHITE);
-  constexpr WatchFacePrideFlag::PrideFlagData<5> transFlagData =
-    WatchFacePrideFlag::PrideFlagData(transColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
-  constexpr WatchFacePrideFlag::PrideFlagData<5> biFlagData =
-    WatchFacePrideFlag::PrideFlagData(biColours, LV_COLOR_BLACK, LV_COLOR_WHITE, LV_COLOR_BLACK);
-  constexpr WatchFacePrideFlag::PrideFlagData<7> lesbianFlagData =
-    WatchFacePrideFlag::PrideFlagData(lesbianColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
+  constexpr PrideFlagData gayFlagData = PrideFlagData(gayColours, LV_COLOR_BLACK, LV_COLOR_BLACK, LV_COLOR_WHITE);
+  constexpr PrideFlagData transFlagData = PrideFlagData(transColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
+  constexpr PrideFlagData biFlagData = PrideFlagData(biColours, LV_COLOR_BLACK, LV_COLOR_WHITE, LV_COLOR_BLACK);
+  constexpr PrideFlagData lesbianFlagData = PrideFlagData(lesbianColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
 }
 
 WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController,
@@ -183,8 +223,8 @@ void WatchFacePrideFlag::Refresh() {
   currentDateTime = std::chrono::time_point_cast<std::chrono::seconds>(dateTimeController.CurrentDateTime());
   if (currentDateTime.IsUpdated() || themeChanged) {
     uint8_t hour = dateTimeController.Hours();
-    uint8_t minute = dateTimeController.Minutes();
-    uint8_t second = dateTimeController.Seconds();
+    const uint8_t minute = dateTimeController.Minutes();
+    const uint8_t second = dateTimeController.Seconds();
 
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
       if (hour == 0) {
@@ -202,10 +242,10 @@ void WatchFacePrideFlag::Refresh() {
 
     currentDate = std::chrono::time_point_cast<std::chrono::days>(currentDateTime.Get());
     if (currentDate.IsUpdated() || ampmChar.IsUpdated() || themeChanged) {
-      uint16_t year = dateTimeController.Year();
-      Controllers::DateTime::Months month = dateTimeController.Month();
-      uint8_t day = dateTimeController.Day();
-      Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
+      const uint16_t year = dateTimeController.Year();
+      const Controllers::DateTime::Months month = dateTimeController.Month();
+      const uint8_t day = dateTimeController.Day();
+      const Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
       lv_label_set_text_fmt(labelDate, "%02d-%02d-%04d", day, static_cast<uint8_t>(month), year);
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         lv_label_set_text_fmt(labelDay, "%s %s", dateTimeController.DayOfWeekToStringLow(dayOfWeek), ampmChar);
@@ -219,15 +259,15 @@ void WatchFacePrideFlag::Refresh() {
   if (stepCount.IsUpdated() || themeChanged) {
     lv_label_set_text_fmt(stepValue, "%lu steps", stepCount.Get());
   }
-  if (themeChanged)
+  if (themeChanged) {
     themeChanged = false;
+  }
 }
 
 void WatchFacePrideFlag::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-  auto valueFlag = settingsController.GetPrideFlag();
-  bool flagChanged = false;
-
   if (event == LV_EVENT_CLICKED) {
+    auto valueFlag = settingsController.GetPrideFlag();
+    bool flagChanged = false;
     if (object == btnClose) {
       CloseMenu();
     }
@@ -254,29 +294,27 @@ bool WatchFacePrideFlag::OnButtonPushed() {
   return false;
 }
 
-template <std::size_t N>
-void WatchFacePrideFlag::UseFlagData(PrideFlagData<N> flagData) {
-  backgroundSections.reserve(N);
-  for (uint8_t i = 0; i < N; i++) {
-    backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
-    lv_obj_set_style_local_bg_color(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, flagData.sectionColours[i]);
-    lv_obj_set_size(backgroundSections[i], LV_HOR_RES, (LV_VER_RES / N) + 1);
-    lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / N);
-    lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
-    lv_obj_move_background(backgroundSections[i]);
-  }
-  lv_obj_set_style_local_text_color(labelTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.labelTimeColour);
-  lv_obj_set_style_local_text_color(batteryValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultTopLabelColour);
-  lv_obj_set_style_local_text_color(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultTopLabelColour);
-  lv_obj_set_style_local_text_color(labelDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultBottomLabelColour);
-  lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultBottomLabelColour);
-  lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -2 * flagData.spacing);
-  lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -1 * flagData.spacing);
-  lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, flagData.spacing);
-  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 2 * flagData.spacing);
-}
-
-void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag prideFlag) {
+void WatchFacePrideFlag::UpdateScreen(const Pinetime::Controllers::Settings::PrideFlag prideFlag) {
+  auto UseFlagData = [this]<size_t N>(PrideFlagData<N> flagData) {
+    backgroundSections.reserve(N);
+    for (size_t i = 0; i < N; i++) {
+      backgroundSections.push_back(lv_obj_create(lv_scr_act(), nullptr));
+      lv_obj_set_style_local_bg_color(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, flagData.sectionColours[i]);
+      lv_obj_set_size(backgroundSections[i], LV_HOR_RES, (LV_VER_RES / N) + 1);
+      lv_obj_set_pos(backgroundSections[i], 0, i * LV_VER_RES / N);
+      lv_obj_set_style_local_radius(backgroundSections[i], LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+      lv_obj_move_background(backgroundSections[i]);
+    }
+    lv_obj_set_style_local_text_color(labelTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.labelTimeColour);
+    lv_obj_set_style_local_text_color(batteryValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultTopLabelColour);
+    lv_obj_set_style_local_text_color(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultTopLabelColour);
+    lv_obj_set_style_local_text_color(labelDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultBottomLabelColour);
+    lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, flagData.defaultBottomLabelColour);
+    lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -2 * flagData.spacing);
+    lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, -1 * flagData.spacing);
+    lv_obj_align(labelDay, lv_scr_act(), LV_ALIGN_CENTER, 0, flagData.spacing);
+    lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 2 * flagData.spacing);
+  };
   themeChanged = true;
   for (lv_obj_t* backgroundSection : backgroundSections) {
     lv_obj_del(backgroundSection);
@@ -284,38 +322,16 @@ void WatchFacePrideFlag::UpdateScreen(Pinetime::Controllers::Settings::PrideFlag
   backgroundSections.clear();
   switch (prideFlag) {
     case Pinetime::Controllers::Settings::PrideFlag::Gay:
-      UseFlagData<gayFlagData.numSections>(gayFlagData);
+      UseFlagData(gayFlagData);
       break;
     case Pinetime::Controllers::Settings::PrideFlag::Trans:
-      UseFlagData<transFlagData.numSections>(transFlagData);
+      UseFlagData(transFlagData);
       break;
     case Pinetime::Controllers::Settings::PrideFlag::Bi:
-      UseFlagData<biFlagData.numSections>(biFlagData);
+      UseFlagData(biFlagData);
       break;
     case Pinetime::Controllers::Settings::PrideFlag::Lesbian:
-      UseFlagData<lesbianFlagData.numSections>(lesbianFlagData);
+      UseFlagData(lesbianFlagData);
       break;
   }
-}
-
-Pinetime::Controllers::Settings::PrideFlag WatchFacePrideFlag::GetNext(Pinetime::Controllers::Settings::PrideFlag prideFlag) {
-  auto prideFlagAsInt = static_cast<uint8_t>(prideFlag);
-  Pinetime::Controllers::Settings::PrideFlag nextFlag;
-  if (prideFlagAsInt < 3) {
-    nextFlag = static_cast<Controllers::Settings::PrideFlag>(prideFlagAsInt + 1);
-  } else {
-    nextFlag = static_cast<Controllers::Settings::PrideFlag>(0);
-  }
-  return nextFlag;
-}
-
-Pinetime::Controllers::Settings::PrideFlag WatchFacePrideFlag::GetPrevious(Pinetime::Controllers::Settings::PrideFlag prideFlag) {
-  auto prideFlagAsInt = static_cast<uint8_t>(prideFlag);
-  Pinetime::Controllers::Settings::PrideFlag prevFlag;
-  if (prideFlagAsInt > 0) {
-    prevFlag = static_cast<Controllers::Settings::PrideFlag>(prideFlagAsInt - 1);
-  } else {
-    prevFlag = static_cast<Controllers::Settings::PrideFlag>(3);
-  }
-  return prevFlag;
 }
