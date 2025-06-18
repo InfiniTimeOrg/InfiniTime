@@ -50,3 +50,8 @@ src/arm-none-eabi
 
 # clangd
 .cache/
+
+# npm files
+node_modules
+package.json
+package-lock.json
