@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <bitset>
+#include <limits>
+#include <optional>
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 #include "displayapp/apps/Apps.h"
@@ -334,10 +336,25 @@ namespace Pinetime {
         return (settings.dfuAndFsEnabledOnBoot ? DfuAndFsMode::Enabled : DfuAndFsMode::Disabled);
       };
 
+      std::optional<uint16_t> GetHeartRateBackgroundMeasurementInterval() const {
+        if (settings.heartRateBackgroundPeriod == std::numeric_limits<uint16_t>::max()) {
+          return std::nullopt;
+        }
+        return settings.heartRateBackgroundPeriod;
+      }
+
+      void SetHeartRateBackgroundMeasurementInterval(std::optional<uint16_t> newIntervalInSeconds) {
+        newIntervalInSeconds = newIntervalInSeconds.value_or(std::numeric_limits<uint16_t>::max());
+        if (newIntervalInSeconds != settings.heartRateBackgroundPeriod) {
+          settingsChanged = true;
+        }
+        settings.heartRateBackgroundPeriod = newIntervalInSeconds.value();
+      }
+
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0009;
+      static constexpr uint32_t settingsVersion = 0x000a;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -365,6 +382,7 @@ namespace Pinetime {
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
 
         bool dfuAndFsEnabledOnBoot = false;
+        uint16_t heartRateBackgroundPeriod = std::numeric_limits<uint16_t>::max(); // Disabled by default
       };
 
       SettingsData settings;
