@@ -469,6 +469,7 @@ list(APPEND SOURCE_FILES
         components/settings/Settings.cpp
         components/timer/Timer.cpp
         components/alarm/AlarmController.cpp
+        components/stopwatch/StopWatchController.cpp
         components/fs/FS.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
@@ -538,6 +539,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/settings/Settings.cpp
         components/timer/Timer.cpp
         components/alarm/AlarmController.cpp
+        components/stopwatch/StopWatchController.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -657,6 +659,7 @@ set(INCLUDE_FILES
         components/settings/Settings.h
         components/timer/Timer.h
         components/alarm/AlarmController.h
+        components/stopwatch/StopWatchController.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
