@@ -9,6 +9,8 @@ using namespace Pinetime::Controllers;
 namespace {
   constexpr const char* const DaysStringShort[] = {"--", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
   constexpr const char* const DaysStringShortLow[] = {"--", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+  constexpr const char* const DaysString[] = {"--", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"};
+  constexpr const char* const DaysStringLow[] = {"--", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
   constexpr const char* const MonthsString[] = {"--", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
   constexpr const char* const MonthsStringLow[] =
     {"--", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
@@ -144,12 +146,20 @@ const char* DateTime::DayOfWeekShortToString() const {
   return DaysStringShort[static_cast<uint8_t>(DayOfWeek())];
 }
 
+const char* DateTime::DayOfWeekToString() const {
+  return DaysString[static_cast<uint8_t>(DayOfWeek())];
+}
+
 const char* DateTime::MonthShortToStringLow(Months month) {
   return MonthsStringLow[static_cast<uint8_t>(month)];
 }
 
 const char* DateTime::DayOfWeekShortToStringLow(Days day) {
   return DaysStringShortLow[static_cast<uint8_t>(day)];
+}
+
+const char* DateTime::DayOfWeekToStringLow(Days day) {
+  return DaysStringLow[static_cast<uint8_t>(day)];
 }
 
 void DateTime::Register(Pinetime::System::SystemTask* systemTask) {

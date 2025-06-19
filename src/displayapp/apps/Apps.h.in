@@ -54,6 +54,7 @@ namespace Pinetime {
       Infineat,
       CasioStyleAE21W,
       CasioStyleG7710,
+      PrideFlag,
     };
 
     template <Apps>
