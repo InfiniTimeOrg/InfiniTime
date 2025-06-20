@@ -26,11 +26,25 @@ namespace Pinetime {
         static const int NUM_PETAL_COLORS = 8;
         static constexpr int CONTAINER_WIDTH = MAX_PETAL_LENGTH * 2 + LINE_WIDTH * 2;
 
-        static constexpr uint16_t PETAL_INDEX(uint16_t seed) { return seed & 0x07UL; }
-        static constexpr uint16_t SIZE_INDEX(uint16_t seed) { return (seed >> 3) & 0x07UL; }
-        static constexpr uint16_t ANGLE_OFFS_INDEX(uint16_t seed) { return (seed >> 6) & 0x07UL; }
-        static constexpr uint16_t COLOR_INDEX(uint16_t seed) { return (seed >> 9) % NUM_PETAL_COLORS; }
-        static constexpr int HEIGHT_FROM_STAGE(int max, int stage) { return stage > 5 ? max * 3 / 4 : max * stage / 5; }
+        static constexpr uint16_t PETAL_INDEX(uint16_t seed) {
+          return seed & 0x07UL;
+        }
+
+        static constexpr uint16_t SIZE_INDEX(uint16_t seed) {
+          return (seed >> 3) & 0x07UL;
+        }
+
+        static constexpr uint16_t ANGLE_OFFS_INDEX(uint16_t seed) {
+          return (seed >> 6) & 0x07UL;
+        }
+
+        static constexpr uint16_t COLOR_INDEX(uint16_t seed) {
+          return (seed >> 9) % NUM_PETAL_COLORS;
+        }
+
+        static constexpr int HEIGHT_FROM_STAGE(int max, int stage) {
+          return stage > 5 ? max * 3 / 4 : max * stage / 5;
+        }
 
         static constexpr uint32_t PETAL_COLORS[NUM_PETAL_COLORS] =
           {0xf43838, 0xf48829, 0xf9f44d, 0x56efe2, 0x6f7afc, 0x8f68f9, 0xdb49fc, 0xfc83b5};
