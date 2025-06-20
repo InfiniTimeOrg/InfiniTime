@@ -32,14 +32,13 @@ WatchFaceGarden::WatchFaceGarden(Controllers::DateTime& dateTimeController,
     motionController {motionController},
     weatherService {weatherService},
     statusIcons(batteryController, bleController, alarmController) {
-  
+
   statusIcons.Create();
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x5FFF5F));
   lv_label_set_text_static(notificationIcon, "");
   lv_obj_align(notificationIcon, statusIcons.GetObject(), LV_ALIGN_OUT_LEFT_MID, -5, 0);
-  
 
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
@@ -60,7 +59,6 @@ WatchFaceGarden::WatchFaceGarden(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x5F8FFF));
   lv_label_set_text_static(stepValue, "0");
   lv_obj_align(stepValue, stepIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
-
 
   garden = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_set_size(garden, 240, 217);
@@ -85,7 +83,6 @@ WatchFaceGarden::WatchFaceGarden(Controllers::DateTime& dateTimeController,
   lv_label_set_text(label_time_ampm, "");
   lv_obj_align(label_time_ampm, label_time_colon, LV_ALIGN_IN_TOP_MID, 0, -7);
 
-
   label_date = lv_label_create(garden, nullptr);
   lv_obj_align(label_date, garden, LV_ALIGN_IN_TOP_LEFT, 4, 75);
 
@@ -98,12 +95,10 @@ WatchFaceGarden::WatchFaceGarden(Controllers::DateTime& dateTimeController,
   lv_label_set_text(weatherIcon, "");
   lv_obj_align(weatherIcon, temperature, LV_ALIGN_OUT_LEFT_MID, -3, 0);
 
-
   for (int k = 0; k < NUM_FLOWERS; k++) {
     flowers[k].Create(garden);
     lv_obj_align(flowers[k].GetObject(), garden, LV_ALIGN_IN_BOTTOM_MID, X_POS_OFFSET + (X_POS_STEP * k), 0);
   }
-
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -152,8 +147,8 @@ void WatchFaceGarden::Refresh() {
     }
 
     if (stage.IsUpdated()) {
-      lv_obj_set_style_local_bg_color(garden, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(BG_COLORS[stage.Get()*2]));
-      lv_obj_set_style_local_bg_grad_color(garden, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(BG_COLORS[stage.Get()*2+1]));
+      lv_obj_set_style_local_bg_color(garden, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(BG_COLORS[stage.Get() * 2]));
+      lv_obj_set_style_local_bg_grad_color(garden, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(BG_COLORS[stage.Get() * 2 + 1]));
       refreshGarden = true;
     }
 
@@ -166,7 +161,7 @@ void WatchFaceGarden::Refresh() {
         hour = hour - 12;
       }
       lv_label_set_text_fmt(label_time_hour, "%2d", hour);
-      
+
       if (hour < 10) {
         offset = -24; // center time display
       }
@@ -200,10 +195,10 @@ void WatchFaceGarden::Refresh() {
 
       refreshGarden = true;
       // base seed is the date
-      seeds[0] = ((uint8_t)dateTimeController.Month()*32U) + day;
+      seeds[0] = ((uint8_t) dateTimeController.Month() * 32U) + day;
       for (int k = 1; k < NUM_FLOWERS; k++) {
         // "sow" seeds using PRNG (xorshift32)
-        uint32_t s = seeds[k-1];
+        uint32_t s = seeds[k - 1];
         s ^= s << 13;
         s ^= s >> 17;
         s ^= s << 5;

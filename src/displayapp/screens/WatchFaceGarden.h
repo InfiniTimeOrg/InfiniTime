@@ -30,14 +30,14 @@ namespace Pinetime {
       class WatchFaceGarden : public Screen {
       public:
         WatchFaceGarden(Controllers::DateTime& dateTimeController,
-                         const Controllers::Battery& batteryController,
-                         const Controllers::Ble& bleController,
-                         const Controllers::AlarmController& alarmController,
-                         Controllers::NotificationManager& notificationManager,
-                         Controllers::Settings& settingsController,
-                         Controllers::HeartRateController& heartRateController,
-                         Controllers::MotionController& motionController,
-                         Controllers::SimpleWeatherService& weather);
+                        const Controllers::Battery& batteryController,
+                        const Controllers::Ble& bleController,
+                        const Controllers::AlarmController& alarmController,
+                        Controllers::NotificationManager& notificationManager,
+                        Controllers::Settings& settingsController,
+                        Controllers::HeartRateController& heartRateController,
+                        Controllers::MotionController& motionController,
+                        Controllers::SimpleWeatherService& weather);
         ~WatchFaceGarden() override;
 
         void Refresh() override;
@@ -46,17 +46,11 @@ namespace Pinetime {
         static const int NUM_FLOWERS = 5;
         static const int NUM_STAGES = 6;
         static const int GARDEN_WIDTH = 180;
-        static constexpr int X_POS_OFFSET = -GARDEN_WIDTH/2;
-        static constexpr int X_POS_STEP = GARDEN_WIDTH/(NUM_FLOWERS-1);
+        static constexpr int X_POS_OFFSET = -GARDEN_WIDTH / 2;
+        static constexpr int X_POS_STEP = GARDEN_WIDTH / (NUM_FLOWERS - 1);
 
-        static constexpr uint32_t BG_COLORS[NUM_STAGES*2] = {
-          0x000000, 0x16004C,
-          0x080065, 0xC6B431,
-          0x00539C, 0xABDFFF,
-          0x2D7DFF, 0x87BBFF,
-          0x2D7DFF, 0x87BBFF,
-          0x090463, 0xBB112D
-        };
+        static constexpr uint32_t BG_COLORS[NUM_STAGES * 2] =
+          {0x000000, 0x16004C, 0x080065, 0xC6B431, 0x00539C, 0xABDFFF, 0x2D7DFF, 0x87BBFF, 0x2D7DFF, 0x87BBFF, 0x090463, 0xBB112D};
 
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         Utility::DirtyValue<uint32_t> stepCount {};
