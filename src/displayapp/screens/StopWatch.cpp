@@ -1,7 +1,9 @@
 #include "displayapp/screens/StopWatch.h"
-
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include <timers.h>
+#include <task.h>
+#include <algorithm>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -34,7 +36,7 @@ namespace {
   constexpr TickType_t blinkInterval = pdMS_TO_TICKS(1000);
 }
 
-StopWatch::StopWatch(System::SystemTask& systemTask) : wakeLock(systemTask) {
+StopWatch::StopWatch() {
   static constexpr uint8_t btnWidth = 115;
   static constexpr uint8_t btnHeight = 80;
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
@@ -134,7 +136,6 @@ void StopWatch::Start() {
   SetInterfaceRunning();
   startTime = xTaskGetTickCount();
   currentState = States::Running;
-  wakeLock.Lock();
 }
 
 void StopWatch::Pause() {
@@ -144,7 +145,6 @@ void StopWatch::Pause() {
   oldTimeElapsed = laps[lapsDone];
   blinkTime = xTaskGetTickCount() + blinkInterval;
   currentState = States::Halted;
-  wakeLock.Release();
 }
 
 void StopWatch::Refresh() {
