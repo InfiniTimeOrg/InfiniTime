@@ -50,8 +50,13 @@ Tally::Tally(Controllers::MotionController& motionController,
   lv_obj_set_size(countButton, 240, 190);
   lv_obj_set_style_local_bg_color(countButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_align(countButton, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
-  countLabel = lv_label_create(countButton, nullptr);
+  countLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(countLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
+  lv_obj_align(countLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 30);
+
+  messageLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(messageLabel, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -65);
+  SetMessage("Tap to count");
 
   resetButton = lv_btn_create(lv_scr_act(), nullptr);
   resetButton->user_data = this;
@@ -81,7 +86,7 @@ Tally::Tally(Controllers::MotionController& motionController,
 
   UpdateCount();
 
-  refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+  refreshTask = lv_task_create(RefreshTaskCallback, PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Tally::~Tally() {
@@ -97,7 +102,7 @@ void Tally::Refresh() {
   if (shakeToCountEnabled) {
     if (motionController.CurrentShakeSpeed() >= settingsController.GetShakeThreshold()) {
       if (shakeToCountDelay <= 0) {
-        shakeToCountDelay = SHAKE_DELAY_TIME / LV_DISP_DEF_REFR_PERIOD;
+        shakeToCountDelay = SHAKE_DELAY_TIME / PERIOD;
         Increment();
       }
     } else if (shakeToCountDelay > 0) {
@@ -108,11 +113,18 @@ void Tally::Refresh() {
   if (incrementDelay > 0) {
     incrementDelay--;
   }
+
+  if (messageTimer > 0) {
+    messageTimer--;
+    if (messageTimer <= 0) {
+      lv_label_set_text_static(messageLabel, "");
+    }
+  }
 }
 
 void Tally::Increment() {
   if (incrementDelay <= 0) {
-    incrementDelay = INCREMENT_DELAY_TIME / LV_DISP_DEF_REFR_PERIOD;
+    incrementDelay = INCREMENT_DELAY_TIME / PERIOD;
     count++;
     motorController.RunForDuration(80);
     UpdateCount();
@@ -131,6 +143,7 @@ void Tally::ToggleShakeToCount() {
   } else {
     ShakeToWakeDisable();
   }
+  SetMessage(shakeToCountEnabled ? "Shake-to-count on" : "Shake-to-count off");
   lv_obj_set_style_local_bg_color(shakeButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, shakeToCountEnabled ? LV_COLOR_GREEN : LV_COLOR_RED);
 }
 
@@ -141,6 +154,7 @@ void Tally::ToggleKeepAwake() {
   } else {
     wakeLock.Release();
   }
+  SetMessage(keepAwakeEnabled ? "Keep awake on" : "Keep awake off");
   lv_obj_set_style_local_bg_color(awakeButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, keepAwakeEnabled ? LV_COLOR_GREEN : LV_COLOR_RED);
 }
 
@@ -163,4 +177,10 @@ void Tally::ShakeToWakeDisable() {
     settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, false);
     shakeToWakeTempEnable = false;
   }
+}
+
+void Tally::SetMessage(const char * text) {
+  lv_label_set_text_static(messageLabel, text);
+  lv_obj_realign(messageLabel);
+  messageTimer = MESSAGE_TIME / PERIOD;
 }

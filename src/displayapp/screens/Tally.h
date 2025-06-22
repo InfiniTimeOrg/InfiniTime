@@ -26,10 +26,13 @@ namespace Pinetime {
         void ToggleKeepAwake();
 
       private:
+        static const int PERIOD = 100; // milliseconds
         static const int INCREMENT_DELAY_TIME = 100; // milliseconds
         static const int SHAKE_DELAY_TIME = 200; // milliseconds
+        static const int MESSAGE_TIME = 3000; // milliseconds
         lv_obj_t* countButton;
         lv_obj_t* countLabel;
+        lv_obj_t* messageLabel;
         lv_obj_t* resetButton;
         lv_obj_t* resetLabel;
         lv_obj_t* shakeButton;
@@ -42,9 +45,11 @@ namespace Pinetime {
         bool keepAwakeEnabled = false;
         int incrementDelay = 0;
         int shakeToCountDelay = 0;
+        int messageTimer = 0;
         void UpdateCount();
         void ShakeToWakeEnable();
         void ShakeToWakeDisable();
+        void SetMessage(const char * text);
 
         Controllers::MotionController& motionController;
         Controllers::MotorController& motorController;
