@@ -22,6 +22,7 @@ namespace Pinetime {
         void ToggleShakeToCount();
 
       private:
+        static const int SHAKE_DELAY_TIME = 300; // milliseconds
         lv_obj_t* countButton;
         lv_obj_t* countLabel;
         lv_obj_t* resetButton;
@@ -31,6 +32,7 @@ namespace Pinetime {
         int count = 0;
         bool shakeToCountEnabled = false;
         bool shakeToWakeTempEnable = false;
+        int shakeToCountDelay = 0;
         void UpdateCount();
         void ShakeToWakeEnable();
         void ShakeToWakeDisable();

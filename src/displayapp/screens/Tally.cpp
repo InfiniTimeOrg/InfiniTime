@@ -75,7 +75,16 @@ Tally::~Tally() {
 
 void Tally::Refresh() {
   if (shakeToCountEnabled) {
-    // TODO
+    if (motionController.CurrentShakeSpeed() >= settingsController.GetShakeThreshold()) {
+      if (shakeToCountDelay <= 0) {
+        shakeToCountDelay = SHAKE_DELAY_TIME / LV_DISP_DEF_REFR_PERIOD;
+        Increment();
+      }
+    } else {
+      if (shakeToCountDelay > 0) {
+        shakeToCountDelay--;
+      }
+    }
   }
 }
 
