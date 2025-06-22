@@ -80,18 +80,23 @@ void Tally::Refresh() {
         shakeToCountDelay = SHAKE_DELAY_TIME / LV_DISP_DEF_REFR_PERIOD;
         Increment();
       }
-    } else {
-      if (shakeToCountDelay > 0) {
-        shakeToCountDelay--;
-      }
+    } else if (shakeToCountDelay > 0) {
+      shakeToCountDelay--;
     }
+  }
+
+  if (incrementDelay > 0) {
+    incrementDelay--;
   }
 }
 
 void Tally::Increment() {
-  count++;
-  motorController.RunForDuration(50);
-  UpdateCount();
+  if (incrementDelay <= 0) {
+    incrementDelay = INCREMENT_DELAY_TIME / LV_DISP_DEF_REFR_PERIOD;
+    count++;
+    motorController.RunForDuration(80);
+    UpdateCount();
+  }
 }
 
 void Tally::Reset() {
