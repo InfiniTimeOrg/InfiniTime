@@ -26,10 +26,10 @@ namespace Pinetime {
         void ToggleKeepAwake();
 
       private:
-        static const int PERIOD = 100; // milliseconds
+        static const int PERIOD = 100;               // milliseconds
         static const int INCREMENT_DELAY_TIME = 100; // milliseconds
-        static const int SHAKE_DELAY_TIME = 200; // milliseconds
-        static const int MESSAGE_TIME = 3000; // milliseconds
+        static const int SHAKE_DELAY_TIME = 200;     // milliseconds
+        static const int MESSAGE_TIME = 3000;        // milliseconds
         lv_obj_t* countButton;
         lv_obj_t* countLabel;
         lv_obj_t* messageLabel;
@@ -49,7 +49,7 @@ namespace Pinetime {
         void UpdateCount();
         void ShakeToWakeEnable();
         void ShakeToWakeDisable();
-        void SetMessage(const char * text);
+        void SetMessage(const char* text);
 
         Controllers::MotionController& motionController;
         Controllers::MotorController& motorController;
@@ -65,7 +65,10 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::tally;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Tally(controllers.motionController, controllers.motorController, controllers.settingsController, *controllers.systemTask);
+        return new Screens::Tally(controllers.motionController,
+                                  controllers.motorController,
+                                  controllers.settingsController,
+                                  *controllers.systemTask);
       };
     };
   }

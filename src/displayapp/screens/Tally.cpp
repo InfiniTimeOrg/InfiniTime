@@ -179,7 +179,7 @@ void Tally::ShakeToWakeDisable() {
   }
 }
 
-void Tally::SetMessage(const char * text) {
+void Tally::SetMessage(const char* text) {
   lv_label_set_text_static(messageLabel, text);
   lv_obj_realign(messageLabel);
   messageTimer = MESSAGE_TIME / PERIOD;
