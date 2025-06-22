@@ -97,3 +97,9 @@ InfiniTime has 13 apps on the `main` branch at the time of writing.
 ![Weather UI](/doc/gettingStarted/AppsScreenshots/Weather.png)
 - This app shows weather info.
     - Please note that this app is not very useful without a device connected.
+
+### Tally
+![Tally UI](/doc/gettingStarted/AppsScreenshots/Tally.png)
+- Tap to count, or enable shake-to-count.
+- Vibrates when the counter increases.
+- Enable keep awake to have your count always visible.
