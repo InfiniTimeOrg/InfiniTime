@@ -37,13 +37,14 @@ namespace Pinetime {
 
       [[nodiscard]] bool BackgroundMeasurementNeeded() const;
       [[nodiscard]] std::optional<TickType_t> BackgroundMeasurementInterval() const;
-      [[nodiscard]] TickType_t CurrentTaskDelay() const;
+      TickType_t CurrentTaskDelay();
 
       TaskHandle_t taskHandle;
       QueueHandle_t messageQueue;
       bool valueCurrentlyShown;
       bool measurementSucceeded;
       States state = States::Disabled;
+      uint16_t count;
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
       Controllers::Settings& settings;

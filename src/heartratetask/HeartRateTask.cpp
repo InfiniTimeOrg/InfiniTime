@@ -1,11 +1,18 @@
 #include "heartratetask/HeartRateTask.h"
 #include <drivers/Hrs3300.h>
 #include <components/heartrate/HeartRateController.h>
+#include <limits>
 
 using namespace Pinetime::Applications;
 
 namespace {
   constexpr TickType_t backgroundMeasurementTimeLimit = 30 * configTICK_RATE_HZ;
+
+  // dividend + (divisor / 2) must be less than the max T value
+  template <std::unsigned_integral T>
+  constexpr T RoundedDiv(T dividend, T divisor) {
+    return (dividend + (divisor / static_cast<T>(2))) / divisor;
+  }
 }
 
 std::optional<TickType_t> HeartRateTask::BackgroundMeasurementInterval() const {
@@ -24,9 +31,40 @@ bool HeartRateTask::BackgroundMeasurementNeeded() const {
   return xTaskGetTickCount() - lastMeasurementTime >= backgroundPeriod.value();
 };
 
-TickType_t HeartRateTask::CurrentTaskDelay() const {
+TickType_t HeartRateTask::CurrentTaskDelay() {
   auto backgroundPeriod = BackgroundMeasurementInterval();
   TickType_t currentTime = xTaskGetTickCount();
+  auto CalculateSleepTicks = [&]() {
+    TickType_t elapsed = currentTime - measurementStartTime;
+
+    // Target system tick is the elapsed sensor ticks multiplied by the sensor tick duration (i.e. the elapsed time)
+    // multiplied by the system tick rate
+    // Since the sensor tick duration is a whole number of milliseconds, we compute in milliseconds and then divide by 1000
+    // To avoid the number of milliseconds overflowing a u32, we take a factor of 2 out of the divisor and dividend
+    // (1024 / 2) * 65536 * 100 = 3355443200 which is less than 2^32
+
+    // Guard against future tick rate changes
+    static_assert((configTICK_RATE_HZ / 2ULL) * (std::numeric_limits<decltype(count)>::max() + 1ULL) *
+                      static_cast<uint64_t>((Pinetime::Controllers::Ppg::deltaTms)) <
+                    std::numeric_limits<uint32_t>::max(),
+                  "Overflow");
+    TickType_t elapsedTarget = RoundedDiv(static_cast<uint32_t>(configTICK_RATE_HZ / 2) * (static_cast<uint32_t>(count) + 1U) *
+                                            static_cast<uint32_t>((Pinetime::Controllers::Ppg::deltaTms)),
+                                          static_cast<uint32_t>(1000 / 2));
+
+    // On count overflow, reset both count and start time
+    // Count is 16bit to avoid overflow in elapsedTarget
+    // Count overflows every 100ms * u16 max = ~2 hours, much more often than the tick count (~48 days)
+    // So no need to check for tick count overflow
+    if (count == std::numeric_limits<decltype(count)>::max()) {
+      count = 0;
+      measurementStartTime = currentTime;
+    }
+    if (elapsedTarget > elapsed) {
+      return elapsedTarget - elapsed;
+    }
+    return static_cast<TickType_t>(0);
+  };
   switch (state) {
     case States::Disabled:
       return portMAX_DELAY;
@@ -43,8 +81,11 @@ TickType_t HeartRateTask::CurrentTaskDelay() const {
       return 0;
     case States::BackgroundMeasuring:
     case States::ForegroundMeasuring:
-      return Pinetime::Controllers::Ppg::deltaTms;
+      return CalculateSleepTicks();
   }
+  // Needed to keep dumb compiler happy, this is unreachable
+  // Any new additions to States will cause the above switch statement not to compile, so this is safe
+  return portMAX_DELAY;
 }
 
 HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor,
@@ -57,7 +98,7 @@ void HeartRateTask::Start() {
   messageQueue = xQueueCreate(10, 1);
   controller.SetHeartRateTask(this);
 
-  if (pdPASS != xTaskCreate(HeartRateTask::Process, "Heartrate", 500, this, 0, &taskHandle)) {
+  if (pdPASS != xTaskCreate(HeartRateTask::Process, "Heartrate", 500, this, 1, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
 }
@@ -130,6 +171,7 @@ void HeartRateTask::Work() {
 
     if (state == States::ForegroundMeasuring || state == States::BackgroundMeasuring) {
       HandleSensorData();
+      count++;
     }
   }
 }
@@ -145,6 +187,7 @@ void HeartRateTask::StartMeasurement() {
   ppg.Reset(true);
   vTaskDelay(100);
   measurementSucceeded = false;
+  count = 0;
   measurementStartTime = xTaskGetTickCount();
 }
 
