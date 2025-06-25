@@ -47,21 +47,21 @@ Tally::Tally(Controllers::MotionController& motionController,
   countButton = lv_btn_create(lv_scr_act(), nullptr);
   countButton->user_data = this;
   lv_obj_set_event_cb(countButton, CountButtonEventHandler);
-  lv_obj_set_size(countButton, 240, 190);
+  lv_obj_set_size(countButton, 240, 180);
   lv_obj_set_style_local_bg_color(countButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_align(countButton, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
   countLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(countLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
-  lv_obj_align(countLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 30);
+  lv_obj_align(countLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 25);
 
   messageLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(messageLabel, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -65);
+  lv_obj_align(messageLabel, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -75);
   SetMessage("Tap to count");
 
   resetButton = lv_btn_create(lv_scr_act(), nullptr);
   resetButton->user_data = this;
   lv_obj_set_event_cb(resetButton, ResetButtonEventHandler);
-  lv_obj_set_size(resetButton, 76, 50);
+  lv_obj_set_size(resetButton, 76, 60);
   lv_obj_align(resetButton, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   resetLabel = lv_label_create(resetButton, nullptr);
   lv_label_set_text_static(resetLabel, Symbols::undo);
@@ -69,7 +69,7 @@ Tally::Tally(Controllers::MotionController& motionController,
   shakeButton = lv_btn_create(lv_scr_act(), nullptr);
   shakeButton->user_data = this;
   lv_obj_set_event_cb(shakeButton, ShakeButtonEventHandler);
-  lv_obj_set_size(shakeButton, 76, 50);
+  lv_obj_set_size(shakeButton, 76, 60);
   lv_obj_set_style_local_bg_color(shakeButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   lv_obj_align(shakeButton, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   shakeLabel = lv_label_create(shakeButton, nullptr);
@@ -78,7 +78,7 @@ Tally::Tally(Controllers::MotionController& motionController,
   awakeButton = lv_btn_create(lv_scr_act(), nullptr);
   awakeButton->user_data = this;
   lv_obj_set_event_cb(awakeButton, AwakeButtonEventHandler);
-  lv_obj_set_size(awakeButton, 76, 50);
+  lv_obj_set_size(awakeButton, 76, 60);
   lv_obj_set_style_local_bg_color(awakeButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   lv_obj_align(awakeButton, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   awakeLabel = lv_label_create(awakeButton, nullptr);
