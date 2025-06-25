@@ -8,28 +8,28 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  void countButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
+  void CountButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<Tally*>(obj->user_data);
     if (event == LV_EVENT_CLICKED) {
       screen->Increment();
     }
   }
 
-  void resetButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
+  void ResetButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<Tally*>(obj->user_data);
     if (event == LV_EVENT_CLICKED) {
       screen->Reset();
     }
   }
 
-  void shakeButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
+  void ShakeButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<Tally*>(obj->user_data);
     if (event == LV_EVENT_CLICKED) {
       screen->ToggleShakeToCount();
     }
   }
 
-  void awakeButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
+  void AwakeButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<Tally*>(obj->user_data);
     if (event == LV_EVENT_CLICKED) {
       screen->ToggleKeepAwake();
@@ -46,7 +46,7 @@ Tally::Tally(Controllers::MotionController& motionController,
   // the count is actually a button (it was the easiest way to detect taps)
   countButton = lv_btn_create(lv_scr_act(), nullptr);
   countButton->user_data = this;
-  lv_obj_set_event_cb(countButton, countButtonEventHandler);
+  lv_obj_set_event_cb(countButton, CountButtonEventHandler);
   lv_obj_set_size(countButton, 240, 190);
   lv_obj_set_style_local_bg_color(countButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_align(countButton, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
@@ -60,7 +60,7 @@ Tally::Tally(Controllers::MotionController& motionController,
 
   resetButton = lv_btn_create(lv_scr_act(), nullptr);
   resetButton->user_data = this;
-  lv_obj_set_event_cb(resetButton, resetButtonEventHandler);
+  lv_obj_set_event_cb(resetButton, ResetButtonEventHandler);
   lv_obj_set_size(resetButton, 76, 50);
   lv_obj_align(resetButton, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   resetLabel = lv_label_create(resetButton, nullptr);
@@ -68,7 +68,7 @@ Tally::Tally(Controllers::MotionController& motionController,
 
   shakeButton = lv_btn_create(lv_scr_act(), nullptr);
   shakeButton->user_data = this;
-  lv_obj_set_event_cb(shakeButton, shakeButtonEventHandler);
+  lv_obj_set_event_cb(shakeButton, ShakeButtonEventHandler);
   lv_obj_set_size(shakeButton, 76, 50);
   lv_obj_set_style_local_bg_color(shakeButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   lv_obj_align(shakeButton, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
@@ -77,7 +77,7 @@ Tally::Tally(Controllers::MotionController& motionController,
 
   awakeButton = lv_btn_create(lv_scr_act(), nullptr);
   awakeButton->user_data = this;
-  lv_obj_set_event_cb(awakeButton, awakeButtonEventHandler);
+  lv_obj_set_event_cb(awakeButton, AwakeButtonEventHandler);
   lv_obj_set_size(awakeButton, 76, 50);
   lv_obj_set_style_local_bg_color(awakeButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   lv_obj_align(awakeButton, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
@@ -86,13 +86,10 @@ Tally::Tally(Controllers::MotionController& motionController,
 
   UpdateCount();
 
-  refreshTask = lv_task_create(RefreshTaskCallback, PERIOD, LV_TASK_PRIO_MID, this);
+  refreshTask = lv_task_create(RefreshTaskCallback, period, LV_TASK_PRIO_MID, this);
 }
 
 Tally::~Tally() {
-  if (keepAwakeEnabled) {
-    wakeLock.Release();
-  }
   ShakeToWakeDisable();
   lv_task_del(refreshTask);
   lv_obj_clean(lv_scr_act());
@@ -101,8 +98,8 @@ Tally::~Tally() {
 void Tally::Refresh() {
   if (shakeToCountEnabled) {
     if (motionController.CurrentShakeSpeed() >= settingsController.GetShakeThreshold()) {
-      if (shakeToCountDelay <= 0) {
-        shakeToCountDelay = SHAKE_DELAY_TIME / PERIOD;
+      if (shakeToCountDelay == 0) {
+        shakeToCountDelay = shakeDelayTime / period;
         Increment();
       }
     } else if (shakeToCountDelay > 0) {
@@ -116,7 +113,7 @@ void Tally::Refresh() {
 
   if (messageTimer > 0) {
     messageTimer--;
-    if (messageTimer <= 0) {
+    if (messageTimer == 0) {
       lv_label_set_text_static(messageLabel, "");
     }
   }
@@ -124,7 +121,7 @@ void Tally::Refresh() {
 
 void Tally::Increment() {
   if (incrementDelay <= 0) {
-    incrementDelay = INCREMENT_DELAY_TIME / PERIOD;
+    incrementDelay = incrementDelayTime / period;
     count++;
     motorController.RunForDuration(80);
     UpdateCount();
@@ -182,5 +179,5 @@ void Tally::ShakeToWakeDisable() {
 void Tally::SetMessage(const char* text) {
   lv_label_set_text_static(messageLabel, text);
   lv_obj_realign(messageLabel);
-  messageTimer = MESSAGE_TIME / PERIOD;
+  messageTimer = messageTime / period;
 }
