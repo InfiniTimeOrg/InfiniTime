@@ -7,8 +7,6 @@
 #include "systemtask/WakeLock.h"
 #include "Symbols.h"
 
-#include <array>
-
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
