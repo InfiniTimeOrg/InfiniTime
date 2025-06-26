@@ -123,12 +123,18 @@ void Tally::Increment() {
   if (incrementDelay <= 0) {
     incrementDelay = incrementDelayTime / period;
     count++;
+    if (count == 100) {
+      lv_obj_set_style_local_text_font(countLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+    }
     motorController.RunForDuration(80);
     UpdateCount();
   }
 }
 
 void Tally::Reset() {
+  if (count >= 100) {
+    lv_obj_set_style_local_text_font(countLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
+  }
   count = 0;
   UpdateCount();
 }
