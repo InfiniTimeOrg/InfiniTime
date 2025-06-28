@@ -6,6 +6,8 @@
 #include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/WeatherSymbols.h"
+#include "displayapp/screens/WeatherSymbols.h"
+#include "displayapp/screens/StopWatch.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
@@ -24,6 +26,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController,
+                                   Controllers::StopWatchController& stopWatchController,
                                    Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -31,6 +34,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
+    stopWatchController {stopWatchController},
     weatherService {weatherService},
     statusIcons(batteryController, bleController, alarmController) {
 
@@ -85,6 +89,16 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  stopWatchIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(stopWatchIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFFFFF));
+  lv_label_set_text_static(stopWatchIcon, "");
+  lv_obj_align(stopWatchIcon, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
+
+  stopWatchValue = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(stopWatchValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFFFFF));
+  lv_label_set_text_static(stopWatchValue, "");
+  lv_obj_align(stopWatchValue, stopWatchIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -170,6 +184,21 @@ void WatchFaceDigital::Refresh() {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_realign(stepValue);
     lv_obj_realign(stepIcon);
+  }
+
+  stopWatchTime = stopWatchController.GetElapsedTime();
+  stopWatchRunning = !stopWatchController.IsCleared();
+  if (stopWatchTime.IsUpdated() || stopWatchRunning.IsUpdated()) {
+    if (stopWatchRunning.Get()) {
+      TimeSeparated elapsedTime = ConvertTicksToTimeSegments(stopWatchTime.Get());
+      lv_label_set_text_fmt(stopWatchValue, "%02d:%02d:%02d:%02d", elapsedTime.hours, elapsedTime.mins, elapsedTime.secs, elapsedTime.hundredths);
+      lv_label_set_text_static(stopWatchIcon, Symbols::stopWatch);
+    } else {
+      lv_label_set_text_fmt(stopWatchValue, "");
+      lv_label_set_text_static(stopWatchIcon, "");
+    }
+    lv_obj_realign(stopWatchValue);
+    lv_obj_realign(stopWatchIcon);
   }
 
   currentWeather = weatherService.Current();
