@@ -437,7 +437,7 @@ void SystemTask::UpdateMotion() {
     if ((settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&
          motionController.ShouldRaiseWake()) ||
         (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) &&
-         motionController.ShouldShakeWake(settingsController.GetShakeThreshold()))) {
+         motionController.CurrentShakeSpeed() > settingsController.GetShakeThreshold())) {
       GoToRunning();
     }
   }
