@@ -155,8 +155,12 @@ int8_t Ppg::Preprocess(uint16_t hrs, uint16_t als) {
 
 int Ppg::HeartRate() {
   if (dataIndex < dataLength) {
+    if (!enoughData) {
+      return -2;
+    }
     return 0;
   }
+  enoughData = true;
   int hr = 0;
   hr = ProcessHeartRate(resetSpectralAvg);
   resetSpectralAvg = false;
@@ -171,6 +175,7 @@ int Ppg::HeartRate() {
 void Ppg::Reset(bool resetDaqBuffer) {
   if (resetDaqBuffer) {
     dataIndex = 0;
+    enoughData = false;
   }
   avgIndex = 0;
   dataAverage.fill(0.0f);

@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <bitset>
+#include <limits>
+#include <optional>
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 #include "displayapp/apps/Apps.h"
@@ -309,6 +311,21 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
+      std::optional<uint16_t> GetHeartRateBackgroundMeasurementInterval() const {
+        if (settings.heartRateBackgroundPeriod == std::numeric_limits<uint16_t>::max()) {
+          return std::nullopt;
+        }
+        return settings.heartRateBackgroundPeriod;
+      }
+
+      void SetHeartRateBackgroundMeasurementInterval(std::optional<uint16_t> newIntervalInSeconds) {
+        newIntervalInSeconds = newIntervalInSeconds.value_or(std::numeric_limits<uint16_t>::max());
+        if (newIntervalInSeconds != settings.heartRateBackgroundPeriod) {
+          settingsChanged = true;
+        }
+        settings.heartRateBackgroundPeriod = newIntervalInSeconds.value();
+      }
+
     private:
       Pinetime::Controllers::FS& fs;
 
@@ -338,6 +355,8 @@ namespace Pinetime {
         uint16_t shakeWakeThreshold = 150;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        uint16_t heartRateBackgroundPeriod = std::numeric_limits<uint16_t>::max(); // Disabled by default
       };
 
       SettingsData settings;
