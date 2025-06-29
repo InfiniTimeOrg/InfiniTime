@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <bitset>
+#include <optional>
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 #include "displayapp/apps/Apps.h"
@@ -50,6 +51,8 @@ namespace Pinetime {
         bool showSideCover = true;
         int colorIndex = 0;
       };
+
+      std::optional<uint16_t> heartRateBackgroundMeasurement = 0;
 
       Settings(Pinetime::Controllers::FS& fs);
 
@@ -309,6 +312,28 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
+      bool IsHeartRateBackgroundMeasurementActivated() const {
+        return settings.heartRateBackgroundMeasurement.has_value();
+      }
+
+      void DeactivateHeartRateBackgroundMeasurement() {
+        if (IsHeartRateBackgroundMeasurementActivated()) {
+          settingsChanged = true;
+        }
+        settings.heartRateBackgroundMeasurement = std::nullopt;
+      }
+
+      uint16_t GetHeartRateBackgroundMeasurementInterval() const {
+        return settings.heartRateBackgroundMeasurement.value_or(0);
+      }
+
+      void SetHeartRateBackgroundMeasurementInterval(uint16_t newIntervalInSeconds) {
+        if (!settings.heartRateBackgroundMeasurement.has_value() || newIntervalInSeconds != settings.heartRateBackgroundMeasurement) {
+          settingsChanged = true;
+        }
+        settings.heartRateBackgroundMeasurement = newIntervalInSeconds;
+      }
+
     private:
       Pinetime::Controllers::FS& fs;
 
@@ -338,6 +363,8 @@ namespace Pinetime {
         uint16_t shakeWakeThreshold = 150;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        std::optional<uint16_t> heartRateBackgroundMeasurement;
       };
 
       SettingsData settings;
