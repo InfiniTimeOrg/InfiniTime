@@ -8,12 +8,12 @@ WatchFaceQRCode::WatchFaceQRCode(Components::LittleVgl& lvgl,
                                  const Controllers::Ble& bleController,
                                  Controllers::Settings& settingsController,
                                  Controllers::MotorController& motor)
-  : lvgl{lvgl},
-    dateTimeController{dateTimeController},
-    batteryController{batteryController},
-    bleController{bleController},
-    settingsController{settingsController},
-    motor{motor} {
+  : lvgl {lvgl},
+    dateTimeController {dateTimeController},
+    batteryController {batteryController},
+    bleController {bleController},
+    settingsController {settingsController},
+    motor {motor} {
 
   altTextIndex = 0;
   altTextIndexUpdated = false;
@@ -186,15 +186,9 @@ std::string WatchFaceQRCode::MakeQRTimeText() const {
   textLength += printReturn;
 
   if (batteryController.IsPowerPresent()) {
-    printReturn = snprintf(&textToEncode[textLength],
-                           80 - textLength,
-                           "\"batt\": \"+%i\"\n}",
-                           batteryController.PercentRemaining());
+    printReturn = snprintf(&textToEncode[textLength], 80 - textLength, "\"batt\": \"+%i\"\n}", batteryController.PercentRemaining());
   } else {
-    printReturn = snprintf(&textToEncode[textLength],
-                           80 - textLength,
-                           "\"batt\": \"%i\"\n}",
-                           batteryController.PercentRemaining());
+    printReturn = snprintf(&textToEncode[textLength], 80 - textLength, "\"batt\": \"%i\"\n}", batteryController.PercentRemaining());
   }
 
   if (printReturn < 0) {
@@ -233,8 +227,7 @@ void WatchFaceQRCode::RefreshQRCode() const {
   }
 }
 
-BitByteArray::BitByteArray(const uint16_t sizeBytes)
-  : size{sizeBytes} {
+BitByteArray::BitByteArray(const uint16_t sizeBytes) : size {sizeBytes} {
   this->byteArray = std::unique_ptr<uint8_t[]>(new uint8_t[sizeBytes]);
   std::fill_n(byteArray.get(), sizeBytes, 0);
 }
@@ -290,10 +283,7 @@ void BitByteArray::setNybble(const uint16_t index, const uint8_t value) {
   }
 }
 
-BitByteArray2D::BitByteArray2D(const uint16_t width, const uint16_t height)
-  : BitByteArray(width * height),
-    width{width},
-    height{height} {
+BitByteArray2D::BitByteArray2D(const uint16_t width, const uint16_t height) : BitByteArray(width * height), width {width}, height {height} {
 }
 
 bool BitByteArray2D::getBit2D(const uint16_t indexX, const uint16_t indexY) const {
@@ -320,7 +310,6 @@ void BitByteArray2D::FillBits(const uint16_t x1, const uint16_t y1, const uint16
     }
   }
 }
-
 
 /**
  * @param text The text to convert to a QR code. Must be encoded in ISO-8859-1 (which is ASCII compatible).
@@ -376,7 +365,6 @@ std::shared_ptr<BitByteArray> QRCodeGenerator::GenerateCodeData(const std::strin
 
   return data;
 }
-
 
 /**
  * Modifies the passed BitByteArray in-place to add 20 bytes of Reed-Solomon error correction at the end.
