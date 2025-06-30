@@ -28,7 +28,7 @@ namespace Pinetime {
         using Id = uint8_t;
         using Idx = uint8_t;
 
-        std::array<char, MessageSize + 1> message;
+        std::array<char, MessageSize + 1> message{};
         uint8_t size;
         Categories category = Categories::Unknown;
         Id id = 0;

@@ -124,7 +124,7 @@ MyApp.h:
 ```cpp
 #pragma once
 
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"

@@ -30,6 +30,7 @@
 #include "displayapp/screens/Weather.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
+#include "displayapp/screens/Calculator.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -52,6 +53,8 @@
 
 #include "libs/lv_conf.h"
 #include "UserApps.h"
+
+#include <algorithm>
 
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
@@ -126,15 +129,6 @@ void DisplayApp::Start(System::BootErrors error) {
 
   bootError = error;
 
-  lvgl.Init();
-  motorController.Init();
-
-  if (error == System::BootErrors::TouchController) {
-    LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);
-  } else {
-    LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
-  }
-
   if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
@@ -143,17 +137,25 @@ void DisplayApp::Start(System::BootErrors error) {
 void DisplayApp::Process(void* instance) {
   auto* app = static_cast<DisplayApp*>(instance);
   NRF_LOG_INFO("displayapp task started!");
-  app->InitHw();
+  app->Init();
+
+  if (app->bootError == System::BootErrors::TouchController) {
+    app->LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);
+  } else {
+    app->LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+  }
 
   while (true) {
     app->Refresh();
   }
 }
 
-void DisplayApp::InitHw() {
+void DisplayApp::Init() {
+  lcd.Init();
+  motorController.Init();
   brightnessController.Init();
   ApplyBrightness();
-  lcd.Init();
+  lvgl.Init();
 }
 
 TickType_t DisplayApp::CalculateSleepTime() {
@@ -475,9 +477,6 @@ void DisplayApp::Refresh() {
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
         break;
-      case Messages::OnChargingEvent:
-        motorController.RunForDuration(15);
-        break;
     }
   }
 
@@ -518,26 +517,25 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
   switch (app) {
     case Apps::Launcher: {
       std::array<Screens::Tile::Applications, UserAppTypes::Count> apps;
-      int i = 0;
-      for (const auto& userApp : userApps) {
-        apps[i++] = Screens::Tile::Applications {userApp.icon, userApp.app, true};
-      }
+      std::ranges::transform(userApps, apps.begin(), [](const auto& userApp) {
+        return Screens::Tile::Applications {userApp.icon, userApp.app, true};
+      });
       currentScreen = std::make_unique<Screens::ApplicationList>(this,
                                                                  settingsController,
                                                                  batteryController,
                                                                  bleController,
+                                                                 alarmController,
                                                                  dateTimeController,
                                                                  filesystem,
                                                                  std::move(apps));
     } break;
     case Apps::Clock: {
-      const auto* watchFace =
-        std::find_if(userWatchFaces.begin(), userWatchFaces.end(), [this](const WatchFaceDescription& watchfaceDescription) {
-          return watchfaceDescription.watchFace == settingsController.GetWatchFace();
-        });
-      if (watchFace != userWatchFaces.end())
+      const auto* watchFace = std::ranges::find_if(userWatchFaces, [this](const WatchFaceDescription& watchfaceDescription) {
+        return watchfaceDescription.watchFace == settingsController.GetWatchFace();
+      });
+      if (watchFace != userWatchFaces.end()) {
         currentScreen.reset(watchFace->create(controllers));
-      else {
+      } else {
         currentScreen.reset(userWatchFaces[0].create(controllers));
       }
       settingsController.SetAppMenu(0);
@@ -580,18 +578,19 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                brightnessController,
                                                                motorController,
                                                                settingsController,
-                                                               bleController);
+                                                               bleController,
+                                                               alarmController);
       break;
     case Apps::Settings:
       currentScreen = std::make_unique<Screens::Settings>(this, settingsController);
       break;
     case Apps::SettingWatchFace: {
       std::array<Screens::SettingWatchFace::Item, UserWatchFaceTypes::Count> items;
-      int i = 0;
-      for (const auto& userWatchFace : userWatchFaces) {
-        items[i++] =
-          Screens::SettingWatchFace::Item {userWatchFace.name, userWatchFace.watchFace, userWatchFace.isAvailable(controllers.filesystem)};
-      }
+      std::ranges::transform(userWatchFaces, items.begin(), [this](const WatchFaceDescription& userWatchFace) {
+        return Screens::SettingWatchFace::Item {userWatchFace.name,
+                                                userWatchFace.watchFace,
+                                                userWatchFace.isAvailable(controllers.filesystem)};
+      });
       currentScreen = std::make_unique<Screens::SettingWatchFace>(this, std::move(items), settingsController, filesystem);
     } break;
     case Apps::SettingTimeFormat:
@@ -639,7 +638,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::FlashLight>(*systemTask, brightnessController);
       break;
     default: {
-      const auto* d = std::find_if(userApps.begin(), userApps.end(), [app](const AppDescription& appDescription) {
+      const auto* d = std::ranges::find_if(userApps, [app](const AppDescription& appDescription) {
         return appDescription.app == app;
       });
       if (d != userApps.end()) {

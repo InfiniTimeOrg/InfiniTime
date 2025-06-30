@@ -36,6 +36,7 @@ namespace Pinetime {
       };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
+      enum class PrideFlag : uint8_t { Gay, Trans, Bi, Lesbian };
 
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
@@ -152,6 +153,16 @@ namespace Pinetime {
 
       PTSWeather GetPTSWeather() const {
         return settings.PTS.weatherEnable;
+      };
+
+      void SetPrideFlag(PrideFlag prideFlag) {
+        if (prideFlag != settings.prideFlag)
+          settingsChanged = true;
+        settings.prideFlag = prideFlag;
+      };
+
+      PrideFlag GetPrideFlag() const {
+        return settings.prideFlag;
       };
 
       void SetAppMenu(uint8_t menu) {
@@ -301,7 +312,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0008;
+      static constexpr uint32_t settingsVersion = 0x0009;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -318,6 +329,8 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
+
+        PrideFlag prideFlag = PrideFlag::Gay;
 
         WatchFaceInfineat watchFaceInfineat;
 

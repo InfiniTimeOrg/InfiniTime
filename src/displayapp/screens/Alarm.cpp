@@ -77,7 +77,7 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
   btnStop = lv_btn_create(lv_scr_act(), nullptr);
   btnStop->user_data = this;
   lv_obj_set_event_cb(btnStop, btnEventHandler);
-  lv_obj_set_size(btnStop, 115, 50);
+  lv_obj_set_size(btnStop, 240, 70);
   lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   txtStop = lv_label_create(btnStop, nullptr);
@@ -203,6 +203,10 @@ void Alarm::UpdateAlarmTime() {
 
 void Alarm::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
+  lv_obj_set_hidden(btnRecur, true);
+  lv_obj_set_hidden(btnInfo, true);
+  hourCounter.HideControls();
+  minuteCounter.HideControls();
   lv_obj_set_hidden(btnStop, false);
   taskStopAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(60 * 1000), LV_TASK_PRIO_MID, this);
   motorController.StartRinging();
@@ -218,8 +222,12 @@ void Alarm::StopAlerting() {
     taskStopAlarm = nullptr;
   }
   wakeLock.Release();
-  lv_obj_set_hidden(enableSwitch, false);
   lv_obj_set_hidden(btnStop, true);
+  hourCounter.ShowControls();
+  minuteCounter.ShowControls();
+  lv_obj_set_hidden(btnInfo, false);
+  lv_obj_set_hidden(btnRecur, false);
+  lv_obj_set_hidden(enableSwitch, false);
 }
 
 void Alarm::SetSwitchState(lv_anim_enable_t anim) {
