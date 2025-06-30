@@ -31,10 +31,10 @@ namespace Pinetime {
       class Alarm : public Screen {
       public:
         explicit Alarm(Controllers::AlarmController& alarmController,
-               Controllers::Settings::ClockType clockType,
-               System::SystemTask& systemTask,
-               Controllers::MotorController& motorController,
-               Controllers::DateTime& dateTimeController);
+                       Controllers::Settings::ClockType clockType,
+                       System::SystemTask& systemTask,
+                       Controllers::MotorController& motorController,
+                       Controllers::DateTime& dateTimeController);
         ~Alarm() override;
         void SetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);

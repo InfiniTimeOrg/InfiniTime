@@ -49,10 +49,7 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
              System::SystemTask& systemTask,
              Controllers::MotorController& motorController,
              Controllers::DateTime& dateTimeController)
-  : dateTimeController {dateTimeController},
-    alarmController {alarmController},
-    wakeLock(systemTask),
-    motorController {motorController} {
+  : dateTimeController {dateTimeController}, alarmController {alarmController}, wakeLock(systemTask), motorController {motorController} {
 
   hourCounter.Create();
   lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
