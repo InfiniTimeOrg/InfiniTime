@@ -2,8 +2,10 @@
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Screen.h"
-#include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include <components/motion/MotionController.h>
+#include <components/settings/Settings.h>
+#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -18,11 +20,23 @@ SettingShakeThreshold::SettingShakeThreshold(Controllers::Settings& settingsCont
                                              Controllers::MotionController& motionController,
                                              System::SystemTask& systemTask)
   : settingsController {settingsController}, motionController {motionController}, systemTask {systemTask} {
-
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Wake Sensitivity");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
+
+  if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::Sleep) {
+    lv_obj_t* explanation = lv_label_create(lv_scr_act(), nullptr);
+    lv_label_set_long_mode(explanation, LV_LABEL_LONG_BREAK);
+    lv_label_set_align(explanation, LV_LABEL_ALIGN_AUTO);
+    lv_obj_set_width(explanation, LV_HOR_RES_MAX);
+    lv_label_set_text_static(
+      explanation,
+      "\nShake detector is disabled in sleep mode, and will neither wake up the watch nor calibrate.\nDisable sleep mode to calibrate.");
+    currentCalibrationStep = CalibrationStep::Disabled;
+    lv_obj_align(explanation, title, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+    return;
+  }
 
   positionArc = lv_arc_create(lv_scr_act(), nullptr);
   positionArc->user_data = this;
@@ -62,39 +76,36 @@ SettingShakeThreshold::SettingShakeThreshold(Controllers::Settings& settingsCont
   lv_arc_set_value(positionArc, settingsController.GetShakeThreshold());
 
   vDecay = xTaskGetTickCount();
-  calibrating = false;
-  EnableForCal = false;
-  if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake)) {
-    EnableForCal = true;
-    settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, true);
-  }
+  oldWakeupModeShake = settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake);
+  // Enable shake to wake for the calibration
+  settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, true);
   refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 SettingShakeThreshold::~SettingShakeThreshold() {
-  settingsController.SetShakeThreshold(lv_arc_get_value(positionArc));
-
-  if (EnableForCal) {
-    settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, false);
-    EnableForCal = false;
+  if (currentCalibrationStep != CalibrationStep::Disabled) {
+    // Don't set new threshold if calibration is disabled due to sleep mode
+    settingsController.SetShakeThreshold(lv_arc_get_value(positionArc));
+    // Restore previous wakeup mode which is only changed if calibration is not disabled due to sleep mode
+    settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, oldWakeupModeShake);
+    settingsController.SaveSettings();
+    lv_task_del(refreshTask);
   }
-  lv_task_del(refreshTask);
-  settingsController.SaveSettings();
+
   lv_obj_clean(lv_scr_act());
 }
 
 void SettingShakeThreshold::Refresh() {
-
-  if (calibrating == 1) {
+  if (currentCalibrationStep == CalibrationStep::GettingReady) {
     if (xTaskGetTickCount() - vCalTime > pdMS_TO_TICKS(2000)) {
       vCalTime = xTaskGetTickCount();
-      calibrating = 2;
+      currentCalibrationStep = CalibrationStep::Calibrating;
       lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_RED);
       lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_RED);
       lv_label_set_text_static(calLabel, "Shake!");
     }
   }
-  if (calibrating == 2) {
+  if (currentCalibrationStep == CalibrationStep::Calibrating) {
 
     if ((motionController.CurrentShakeSpeed() - 300) > lv_arc_get_value(positionArc)) {
       lv_arc_set_value(positionArc, (int16_t) motionController.CurrentShakeSpeed() - 300);
@@ -113,19 +124,18 @@ void SettingShakeThreshold::Refresh() {
 }
 
 void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-
   switch (event) {
     case LV_EVENT_VALUE_CHANGED: {
       if (object == calButton) {
-        if (lv_btn_get_state(calButton) == LV_BTN_STATE_CHECKED_RELEASED && calibrating == 0) {
+        if (lv_btn_get_state(calButton) == LV_BTN_STATE_CHECKED_RELEASED && currentCalibrationStep == CalibrationStep::NotCalibrated) {
           lv_arc_set_value(positionArc, 0);
-          calibrating = 1;
+          currentCalibrationStep = CalibrationStep::GettingReady;
           vCalTime = xTaskGetTickCount();
           lv_label_set_text_static(calLabel, "Ready!");
           lv_obj_set_click(positionArc, false);
           lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, Colors::highlight);
         } else if (lv_btn_get_state(calButton) == LV_BTN_STATE_RELEASED) {
-          calibrating = 0;
+          currentCalibrationStep = CalibrationStep::NotCalibrated;
           lv_obj_set_click(positionArc, true);
           lv_label_set_text_static(calLabel, "Calibrate");
         }
