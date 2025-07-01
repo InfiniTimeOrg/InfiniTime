@@ -18,6 +18,15 @@ namespace Pinetime {
         BMA425,
       };
 
+      enum class Days : uint8_t {
+        Today = 0,
+        Yesterday,
+      };
+
+      static constexpr size_t stepHistorySize = 2; // Store this many day's step counter
+
+      void AdvanceDay();
+
       void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
 
       int16_t X() const {
@@ -32,8 +41,8 @@ namespace Pinetime {
         return zHistory[0];
       }
 
-      uint32_t NbSteps() const {
-        return nbSteps;
+      uint32_t NbSteps(Days day = Days::Today) const {
+        return nbSteps[static_cast<std::underlying_type_t<Days>>(day)];
       }
 
       void ResetTrip() {
@@ -67,8 +76,12 @@ namespace Pinetime {
       }
 
     private:
-      uint32_t nbSteps = 0;
+      Utility::CircularBuffer<uint32_t, stepHistorySize> nbSteps = {0};
       uint32_t currentTripSteps = 0;
+
+      uint32_t& NbStepsRef(Days day = Days::Today) {
+        return nbSteps[static_cast<std::underlying_type_t<Days>>(day)];
+      }
 
       TickType_t lastTime = 0;
       TickType_t time = 0;
