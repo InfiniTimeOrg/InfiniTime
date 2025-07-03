@@ -21,6 +21,7 @@
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <string>
 #include "displayapp/screens/Screen.h"
+#include "displayapp/widgets/PageIndicator.h"
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
@@ -81,6 +82,9 @@ namespace Pinetime {
         bool playing;
 
         lv_task_t* taskRefresh;
+
+        Widgets::PageIndicator page1Indicator = Widgets::PageIndicator(0, 2);
+        Widgets::PageIndicator page2Indicator = Widgets::PageIndicator(1, 2);
 
         /** Watchapp */
       };
