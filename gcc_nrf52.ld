@@ -24,7 +24,6 @@
  */
 
 SEARCH_DIR(.)
-GROUP(-lgcc -lc -lnosys)
 
 MCUBOOT_SIZE = 0x8000;
 SCRATCH_SIZE = 0x1000;
