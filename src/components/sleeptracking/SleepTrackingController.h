@@ -29,7 +29,7 @@ namespace Pinetime::Controllers {
   private:
     using timepoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
     static constexpr uint8_t sleeptrackingSettingsFormatVersion = 1;
-    static constexpr uint8_t maxSavedSessions = 5;
+    static constexpr uint8_t maxSavedSessions = 14; // A night is ~5.5KiB (pessimistic estimate) = max(ish) 77KiB usage.
     static constexpr const char* settingsFileName = "sleeptracksettings.dat";
     static constexpr uint8_t wakeAlarmVibrationDurationStart = 50;
     static constexpr uint8_t maxSessionNameLength = 36;
