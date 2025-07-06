@@ -2,20 +2,6 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "create openocd build",
-			"type": "shell",
-			"command": "/opt/create_build_openocd.sh",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"presentation": {
-				"reveal": "always",
-				"panel": "shared"
-			},
-			"problemMatcher": []
-		},
-		{
 			"label": "update submodules",
 			"type": "shell",
 			"command": "git submodule update --init",
@@ -30,14 +16,6 @@
 				"reveal": "always",
 				"panel": "shared"
 			},
-			"problemMatcher": []
-		},
-		{
-			"label": "BuildInit",
-			"dependsOn": [
-				"update submodules",
-				"create openocd build"
-			],
 			"problemMatcher": []
 		}
 	]

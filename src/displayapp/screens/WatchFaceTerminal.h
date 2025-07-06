@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <displayapp/Controllers.h>
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "utility/DirtyValue.h"
@@ -44,8 +45,7 @@ namespace Pinetime {
         Utility::DirtyValue<uint8_t> heartbeat {};
         Utility::DirtyValue<bool> heartbeatRunning {};
         Utility::DirtyValue<bool> notificationState {};
-        using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
         lv_obj_t* label_time;
         lv_obj_t* label_date;
@@ -68,5 +68,25 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct WatchFaceTraits<WatchFace::Terminal> {
+      static constexpr WatchFace watchFace = WatchFace::Terminal;
+      static constexpr const char* name = "Terminal";
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::WatchFaceTerminal(controllers.dateTimeController,
+                                              controllers.batteryController,
+                                              controllers.bleController,
+                                              controllers.notificationManager,
+                                              controllers.settingsController,
+                                              controllers.heartRateController,
+                                              controllers.motionController);
+      };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      }
+    };
   }
 }

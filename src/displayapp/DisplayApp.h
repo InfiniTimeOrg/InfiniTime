@@ -4,7 +4,7 @@
 #include <task.h>
 #include <memory>
 #include <systemtask/Messages.h>
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "displayapp/LittleVgl.h"
 #include "displayapp/TouchEvents.h"
 #include "components/brightness/BrightnessController.h"
@@ -20,6 +20,7 @@
 #include "BootErrors.h"
 
 #include "utility/StaticStack.h"
+#include "displayapp/Controllers.h"
 
 namespace Pinetime {
 
@@ -38,6 +39,7 @@ namespace Pinetime {
     class HeartRateController;
     class MotionController;
     class TouchHandler;
+    class SimpleWeatherService;
   }
 
   namespace System {
@@ -47,7 +49,7 @@ namespace Pinetime {
   namespace Applications {
     class DisplayApp {
     public:
-      enum class States { Idle, Running };
+      enum class States { Idle, Running, AOD };
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
 
       DisplayApp(Drivers::St7789& lcd,
@@ -64,7 +66,8 @@ namespace Pinetime {
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
-                 Pinetime::Controllers::FS& filesystem);
+                 Pinetime::Controllers::FS& filesystem,
+                 Pinetime::Drivers::SpiNorFlash& spiNorFlash);
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
@@ -73,6 +76,9 @@ namespace Pinetime {
       void SetFullRefresh(FullRefreshDirections direction);
 
       void Register(Pinetime::System::SystemTask* systemTask);
+      void Register(Pinetime::Controllers::SimpleWeatherService* weatherService);
+      void Register(Pinetime::Controllers::MusicService* musicService);
+      void Register(Pinetime::Controllers::NavigationService* NavigationService);
 
     private:
       Pinetime::Drivers::St7789& lcd;
@@ -91,11 +97,13 @@ namespace Pinetime {
       Pinetime::Controllers::BrightnessController& brightnessController;
       Pinetime::Controllers::TouchHandler& touchHandler;
       Pinetime::Controllers::FS& filesystem;
+      Pinetime::Drivers::SpiNorFlash& spiNorFlash;
 
       Pinetime::Controllers::FirmwareValidator validator;
       Pinetime::Components::LittleVgl lvgl;
       Pinetime::Controllers::Timer timer;
 
+      AppControllers controllers;
       TaskHandle_t taskHandle;
 
       States state = States::Running;
@@ -113,7 +121,7 @@ namespace Pinetime {
 
       TouchEvents GetGesture();
       static void Process(void* instance);
-      void InitHw();
+      void Init();
       void Refresh();
       void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
@@ -129,6 +137,13 @@ namespace Pinetime {
       Utility::StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
 
       bool isDimmed = false;
+
+      TickType_t CalculateSleepTime();
+      TickType_t alwaysOnFrameCount;
+      TickType_t alwaysOnStartTime;
+      // If this is to be changed, make sure the actual always on refresh rate is changed
+      // by configuring the LCD refresh timings
+      static constexpr uint32_t alwaysOnRefreshPeriod = 500;
     };
   }
 }

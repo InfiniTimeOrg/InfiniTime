@@ -11,7 +11,6 @@
 #include "components/motion/MotionController.h"
 #include "components/motor/MotorController.h"
 #include "displayapp/screens/ApplicationList.h"
-#include "displayapp/screens/Clock.h"
 #include "displayapp/screens/FirmwareUpdate.h"
 #include "displayapp/screens/FirmwareValidation.h"
 #include "displayapp/screens/InfiniPaint.h"
@@ -27,9 +26,11 @@
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
 #include "displayapp/screens/Steps.h"
+#include "displayapp/screens/Dice.h"
+#include "displayapp/screens/Weather.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
-#include "displayapp/screens/Weather.h"
+#include "displayapp/screens/Calculator.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -41,6 +42,7 @@
 #include "displayapp/screens/settings/Settings.h"
 #include "displayapp/screens/settings/SettingWatchFace.h"
 #include "displayapp/screens/settings/SettingTimeFormat.h"
+#include "displayapp/screens/settings/SettingWeatherFormat.h"
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
@@ -50,6 +52,9 @@
 #include "displayapp/screens/settings/SettingBluetooth.h"
 
 #include "libs/lv_conf.h"
+#include "UserApps.h"
+
+#include <algorithm>
 
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
@@ -79,7 +84,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::AlarmController& alarmController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
-                       Pinetime::Controllers::FS& filesystem)
+                       Pinetime::Controllers::FS& filesystem,
+                       Pinetime::Drivers::SpiNorFlash& spiNorFlash)
   : lcd {lcd},
     touchPanel {touchPanel},
     batteryController {batteryController},
@@ -95,22 +101,33 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     brightnessController {brightnessController},
     touchHandler {touchHandler},
     filesystem {filesystem},
+    spiNorFlash {spiNorFlash},
     lvgl {lcd, filesystem},
-    timer(this, TimerCallback) {
+    timer(this, TimerCallback),
+    controllers {batteryController,
+                 bleController,
+                 dateTimeController,
+                 notificationManager,
+                 heartRateController,
+                 settingsController,
+                 motorController,
+                 motionController,
+                 alarmController,
+                 brightnessController,
+                 nullptr,
+                 filesystem,
+                 timer,
+                 nullptr,
+                 this,
+                 lvgl,
+                 nullptr,
+                 nullptr} {
 }
 
 void DisplayApp::Start(System::BootErrors error) {
   msgQueue = xQueueCreate(queueSize, itemSize);
 
   bootError = error;
-
-  lvgl.Init();
-
-  if (error == System::BootErrors::TouchController) {
-    LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);
-  } else {
-    LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
-  }
 
   if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
@@ -120,21 +137,63 @@ void DisplayApp::Start(System::BootErrors error) {
 void DisplayApp::Process(void* instance) {
   auto* app = static_cast<DisplayApp*>(instance);
   NRF_LOG_INFO("displayapp task started!");
-  app->InitHw();
+  app->Init();
 
-  // Send a dummy notification to unlock the lvgl display driver for the first iteration
-  xTaskNotifyGive(xTaskGetCurrentTaskHandle());
+  if (app->bootError == System::BootErrors::TouchController) {
+    app->LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);
+  } else {
+    app->LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+  }
 
   while (true) {
     app->Refresh();
   }
 }
 
-void DisplayApp::InitHw() {
+void DisplayApp::Init() {
+  lcd.Init();
+  motorController.Init();
   brightnessController.Init();
   ApplyBrightness();
-  motorController.Init();
-  lcd.Init();
+  lvgl.Init();
+}
+
+TickType_t DisplayApp::CalculateSleepTime() {
+  // Calculates how many system ticks DisplayApp should sleep before rendering the next AOD frame
+  // Next frame time is frame count * refresh period (ms) * tick rate
+
+  auto RoundedDiv = [](uint32_t a, uint32_t b) {
+    return ((a + (b / 2)) / b);
+  };
+  // RoundedDiv overflows when numerator + (denominator floordiv 2) > uint32 max
+  // in this case around 9 hours (=overflow frame count / always on refresh period)
+  constexpr TickType_t overflowFrameCount = (UINT32_MAX - (1000 / 16)) / ((configTICK_RATE_HZ / 8) * alwaysOnRefreshPeriod);
+
+  TickType_t ticksElapsed = xTaskGetTickCount() - alwaysOnStartTime;
+  // Divide both the numerator and denominator by 8 (=GCD(1000,1024))
+  // to increase the number of ticks (frames) before the overflow tick is reached
+  TickType_t targetRenderTick = RoundedDiv((configTICK_RATE_HZ / 8) * alwaysOnFrameCount * alwaysOnRefreshPeriod, 1000 / 8);
+
+  // Assumptions
+
+  // Tick rate is multiple of 8
+  // Needed for division trick above
+  static_assert(configTICK_RATE_HZ % 8 == 0);
+
+  // Frame count must always wraparound more often than the system tick count does
+  // Always on overflow time (ms) < system tick overflow time (ms)
+  // Using 64bit ints here to avoid overflow
+  static_assert((uint64_t) overflowFrameCount * (uint64_t) alwaysOnRefreshPeriod < (uint64_t) UINT32_MAX * 1000ULL / configTICK_RATE_HZ);
+
+  if (alwaysOnFrameCount == overflowFrameCount) {
+    alwaysOnFrameCount = 0;
+    alwaysOnStartTime = xTaskGetTickCount();
+  }
+  if (targetRenderTick > ticksElapsed) {
+    return targetRenderTick - ticksElapsed;
+  } else {
+    return 0;
+  }
 }
 
 void DisplayApp::Refresh() {
@@ -160,21 +219,6 @@ void DisplayApp::Refresh() {
     LoadScreen(returnAppStack.Pop(), returnDirection);
   };
 
-  auto DimScreen = [this]() {
-    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
-      isDimmed = true;
-      brightnessController.Set(Controllers::BrightnessController::Levels::Low);
-    }
-  };
-
-  auto RestoreBrightness = [this]() {
-    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
-      isDimmed = false;
-      lv_disp_trig_activity(nullptr);
-      ApplyBrightness();
-    }
-  };
-
   auto IsPastDimTime = [this]() -> bool {
     return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000);
   };
@@ -188,6 +232,27 @@ void DisplayApp::Refresh() {
     case States::Idle:
       queueTimeout = portMAX_DELAY;
       break;
+    case States::AOD:
+      if (!currentScreen->IsRunning()) {
+        LoadPreviousScreen();
+      }
+      // Check we've slept long enough
+      // Might not be true if the loop received an event
+      // If not true, then wait that amount of time
+      queueTimeout = CalculateSleepTime();
+      if (queueTimeout == 0) {
+        // Only advance the tick count when LVGL is done
+        // Otherwise keep running the task handler while it still has things to draw
+        // Note: under high graphics load, LVGL will always have more work to do
+        if (lv_task_handler() > 0) {
+          // Drop frames that we've missed if drawing/event handling took way longer than expected
+          while (queueTimeout == 0) {
+            alwaysOnFrameCount += 1;
+            queueTimeout = CalculateSleepTime();
+          }
+        }
+      }
+      break;
     case States::Running:
       if (!currentScreen->IsRunning()) {
         LoadPreviousScreen();
@@ -196,14 +261,27 @@ void DisplayApp::Refresh() {
 
       if (!systemTask->IsSleepDisabled() && IsPastDimTime()) {
         if (!isDimmed) {
-          DimScreen();
+          isDimmed = true;
+          brightnessController.Set(Controllers::BrightnessController::Levels::Low);
         }
-        if (IsPastSleepTime()) {
-          systemTask->PushMessage(System::Messages::GoToSleep);
-          state = States::Idle;
+        if (IsPastSleepTime() && uxQueueMessagesWaiting(msgQueue) == 0) {
+          PushMessageToSystemTask(System::Messages::GoToSleep);
+          // Can't set state to Idle here, something may send
+          // DisableSleeping before this GoToSleep arrives
+          // Instead we check we have no messages queued before sending GoToSleep
+          // This works as the SystemTask is higher priority than DisplayApp
+          // As soon as we send GoToSleep, SystemTask pre-empts DisplayApp
+          // Whenever DisplayApp is running again, it is guaranteed that
+          // SystemTask has handled the message
+          // If it responded, we will have a GoToSleep waiting in the queue
+          // By checking that there are no messages in the queue, we avoid
+          // resending GoToSleep when we already have a response
+          // SystemTask is resilient to duplicate messages, this is an
+          // optimisation to reduce pressure on the message queues
         }
       } else if (isDimmed) {
-        RestoreBrightness();
+        isDimmed = false;
+        ApplyBrightness();
       }
       break;
     default:
@@ -214,30 +292,73 @@ void DisplayApp::Refresh() {
   Messages msg;
   if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
     switch (msg) {
-      case Messages::DimScreen:
-        DimScreen();
-        break;
-      case Messages::RestoreBrightness:
-        RestoreBrightness();
-        break;
       case Messages::GoToSleep:
-        while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
+      case Messages::GoToAOD:
+        // Checking if SystemTask is sleeping is purely an optimisation.
+        // If it's no longer sleeping since it sent GoToSleep, it has
+        // cancelled the sleep and transitioned directly from
+        // GoingToSleep->Running, so we are about to receive GoToRunning
+        // and can ignore this message. If it wasn't ignored, DisplayApp
+        // would go to sleep and then immediately re-wake
+        if (state != States::Running || !systemTask->IsSleeping()) {
+          break;
+        }
+        while (brightnessController.Level() != Controllers::BrightnessController::Levels::Low) {
           brightnessController.Lower();
           vTaskDelay(100);
         }
-        lcd.Sleep();
-        PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
-        state = States::Idle;
+        // Turn brightness down (or set to AlwaysOn mode)
+        if (msg == Messages::GoToAOD) {
+          brightnessController.Set(Controllers::BrightnessController::Levels::AlwaysOn);
+        } else {
+          brightnessController.Set(Controllers::BrightnessController::Levels::Off);
+        }
+        // Since the active screen is not really an app, go back to Clock.
+        if (currentApp == Apps::Launcher || currentApp == Apps::Notifications || currentApp == Apps::QuickSettings ||
+            currentApp == Apps::Settings) {
+          LoadScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+          // Wait for the clock app to load before moving on.
+          while (!lv_task_handler()) {
+          };
+        }
+        // Clear any ongoing touch pressed events
+        // Without this LVGL gets stuck in the pressed state and will keep refreshing the
+        // display activity timer causing the screen to never sleep after timeout
+        lvgl.ClearTouchState();
+        if (msg == Messages::GoToAOD) {
+          lcd.LowPowerOn();
+          // Record idle entry time
+          alwaysOnFrameCount = 0;
+          alwaysOnStartTime = xTaskGetTickCount();
+          PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskAOD);
+          state = States::AOD;
+        } else {
+          lcd.Sleep();
+          PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
+          state = States::Idle;
+        }
+        break;
+      case Messages::NotifyDeviceActivity:
+        lv_disp_trig_activity(nullptr);
         break;
       case Messages::GoToRunning:
-        lcd.Wakeup();
+        // If SystemTask is sleeping, the GoToRunning message is old
+        // and must be ignored. Otherwise DisplayApp will use SPI
+        // that is powered down and cause bad behaviour
+        if (state == States::Running || systemTask->IsSleeping()) {
+          break;
+        }
+        if (state == States::AOD) {
+          lcd.LowPowerOff();
+        } else {
+          lcd.Wakeup();
+        }
         lv_disp_trig_activity(nullptr);
         ApplyBrightness();
         state = States::Running;
         break;
       case Messages::UpdateBleConnection:
-        //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
-        //        Screens::Clock::BleConnectionStates::NotConnected);
+        // Only used for recovery firmware
         break;
       case Messages::NewNotification:
         LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
@@ -352,22 +473,14 @@ void DisplayApp::Refresh() {
       case Messages::BleRadioEnableToggle:
         PushMessageToSystemTask(System::Messages::BleRadioEnableToggle);
         break;
-      case Messages::UpdateDateTime:
-        // Added to remove warning
-        // What should happen here?
-        break;
       case Messages::Chime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
         break;
-      case Messages::OnChargingEvent:
-        RestoreBrightness();
-        motorController.RunForDuration(15);
-        break;
     }
   }
 
-  if (touchHandler.IsTouching()) {
+  if (state == States::Running && touchHandler.IsTouching()) {
     currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
   }
 
@@ -402,26 +515,31 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
   SetFullRefresh(direction);
 
   switch (app) {
-    case Apps::Launcher:
-      currentScreen =
-        std::make_unique<Screens::ApplicationList>(this, settingsController, batteryController, bleController, dateTimeController, filesystem);
-      break;
-    case Apps::Motion:
-      // currentScreen = std::make_unique<Screens::Motion>(motionController);
-      // break;
-    case Apps::None:
-    case Apps::Clock:
-      currentScreen = std::make_unique<Screens::Clock>(dateTimeController,
-                                                       batteryController,
-                                                       bleController,
-                                                       notificationManager,
-                                                       settingsController,
-                                                       heartRateController,
-                                                       motionController,
-                                                       systemTask->nimble().weather(),
-                                                       filesystem);
-      break;
-
+    case Apps::Launcher: {
+      std::array<Screens::Tile::Applications, UserAppTypes::Count> apps;
+      std::ranges::transform(userApps, apps.begin(), [this](const auto& userApp) {
+        return Screens::Tile::Applications {userApp.icon, userApp.app, userApp.isAvailable(controllers.filesystem)};
+      });
+      currentScreen = std::make_unique<Screens::ApplicationList>(this,
+                                                                 settingsController,
+                                                                 batteryController,
+                                                                 bleController,
+                                                                 alarmController,
+                                                                 dateTimeController,
+                                                                 filesystem,
+                                                                 std::move(apps));
+    } break;
+    case Apps::Clock: {
+      const auto* watchFace = std::ranges::find_if(userWatchFaces, [this](const WatchFaceDescription& watchfaceDescription) {
+        return watchfaceDescription.watchFace == settingsController.GetWatchFace();
+      });
+      if (watchFace != userWatchFaces.end()) {
+        currentScreen.reset(watchFace->create(controllers));
+      } else {
+        currentScreen.reset(userWatchFaces[0].create(controllers));
+      }
+      settingsController.SetAppMenu(0);
+    } break;
     case Apps::Error:
       currentScreen = std::make_unique<Screens::Error>(bootError);
       break;
@@ -453,14 +571,6 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Preview);
       break;
-    case Apps::Timer:
-      currentScreen = std::make_unique<Screens::Timer>(timer);
-      break;
-    case Apps::Alarm:
-      currentScreen = std::make_unique<Screens::Alarm>(alarmController, settingsController.GetClockType(), *systemTask, motorController);
-      break;
-
-    // Settings
     case Apps::QuickSettings:
       currentScreen = std::make_unique<Screens::QuickSettings>(this,
                                                                batteryController,
@@ -468,22 +578,32 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                brightnessController,
                                                                motorController,
                                                                settingsController,
-                                                               bleController);
+                                                               bleController,
+                                                               alarmController);
       break;
     case Apps::Settings:
       currentScreen = std::make_unique<Screens::Settings>(this, settingsController);
       break;
-    case Apps::SettingWatchFace:
-      currentScreen = std::make_unique<Screens::SettingWatchFace>(this, settingsController, filesystem);
-      break;
+    case Apps::SettingWatchFace: {
+      std::array<Screens::SettingWatchFace::Item, UserWatchFaceTypes::Count> items;
+      std::ranges::transform(userWatchFaces, items.begin(), [this](const WatchFaceDescription& userWatchFace) {
+        return Screens::SettingWatchFace::Item {userWatchFace.name,
+                                                userWatchFace.watchFace,
+                                                userWatchFace.isAvailable(controllers.filesystem)};
+      });
+      currentScreen = std::make_unique<Screens::SettingWatchFace>(this, std::move(items), settingsController, filesystem);
+    } break;
     case Apps::SettingTimeFormat:
       currentScreen = std::make_unique<Screens::SettingTimeFormat>(settingsController);
+      break;
+    case Apps::SettingWeatherFormat:
+      currentScreen = std::make_unique<Screens::SettingWeatherFormat>(settingsController);
       break;
     case Apps::SettingWakeUp:
       currentScreen = std::make_unique<Screens::SettingWakeUp>(settingsController);
       break;
     case Apps::SettingDisplay:
-      currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
+      currentScreen = std::make_unique<Screens::SettingDisplay>(settingsController);
       break;
     case Apps::SettingSteps:
       currentScreen = std::make_unique<Screens::SettingSteps>(settingsController);
@@ -511,43 +631,23 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                             bleController,
                                                             watchdog,
                                                             motionController,
-                                                            touchPanel);
+                                                            touchPanel,
+                                                            spiNorFlash);
       break;
     case Apps::FlashLight:
       currentScreen = std::make_unique<Screens::FlashLight>(*systemTask, brightnessController);
       break;
-    case Apps::StopWatch:
-      currentScreen = std::make_unique<Screens::StopWatch>(*systemTask);
+    default: {
+      const auto* d = std::ranges::find_if(userApps, [app](const AppDescription& appDescription) {
+        return appDescription.app == app;
+      });
+      if (d != userApps.end()) {
+        currentScreen.reset(d->create(controllers));
+      } else {
+        currentScreen.reset(userWatchFaces[0].create(controllers));
+      }
       break;
-    case Apps::Twos:
-      currentScreen = std::make_unique<Screens::Twos>();
-      break;
-    case Apps::Paint:
-      currentScreen = std::make_unique<Screens::InfiniPaint>(lvgl, motorController);
-      break;
-    case Apps::Paddle:
-      currentScreen = std::make_unique<Screens::Paddle>(lvgl);
-      break;
-    case Apps::Music:
-      currentScreen = std::make_unique<Screens::Music>(systemTask->nimble().music());
-      break;
-    case Apps::Navigation:
-      currentScreen = std::make_unique<Screens::Navigation>(systemTask->nimble().navigation());
-      break;
-    case Apps::HeartRate:
-      currentScreen = std::make_unique<Screens::HeartRate>(heartRateController, *systemTask);
-      break;
-    case Apps::Metronome:
-      currentScreen = std::make_unique<Screens::Metronome>(motorController, *systemTask);
-      break;
-    /* Weather debug app
-    case Apps::Weather:
-      currentScreen = std::make_unique<Screens::Weather>(this, systemTask->nimble().weather());
-      break;
-    */
-    case Apps::Steps:
-      currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);
-      break;
+    }
   }
   currentApp = app;
 }
@@ -556,11 +656,17 @@ void DisplayApp::PushMessage(Messages msg) {
   if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
-    if (xHigherPriorityTaskWoken == pdTRUE) {
-      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   } else {
-    xQueueSend(msgQueue, &msg, portMAX_DELAY);
+    TickType_t timeout = portMAX_DELAY;
+    // Make xQueueSend() non-blocking if the message is a Notification message. We do this to avoid
+    // deadlock between SystemTask and DisplayApp when their respective message queues are getting full
+    // when a lot of notifications are received on a very short time span.
+    if (msg == Messages::NewNotification) {
+      timeout = static_cast<TickType_t>(0);
+    }
+
+    xQueueSend(msgQueue, &msg, timeout);
   }
 }
 
@@ -597,6 +703,19 @@ void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
 
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
+  this->controllers.systemTask = systemTask;
+}
+
+void DisplayApp::Register(Pinetime::Controllers::SimpleWeatherService* weatherService) {
+  this->controllers.weatherController = weatherService;
+}
+
+void DisplayApp::Register(Pinetime::Controllers::MusicService* musicService) {
+  this->controllers.musicService = musicService;
+}
+
+void DisplayApp::Register(Pinetime::Controllers::NavigationService* NavigationService) {
+  this->controllers.navigationService = NavigationService;
 }
 
 void DisplayApp::ApplyBrightness() {

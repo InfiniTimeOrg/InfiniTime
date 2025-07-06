@@ -5,7 +5,7 @@
 To build this project, you'll need:
 
 - A cross-compiler : [ARM-GCC (10.3-2021.10)](https://developer.arm.com/downloads/-/gnu-rm)
-- The NRF52 SDK 15.3.0 : [nRF-SDK v15.3.0](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip)
+- The NRF52 SDK 15.3.0 : [nRF-SDK v15.3.0](https://nsscprodmedia.blob.core.windows.net/prod/software-and-other-downloads/sdks/nrf5/binaries/nrf5sdk153059ac345.zip)
 - The Python 3 modules `cbor`, `intelhex`, `click` and `cryptography` modules for the `mcuboot` tool (see [requirements.txt](../tools/mcuboot/requirements.txt))
   - To keep the system clean, you can install python modules into a python virtual environment (`venv`)
     ```sh
@@ -42,8 +42,8 @@ CMake configures the project according to variables you specify the command line
 **NRF5_SDK_PATH**|path to the NRF52 SDK|`-DNRF5_SDK_PATH=/home/jf/nrf52/Pinetime/sdk`|
 **CMAKE_BUILD_TYPE (\*)**| Build type (Release or Debug). Release is applied by default if this variable is not specified.|`-DCMAKE_BUILD_TYPE=Debug`
 **BUILD_DFU (\*\*)**|Build DFU files while building (needs [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil)).|`-DBUILD_DFU=1`
-**BUILD_RESOURCES (\*\*)**| Generate external resource while building (needs [lv_font_conv](https://github.com/lvgl/lv_font_conv) and [lv_img_conv](https://github.com/lvgl/lv_img_conv). |`-DBUILD_RESOURCES=1`
-**TARGET_DEVICE**|Target device, used for hardware configuration. Allowed: `PINETIME, MOY-TFK5, MOY-TIN5, MOY-TON5, MOY-UNK`|`-DTARGET_DEVICE=PINETIME` (Default)
+**BUILD_RESOURCES (\*\*)**| Generate external resource while building (needs [lv_font_conv](https://github.com/lvgl/lv_font_conv) and [python3-pil/pillow](https://pillow.readthedocs.io) module). |`-DBUILD_RESOURCES=1`
+**TARGET_DEVICE**|Target device, used for hardware configuration. Allowed: `PINETIME, MOY_TFK5, MOY_TIN5, MOY_TON5, MOY_UNK`|`-DTARGET_DEVICE=PINETIME` (Default)
 
 #### (\*) Note about **CMAKE_BUILD_TYPE**
 By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/InfiniTimeOrg/InfiniTime/releases) new versions of InfiniTime.
@@ -66,7 +66,7 @@ DFU files are the files you'll need to install your build of InfiniTime using OT
 #### CMake command 
 
 ```
-cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=...
+cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -S ..
 ```
 
 ### Build the project
@@ -98,4 +98,4 @@ Binary files are generated into the folder `src`:
 - **pinetime-mcuboot-app-image** : MCUBoot image of the firmware
 - **pinetime-mcuboot-app-dfu** : DFU file of the firmware
 
-The same files are generated for **pinetime-recovery** and **pinetime-recoveryloader**
+The same files are generated for **pinetime-recovery** and **pinetime-recovery-loader**

@@ -1,5 +1,4 @@
 #include "displayapp/screens/Tile.h"
-#include "displayapp/DisplayApp.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "components/ble/BleController.h"
 #include "displayapp/InfiniTimeTheme.h"
@@ -30,9 +29,13 @@ Tile::Tile(uint8_t screenID,
            Controllers::Settings& settingsController,
            const Controllers::Battery& batteryController,
            const Controllers::Ble& bleController,
+           const Controllers::AlarmController& alarmController,
            Controllers::DateTime& dateTimeController,
            std::array<Applications, 6>& applications)
-  : app {app}, dateTimeController {dateTimeController}, pageIndicator(screenID, numScreens), statusIcons(batteryController, bleController) {
+  : app {app},
+    dateTimeController {dateTimeController},
+    pageIndicator(screenID, numScreens),
+    statusIcons(batteryController, bleController, alarmController) {
 
   settingsController.SetAppMenu(screenID);
 
@@ -67,8 +70,7 @@ Tile::Tile(uint8_t screenID,
   lv_obj_align(btnm1, nullptr, LV_ALIGN_CENTER, 0, 10);
 
   lv_obj_set_style_local_radius(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, 20);
-  lv_obj_set_style_local_bg_opa(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+  lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_set_style_local_bg_opa(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DISABLED, LV_OPA_50);
   lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DISABLED, Colors::bgDark);
   lv_obj_set_style_local_pad_all(btnm1, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 0);

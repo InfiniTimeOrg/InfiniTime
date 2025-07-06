@@ -70,7 +70,8 @@ void HeartRateTask::Work() {
     }
 
     if (measurementStarted) {
-      int8_t ambient = ppg.Preprocess(heartRateSensor.ReadHrs(), heartRateSensor.ReadAls());
+      auto sensorData = heartRateSensor.ReadHrsAls();
+      int8_t ambient = ppg.Preprocess(sensorData.hrs, sensorData.als);
       int bpm = ppg.HeartRate();
 
       // If ambient light detected or a reset requested (bpm < 0)
@@ -103,10 +104,7 @@ void HeartRateTask::Work() {
 void HeartRateTask::PushMessage(HeartRateTask::Messages msg) {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   xQueueSendFromISR(messageQueue, &msg, &xHigherPriorityTaskWoken);
-  if (xHigherPriorityTaskWoken) {
-    /* Actual macro used here is port specific. */
-    // TODO : should I do something here?
-  }
+  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 void HeartRateTask::StartMeasurement() {

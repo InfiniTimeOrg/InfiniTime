@@ -3,6 +3,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/brightness/BrightnessController.h"
 #include "systemtask/SystemTask.h"
+#include "systemtask/WakeLock.h"
 #include <cstdint>
 #include <lvgl/lvgl.h>
 
@@ -23,10 +24,11 @@ namespace Pinetime {
         void SetIndicators();
         void SetColors();
 
-        Pinetime::System::SystemTask& systemTask;
+        Pinetime::System::WakeLock wakeLock;
         Controllers::BrightnessController& brightnessController;
 
         Controllers::BrightnessController::Levels brightnessLevel = Controllers::BrightnessController::Levels::High;
+        Controllers::BrightnessController::Levels previousBrightnessLevel;
 
         lv_obj_t* flashLight;
         lv_obj_t* backgroundAction;

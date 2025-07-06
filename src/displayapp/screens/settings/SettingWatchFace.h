@@ -19,15 +19,27 @@ namespace Pinetime {
 
       class SettingWatchFace : public Screen {
       public:
-        SettingWatchFace(DisplayApp* app, Pinetime::Controllers::Settings& settingsController, Pinetime::Controllers::FS& filesystem);
+        struct Item {
+          const char* name;
+          WatchFace watchface;
+          bool enabled;
+        };
+
+        SettingWatchFace(DisplayApp* app,
+                         std::array<Item, UserWatchFaceTypes::Count>&& watchfaceItems,
+                         Pinetime::Controllers::Settings& settingsController,
+                         Pinetime::Controllers::FS& filesystem);
         ~SettingWatchFace() override;
 
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
-        DisplayApp* app;
         auto CreateScreenList() const;
         std::unique_ptr<Screen> CreateScreen(unsigned int screenNum) const;
+
+        static constexpr int settingsPerScreen = 4;
+        std::array<Item, UserWatchFaceTypes::Count> watchfaceItems;
+        static constexpr int nScreens = UserWatchFaceTypes::Count > 0 ? (UserWatchFaceTypes ::Count - 1) / settingsPerScreen + 1 : 1;
 
         Controllers::Settings& settingsController;
         Pinetime::Controllers::FS& filesystem;
@@ -35,20 +47,6 @@ namespace Pinetime {
         static constexpr const char* title = "Watch face";
         static constexpr const char* symbol = Symbols::home;
 
-        static constexpr int settingsPerScreen = 4;
-
-        // Increment this when more space is needed
-        static constexpr int nScreens = 2;
-
-        std::array<Screens::CheckboxList::Item, settingsPerScreen * nScreens> watchfaces {
-          {{"Digital face", true},
-           {"Analog face", true},
-           {"PineTimeStyle", true},
-           {"Terminal", true},
-           {"Infineat face", Applications::Screens::WatchFaceInfineat::IsAvailable(filesystem)},
-           {"Casio G7710", Applications::Screens::WatchFaceCasioStyleG7710::IsAvailable(filesystem)},
-           {"", false},
-           {"", false}}};
         ScreenList<nScreens> screens;
       };
     }

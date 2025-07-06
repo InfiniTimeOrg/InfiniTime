@@ -22,18 +22,19 @@
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
 #include <lvgl/lvgl.h>
 #include <cstdio>
-#include <displayapp/Colors.h>
+#include "displayapp/Colors.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/WeatherSymbols.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
-#include "components/ble/weather/WeatherService.h"
+#include "components/ble/SimpleWeatherService.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -50,7 +51,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
                                                Controllers::NotificationManager& notificationManager,
                                                Controllers::Settings& settingsController,
                                                Controllers::MotionController& motionController,
-                                               Controllers::WeatherService& weatherService)
+                                               Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
     batteryIcon(false),
     dateTimeController {dateTimeController},
@@ -115,7 +116,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   weatherIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
-  lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
+  lv_label_set_text(weatherIcon, Symbols::ban);
   lv_obj_align(weatherIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 35);
   lv_obj_set_auto_realign(weatherIcon, true);
   if (settingsController.GetPTSWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {
@@ -126,6 +127,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
 
   temperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_label_set_text(temperature, "--");
   lv_obj_align(temperature, sidebar, LV_ALIGN_IN_TOP_MID, 0, 65);
   if (settingsController.GetPTSWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {
     lv_obj_set_hidden(temperature, false);
@@ -405,7 +407,7 @@ bool WatchFacePineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents ev
   if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnClose)) {
     lv_obj_set_hidden(btnSetColor, false);
     lv_obj_set_hidden(btnSetOpts, false);
-    savedTick = lv_tick_get();
+    savedTick = xTaskGetTickCount();
     return true;
   }
   if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnClose) == false)) {
@@ -537,36 +539,26 @@ void WatchFacePineTimeStyle::Refresh() {
     }
   }
 
-  if (weatherService.GetCurrentTemperature()->timestamp != 0 && weatherService.GetCurrentClouds()->timestamp != 0 &&
-      weatherService.GetCurrentPrecipitation()->timestamp != 0) {
-    nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100);
-    clouds = (weatherService.GetCurrentClouds()->amount);
-    precip = (weatherService.GetCurrentPrecipitation()->amount);
-    if (nowTemp.IsUpdated()) {
-      lv_label_set_text_fmt(temperature, "%d°", nowTemp.Get());
-      if ((clouds <= 30) && (precip == 0)) {
-        lv_label_set_text(weatherIcon, Symbols::sun);
-      } else if ((clouds >= 70) && (clouds <= 90) && (precip == 1)) {
-        lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
-      } else if ((clouds > 90) && (precip == 0)) {
-        lv_label_set_text(weatherIcon, Symbols::cloud);
-      } else if ((clouds > 70) && (precip >= 2)) {
-        lv_label_set_text(weatherIcon, Symbols::cloudShowersHeavy);
-      } else {
-        lv_label_set_text(weatherIcon, Symbols::cloudSun);
-      };
-      lv_obj_realign(temperature);
-      lv_obj_realign(weatherIcon);
+  currentWeather = weatherService.Current();
+  if (currentWeather.IsUpdated()) {
+    auto optCurrentWeather = currentWeather.Get();
+    if (optCurrentWeather) {
+      int16_t temp = optCurrentWeather->temperature.Celsius();
+      if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
+        temp = optCurrentWeather->temperature.Fahrenheit();
+      }
+      lv_label_set_text_fmt(temperature, "%d°", temp);
+      lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
+    } else {
+      lv_label_set_text(temperature, "--");
+      lv_label_set_text(weatherIcon, Symbols::ban);
     }
-  } else {
-    lv_label_set_text_static(temperature, "--");
-    lv_label_set_text(weatherIcon, Symbols::ban);
     lv_obj_realign(temperature);
     lv_obj_realign(weatherIcon);
   }
 
   if (!lv_obj_get_hidden(btnSetColor)) {
-    if ((savedTick > 0) && (lv_tick_get() - savedTick > 3000)) {
+    if ((savedTick > 0) && (xTaskGetTickCount() - savedTick > pdMS_TO_TICKS(3000))) {
       lv_obj_set_hidden(btnSetColor, true);
       lv_obj_set_hidden(btnSetOpts, true);
       savedTick = 0;

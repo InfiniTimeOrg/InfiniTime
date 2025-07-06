@@ -1,4 +1,9 @@
 {
+    "env": {
+        // TODO: This is a duplication of the configuration set in /docker/build.sh!
+        "TOOLS_DIR": "/opt",
+        "GCC_ARM_PATH": "gcc-arm-none-eabi-10.3-2021.10"
+    },
     "configurations": [
         {
             "name": "nrfCC",
@@ -10,7 +15,22 @@
             "defines": [],
             "compilerPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gcc",
             "cStandard": "c11",
-            "cppStandard": "c++14",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "linux-gcc-arm",
+            "configurationProvider": "ms-vscode.cpp-tools",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+        },
+        {
+            "name": "nrfCC Devcontainer",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/src"
+            ],
+            "defines": [],
+            "compilerPath": "${TOOLS_DIR}/${GCC_ARM_PATH}/bin/arm-none-eabi-gcc",
+            "cStandard": "c99",
+            "cppStandard": "c++20",
             "intelliSenseMode": "linux-gcc-arm",
             "configurationProvider": "ms-vscode.cpp-tools",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json"

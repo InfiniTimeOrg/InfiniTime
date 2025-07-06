@@ -4,6 +4,8 @@
 #include <chrono>
 #include "displayapp/screens/Screen.h"
 #include "systemtask/SystemTask.h"
+#include "systemtask/WakeLock.h"
+#include "Symbols.h"
 #include <lvgl/src/lv_core/lv_style.h>
 #include <lvgl/src/lv_core/lv_obj.h>
 
@@ -26,7 +28,7 @@ namespace Pinetime {
 
       private:
         Controllers::HeartRateController& heartRateController;
-        Pinetime::System::SystemTask& systemTask;
+        Pinetime::System::WakeLock wakeLock;
         void UpdateStartStopButton(bool isRunning);
         lv_obj_t* label_hr;
         lv_obj_t* label_bpm;
@@ -37,5 +39,19 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct AppTraits<Apps::HeartRate> {
+      static constexpr Apps app = Apps::HeartRate;
+      static constexpr const char* icon = Screens::Symbols::heartBeat;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::HeartRate(controllers.heartRateController, *controllers.systemTask);
+      };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      };
+    };
   }
 }
