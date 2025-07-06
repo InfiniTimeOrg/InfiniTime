@@ -104,7 +104,7 @@ namespace Pinetime {
     template <>
     struct WatchFaceTraits<WatchFace::Infineat> {
       static constexpr WatchFace watchFace = WatchFace::Infineat;
-      static constexpr const char* name = "Infineat face";
+      static constexpr const char* name = "Infineat";
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::WatchFaceInfineat(controllers.dateTimeController,
