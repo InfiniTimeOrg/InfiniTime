@@ -677,6 +677,7 @@ set(INCLUDE_FILES
         buttonhandler/ButtonHandler.h
         touchhandler/TouchHandler.h
         utility/Math.h
+        utility/Persistent.h
         )
 
 include_directories(
