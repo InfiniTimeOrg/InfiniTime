@@ -52,7 +52,7 @@ namespace Pinetime {
         Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
         Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
         uint8_t currentDay = 0;
-        uint32_t savedTick = 0;
+        TickType_t savedTick = 0;
 
         Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
         Utility::DirtyValue<bool> isCharging {};

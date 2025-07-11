@@ -37,6 +37,7 @@ namespace Pinetime {
       enum class VibrationStrength : uint8_t { Weak = 15, Normal = 35, Strong = 75 };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
+      enum class PrideFlag : uint8_t { Gay, Trans, Bi, Lesbian };
 
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
@@ -182,6 +183,16 @@ namespace Pinetime {
       CasioWeatherSegment GetCasioWeatherSegment() const {
         return settings.casio.weatherSegment;
       }
+
+      void SetPrideFlag(PrideFlag prideFlag) {
+        if (prideFlag != settings.prideFlag)
+          settingsChanged = true;
+        settings.prideFlag = prideFlag;
+      };
+
+      PrideFlag GetPrideFlag() const {
+        return settings.prideFlag;
+      };
 
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
@@ -352,7 +363,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0008;
+      static constexpr uint32_t settingsVersion = 0x0009;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -371,6 +382,8 @@ namespace Pinetime {
         PineTimeStyle PTS;
 
         CasioStyleG7710 casio;
+
+        PrideFlag prideFlag = PrideFlag::Gay;
 
         WatchFaceInfineat watchFaceInfineat;
 

@@ -8,8 +8,6 @@
 
 using namespace Pinetime::Applications::Screens;
 
-constexpr std::array<SettingWakeUp::Option, 5> SettingWakeUp::options;
-
 namespace {
   void event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingWakeUp*>(obj->user_data);
@@ -45,7 +43,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Controllers::Settings& settingsController
 
   for (unsigned int i = 0; i < options.size(); i++) {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
-    lv_checkbox_set_text(cbOption[i], options[i].name);
+    lv_checkbox_set_text_static(cbOption[i], options[i].name);
     if (settingsController.isWakeUpModeOn(static_cast<Controllers::Settings::WakeUpMode>(i))) {
       lv_checkbox_set_checked(cbOption[i], true);
     }
