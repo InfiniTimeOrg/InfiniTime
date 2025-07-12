@@ -183,11 +183,16 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     // os_mbuf_copydata(event->notify_rx.om, 3, 1, &categoryCount);
     os_mbuf_copydata(event->notify_rx.om, 4, 4, &ancsNotif.uuid);
 
-    bool silent = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0;
+    //bool silent = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0;
     // bool important = eventFlags & static_cast<uint8_t>(EventFlags::Important);
     bool preExisting = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) != 0;
     // bool positiveAction = eventFlags & static_cast<uint8_t>(EventFlags::PositiveAction);
     // bool negativeAction = eventFlags & static_cast<uint8_t>(EventFlags::NegativeAction);
+
+    // If the notification is pre-existing, or if it is a silent notification, we do not add it to the list
+    if (preExisting || ancsNotif.eventId != static_cast<uint8_t>(EventIds::Added)) {
+      return;
+    }
 
     // The 6 is from TotalNbNotifications in NotificationManager.h + 1
     while (notifications.size() > 6) {
@@ -196,12 +201,8 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     if (notifications.contains(ancsNotif.uuid)) {
       notifications[ancsNotif.uuid] = ancsNotif;
-    } else if (!silent) {
+    } else {
       notifications.insert({ancsNotif.uuid, ancsNotif});
-    }
-
-    if (preExisting || ancsNotif.eventId != static_cast<uint8_t>(EventIds::Added) || silent) {
-      return;
     }
 
     // Request ANCS more info
@@ -326,7 +327,10 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     }
     notificationManager.Push(std::move(notif));
 
-    systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
+    // Only ping the system task if the notification was added
+    if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Added)) {
+      systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
+    }
   }
 }
 
