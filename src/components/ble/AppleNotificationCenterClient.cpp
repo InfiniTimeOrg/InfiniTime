@@ -328,7 +328,7 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     notificationManager.Push(std::move(notif));
 
     // Only ping the system task if the notification was added
-    if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Added)) {
+    if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Added) && (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0) {
       systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
     }
   }
