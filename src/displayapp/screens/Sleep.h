@@ -102,6 +102,10 @@ namespace Pinetime {
                                   controllers.motorController,
                                   *controllers.displayApp);
       }
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      };
     };
   }
 }
