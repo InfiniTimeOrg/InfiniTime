@@ -479,8 +479,6 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     if (obj == btnSuggestedAlarm) {
       // Set the suggested time
       const uint16_t totalSuggestedMinutes = infiniSleepController.GetSuggestedSleepTime();
-      const uint8_t suggestedHours = totalSuggestedMinutes / 60;
-      const uint8_t suggestedMinutes = totalSuggestedMinutes % 60;
 
       // Time for alarm, current time + suggested sleep time
       // Convert current time to total minutes since midnight
