@@ -83,8 +83,7 @@ namespace Pinetime {
 
         lv_task_t* taskRefresh;
 
-        Widgets::PageIndicator page1Indicator = Widgets::PageIndicator(0, 2);
-        Widgets::PageIndicator page2Indicator = Widgets::PageIndicator(1, 2);
+        Widgets::PageIndicator pageIndicator = Widgets::PageIndicator(0, 2);
 
         /** Watchapp */
       };

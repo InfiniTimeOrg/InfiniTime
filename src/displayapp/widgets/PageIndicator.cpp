@@ -35,3 +35,9 @@ void PageIndicator::Delete() {
   lv_obj_del(pageIndicatorBase);
   lv_obj_del(pageIndicator);
 }
+
+void PageIndicator::SetCurrentScreen(uint8_t nScreen) {
+  Delete();
+  nCurrentScreen = nScreen;
+  Create();
+}
