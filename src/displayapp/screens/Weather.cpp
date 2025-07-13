@@ -35,15 +35,21 @@ namespace {
   }
 }
 
-Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleWeatherService& weatherService)
-  : settingsController {settingsController}, weatherService {weatherService} {
+Weather::Weather(Controllers::Settings& settingsController,
+                 Controllers::SimpleWeatherService& weatherService,
+                 Controllers::DateTime& dateTimeController)
+  : settingsController {settingsController}, weatherService {weatherService}, dateTimeController {dateTimeController} {
 
   temperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_text_font(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_label_set_text(temperature, "---");
-  lv_obj_align(temperature, nullptr, LV_ALIGN_CENTER, 0, -30);
+  lv_obj_align(temperature, nullptr, LV_ALIGN_CENTER, 0, -32);
   lv_obj_set_auto_realign(temperature, true);
+
+  lastUpdated = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(lastUpdated, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
+  lv_label_set_text(lastUpdated, "");
 
   minTemperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(minTemperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
@@ -137,10 +143,44 @@ void Weather::Refresh() {
       lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
       lv_label_set_text_fmt(minTemperature, "%d°", minTemp);
       lv_label_set_text_fmt(maxTemperature, "%d°", maxTemp);
+
+      std::chrono::seconds secondsSinceEpoch =
+        std::chrono::duration_cast<std::chrono::seconds>(dateTimeController.CurrentDateTime().time_since_epoch());
+      int32_t secondsSinceWeatherUpdate = secondsSinceEpoch.count() - optCurrentWeather->timestamp;
+      int8_t minutesSinceWeatherUpdate = secondsSinceWeatherUpdate / 60;
+      int8_t hoursSinceWeatherUpdate = secondsSinceWeatherUpdate / 3600;
+
+      constexpr uint8_t Y_POSITION = 108;
+      constexpr uint8_t X_SINGLE_DIGIT_POSITION = 90;
+      constexpr uint8_t X_TWO_DIGIT_POSITION = 78;
+      constexpr uint8_t X_NOW_POSITION = 102;
+
+      lv_obj_set_pos(lastUpdated, X_SINGLE_DIGIT_POSITION, Y_POSITION);
+
+      if (hoursSinceWeatherUpdate > 0) {
+        if (hoursSinceWeatherUpdate > 9) {
+          lv_obj_set_pos(lastUpdated, X_TWO_DIGIT_POSITION, Y_POSITION);
+        }
+        lv_label_set_text_fmt(lastUpdated, "%dh ago", hoursSinceWeatherUpdate);
+      } else if (minutesSinceWeatherUpdate > 0) {
+        if (minutesSinceWeatherUpdate > 9 && minutesSinceWeatherUpdate < 60) {
+          lv_obj_set_pos(lastUpdated, X_TWO_DIGIT_POSITION, Y_POSITION);
+        }
+        lv_label_set_text_fmt(lastUpdated, "%dm ago", minutesSinceWeatherUpdate);
+      } else if (secondsSinceWeatherUpdate > 30) {
+        if (secondsSinceWeatherUpdate > 9 && secondsSinceWeatherUpdate < 60) {
+          lv_obj_set_pos(lastUpdated, X_TWO_DIGIT_POSITION, Y_POSITION);
+        }
+        lv_label_set_text_fmt(lastUpdated, "%ds ago", secondsSinceWeatherUpdate);
+      } else if (secondsSinceWeatherUpdate < 31) {
+        lv_obj_set_pos(lastUpdated, X_NOW_POSITION, Y_POSITION);
+        lv_label_set_text_fmt(lastUpdated, "Now", secondsSinceWeatherUpdate);
+      }
     } else {
       lv_label_set_text(icon, "");
       lv_label_set_text(condition, "");
       lv_label_set_text(temperature, "---");
+      lv_label_set_text(lastUpdated, "");
       lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
       lv_label_set_text(minTemperature, "");
       lv_label_set_text(maxTemperature, "");
