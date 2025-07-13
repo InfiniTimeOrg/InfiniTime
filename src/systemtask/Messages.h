@@ -25,11 +25,14 @@ namespace Pinetime {
       OnChargingEvent,
       OnPairing,
       SetOffAlarm,
+      SetOffWakeAlarm,
+      SetOffGradualWake,
       MeasureBatteryTimerExpired,
       BatteryPercentageUpdated,
       StartFileTransfer,
       StopFileTransfer,
-      BleRadioEnableToggle
+      BleRadioEnableToggle,
+      SleepTrackerUpdate,
     };
   }
 }

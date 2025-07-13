@@ -14,6 +14,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/timer/Timer.h"
 #include "components/alarm/AlarmController.h"
+#include "components/infinisleep/InfiniSleepController.h"
 #include "touchhandler/TouchHandler.h"
 
 #include "displayapp/Messages.h"
@@ -67,7 +68,8 @@ namespace Pinetime {
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
                  Pinetime::Controllers::FS& filesystem,
-                 Pinetime::Drivers::SpiNorFlash& spiNorFlash);
+                 Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+                 Pinetime::Controllers::InfiniSleepController& infiniSleepController);
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
@@ -98,6 +100,7 @@ namespace Pinetime {
       Pinetime::Controllers::TouchHandler& touchHandler;
       Pinetime::Controllers::FS& filesystem;
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
+      Pinetime::Controllers::InfiniSleepController& infiniSleepController;
 
       Pinetime::Controllers::FirmwareValidator validator;
       Pinetime::Components::LittleVgl lvgl;

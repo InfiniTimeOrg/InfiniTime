@@ -31,6 +31,7 @@
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
 #include "displayapp/screens/Calculator.h"
+#include "displayapp/screens/Sleep.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -85,7 +86,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
                        Pinetime::Controllers::FS& filesystem,
-                       Pinetime::Drivers::SpiNorFlash& spiNorFlash)
+                       Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+                       Pinetime::Controllers::InfiniSleepController& infiniSleepController)
   : lcd {lcd},
     touchPanel {touchPanel},
     batteryController {batteryController},
@@ -102,6 +104,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     touchHandler {touchHandler},
     filesystem {filesystem},
     spiNorFlash {spiNorFlash},
+    infiniSleepController {infiniSleepController},
     lvgl {lcd, filesystem},
     timer(this, TimerCallback),
     controllers {batteryController,
@@ -113,6 +116,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                  motorController,
                  motionController,
                  alarmController,
+                 infiniSleepController,
                  brightnessController,
                  nullptr,
                  filesystem,
@@ -352,6 +356,11 @@ void DisplayApp::Refresh() {
           lcd.LowPowerOff();
         } else {
           lcd.Wakeup();
+          if (infiniSleepController.IsEnabled()) {
+            if (currentApp != Apps::Sleep) {
+              LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::Up);
+            }
+          }
         }
         lv_disp_trig_activity(nullptr);
         ApplyBrightness();
@@ -382,6 +391,37 @@ void DisplayApp::Refresh() {
           alarm->SetAlerting();
         } else {
           LoadNewScreen(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
+        }
+        break;
+      case Messages::WakeAlarmTriggered:
+        if (currentApp == Apps::Sleep) {
+          auto* sleep = static_cast<Screens::Sleep*>(currentScreen.get());
+          sleep->SetAlerting();
+        } else {
+          LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::None);
+        }
+        break;
+      case Messages::GradualWakeTriggered:
+        if (currentApp == Apps::Sleep) {
+          // auto* sleep = static_cast<Screens::Sleep*>(currentScreen.get());
+          // sleep->SetGradualWakeAlerting();
+        } else {
+          // LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::None);
+        }
+        // motorController.RunForDuration(infiniSleepController.gradualWakeVibrationDurations[-1 + infiniSleepController.gradualWakeStep]);
+
+        if (infiniSleepController.isSnoozing == false) {
+          motorController.GradualWakeBuzz();
+          NRF_LOG_INFO("Gradual wake triggered");
+        }
+
+        infiniSleepController.UpdateGradualWake();
+
+        break;
+      case Messages::SleepTrackerUpdate:
+        if (currentApp == Apps::Sleep) {
+          auto* sleep = static_cast<Screens::Sleep*>(currentScreen.get());
+          sleep->UpdateDisplay();
         }
         break;
       case Messages::ShowPairingKey:
@@ -462,7 +502,7 @@ void DisplayApp::Refresh() {
         LoadNewScreen(Apps::SysInfo, DisplayApp::FullRefreshDirections::Up);
         break;
       case Messages::ButtonDoubleClicked:
-        if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
+        if (!infiniSleepController.IsAlerting() && currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
           LoadNewScreen(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
         }
         break;
@@ -719,6 +759,10 @@ void DisplayApp::Register(Pinetime::Controllers::NavigationService* NavigationSe
 }
 
 void DisplayApp::ApplyBrightness() {
+  if (infiniSleepController.IsEnabled() || currentApp == Apps::Sleep) {
+    brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+    return;
+  }
   auto brightness = settingsController.GetBrightness();
   if (brightness != Controllers::BrightnessController::Levels::Low && brightness != Controllers::BrightnessController::Levels::Medium &&
       brightness != Controllers::BrightnessController::Levels::High) {
