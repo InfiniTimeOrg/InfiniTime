@@ -483,8 +483,15 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       const uint8_t suggestedMinutes = totalSuggestedMinutes % 60;
 
       // Time for alarm, current time + suggested sleep time
-      const uint8_t alarmHour = (infiniSleepController.GetCurrentHour() + suggestedHours) % 24;
-      const uint8_t alarmMinute = (infiniSleepController.GetCurrentMinute() + suggestedMinutes) % 60;
+      // Convert current time to total minutes since midnight
+      const uint16_t currentTotalMinutes = infiniSleepController.GetCurrentHour() * 60 + infiniSleepController.GetCurrentMinute();
+      
+      // Add suggested sleep time
+      const uint16_t alarmTotalMinutes = (currentTotalMinutes + totalSuggestedMinutes) % (24 * 60);
+  
+      // Convert back to hours and minutes
+      const uint8_t alarmHour = alarmTotalMinutes / 60;
+      const uint8_t alarmMinute = alarmTotalMinutes % 60;
 
       infiniSleepController.SetWakeAlarmTime(alarmHour, alarmMinute);
 
