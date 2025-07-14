@@ -441,6 +441,7 @@ void AppleNotificationCenterClient::Reset() {
   isDataDescriptorFound = false;
 
   notifications.clear();
+  sessionNotificationUids.clear();
 }
 
 void AppleNotificationCenterClient::Discover(uint16_t connectionHandle, std::function<void(uint16_t)> onServiceDiscovered) {
