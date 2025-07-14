@@ -185,12 +185,31 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     //bool silent = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0;
     // bool important = eventFlags & static_cast<uint8_t>(EventFlags::Important);
-    bool preExisting = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) != 0;
+    //bool preExisting = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) != 0;
     // bool positiveAction = eventFlags & static_cast<uint8_t>(EventFlags::PositiveAction);
     // bool negativeAction = eventFlags & static_cast<uint8_t>(EventFlags::NegativeAction);
 
+    // If notification was removed, we remove it from the notifications map
+    if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Removed) && sessionNotificationUids.contains(ancsNotif.uuid)) {
+      sessionNotificationUids.erase(ancsNotif.uuid);
+      if (notifications.contains(ancsNotif.uuid)) {
+        notifications.erase(ancsNotif.uuid);
+      }
+      NRF_LOG_INFO("ANCS Notification removed: %d", ancsNotif.uuid);
+      return;
+    }
+
     // If the notification is pre-existing, or if it is a silent notification, we do not add it to the list
-    if (preExisting || ancsNotif.eventId != static_cast<uint8_t>(EventIds::Added)) {
+    if (sessionNotificationUids.contains(ancsNotif.uuid)) {
+      return;
+    }
+
+    // If new notification, add it to the sessionNotificationUids
+    if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Added) && (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) == 0) {
+      sessionNotificationUids.insert({ancsNotif.uuid, false});
+    } else {
+      // If the notification is not added, we ignore it
+      NRF_LOG_INFO("ANCS Notification not added, ignoring: %d", ancsNotif.uuid);
       return;
     }
 
@@ -241,6 +260,19 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     AncsNotification ancsNotif;
     ancsNotif.uuid = 0;
+
+    // Check if the notification is in the session
+    if (sessionNotificationUids.contains(notificationUid)) {
+      if (sessionNotificationUids[notificationUid]) {
+        // If the notification is already processed, we ignore it
+        NRF_LOG_INFO("Notification with UID %d already processed, ignoring", notificationUid);
+        return;
+      }
+    } else {
+      // If the notification is not in the session, we ignore it
+      NRF_LOG_INFO("Notification with UID %d not found in session, ignoring", notificationUid);
+      return;
+    }
 
     if (notifications.contains(notificationUid)) {
       ancsNotif = notifications[notificationUid];
@@ -330,6 +362,9 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
       notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
     }
     notificationManager.Push(std::move(notif));
+
+    // Mark the notification as processed in the session
+    sessionNotificationUids[notificationUid] = true;
 
     // Only ping the system task if the notification was added
     if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Added) && (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) == 0) {
