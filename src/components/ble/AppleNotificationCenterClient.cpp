@@ -244,6 +244,10 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     if (notifications.contains(notificationUid)) {
       ancsNotif = notifications[notificationUid];
+    } else {
+      // If the Notification source didn't add it earlier, then don't process it
+      NRF_LOG_INFO("Notification with UID %d not found in notifications map, ignoring datasource", notificationUid);
+      return;
     }
 
     std::string decodedTitle = DecodeUtf8String(event->notify_rx.om, titleSize, 8);
