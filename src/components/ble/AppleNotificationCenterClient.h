@@ -45,12 +45,6 @@ namespace Pinetime {
       static constexpr uint8_t maxSubtitleSize {15};
       static constexpr uint8_t maxMessageSize {120};
 
-      // Keep track of the ANCS UUIDs in array for this session to avoid re-pings for old notifications
-      // Keep track of max notifications UUIDs at most
-      static constexpr uint8_t maxNotifications {200};
-      // make this unordered map have a boolean attached to see if data has been received for this notification
-      std::unordered_map<uint32_t, bool> sessionNotificationUids {};
-
       // The Apple Notification Center Service UUID are from https://developer.apple.com/library/archive/documentation/CoreBluetooth/Reference/AppleNotificationCenterServiceSpecification/Specification/Specification.html
 
       // 7905F431-B5CE-4E99-A40F-4B1E122D00D0
@@ -105,6 +99,7 @@ namespace Pinetime {
         uint8_t eventFlags {0};
         uint8_t category {0};
         uint32_t uuid {0};
+        bool isProcessed {false};
       };
 
       std::unordered_map<uint32_t, AncsNotification> notifications;

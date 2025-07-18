@@ -190,23 +190,22 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     // bool negativeAction = eventFlags & static_cast<uint8_t>(EventFlags::NegativeAction);
 
     // If notification was removed, we remove it from the notifications map
-    if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Removed) && sessionNotificationUids.contains(ancsNotif.uuid)) {
-      sessionNotificationUids.erase(ancsNotif.uuid);
-      if (notifications.contains(ancsNotif.uuid)) {
-        notifications.erase(ancsNotif.uuid);
-      }
+    if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Removed) && notifications.contains(ancsNotif.uuid)) {
+      notifications.erase(ancsNotif.uuid);
       NRF_LOG_INFO("ANCS Notification removed: %d", ancsNotif.uuid);
       return;
     }
 
     // If the notification is pre-existing, or if it is a silent notification, we do not add it to the list
-    if (sessionNotificationUids.contains(ancsNotif.uuid)) {
+    if (notifications.contains(ancsNotif.uuid) || 
+        (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0 ||
+        (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) != 0) {
       return;
     }
 
-    // If new notification, add it to the sessionNotificationUids
+    // If new notification, add it to the notifications
     if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Added) && (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) == 0) {
-      sessionNotificationUids.insert({ancsNotif.uuid, false});
+      notifications.insert({ancsNotif.uuid, ancsNotif});
     } else {
       // If the notification is not added, we ignore it
       NRF_LOG_INFO("ANCS Notification not added, ignoring: %d", ancsNotif.uuid);
@@ -214,15 +213,15 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     }
 
     // The 6 is from TotalNbNotifications in NotificationManager.h + 1
-    while (notifications.size() > 6) {
+    while (notifications.size() > 100) {
       notifications.erase(notifications.begin());
     }
 
-    if (notifications.contains(ancsNotif.uuid)) {
-      notifications[ancsNotif.uuid] = ancsNotif;
-    } else {
-      notifications.insert({ancsNotif.uuid, ancsNotif});
-    }
+    // if (notifications.contains(ancsNotif.uuid)) {
+    //   notifications[ancsNotif.uuid] = ancsNotif;
+    // } else {
+    //   notifications.insert({ancsNotif.uuid, ancsNotif});
+    // }
 
     // Request ANCS more info
     // The +4 is for the "..." at the end of the string
@@ -262,8 +261,8 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     ancsNotif.uuid = 0;
 
     // Check if the notification is in the session
-    if (sessionNotificationUids.contains(notificationUid)) {
-      if (sessionNotificationUids[notificationUid]) {
+    if (notifications.contains(notificationUid)) {
+      if (notifications[notificationUid].isProcessed) {
         // If the notification is already processed, we ignore it
         NRF_LOG_INFO("Notification with UID %d already processed, ignoring", notificationUid);
         return;
@@ -287,6 +286,9 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     std::string decodedSubTitle = DecodeUtf8String(event->notify_rx.om, subTitleSize, 8 + titleSize + 1 + 2);
 
     std::string decodedMessage = DecodeUtf8String(event->notify_rx.om, messageSize, 8 + titleSize + 1 + 2 + subTitleSize + 1 + 2);
+
+    //Debug event ids ands flags by putting them at front of message (in int format)
+    //decodedMessage = std::to_string(ancsNotif.uuid) + " " + decodedMessage;
 
     NRF_LOG_INFO("Decoded Title: %s", decodedTitle.c_str());
     NRF_LOG_INFO("Decoded SubTitle: %s", decodedSubTitle.c_str());
@@ -363,13 +365,14 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     }
     notificationManager.Push(std::move(notif));
 
-    // Mark the notification as processed in the session
-    sessionNotificationUids[notificationUid] = true;
-
-    // Only ping the system task if the notification was added
-    if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Added) && (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) == 0) {
+    // Only ping the system task if the notification was added and ignore pre-existing notifications
+    if (ancsNotif.isProcessed == false && (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) == 0 &&
+        (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) == 0) {
       systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
     }
+
+    // Mark the notification as processed in the session
+    notifications[notificationUid].isProcessed = true;
   }
 }
 
@@ -441,7 +444,6 @@ void AppleNotificationCenterClient::Reset() {
   isDataDescriptorFound = false;
 
   notifications.clear();
-  sessionNotificationUids.clear();
 }
 
 void AppleNotificationCenterClient::Discover(uint16_t connectionHandle, std::function<void(uint16_t)> onServiceDiscovered) {
