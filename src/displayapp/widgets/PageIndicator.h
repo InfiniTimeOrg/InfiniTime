@@ -8,10 +8,9 @@ namespace Pinetime {
       public:
         PageIndicator(uint8_t nCurrentScreen, uint8_t nScreens);
         void Create();
-        void SetCurrentScreen(uint8_t nScreen);
+        void SetPageIndicatorPosition(uint8_t position);
 
       private:
-        void SetPageIndicatorPosition(uint8_t position);
         uint8_t nCurrentScreen;
         uint8_t nScreens;
 
