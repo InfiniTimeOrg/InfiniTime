@@ -257,7 +257,7 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       lv_obj_set_hidden(btnVolUp, false);
       lv_obj_set_hidden(btnNext, true);
       lv_obj_set_hidden(btnPrev, true);
-      pageIndicator.SetCurrentScreen(1);
+      pageIndicator.SetPageIndicatorPosition(1);
       return true;
     }
     case TouchEvents::SwipeDown: {
@@ -266,7 +266,7 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
         lv_obj_set_hidden(btnPrev, false);
         lv_obj_set_hidden(btnVolDown, true);
         lv_obj_set_hidden(btnVolUp, true);
-        pageIndicator.SetCurrentScreen(0);
+        pageIndicator.SetPageIndicatorPosition(0);
         return true;
       }
       return false;
