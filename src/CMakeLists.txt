@@ -380,6 +380,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Metronome.cpp
         displayapp/screens/Motion.cpp
         displayapp/screens/Weather.cpp
+        displayapp/screens/Calculator.cpp
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
@@ -426,6 +427,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/WatchFaceTerminal.cpp
         displayapp/screens/WatchFacePineTimeStyle.cpp
         displayapp/screens/WatchFaceCasioStyleG7710.cpp
+        displayapp/screens/WatchFacePrideFlag.cpp
 
         ##
 
