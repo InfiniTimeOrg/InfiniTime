@@ -506,6 +506,11 @@ void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direc
   // This is mainly to fix an issue with receiving two notifications at the same time
   // and shouldn't happen otherwise.
   if (app != currentApp) {
+    // We need to remove the popup
+    // If we keep the popup linked to the previous view, and this view is deleted, a bug will occur if we try to re-remove the popup.
+    // Not removing the popup will also prevent the popup to be raised on top of
+    // the new app
+    popupMessage.SetHidden(true);
     returnAppStack.Push(currentApp);
     appStackDirections.Push(direction);
   }
