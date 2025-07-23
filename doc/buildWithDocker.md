@@ -15,23 +15,55 @@ Based on Ubuntu 22.04 with the following build dependencies:
 
 Before building, local repository must be fully initialized.
 
-```
+```sh
 git clone https://github.com/InfiniTimeOrg/InfiniTime.git
 cd InfiniTime
 git submodule update --init
 ```
+
+## Provision the image
+
+Before continuing, the build image needs to be either build locally or pulled
+from Docker Hub, as described in the two sections below:
+
+### Build the image
+
+You can build the image yourself if you like!
+
+The following commands must be run from the root of the project. This operation
+will take some time but, when done, a new image named `infinitime-build` is
+available.
+
+```sh
+docker build -t infinitime-build ./docker
+```
+
+### Pull the image from Docker Hub
+
+The image is available via Docker Hub for both the amd64 and arm64v8 architectures at
+[infinitime/infinitime-build](https://hub.docker.com/repository/docker/infinitime/infinitime-build).
+
+You can run it using the following command:
+
+```sh
+docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime/infinitime-build
+```
+
+The default `latest` tag *should* automatically identify the correct image architecture, but if for some reason Docker does not, you can specify it manually:
+
+- For AMD64 (x86_64) systems: `docker pull --platform linux/amd64 infinitime/infinitime-build`
+
+- For ARM64v8 (ARM64/aarch64) systems: `docker pull --platform linux/arm64 infinitime/infinitime-build`
 
 ## Run a container to build the project
 
 The `infinitime-build` image contains all the dependencies you need.
 The default `CMD` will compile sources found in `/sources`, so you need only mount your code.
 
-Before continuing, make sure you first build the image as indicated in the [Build the image](#build-the-image) section, or check the [Using the image from Docker Hub](#using-the-image-from-docker-hub) section if you prefer to use a pre-made image.
-
 This example will build the firmware, generate the MCUBoot image and generate the DFU file.
 For cloning the repo, see [these instructions](../doc/buildAndProgram.md#clone-the-repo). Outputs will be written to **<project_root>/build/output**:
 
-```bash
+```sh
 cd <project_root> # e.g. cd ./work/Pinetime
 docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime-build
 ```
@@ -44,32 +76,6 @@ If you only want to build a single CMake target, you can pass it in as the first
 This means calling the script explicitly as it will override the `CMD`.
 Here's an example for `pinetime-app`:
 
-```bash
+```sh
 docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime-build /opt/build.sh pinetime-app
-```
-
-## Using the image from Docker Hub
-
-The image is available via Docker Hub for both the amd64 and arm64v8 architectures at [infinitime/infinitime-build](https://hub.docker.com/repository/docker/infinitime/infinitime-build).
-
-You can run it using the following command:
-
-```bash
-docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime/infinitime-build
-```
-
-The default `latest` tag *should* automatically identify the correct image architecture, but if for some reason Docker does not, you can specify it manually:
-
-- For AMD64 (x86_64) systems: `docker pull --platform linux/amd64 infinitime/infinitime-build`
-
-- For ARM64v8 (ARM64/aarch64) systems: `docker pull --platform linux/arm64 infinitime/infinitime-build`
-
-## Build the image
-
-You can build the image yourself if you like!
-
-The following commands must be run from the root of the project. This operation will take some time but, when done, a new image named *infinitime-build* is available.
-
-```bash
-docker build -t infinitime-build ./docker
 ```
