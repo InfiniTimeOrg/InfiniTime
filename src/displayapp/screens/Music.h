@@ -105,6 +105,10 @@ namespace Pinetime {
         return new Screens::Music(*controllers.musicService,
                                    controllers.bleController);
       };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      };
     };
   }
 }
