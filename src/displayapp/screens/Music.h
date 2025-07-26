@@ -24,6 +24,8 @@
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
+#include "components/ble/BleController.h"
+#include "utility/DirtyValue.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -34,7 +36,7 @@ namespace Pinetime {
     namespace Screens {
       class Music : public Screen {
       public:
-        Music(Pinetime::Controllers::MusicService& music);
+        Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble& bleController);
 
         ~Music() override;
 
@@ -55,17 +57,22 @@ namespace Pinetime {
         lv_obj_t* txtArtist;
         lv_obj_t* txtTrack;
         lv_obj_t* txtPlayPause;
+        lv_obj_t* bluetoothInfo;
 
         lv_obj_t* imgDisc;
         lv_obj_t* imgDiscAnim;
         lv_obj_t* txtTrackDuration;
+        lv_obj_t* txtCurrentPosition;
+        lv_obj_t* barTrackDuration;
+
 
         lv_style_t btn_style;
 
         /** For the spinning disc animation */
         bool frameB;
 
-        Pinetime::Controllers::MusicService& musicService;
+        Pinetime::Controllers::MusicService& musicService;        
+        const Controllers::Ble& bleController;
 
         std::string artist;
         std::string album;
@@ -82,6 +89,9 @@ namespace Pinetime {
 
         lv_task_t* taskRefresh;
 
+        Utility::DirtyValue<bool> bleState {};
+        Utility::DirtyValue<bool> bleRadioEnabled {};
+
         /** Watchapp */
       };
     }
@@ -92,7 +102,8 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::music;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Music(*controllers.musicService);
+        return new Screens::Music(*controllers.musicService,
+                                   controllers.bleController);
       };
     };
   }
