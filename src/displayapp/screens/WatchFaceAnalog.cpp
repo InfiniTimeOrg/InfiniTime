@@ -1,5 +1,6 @@
 #include "displayapp/screens/WatchFaceAnalog.h"
 #include <cmath>
+#include <limits>
 #include <lvgl/lvgl.h>
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/BleIcon.h"
@@ -15,8 +16,10 @@ namespace {
   constexpr int16_t MinuteLength = 90;
   constexpr int16_t SecondLength = 110;
 
+  // LVGL sin isn't constexpr (though it could be if it were C++) so fix size here
+  // All the types are hardcoded anyway and would need changing if the size changed
   // sin(90) = 1 so the value of _lv_trigo_sin(90) is the scaling factor
-  const auto LV_TRIG_SCALE = _lv_trigo_sin(90);
+  constexpr int16_t LV_TRIG_SCALE = std::numeric_limits<int16_t>::max(); // = _lv_trigo_sin(90)
 
   int16_t Cosine(int16_t angle) {
     return _lv_trigo_sin(angle + 90);
