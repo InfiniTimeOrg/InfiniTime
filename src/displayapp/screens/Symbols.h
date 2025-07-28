@@ -42,6 +42,7 @@ namespace Pinetime {
         static constexpr const char* calculator = "\xEF\x87\xAC";
         static constexpr const char* backspace = "\xEF\x95\x9A";
 
+
         // fontawesome_weathericons.c
         // static constexpr const char* sun = "\xEF\x86\x85";
         static constexpr const char* cloudSun = "\xEF\x9B\x84";
@@ -53,6 +54,7 @@ namespace Pinetime {
         static constexpr const char* bolt = "\xEF\x83\xA7";
         static constexpr const char* snowflake = "\xEF\x8B\x9C";
         static constexpr const char* ban = "\xEF\x81\x9E";
+        static constexpr const char* boxChecked = "\xEF\x81\x98";
 
         // lv_font_sys_48.c
         static constexpr const char* settings = "\xEE\xA2\xB8";
