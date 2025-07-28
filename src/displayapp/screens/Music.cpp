@@ -49,7 +49,8 @@ inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
  *
  * TODO: Investigate Apple Media Service and AVRCPv1.6 support for seamless integration
  */
-Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble& bleController): musicService(music), bleController {bleController}{
+Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble& bleController)
+  : musicService(music), bleController {bleController}{
   lv_obj_t* label;
 
   lv_style_init(&btn_style);
@@ -212,7 +213,7 @@ void Music::Refresh() {
     if (bleState.Get() == false) {
       lv_label_set_text_fmt(bluetoothInfo, "%s Disconnected", Screens::Symbols::bluetooth);
     } else {
-    lv_label_set_text_fmt(bluetoothInfo, "%s Connected", Screens::Symbols::bluetooth);
+      lv_label_set_text_fmt(bluetoothInfo, "%s Connected", Screens::Symbols::bluetooth);
     }
   }
 
@@ -242,33 +243,20 @@ void Music::Refresh() {
 
 void Music::UpdateLength() {
   int remaining = totalLength - currentPosition;
-  if (remaining < 0) remaining = 0;
+  if (remaining < 0)
+    remaining = 0;
 
   if (totalLength > (99 * 60 * 60)) {
     lv_label_set_text_static(txtCurrentPosition, "Inf");
     lv_label_set_text_static(txtTrackDuration, "Inf");
   } else if (totalLength > (99 * 60)) {
-    lv_label_set_text_fmt(txtCurrentPosition,
-                          "%d:%02d",
-                          (currentPosition / (60 * 60)) % 100,
-                          ((currentPosition % (60 * 60)) / 60) % 100);
-
-    lv_label_set_text_fmt(txtTrackDuration,
-                          "-%d:%02d",
-                          (remaining / (60 * 60)) % 100,
-                          ((remaining % (60 * 60)) / 60) % 100);
+    lv_label_set_text_fmt(txtCurrentPosition, "%d:%02d", (currentPosition / (60 * 60)) % 100, ((currentPosition % (60 * 60)) / 60) % 100);
+    lv_label_set_text_fmt(txtTrackDuration, "-%d:%02d", (remaining / (60 * 60)) % 100, ((remaining % (60 * 60)) / 60) % 100);
     lv_bar_set_range(barTrackDuration, 0, totalLength > 0 ? totalLength : 1);
     lv_bar_set_value(barTrackDuration, currentPosition, LV_ANIM_OFF);
   } else {
-    lv_label_set_text_fmt(txtCurrentPosition,
-                          "%d:%02d",
-                          (currentPosition / 60) % 100,
-                          (currentPosition % 60) % 100);
-
-    lv_label_set_text_fmt(txtTrackDuration,
-                          "-%d:%02d",
-                          (remaining / 60) % 100,
-                          (remaining % 60) % 100);
+    lv_label_set_text_fmt(txtCurrentPosition, "%d:%02d", (currentPosition / 60) % 100, (currentPosition % 60) % 100);
+    lv_label_set_text_fmt(txtTrackDuration, "-%d:%02d", (remaining / 60) % 100, (remaining % 60) % 100);
     lv_bar_set_range(barTrackDuration, 0, totalLength);
     lv_bar_set_value(barTrackDuration, currentPosition, LV_ANIM_OFF);
   }
