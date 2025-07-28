@@ -26,6 +26,7 @@
 #include "displayapp/InfiniTimeTheme.h"
 #include "components/ble/BleController.h"
 
+
 using namespace Pinetime::Applications::Screens;
 
 static void event_handler(lv_obj_t* obj, lv_event_t event) {
@@ -117,6 +118,7 @@ Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble&
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
+
   lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 0, (MIDDLE_OFFSET - 45) + 1 * FONT_HEIGHT);
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrack, LV_HOR_RES - 12);
@@ -153,7 +155,6 @@ Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble&
   lv_obj_set_style_local_text_color(bluetoothInfo, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_align(bluetoothInfo, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
   lv_obj_set_auto_realign(bluetoothInfo, true);
-
 
   /* Init animation
   imgDisc = lv_img_create(lv_scr_act(), nullptr);

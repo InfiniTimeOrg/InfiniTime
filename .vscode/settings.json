@@ -65,7 +65,6 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp",
-        "disc_f_1.c": "cpp"
+        "typeinfo": "cpp"
     }
 }
