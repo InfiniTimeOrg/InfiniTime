@@ -65,7 +65,6 @@ namespace Pinetime {
         lv_obj_t* txtCurrentPosition;
         lv_obj_t* barTrackDuration;
 
-
         lv_style_t btn_style;
 
         /** For the spinning disc animation */

@@ -26,7 +26,6 @@
 #include "displayapp/InfiniTimeTheme.h"
 #include "components/ble/BleController.h"
 
-
 using namespace Pinetime::Applications::Screens;
 
 static void event_handler(lv_obj_t* obj, lv_event_t event) {
