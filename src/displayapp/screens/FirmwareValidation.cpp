@@ -52,7 +52,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Controllers::FirmwareValidator&
     lv_obj_align(labelIsValidated, nullptr, LV_ALIGN_CENTER, 0, 10);
   } else {
     lv_label_set_text_static(labelIsValidated,
-                             "Any reboot will\nrollback to last\nvalidated firmware.");
+                             "Any reboot will\nrollback to last\nvalidated firmware");
 
     buttonValidate = lv_btn_create(lv_scr_act(), nullptr);
     buttonValidate->user_data = this;
