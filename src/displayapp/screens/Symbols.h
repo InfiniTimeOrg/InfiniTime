@@ -54,7 +54,6 @@ namespace Pinetime {
         static constexpr const char* bolt = "\xEF\x83\xA7";
         static constexpr const char* snowflake = "\xEF\x8B\x9C";
         static constexpr const char* ban = "\xEF\x81\x9E";
-        static constexpr const char* boxChecked = "\xEF\x81\x98";
 
         // lv_font_sys_48.c
         static constexpr const char* settings = "\xEE\xA2\xB8";
