@@ -71,7 +71,7 @@ namespace Pinetime {
         /** For the spinning disc animation */
         bool frameB;
 
-        Pinetime::Controllers::MusicService& musicService;        
+        Pinetime::Controllers::MusicService& musicService;
         const Controllers::Ble& bleController;
 
         std::string artist;
