@@ -43,6 +43,7 @@ namespace Pinetime {
           {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
 
           {Symbols::clock, "Chimes", Apps::SettingChimes},
+          {Symbols::clock, "Sleep/Wake", Apps::SettingSetSleepWakeTime},
           {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
           {Symbols::check, "Firmware", Apps::FirmwareValidation},
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
