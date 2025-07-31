@@ -28,12 +28,17 @@
 #include <FreeRTOS.h>
 
 namespace Pinetime {
+
+  namespace System {
+    class SystemTask;
+  }
+
   namespace Controllers {
     class NimbleController;
 
     class MusicService {
     public:
-      explicit MusicService(NimbleController& nimble);
+      explicit MusicService(Pinetime::System::SystemTask& systemTask, NimbleController& nimble);
 
       void Init();
 
@@ -88,6 +93,7 @@ namespace Pinetime {
       bool repeat {false};
       bool shuffle {false};
 
+      Pinetime::System::SystemTask& systemTask;
       NimbleController& nimble;
     };
   }
