@@ -19,8 +19,13 @@ namespace Pinetime {
 
       bool IsRunning();
 
+      void SetExpiredTime();
+
+      void ResetExpiredTime();
+
     private:
       TimerHandle_t timer;
+      TickType_t expired = 0;
     };
   }
 }
