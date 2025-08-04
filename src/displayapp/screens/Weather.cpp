@@ -144,7 +144,7 @@ void Weather::Refresh() {
       lv_label_set_text_fmt(minTemperature, "%d°", minTemp);
       lv_label_set_text_fmt(maxTemperature, "%d°", maxTemp);
 
-      std::chrono::seconds secondsSinceEpoch =
+      auto secondsSinceEpoch =
         std::chrono::duration_cast<std::chrono::seconds>(dateTimeController.CurrentDateTime().time_since_epoch());
       int32_t secondsSinceWeatherUpdate = secondsSinceEpoch.count() - optCurrentWeather->timestamp;
       int8_t minutesSinceWeatherUpdate = secondsSinceWeatherUpdate / 60;
