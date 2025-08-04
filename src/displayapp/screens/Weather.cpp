@@ -163,14 +163,12 @@ void Weather::Refresh() {
         }
         lv_label_set_text_fmt(lastUpdated, "%dh ago", hoursSinceWeatherUpdate);
       } else if (minutesSinceWeatherUpdate > 0) {
-        if (minutesSinceWeatherUpdate > 9 && minutesSinceWeatherUpdate < 60) {
+        if (minutesSinceWeatherUpdate > 9) {
           lv_obj_set_pos(lastUpdated, X_TWO_DIGIT_POSITION, Y_POSITION);
         }
         lv_label_set_text_fmt(lastUpdated, "%dm ago", minutesSinceWeatherUpdate);
       } else if (secondsSinceWeatherUpdate > 30) {
-        if (secondsSinceWeatherUpdate > 9 && secondsSinceWeatherUpdate < 60) {
-          lv_obj_set_pos(lastUpdated, X_TWO_DIGIT_POSITION, Y_POSITION);
-        }
+        lv_obj_set_pos(lastUpdated, X_TWO_DIGIT_POSITION, Y_POSITION);
         lv_label_set_text_fmt(lastUpdated, "%ds ago", secondsSinceWeatherUpdate);
       } else if (secondsSinceWeatherUpdate < 31) {
         lv_obj_set_pos(lastUpdated, X_NOW_POSITION, Y_POSITION);
