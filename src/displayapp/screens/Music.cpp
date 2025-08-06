@@ -49,8 +49,12 @@ inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
  *
  * TODO: Investigate Apple Media Service and AVRCPv1.6 support for seamless integration
  */
-Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble& bleController)
-  : musicService(music), bleController {bleController} {
+Music::Music(Pinetime::Controllers::MusicService& music,
+             const Controllers::Ble& bleController,
+             Controllers::DateTime& dateTimeController)
+  : musicService(music), bleController {bleController},
+    dateTimeController {dateTimeController} {
+  
   lv_obj_t* label;
 
   lv_style_init(&btn_style);
@@ -149,11 +153,13 @@ Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble&
   lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
   lv_obj_set_style_local_text_color(txtTrackDuration, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
+  /*
   bluetoothInfo = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(bluetoothInfo, "%s ???", Screens::Symbols::bluetooth);
   lv_obj_set_style_local_text_color(bluetoothInfo, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_align(bluetoothInfo, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
   lv_obj_set_auto_realign(bluetoothInfo, true);
+  */
 
   /* Init animation
   imgDisc = lv_img_create(lv_scr_act(), nullptr);
@@ -164,6 +170,11 @@ Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble&
   lv_img_set_src_arr(imgDiscAnim, &disc_f_1);
   lv_obj_align(imgDiscAnim, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0 - 32, 0);
   */
+
+  label_time = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_set_auto_realign(label_time, true);
 
   frameB = false;
 
@@ -207,15 +218,24 @@ void Music::Refresh() {
     UpdateLength();
   }
 
+  lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
+
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     if (bleState.Get() == false) {
-      lv_label_set_text_fmt(bluetoothInfo, "%s Disconnected", Screens::Symbols::bluetooth);
-    } else {
-      lv_label_set_text_fmt(bluetoothInfo, "%s Connected", Screens::Symbols::bluetooth);
+      lv_label_set_text_fmt(txtArtist, "Disconnected");
+      lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+      lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+      lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+    }
+    else {
+      lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+      lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+      lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
     }
   }
+  
 
   if (playing) {
     lv_label_set_text_static(txtPlayPause, Symbols::pause);

@@ -36,7 +36,9 @@ namespace Pinetime {
     namespace Screens {
       class Music : public Screen {
       public:
-        Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble& bleController);
+        Music(Pinetime::Controllers::MusicService& music,
+              const Controllers::Ble& bleController,
+              Controllers::DateTime& dateTimeController);
 
         ~Music() override;
 
@@ -58,6 +60,7 @@ namespace Pinetime {
         lv_obj_t* txtTrack;
         lv_obj_t* txtPlayPause;
         lv_obj_t* bluetoothInfo;
+        lv_obj_t* label_time;
 
         lv_obj_t* imgDisc;
         lv_obj_t* imgDiscAnim;
@@ -72,6 +75,7 @@ namespace Pinetime {
 
         Pinetime::Controllers::MusicService& musicService;
         const Controllers::Ble& bleController;
+        Pinetime::Controllers::DateTime& dateTimeController;
 
         std::string artist;
         std::string album;
@@ -101,7 +105,9 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::music;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Music(*controllers.musicService, controllers.bleController);
+        return new Screens::Music(*controllers.musicService,
+                                  controllers.bleController,
+                                  controllers.dateTimeController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
