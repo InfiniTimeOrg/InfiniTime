@@ -43,7 +43,8 @@ namespace Pinetime {
       SettingChimes,
       SettingShakeThreshold,
       SettingBluetooth,
-      Error
+      Error,
+      Magic8ball,
     };
 
     enum class WatchFace : uint8_t {

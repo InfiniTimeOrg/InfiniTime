@@ -7,6 +7,7 @@
 #include "displayapp/screens/Timer.h"
 #include "displayapp/screens/Twos.h"
 #include "displayapp/screens/Tile.h"
+#include "displayapp/screens/Magic8ball.h"
 #include "displayapp/screens/ApplicationList.h"
 #include "displayapp/screens/WatchFaceDigital.h"
 #include "displayapp/screens/WatchFaceAnalog.h"
