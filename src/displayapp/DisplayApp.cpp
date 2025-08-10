@@ -129,15 +129,6 @@ void DisplayApp::Start(System::BootErrors error) {
 
   bootError = error;
 
-  lvgl.Init();
-  motorController.Init();
-
-  if (error == System::BootErrors::TouchController) {
-    LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);
-  } else {
-    LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
-  }
-
   if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
@@ -146,17 +137,25 @@ void DisplayApp::Start(System::BootErrors error) {
 void DisplayApp::Process(void* instance) {
   auto* app = static_cast<DisplayApp*>(instance);
   NRF_LOG_INFO("displayapp task started!");
-  app->InitHw();
+  app->Init();
+
+  if (app->bootError == System::BootErrors::TouchController) {
+    app->LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);
+  } else {
+    app->LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+  }
 
   while (true) {
     app->Refresh();
   }
 }
 
-void DisplayApp::InitHw() {
+void DisplayApp::Init() {
+  lcd.Init();
+  motorController.Init();
   brightnessController.Init();
   ApplyBrightness();
-  lcd.Init();
+  lvgl.Init();
 }
 
 TickType_t DisplayApp::CalculateSleepTime() {
@@ -518,8 +517,8 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
   switch (app) {
     case Apps::Launcher: {
       std::array<Screens::Tile::Applications, UserAppTypes::Count> apps;
-      std::ranges::transform(userApps, apps.begin(), [](const auto& userApp) {
-        return Screens::Tile::Applications {userApp.icon, userApp.app, true};
+      std::ranges::transform(userApps, apps.begin(), [this](const auto& userApp) {
+        return Screens::Tile::Applications {userApp.icon, userApp.app, userApp.isAvailable(controllers.filesystem)};
       });
       currentScreen = std::make_unique<Screens::ApplicationList>(this,
                                                                  settingsController,
