@@ -73,7 +73,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Controllers::FirmwareValidator&
     // lv_obj_set_style_local_radius(buttonReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
 
     labelButtonReset = lv_label_create(buttonReset, nullptr);
-    lv_label_set_text_static(labelButtonReset, "Reset");
+    lv_label_set_text_static(labelButtonReset, "Rollback");
   }
 }
 
