@@ -115,16 +115,15 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SROLL_CIRC);
   lv_obj_align(txtArtist, nullptr, LV_ALIGN_IN_LEFT_MID, 0, (MIDDLE_OFFSET - 45) + 2 * FONT_HEIGHT + LINE_PAD);
   lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
-  lv_obj_set_width(txtArtist, LV_HOR_RES - 12);
+  lv_obj_set_width(txtArtist, LV_HOR_RES);
   lv_label_set_text_static(txtArtist, "");
   lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
-
   lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 0, (MIDDLE_OFFSET - 45) + 1 * FONT_HEIGHT);
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
-  lv_obj_set_width(txtTrack, LV_HOR_RES - 12);
+  lv_obj_set_width(txtTrack, LV_HOR_RES);
   lv_label_set_text_static(txtTrack, "");
 
   barTrackDuration = lv_bar_create(lv_scr_act(), nullptr);
@@ -153,14 +152,6 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
   lv_obj_set_style_local_text_color(txtTrackDuration, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
-  /*
-  bluetoothInfo = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(bluetoothInfo, "%s ???", Screens::Symbols::bluetooth);
-  lv_obj_set_style_local_text_color(bluetoothInfo, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_obj_align(bluetoothInfo, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
-  lv_obj_set_auto_realign(bluetoothInfo, true);
-  */
-
   /* Init animation
   imgDisc = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_src_arr(imgDisc, &disc);
@@ -171,10 +162,11 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_obj_align(imgDiscAnim, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0 - 32, 0);
   */
 
-  label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
-  lv_obj_set_auto_realign(label_time, true);
+  labelTime = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_align(labelTime, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(labelTime, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_set_auto_realign(labelTime, true);
+  lv_label_set_text_static(labelTime, "09:41");
 
   frameB = false;
 
@@ -218,7 +210,7 @@ void Music::Refresh() {
     UpdateLength();
   }
 
-  lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
+  lv_label_set_text(labelTime, dateTimeController.FormattedTime().c_str());
 
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
@@ -241,7 +233,8 @@ void Music::Refresh() {
     lv_label_set_text_static(txtPlayPause, Symbols::pause);
     if (xTaskGetTickCount() - 1024 >= lastIncrement) {
 
-      /*if (frameB) {
+      /*
+      if (frameB) {
         lv_img_set_src(imgDiscAnim, &disc_f_1);
       } else {
         lv_img_set_src(imgDiscAnim, &disc_f_2);

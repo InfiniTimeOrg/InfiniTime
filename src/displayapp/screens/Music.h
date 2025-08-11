@@ -59,8 +59,7 @@ namespace Pinetime {
         lv_obj_t* txtArtist;
         lv_obj_t* txtTrack;
         lv_obj_t* txtPlayPause;
-        lv_obj_t* bluetoothInfo;
-        lv_obj_t* label_time;
+        lv_obj_t* labelTime;
 
         lv_obj_t* imgDisc;
         lv_obj_t* imgDiscAnim;
