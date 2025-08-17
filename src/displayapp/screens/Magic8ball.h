@@ -99,8 +99,7 @@ namespace Pinetime {
           /// @param name The name of the category to display
           /// @param usedCategories An initializer list of PoolMembers as the pool contents
           Pool(const char* name, const std::initializer_list<PoolMember> usedCategories)
-            : name(name),
-              categoryCount(usedCategories.size()) {
+            : name(name), categoryCount(usedCategories.size()) {
             categories = std::shared_ptr<PoolMember>(new PoolMember[categoryCount]);
             std::copy(usedCategories.begin(), usedCategories.end(), categories.get());
           }
@@ -354,7 +353,7 @@ namespace Pinetime {
 
         /// Vector of Pool objects containing information on what to display in the app.
         /// On app startup, index 0 is selected.
-        std::vector<Pool> answerPools{
+        std::vector<Pool> answerPools {
           {"Default",
            {
              {10, Positive},

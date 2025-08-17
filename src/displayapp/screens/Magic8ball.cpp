@@ -22,8 +22,7 @@ namespace {
   }
 }
 
-Magic8ball::Magic8ball(Controllers::MotionController& motionController)
-  : motionController{motionController} {
+Magic8ball::Magic8ball(Controllers::MotionController& motionController) : motionController {motionController} {
 
   activePool = 0; // default pool
   isMenuOpen = false;
@@ -220,7 +219,7 @@ void Magic8ball::Refresh() {
 const char* Magic8ball::getRandomString() const {
   // Get sum of weights in current pool
   uint16_t poolTotalWeight = 0;
-  const Pool* selectedPool{&answerPools[activePool]};
+  const Pool* selectedPool {&answerPools[activePool]};
   for (size_t i = 0; i < selectedPool->size(); i++) {
     poolTotalWeight += (*selectedPool)[i].weight;
   }
