@@ -108,37 +108,40 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   lv_label_set_text_static(txtPlayPause, Symbols::play);
 
-  constexpr uint8_t FONT_HEIGHT = 12;
-  constexpr uint8_t LINE_PAD = 15;
-  constexpr int8_t MIDDLE_OFFSET = -25;
+  // top anchor for the whole stack, move this and everything follows
+  constexpr int16_t BASE_Y = -70; // was txtTrack's previous y, 70 looks good for current default
+
+  txtTrack = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
+  lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 0, BASE_Y);
+  lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
+  lv_obj_set_width(txtTrack, LV_HOR_RES);
+  lv_label_set_text_static(txtTrack, "");
+
+  // 27px below txtTrack (12 + 15 previously), hard coded
   txtArtist = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_align(txtArtist, nullptr, LV_ALIGN_IN_LEFT_MID, 0, (MIDDLE_OFFSET - 45) + 2 * FONT_HEIGHT + LINE_PAD);
+  lv_obj_align(txtArtist, txtTrack, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 27);
   lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtArtist, LV_HOR_RES);
   lv_label_set_text_static(txtArtist, "");
   lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
-  txtTrack = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 0, (MIDDLE_OFFSET - 45) + 1 * FONT_HEIGHT);
-  lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
-  lv_obj_set_width(txtTrack, LV_HOR_RES);
-  lv_label_set_text_static(txtTrack, "");
-
+  // bar sits 36px below txtArtist (to match old layout)
   barTrackDuration = lv_bar_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(barTrackDuration, LV_BAR_PART_BG, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_set_style_local_bg_color(barTrackDuration, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, Colors::lightGray);
   lv_obj_set_style_local_bg_opa(barTrackDuration, LV_BAR_PART_BG, LV_STATE_DEFAULT, LV_OPA_100);
   lv_obj_set_style_local_radius(barTrackDuration, LV_BAR_PART_BG, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_obj_set_size(barTrackDuration, 240, 10);
-  lv_obj_align(barTrackDuration, nullptr, LV_ALIGN_CENTER, 0, 5);
+  lv_obj_align(barTrackDuration, txtArtist, LV_ALIGN_OUT_BOTTOM_MID, 0, 14);
   lv_bar_set_range(barTrackDuration, 0, 1000);
   lv_bar_set_value(barTrackDuration, 0, LV_ANIM_OFF);
 
+  // time labels 20px below the bar, left and right aligned
   txtCurrentPosition = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtCurrentPosition, LV_LABEL_LONG_SROLL);
-  lv_obj_align(txtCurrentPosition, nullptr, LV_ALIGN_IN_LEFT_MID, 0, 25);
+  lv_obj_align(txtCurrentPosition, barTrackDuration, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
   lv_label_set_text_static(txtCurrentPosition, "--:--");
   lv_label_set_align(txtCurrentPosition, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtCurrentPosition, LV_HOR_RES);
@@ -146,11 +149,19 @@ Music::Music(Pinetime::Controllers::MusicService& music,
 
   txtTrackDuration = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrackDuration, LV_LABEL_LONG_SROLL);
-  lv_obj_align(txtTrackDuration, nullptr, LV_ALIGN_IN_RIGHT_MID, -13, 25);
+  lv_obj_align(txtTrackDuration, barTrackDuration, LV_ALIGN_OUT_BOTTOM_RIGHT, -13, 0);
   lv_label_set_text_static(txtTrackDuration, "--:--");
   lv_label_set_align(txtTrackDuration, LV_ALIGN_IN_RIGHT_MID);
   lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
   lv_obj_set_style_local_text_color(txtTrackDuration, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+
+  // status time at the very top, keep independent of the chain
+  labelTime = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_align(labelTime, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(labelTime, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_set_auto_realign(labelTime, true);
+  lv_label_set_text_static(labelTime, "09:41");
+  lv_obj_set_hidden(labelTime, true);
 
   /* Init animation
   imgDisc = lv_img_create(lv_scr_act(), nullptr);
@@ -161,12 +172,6 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_img_set_src_arr(imgDiscAnim, &disc_f_1);
   lv_obj_align(imgDiscAnim, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0 - 32, 0);
   */
-
-  labelTime = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_align(labelTime, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(labelTime, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
-  lv_obj_set_auto_realign(labelTime, true);
-  lv_label_set_text_static(labelTime, "09:41");
 
   frameB = false;
 
