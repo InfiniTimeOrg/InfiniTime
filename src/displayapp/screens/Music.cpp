@@ -116,7 +116,7 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 0, BASE_Y);
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrack, LV_HOR_RES);
-  lv_label_set_text_static(txtTrack, "");
+  lv_label_set_text_static(txtTrack, "Some Track");
 
   // 27px below txtTrack (12 + 15 previously), hard coded
   txtArtist = lv_label_create(lv_scr_act(), nullptr);
