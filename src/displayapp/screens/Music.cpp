@@ -109,7 +109,7 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_label_set_text_static(txtPlayPause, Symbols::play);
 
   // top anchor for the whole stack, move this and everything follows
-  constexpr int16_t BASE_Y = -70; // was txtTrack's previous y, 70 looks good for current default
+  constexpr int16_t BASE_Y = -90; // was txtTrack's previous y, 70 looks good for current default
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
@@ -121,7 +121,7 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   // 27px below txtTrack (12 + 15 previously), hard coded
   txtArtist = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_align(txtArtist, txtTrack, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 27);
+  lv_obj_align(txtArtist, txtTrack, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
   lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtArtist, LV_HOR_RES);
   lv_label_set_text_static(txtArtist, "");
@@ -162,6 +162,19 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_obj_set_auto_realign(labelTime, true);
   lv_label_set_text_static(labelTime, "09:41");
   lv_obj_set_hidden(labelTime, true);
+
+  btnSwapControls = lv_btn_create(lv_scr_act(), nullptr);
+  btnSwapControls->user_data = this;
+  lv_obj_set_event_cb(btnSwapControls, event_handler);
+  lv_obj_set_style_local_radius(btnSwapControls, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
+  lv_obj_set_style_local_bg_color(btnSwapControls, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+  txtSwapControls = lv_label_create(btnSwapControls, nullptr);
+  lv_label_set_text_fmt(txtSwapControls, "%s Volume Controls", Symbols::swap);
+  lv_obj_set_style_local_text_color(txtSwapControls, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_width(btnSwapControls, lv_obj_get_width(txtSwapControls) + 18);   // +padding
+  lv_obj_set_height(btnSwapControls, lv_obj_get_height(txtSwapControls) + 8); // +padding
+  lv_obj_align(btnSwapControls, nullptr, LV_ALIGN_CENTER, 0, 20);
+
 
   /* Init animation
   imgDisc = lv_img_create(lv_scr_act(), nullptr);
@@ -303,12 +316,31 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
       }
     } else if (obj == btnNext) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);
+    } else if (obj == btnSwapControls) {
+      showingVolumeControls = !showingVolumeControls; // flip the state
+
+      if (showingVolumeControls) {
+        // show volume buttons, hide track buttons
+        lv_obj_set_hidden(btnVolDown, false);
+        lv_obj_set_hidden(btnVolUp, false);
+        lv_obj_set_hidden(btnNext, true);
+        lv_obj_set_hidden(btnPrev, true);
+        lv_label_set_text_fmt(txtSwapControls, "%s Track Controls", Symbols::swap);
+      } else {
+        // show track buttons, hide volume buttons
+        lv_obj_set_hidden(btnNext, false);
+        lv_obj_set_hidden(btnPrev, false);
+        lv_obj_set_hidden(btnVolDown, true);
+        lv_obj_set_hidden(btnVolUp, true);
+        lv_label_set_text_fmt(txtSwapControls, "%s Volume Controls", Symbols::swap);
+      }
     }
   }
 }
 
 bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch (event) {
+    /*
     case TouchEvents::SwipeUp: {
       lv_obj_set_hidden(btnVolDown, false);
       lv_obj_set_hidden(btnVolUp, false);
@@ -327,6 +359,7 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
       return false;
     }
+    */
     case TouchEvents::SwipeLeft: {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);
       return true;
