@@ -116,7 +116,7 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 0, BASE_Y);
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrack, LV_HOR_RES);
-  lv_label_set_text_static(txtTrack, "Some Track");
+  lv_label_set_text_static(txtTrack, "");
 
   // 27px below txtTrack (12 + 15 previously), hard coded
   txtArtist = lv_label_create(lv_scr_act(), nullptr);
@@ -174,6 +174,7 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_obj_set_width(btnSwapControls, lv_obj_get_width(txtSwapControls) + 18);   // +padding
   lv_obj_set_height(btnSwapControls, lv_obj_get_height(txtSwapControls) + 8); // +padding
   lv_obj_align(btnSwapControls, nullptr, LV_ALIGN_CENTER, 0, 20);
+  lv_obj_set_auto_realign(btnSwapControls, true);
 
 
   /* Init animation
@@ -234,15 +235,20 @@ void Music::Refresh() {
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     if (bleState.Get() == false) {
-      lv_label_set_text_fmt(txtArtist, "Disconnected");
+      lv_label_set_text_static(txtArtist, "Disconnected");
+      lv_label_set_text_static(txtTrack, "");
       lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
       lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
       lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+      lv_obj_set_style_local_bg_color(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+      lv_obj_set_style_local_bg_color(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
     }
     else {
       lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
       lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
       lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+      lv_obj_set_style_local_bg_color(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+      lv_obj_set_style_local_bg_color(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
     }
   }
   
@@ -326,6 +332,8 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
         lv_obj_set_hidden(btnNext, true);
         lv_obj_set_hidden(btnPrev, true);
         lv_label_set_text_fmt(txtSwapControls, "%s Track Controls", Symbols::swap);
+        lv_obj_set_width(btnSwapControls, lv_obj_get_width(txtSwapControls) + 18);   // +padding
+        lv_obj_set_height(btnSwapControls, lv_obj_get_height(txtSwapControls) + 8); // +padding
       } else {
         // show track buttons, hide volume buttons
         lv_obj_set_hidden(btnNext, false);
@@ -333,6 +341,9 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
         lv_obj_set_hidden(btnVolDown, true);
         lv_obj_set_hidden(btnVolUp, true);
         lv_label_set_text_fmt(txtSwapControls, "%s Volume Controls", Symbols::swap);
+        lv_obj_set_width(btnSwapControls, lv_obj_get_width(txtSwapControls) + 18);   // +padding
+        lv_obj_set_height(btnSwapControls, lv_obj_get_height(txtSwapControls) + 8); // +padding
+
       }
     }
   }
