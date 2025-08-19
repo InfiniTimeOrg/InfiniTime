@@ -87,19 +87,21 @@ void StopWatch::SetInterfacePaused() {
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
   lv_label_set_text_static(txtPlayPause, Symbols::play);
   lv_label_set_text_static(txtStopLap, Symbols::stop);
+  lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
+  lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
 }
 
 void StopWatch::SetInterfaceRunning() {
   lv_obj_set_state(time, LV_STATE_DEFAULT);
   lv_obj_set_state(msecTime, LV_STATE_DEFAULT);
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, (lapsDone == maxLapCount) ? Colors::bgDark : Colors::bgAlt);
 
   lv_label_set_text_static(txtPlayPause, Symbols::pause);
   lv_label_set_text_static(txtStopLap, Symbols::lapsFlag);
 
-  lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
-  lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
+  lv_obj_set_state(btnStopLap, (lapsDone == maxLapCount) ? LV_STATE_DISABLED : LV_STATE_DEFAULT);
+  lv_obj_set_state(txtStopLap, (lapsDone == maxLapCount) ? LV_STATE_DISABLED : LV_STATE_DEFAULT);
 }
 
 void StopWatch::SetInterfaceStopped() {
@@ -191,6 +193,10 @@ void StopWatch::stopLapBtnEventHandler() {
   if (currentState == States::Running) {
     lv_label_set_text(lapText, "");
     lapsDone = std::min(lapsDone + 1, maxLapCount);
+    if (lapsDone == maxLapCount) {
+      lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
+      lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
+    }
     for (int i = lapsDone - displayedLaps; i < lapsDone; i++) {
       if (i < 0) {
         lv_label_ins_text(lapText, LV_LABEL_POS_LAST, "\n");
