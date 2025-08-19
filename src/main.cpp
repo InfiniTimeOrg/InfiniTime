@@ -47,6 +47,8 @@
 #include "touchhandler/TouchHandler.h"
 #include "buttonhandler/ButtonHandler.h"
 
+#include <sys/time.h>
+
 #if NRF_LOG_ENABLED
   #include "logging/NrfLogger.h"
 Pinetime::Logging::NrfLogger logger;
@@ -108,6 +110,21 @@ Pinetime::Controllers::AlarmController alarmController {dateTimeController, fs};
 Pinetime::Controllers::TouchHandler touchHandler;
 Pinetime::Controllers::ButtonHandler buttonHandler;
 Pinetime::Controllers::BrightnessController brightnessController {};
+
+extern "C" {
+int __wrap_gettimeofday(struct timeval* tv, struct timezone* tz) {
+  using namespace std::chrono;
+  auto currentDayTime(round<microseconds>(dateTimeController.CurrentDateTime()));
+  auto usAfterEpoch(currentDayTime.time_since_epoch().count());
+  tv->tv_sec = usAfterEpoch / 1000000;
+  tv->tv_usec = usAfterEpoch % 1000000;
+  tz->tz_minuteswest = dateTimeController.TzOffset() + dateTimeController.DstOffset();
+  tz->tz_minuteswest *= -60;
+  tz->tz_dsttime = -1;
+  errno = 0;
+  return 0;
+}
+}
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               touchPanel,
