@@ -20,6 +20,19 @@ To build this project, you'll need:
   - install npm (commonly done via the package manager, ensure node's version is at least 12)
   - install lv_font_conv: `npm install lv_font_conv`
 
+On Alpine Linux (edge), these can be installed via:
+
+```sh
+apk add -t .infinitime-deps \
+	cmake \
+	gcc-arm-none-eabi \
+	lv_font_conv \
+	nrf5-sdk \
+	py3-cbor2 \
+	py3-cryptography \
+	py3-intelhex
+```
+
 ## Build steps
 
 ### Clone the repo
