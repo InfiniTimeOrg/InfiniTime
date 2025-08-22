@@ -64,28 +64,26 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   btnVolDown = lv_btn_create(lv_scr_act(), nullptr);
   btnVolDown->user_data = this;
   lv_obj_set_event_cb(btnVolDown, event_handler);
-  lv_obj_set_size(btnVolDown, 76, 76);
+  lv_obj_set_size(btnVolDown, 115, 50);
   lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   lv_obj_add_style(btnVolDown, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolDown, nullptr);
   lv_label_set_text_static(label, Symbols::volumDown);
-  lv_obj_set_hidden(btnVolDown, true);
 
   btnVolUp = lv_btn_create(lv_scr_act(), nullptr);
   btnVolUp->user_data = this;
   lv_obj_set_event_cb(btnVolUp, event_handler);
-  lv_obj_set_size(btnVolUp, 76, 76);
+  lv_obj_set_size(btnVolUp, 115, 50);
   lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   lv_obj_add_style(btnVolUp, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolUp, nullptr);
   lv_label_set_text_static(label, Symbols::volumUp);
-  lv_obj_set_hidden(btnVolUp, true);
 
   btnPrev = lv_btn_create(lv_scr_act(), nullptr);
   btnPrev->user_data = this;
   lv_obj_set_event_cb(btnPrev, event_handler);
   lv_obj_set_size(btnPrev, 76, 76);
-  lv_obj_align(btnPrev, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_align(btnPrev, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, -56);
   lv_obj_add_style(btnPrev, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnPrev, nullptr);
   lv_label_set_text_static(label, Symbols::stepBackward);
@@ -94,7 +92,7 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   btnNext->user_data = this;
   lv_obj_set_event_cb(btnNext, event_handler);
   lv_obj_set_size(btnNext, 76, 76);
-  lv_obj_align(btnNext, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lv_obj_align(btnNext, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -56);
   lv_obj_add_style(btnNext, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnNext, nullptr);
   lv_label_set_text_static(label, Symbols::stepForward);
@@ -103,13 +101,15 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   btnPlayPause->user_data = this;
   lv_obj_set_event_cb(btnPlayPause, event_handler);
   lv_obj_set_size(btnPlayPause, 76, 76);
-  lv_obj_align(btnPlayPause, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_obj_align(btnPlayPause, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -56);
   lv_obj_add_style(btnPlayPause, LV_STATE_DEFAULT, &btn_style);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   lv_label_set_text_static(txtPlayPause, Symbols::play);
 
-  // top anchor for the whole stack, move this and everything follows
-  constexpr int16_t BASE_Y = -90; // was txtTrack's previous y, 70 looks good for current default
+  // I'm using the txtTrack label as the top anchor for the whole lot
+  // of song, artist, progress bar and duration text (0:00 and -0:00) so
+  // its much easier to move that around and mess with the buttons
+  constexpr int16_t BASE_Y = -100;
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
@@ -118,7 +118,6 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_obj_set_width(txtTrack, LV_HOR_RES);
   lv_label_set_text_static(txtTrack, "");
 
-  // 27px below txtTrack (12 + 15 previously), hard coded
   txtArtist = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SROLL_CIRC);
   lv_obj_align(txtArtist, txtTrack, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
@@ -127,7 +126,6 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_label_set_text_static(txtArtist, "");
   lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
-  // bar sits 36px below txtArtist (to match old layout)
   barTrackDuration = lv_bar_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(barTrackDuration, LV_BAR_PART_BG, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_set_style_local_bg_color(barTrackDuration, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, Colors::lightGray);
@@ -155,6 +153,9 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
   lv_obj_set_style_local_text_color(txtTrackDuration, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
+  // Only commented out until we figure out the final version of this over on GitHub. Can be fully removed after that
+
+  /*
   // status time at the very top, keep independent of the chain
   labelTime = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_align(labelTime, LV_LABEL_ALIGN_CENTER);
@@ -175,6 +176,7 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   lv_obj_set_height(btnSwapControls, lv_obj_get_height(txtSwapControls) + 8); // +padding
   lv_obj_align(btnSwapControls, nullptr, LV_ALIGN_CENTER, 0, 20);
   lv_obj_set_auto_realign(btnSwapControls, true);
+  */
 
 
   /* Init animation
@@ -322,6 +324,8 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
       }
     } else if (obj == btnNext) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);
+    // Only commented out until we figure out the final version of this over on GitHub. Can be fully removed after that
+    /*
     } else if (obj == btnSwapControls) {
       showingVolumeControls = !showingVolumeControls; // flip the state
 
@@ -345,12 +349,14 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
         lv_obj_set_height(btnSwapControls, lv_obj_get_height(txtSwapControls) + 8); // +padding
 
       }
+      */
     }
   }
 }
 
 bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch (event) {
+    // Only commented out until we figure out the final version of this over on GitHub. Can be fully removed after that
     /*
     case TouchEvents::SwipeUp: {
       lv_obj_set_hidden(btnVolDown, false);
