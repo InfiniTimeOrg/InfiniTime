@@ -497,6 +497,11 @@ void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
       }
       break;
     case Actions::DoubleClick:
+      if (!unlockedByButton) {
+        // the first button event unlocks the touch input
+        unlockedByButton = true;
+        displayApp.PushMessage(Pinetime::Applications::Display::Messages::HideIgnoreTouchPopup);
+      }
       displayApp.PushMessage(Applications::Display::Messages::ButtonDoubleClicked);
       break;
     case Actions::LongPress:
