@@ -107,7 +107,7 @@ void WatchFaceTerminal::Refresh() {
         hour = hour - 12;
         ampmChar[0] = 'P';
       }
-      lv_label_set_text_fmt(label_time, "#fffff [TIME]# #11cc55 %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
+      lv_label_set_text_fmt(label_time, "#ffffff [TIME]# #11cc55 %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
     } else {
       lv_label_set_text_fmt(label_time, "#ffffff [TIME]# #11cc55 %02d:%02d:%02d#", hour, minute, second);
     }
