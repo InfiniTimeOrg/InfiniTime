@@ -64,8 +64,8 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   btnVolDown = lv_btn_create(lv_scr_act(), nullptr);
   btnVolDown->user_data = this;
   lv_obj_set_event_cb(btnVolDown, event_handler);
-  lv_obj_set_size(btnVolDown, 115, 50);
-  lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, -86);
+  lv_obj_set_size(btnVolDown, 117, 60);
+  lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   lv_obj_add_style(btnVolDown, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolDown, nullptr);
   lv_label_set_text_static(label, Symbols::volumDown);
@@ -73,8 +73,8 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   btnVolUp = lv_btn_create(lv_scr_act(), nullptr);
   btnVolUp->user_data = this;
   lv_obj_set_event_cb(btnVolUp, event_handler);
-  lv_obj_set_size(btnVolUp, 115, 50);
-  lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -86);
+  lv_obj_set_size(btnVolUp, 117, 60);
+  lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
   lv_obj_add_style(btnVolUp, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolUp, nullptr);
   lv_label_set_text_static(label, Symbols::volumUp);
@@ -109,14 +109,14 @@ Music::Music(Pinetime::Controllers::MusicService& music,
   // I'm using the txtTrack label as the top anchor for the whole lot
   // of song, artist, progress bar and duration text (0:00 and -0:00) so
   // its much easier to move that around and mess with the buttons
-  constexpr int16_t BASE_Y = -110;
+  constexpr int16_t BASE_Y = -45; // -45 for buttons at the top
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
   lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 0, BASE_Y);
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrack, LV_HOR_RES);
-  lv_label_set_text_static(txtTrack, "");
+  lv_label_set_text_static(txtTrack, "Some Track");
 
   txtArtist = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SROLL_CIRC);
