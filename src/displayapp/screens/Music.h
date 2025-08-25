@@ -36,9 +36,7 @@ namespace Pinetime {
     namespace Screens {
       class Music : public Screen {
       public:
-        Music(Pinetime::Controllers::MusicService& music,
-              const Controllers::Ble& bleController,
-              Controllers::DateTime& dateTimeController);
+        Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble& bleController, Controllers::DateTime& dateTimeController);
 
         ~Music() override;
 
@@ -108,9 +106,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::music;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Music(*controllers.musicService,
-                                  controllers.bleController,
-                                  controllers.dateTimeController);
+        return new Screens::Music(*controllers.musicService, controllers.bleController, controllers.dateTimeController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
