@@ -54,12 +54,9 @@ namespace Pinetime {
         lv_obj_t* btnNext;
         lv_obj_t* btnVolDown;
         lv_obj_t* btnVolUp;
-        // lv_obj_t* btnSwapControls;
         lv_obj_t* txtArtist;
         lv_obj_t* txtTrack;
         lv_obj_t* txtPlayPause;
-        // lv_obj_t* txtSwapControls;
-        lv_obj_t* labelTime;
 
         lv_obj_t* imgDisc;
         lv_obj_t* imgDiscAnim;
@@ -67,12 +64,7 @@ namespace Pinetime {
         lv_obj_t* txtCurrentPosition;
         lv_obj_t* barTrackDuration;
 
-        bool showingVolumeControls = false;
-
         lv_style_t btn_style;
-
-        /** For the spinning disc animation */
-        bool frameB;
 
         Pinetime::Controllers::MusicService& musicService;
         const Controllers::Ble& bleController;
@@ -86,8 +78,6 @@ namespace Pinetime {
         int totalLength = 0;
         /** Current position in seconds */
         int currentPosition;
-        /** Last time an animation update or timer was incremented */
-        TickType_t lastIncrement = 0;
 
         bool playing;
 
