@@ -49,12 +49,9 @@ inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
  *
  * TODO: Investigate Apple Media Service and AVRCPv1.6 support for seamless integration
  */
-Music::Music(Pinetime::Controllers::MusicService& music,
-             const Controllers::Ble& bleController,
-             Controllers::DateTime& dateTimeController)
-  : musicService(music), bleController {bleController},
-    dateTimeController {dateTimeController} {
-  
+Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble& bleController, Controllers::DateTime& dateTimeController)
+  : musicService(music), bleController {bleController}, dateTimeController {dateTimeController} {
+
   lv_obj_t* label;
 
   lv_style_init(&btn_style);
@@ -177,8 +174,7 @@ void Music::Refresh() {
       lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
       lv_obj_set_style_local_bg_color(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
       lv_obj_set_style_local_bg_color(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
-    }
-    else {
+    } else {
       lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
       lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
       lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
@@ -214,7 +210,6 @@ void Music::Refresh() {
     totalLength = musicService.getTrackLength();
     UpdateLength();
   }
-  
 
   if (playing) {
     lv_label_set_text_static(txtPlayPause, Symbols::pause);
