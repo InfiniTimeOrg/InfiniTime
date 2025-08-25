@@ -146,8 +146,6 @@ Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble&
   lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
   lv_obj_set_style_local_text_color(txtTrackDuration, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
-  frameB = false;
-
   musicService.event(Controllers::MusicService::EVENT_MUSIC_OPEN);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
@@ -161,57 +159,72 @@ Music::~Music() {
 
 void Music::Refresh() {
   bleState = bleController.IsConnected();
-  bleRadioEnabled = bleController.IsRadioEnabled();
-  if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
-    if (bleState.Get() == false) {
-      lv_label_set_text_static(txtArtist, "Disconnected");
-      lv_label_set_text_static(txtTrack, "");
-      lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
-      lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
-      lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
-      lv_obj_set_style_local_bg_color(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
-      lv_obj_set_style_local_bg_color(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+  if (bleState.Get() == false) {
+    SetDisconnectedUI();
+    lastConnected = false;
+  } else {
+    if (!lastConnected) {
+      // just reconnected
+      musicService.event(Controllers::MusicService::EVENT_MUSIC_OPEN);
+      SetConnectedUI();
+      RefreshTrackInfo(true);
     } else {
-      lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-      lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-      lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-      lv_obj_set_style_local_bg_color(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-      lv_obj_set_style_local_bg_color(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+      RefreshTrackInfo(false);
     }
+    lastConnected = true;
+  }
+}
+
+void Music::SetDisconnectedUI() {
+  lv_label_set_text_static(txtArtist, "Disconnected");
+  lv_label_set_text_static(txtTrack, "");
+  lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+  lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+  lv_obj_set_style_local_bg_color(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+  lv_obj_set_style_local_bg_color(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+  lv_label_set_text_static(txtCurrentPosition, "--:--");
+  lv_label_set_text_static(txtTrackDuration, "--:--");
+  lv_bar_set_range(barTrackDuration, 0, 1000);
+  lv_bar_set_value(barTrackDuration, 0, LV_ANIM_OFF);
+}
+
+void Music::SetConnectedUI() {
+  lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+}
+
+void Music::RefreshTrackInfo(bool force) {
+  if (force || playing != musicService.isPlaying()) {
+    playing = musicService.isPlaying();
+    lv_label_set_text_static(txtPlayPause, playing ? Symbols::pause : Symbols::play);
   }
 
-  if (artist != musicService.getArtist()) {
+  if (force || artist != musicService.getArtist()) {
     artist = musicService.getArtist();
     lv_label_set_text(txtArtist, artist.data());
   }
 
-  if (track != musicService.getTrack()) {
+  if (force || track != musicService.getTrack()) {
     track = musicService.getTrack();
     lv_label_set_text(txtTrack, track.data());
   }
 
-  if (album != musicService.getAlbum()) {
+  if (force || album != musicService.getAlbum()) {
     album = musicService.getAlbum();
   }
 
-  if (playing != musicService.isPlaying()) {
-    playing = musicService.isPlaying();
-  }
-
-  if (currentPosition != musicService.getProgress()) {
+  if (force || currentPosition != musicService.getProgress()) {
     currentPosition = musicService.getProgress();
     UpdateLength();
   }
 
-  if (totalLength != musicService.getTrackLength()) {
+  if (force || totalLength != musicService.getTrackLength()) {
     totalLength = musicService.getTrackLength();
     UpdateLength();
-  }
-
-  if (playing) {
-    lv_label_set_text_static(txtPlayPause, Symbols::pause);
-  } else {
-    lv_label_set_text_static(txtPlayPause, Symbols::play);
   }
 }
 

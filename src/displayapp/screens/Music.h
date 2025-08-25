@@ -49,6 +49,12 @@ namespace Pinetime {
 
         void UpdateLength();
 
+        void RefreshTrackInfo(bool force);
+
+        void SetDisconnectedUI();
+
+        void SetConnectedUI();
+
         lv_obj_t* btnPrev;
         lv_obj_t* btnPlayPause;
         lv_obj_t* btnNext;
@@ -80,6 +86,8 @@ namespace Pinetime {
         int currentPosition;
 
         bool playing;
+
+        bool lastConnected = false;
 
         lv_task_t* taskRefresh;
 
