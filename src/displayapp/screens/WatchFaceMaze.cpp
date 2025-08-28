@@ -54,22 +54,22 @@ void Maze::Set(const int32_t index, const MazeTile tile) {
 // Silently does nothing if given invalid values.
 void Maze::SetAttr(const int32_t index, const TileAttr attr, const bool value) {
   switch (attr) {
-    case Up:
+    case TileAttr::Up:
       Set(index, Get(index).SetUp(value));
       break;
-    case Down:
+    case TileAttr::Down:
       Set(index + WIDTH, Get(index + WIDTH).SetUp(value));
       break;
-    case Left:
+    case TileAttr::Left:
       Set(index, Get(index).SetLeft(value));
       break;
-    case Right:
+    case TileAttr::Right:
       Set(index + 1, Get(index + 1).SetLeft(value));
       break;
-    case FlagEmpty:
+    case TileAttr::FlagEmpty:
       Set(index, Get(index).SetFlagEmpty(value));
       break;
-    case FlagGen:
+    case TileAttr::FlagGen:
       Set(index, Get(index).SetFlagGen(value));
       break;
   }
@@ -81,17 +81,17 @@ void Maze::SetAttr(const coord_t x, const coord_t y, const TileAttr attr, const 
 
 bool Maze::GetTileAttr(const int32_t index, const TileAttr attr) const {
   switch (attr) {
-    case Up:
+    case TileAttr::Up:
       return Get(index).GetUp();
-    case Down:
+    case TileAttr::Down:
       return Get(index + WIDTH).GetUp();
-    case Left:
+    case TileAttr::Left:
       return Get(index).GetLeft();
-    case Right:
+    case TileAttr::Right:
       return Get(index + 1).GetLeft();
-    case FlagEmpty:
+    case TileAttr::FlagEmpty:
       return Get(index).GetFlagEmpty();
-    case FlagGen:
+    case TileAttr::FlagGen:
       return Get(index).GetFlagGen();
   }
   return false;
@@ -237,7 +237,7 @@ void WatchFaceMaze::HandleMazeRefresh() {
   currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
 
   // Refresh if it's needed by some other component, a minute has passed on the watchface, or if generation has paused.
-  if (screenRefreshRequired || (currentState == Displaying::WatchFace && currentDateTime.IsUpdated()) || pausedGeneration) {
+  if (screenRefreshRequired || (currentState == MazeScreen::WatchFace && currentDateTime.IsUpdated()) || pausedGeneration) {
 
     // if generation wasn't paused (i.e. doing a ground up maze gen), set everything up
     if (!pausedGeneration) {
@@ -255,13 +255,13 @@ void WatchFaceMaze::HandleMazeRefresh() {
     // only finalize and draw once maze is fully generated (not paused)
     if (!pausedGeneration) {
       ForceValidMaze();
-      if (currentState != Displaying::WatchFace) {
+      if (currentState != MazeScreen::WatchFace) {
         ClearIndicators();
       }
       DrawMaze();
       screenRefreshRequired = false;
       // if on watchface, also add indicators for BLE and battery
-      if (currentState == Displaying::WatchFace) {
+      if (currentState == MazeScreen::WatchFace) {
         UpdateBatteryDisplay(true);
         UpdateBleDisplay(true);
       }
@@ -269,7 +269,7 @@ void WatchFaceMaze::HandleMazeRefresh() {
   }
 
   // update battery and ble displays if on main watchface
-  if (currentState == Displaying::WatchFace) {
+  if (currentState == MazeScreen::WatchFace) {
     UpdateBatteryDisplay();
     UpdateBleDisplay();
   }
@@ -287,7 +287,7 @@ void WatchFaceMaze::HandleConfettiRefresh() {
   }
   // update confetti if needed
   if (confettiActive) {
-    if (currentState != Displaying::AutismCreature) {
+    if (currentState != MazeScreen::AutismCreature) {
       // remove confetti if went to a different display
       ClearConfetti();
       confettiActive = false;
@@ -404,9 +404,9 @@ bool WatchFaceMaze::OnTouchEvent(const TouchEvents event) {
 
 // allow pushing the button to go back to the watchface
 bool WatchFaceMaze::OnButtonPushed() {
-  if (currentState != Displaying::WatchFace) {
+  if (currentState != MazeScreen::WatchFace) {
     screenRefreshRequired = true;
-    currentState = Displaying::WatchFace;
+    currentState = MazeScreen::WatchFace;
     // set lastLongClickTime to be in the past so it always needs two long taps to get back to blank, even if you're fast
     lastLongClickTime = xTaskGetTickCount() - doubleDoubleClickDelay;
     return true;
@@ -415,11 +415,11 @@ bool WatchFaceMaze::OnButtonPushed() {
 }
 
 bool WatchFaceMaze::HandleLongTap() {
-  if (currentState == Displaying::WatchFace) {
+  if (currentState == MazeScreen::WatchFace) {
     // On watchface; either refresh maze or go to blank state
     if (xTaskGetTickCount() - lastLongClickTime < doubleDoubleClickDelay) {
       // long tapped twice in sequence; switch to blank maze
-      currentState = Displaying::Blank;
+      currentState = MazeScreen::Blank;
       screenRefreshRequired = true;
       std::fill_n(currentCode, sizeof(currentCode), 255); // clear current code in preparation for code entry
     } else {
@@ -432,7 +432,7 @@ bool WatchFaceMaze::HandleLongTap() {
   } else {
     // Not on watchface; go back to main watchface
     screenRefreshRequired = true;
-    currentState = Displaying::WatchFace;
+    currentState = MazeScreen::WatchFace;
     // set lastLongClickTime to be in the past so it always needs two long taps to get back to blank, even if you're fast
     lastLongClickTime = xTaskGetTickCount() - doubleDoubleClickDelay;
     motor.RunForDuration(20);
@@ -444,7 +444,7 @@ bool WatchFaceMaze::HandleLongTap() {
 
 bool WatchFaceMaze::HandleTap() {
   // confetti must only display on autismcreature
-  if (currentState != Displaying::AutismCreature) {
+  if (currentState != MazeScreen::AutismCreature) {
     return false;
   }
   // only need to set initConfetti, everything else is handled in functions called by refresh()
@@ -454,7 +454,7 @@ bool WatchFaceMaze::HandleTap() {
 
 bool WatchFaceMaze::HandleSwipe(const uint8_t direction) {
   // Don't handle any swipes on watchface
-  if (currentState == Displaying::WatchFace) {
+  if (currentState == MazeScreen::WatchFace) {
     return false;
   }
 
@@ -466,23 +466,23 @@ bool WatchFaceMaze::HandleSwipe(const uint8_t direction) {
 
   // check if valid code has been entered
   // Displaying::WatchFace is used here simply as a dummy value, and it will never transition to that
-  Displaying newState = Displaying::WatchFace;
+  MazeScreen newState = MazeScreen::WatchFace;
   if (std::memcmp(currentCode, lossCode, sizeof(lossCode)) == 0) {
-    newState = Displaying::Loss;
+    newState = MazeScreen::Loss;
   } else if (std::memcmp(currentCode, amogusCode, sizeof(amogusCode)) == 0) {
-    newState = Displaying::Amogus;
+    newState = MazeScreen::Amogus;
   } else if (std::memcmp(currentCode, autismCode, sizeof(autismCode)) == 0) {
-    newState = Displaying::AutismCreature;
+    newState = MazeScreen::AutismCreature;
   } else if (std::memcmp(currentCode, foxCode, sizeof(foxCode)) == 0) {
-    newState = Displaying::FoxGame;
+    newState = MazeScreen::FoxGame;
   } else if (std::memcmp(currentCode, reminderCode, sizeof(reminderCode)) == 0) {
-    newState = Displaying::GameReminder;
+    newState = MazeScreen::GameReminder;
   } else if (std::memcmp(currentCode, pinetimeCode, sizeof(pinetimeCode)) == 0) {
-    newState = Displaying::PineTime;
+    newState = MazeScreen::PineTime;
   }
 
   // only request a screen refresh if state has been updated
-  if (newState != Displaying::WatchFace) {
+  if (newState != MazeScreen::WatchFace) {
     currentState = newState;
     screenRefreshRequired = true;
     motor.RunForDuration(10);
@@ -499,32 +499,32 @@ void WatchFaceMaze::InitializeMaze() {
 // seeds the maze with whatever the current state needs
 void WatchFaceMaze::SeedMaze() {
   switch (currentState) {
-    case Displaying::WatchFace:
+    case MazeScreen::WatchFace:
       PutTime();
       break;
-    case Displaying::Blank: {
+    case MazeScreen::Blank: {
       // seed maze with 4 tiles
       const coord_t randX = (coord_t) prng.Rand(0, 20);
       const coord_t randY = (coord_t) prng.Rand(3, 20);
       maze.PasteMazeSeed(randX, randY, randX + 3, randY, blankseed);
       break;
     }
-    case Displaying::Loss:
+    case MazeScreen::Loss:
       maze.PasteMazeSeed(2, 2, 22, 21, loss);
       break;
-    case Displaying::Amogus:
+    case MazeScreen::Amogus:
       maze.PasteMazeSeed(3, 0, 21, 23, amogus);
       break;
-    case Displaying::AutismCreature:
+    case MazeScreen::AutismCreature:
       maze.PasteMazeSeed(0, 2, 23, 22, autismCreature);
       break;
-    case Displaying::FoxGame:
+    case MazeScreen::FoxGame:
       maze.PasteMazeSeed(0, 1, 23, 22, foxGame);
       break;
-    case Displaying::GameReminder:
+    case MazeScreen::GameReminder:
       maze.PasteMazeSeed(0, 3, 23, 19, gameReminder);
       break;
-    case Displaying::PineTime:
+    case MazeScreen::PineTime:
       maze.PasteMazeSeed(2, 0, 21, 23, pinetime);
       break;
   }
@@ -729,13 +729,13 @@ void WatchFaceMaze::ForceValidMaze() {
 
     // add all possible movement options to the stack
     if (y > 0 && !maze.GetTileAttr(x, y, TileAttr::Up) && !maze.GetTileAttr(x, y - 1, TileAttr::FlagGen))
-      backtrackStack.push(coordXY(x, y-1));
+      backtrackStack.push(coordXY(x, y - 1));
     if (x < Maze::WIDTH - 1 && !maze.GetTileAttr(x, y, TileAttr::Right) && !maze.GetTileAttr(x + 1, y, TileAttr::FlagGen))
-      backtrackStack.push(coordXY(x+1, y));
+      backtrackStack.push(coordXY(x + 1, y));
     if (y < Maze::HEIGHT - 1 && !maze.GetTileAttr(x, y, TileAttr::Down) && !maze.GetTileAttr(x, y + 1, TileAttr::FlagGen))
-      backtrackStack.push(coordXY(x, y+1));
+      backtrackStack.push(coordXY(x, y + 1));
     if (x > 0 && !maze.GetTileAttr(x, y, TileAttr::Left) && !maze.GetTileAttr(x - 1, y, TileAttr::FlagGen))
-      backtrackStack.push(coordXY(x-1, y));
+      backtrackStack.push(coordXY(x - 1, y));
 
     if (!backtrackStack.empty()) {
       // stack not empty (still have traversal to do); pull a position from the stack and move from there
@@ -761,7 +761,9 @@ void WatchFaceMaze::ForceValidMaze() {
       }
 
       // if there are no boundaries, entire maze has been traversed and function can return
-      if (pokeLocationCount == 0) { return; }
+      if (pokeLocationCount == 0) {
+        return;
+      }
 
       // choose a random indexed boundary to poke, then go back through the boundary finding process to find the exact place to poke
       pokeLocationCount = (int) prng.Rand(1, pokeLocationCount);

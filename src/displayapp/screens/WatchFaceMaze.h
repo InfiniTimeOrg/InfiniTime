@@ -103,7 +103,7 @@ namespace Pinetime {
       };
 
       // Little bit of convenience for working with tile flags
-      enum TileAttr { Up, Down, Left, Right, FlagEmpty, FlagGen };
+      enum class TileAttr { Up, Down, Left, Right, FlagEmpty, FlagGen };
 
       // could also be called Field or something. Does not handle stuff like generation or printing,
       // ONLY handles interacting with the board.
@@ -183,9 +183,9 @@ namespace Pinetime {
         float yVel;
 
         // first apply gravity, then apply damping factor, then add velocity to position
-        static constexpr float GRAVITY = 0.3;         // added to yvel every step (remember up is -y)
-        static constexpr float DAMPING_FACTOR = 0.99; // keep this much of the velocity every step (applied after gravity)
-        static constexpr int8_t MAX_START_ANGLE = 45; // degrees off from straight vertical a particle can be going when spawned (<90)
+        static constexpr float GRAVITY = 0.3;              // added to yvel every step (remember up is -y)
+        static constexpr float DAMPING_FACTOR = 0.99;      // keep this much of the velocity every step (applied after gravity)
+        static constexpr int8_t MAX_START_ANGLE = 45;      // degrees off from straight vertical a particle can be going when spawned (<90)
         static constexpr int16_t MIN_START_VELOCITY = 5;   // minimum velocity a particle can spawn with
         static constexpr int16_t MAX_START_VELOCITY = 14;  // maximum velocity a particle can spawn with
         static constexpr float START_X_COMPRESS = 1. / 2.; // multiply X velocity by this value. for a more concentrated confetti blast.
@@ -194,7 +194,7 @@ namespace Pinetime {
       // What is currently being displayed.
       // Watchface is normal operation; anything else is an easter egg. Really only used to indicate what
       // should be displayed when the screen refreshes.
-      enum Displaying { WatchFace, Blank, Loss, Amogus, AutismCreature, FoxGame, GameReminder, PineTime };
+      enum class MazeScreen { WatchFace, Blank, Loss, Amogus, AutismCreature, FoxGame, GameReminder, PineTime };
 
       // The watchface itself
       class WatchFaceMaze : public Screen {
@@ -240,7 +240,8 @@ namespace Pinetime {
         // MAZE MUST BE SEEDED ELSE ALL YOU'LL GENERATE IS AN INFINITE LOOP!
         // If seed has disconnected components, maze will also have disconnected components.
         void GenerateMaze();
-        void GeneratePath(coord_t x, coord_t y); // Generates a single path starting at the x,y coords. Part of GenerateMaze, do not call directly.
+        void GeneratePath(coord_t x, coord_t y);
+        // Generates a single path starting at the x,y coords. Part of GenerateMaze, do not call directly.
 
         // If the maze has any disconnected components (such as if seed wasn't fully connected), poke holes to force all components to be
         // connected.
@@ -273,7 +274,7 @@ namespace Pinetime {
         MazeRNG prng;
 
         // Used for keeping track of minutes. It's what refreshes the screen every minute.
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime{};
 
         // Indicator values. Used for refreshing the respective indicators.
         Utility::DirtyValue<uint8_t> batteryPercent;
@@ -328,7 +329,7 @@ namespace Pinetime {
         // lastInputTime is for long clicking on the main watchface. If you long click twice in a certain timespan, it goes to the secret input
         // doubleDoubleClickDelay is the aforementioned 'certain timespan' to get to the secret input. In ticks.
         // screen. currentCode is the current swipe sequence that's being inputted.
-        Displaying currentState = Displaying::WatchFace;
+        MazeScreen currentState = MazeScreen::WatchFace;
         TickType_t lastLongClickTime;
         constexpr static uint32_t doubleDoubleClickDelay = pdMS_TO_TICKS(2500);
         uint8_t currentCode[8];
