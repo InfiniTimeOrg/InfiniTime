@@ -199,14 +199,14 @@ WatchFaceMaze::WatchFaceMaze(Pinetime::Components::LittleVgl& lvgl,
                              Controllers::MotorController& motor,
                              const Controllers::Battery& batteryController,
                              const Controllers::Ble& bleController)
-  : dateTimeController{dateTimeController},
-    settingsController{settingsController},
-    motor{motor},
-    batteryController{batteryController},
-    bleController{bleController},
-    lvgl{lvgl},
-    maze{Maze()},
-    prng{MazeRNG()} {
+  : dateTimeController {dateTimeController},
+    settingsController {settingsController},
+    motor {motor},
+    batteryController {batteryController},
+    bleController {bleController},
+    lvgl {lvgl},
+    maze {Maze()},
+    prng {MazeRNG()} {
 
   // set it to be in the past so it always takes two clicks to go to the secret, even if you're fast
   lastLongClickTime = xTaskGetTickCount() - doubleDoubleClickDelay;
@@ -238,6 +238,8 @@ void WatchFaceMaze::HandleMazeRefresh() {
 
   // Refresh if it's needed by some other component, a minute has passed on the watchface, or if generation has paused.
   if (screenRefreshRequired || (currentState == MazeScreen::WatchFace && currentDateTime.IsUpdated()) || pausedGeneration) {
+    // make sure isUpdated flags are reset
+    currentDateTime.IsUpdated();
 
     // if generation wasn't paused (i.e. doing a ground up maze gen), set everything up
     if (!pausedGeneration) {
@@ -305,6 +307,10 @@ void WatchFaceMaze::UpdateBatteryDisplay(const bool forceRedraw) {
     // need to redraw battery stuff
     SwapActiveBuffer();
 
+    // make sure isUpdated flags are reset
+    batteryPercent.IsUpdated();
+    charging.IsUpdated();
+
     // number of pixels between top of indicator and fill line. rounds up, so 0% is 24px but 1% is 23px
     const uint8_t fillLevel = 24 - ((uint16_t) (batteryPercent.Get()) * 24) / 100;
     constexpr lv_area_t area = {223, 3, 236, 26};
@@ -341,7 +347,7 @@ void WatchFaceMaze::UpdateBatteryDisplay(const bool forceRedraw) {
 
 void WatchFaceMaze::UpdateBleDisplay(const bool forceRedraw) {
   bleConnected = bleController.IsConnected();
-  if (forceRedraw || bleConnected.IsUpdated()) {
+  if (bleConnected.IsUpdated() || forceRedraw) {
     // need to redraw BLE indicator
     SwapActiveBuffer();
 
@@ -581,7 +587,6 @@ void WatchFaceMaze::GenerateMaze() {
           pausedGeneration = true;
           return;
         }
-
       }
     }
   }
@@ -722,6 +727,7 @@ void WatchFaceMaze::ForceValidMaze() {
     coord_t x : 16;
     coord_t y : 16;
   };
+
   std::stack<coordXY> backtrackStack;
 
   while (true) {

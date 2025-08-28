@@ -4,7 +4,7 @@
 #include <numbers>
 #include <stack>
 #include "FreeRTOS.h"
-#include "task.h"  // configTICK_RATE_HZ
+#include "task.h" // configTICK_RATE_HZ
 #include "sys/unistd.h"
 #include "displayapp/LittleVgl.h"
 #include "displayapp/apps/Apps.h"
@@ -274,7 +274,7 @@ namespace Pinetime {
         MazeRNG prng;
 
         // Used for keeping track of minutes. It's what refreshes the screen every minute.
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime{};
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
 
         // Indicator values. Used for refreshing the respective indicators.
         Utility::DirtyValue<uint8_t> batteryPercent;
@@ -326,9 +326,9 @@ namespace Pinetime {
 
         // Used for swipe sequences for easter eggs.
         // currentState is what is being displayed. It's generally categorized into "WatchFace" and "not WatchFace".
-        // lastInputTime is for long clicking on the main watchface. If you long click twice in a certain timespan, it goes to the secret input
-        // doubleDoubleClickDelay is the aforementioned 'certain timespan' to get to the secret input. In ticks.
-        // screen. currentCode is the current swipe sequence that's being inputted.
+        // lastInputTime is for long clicking on the main watchface. If you long click twice in a certain timespan, it goes to the secret
+        // input doubleDoubleClickDelay is the aforementioned 'certain timespan' to get to the secret input. In ticks. screen. currentCode
+        // is the current swipe sequence that's being inputted.
         MazeScreen currentState = MazeScreen::WatchFace;
         TickType_t lastLongClickTime;
         constexpr static uint32_t doubleDoubleClickDelay = pdMS_TO_TICKS(2500);
