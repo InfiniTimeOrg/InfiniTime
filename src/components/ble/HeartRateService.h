@@ -5,6 +5,7 @@
 #undef max
 #undef min
 #include <atomic>
+#include <optional>
 
 namespace Pinetime {
   namespace Controllers {
@@ -16,7 +17,7 @@ namespace Pinetime {
       HeartRateService(NimbleController& nimble, Controllers::HeartRateController& heartRateController);
       void Init();
       int OnHeartRateRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context);
-      void OnNewHeartRateValue(uint8_t hearRateValue);
+      void OnNewHeartRateValue(std::optional<uint8_t> hearRateValue);
 
       void SubscribeNotification(uint16_t attributeHandle);
       void UnsubscribeNotification(uint16_t attributeHandle);
