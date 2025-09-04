@@ -430,6 +430,7 @@ void SystemTask::GoToSleep() {
     return;
   }
   NRF_LOG_INFO("[systemtask] Going to sleep");
+  displayApp.PushMessage(Pinetime::Applications::Display::Messages::HideIgnoreTouchPopup);
   if (settingsController.GetAlwaysOnDisplay()) {
     displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToAOD);
   } else {
@@ -437,7 +438,6 @@ void SystemTask::GoToSleep() {
   }
   heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
   unlockedByButton = false;
-  displayApp.PushMessage(Pinetime::Applications::Display::Messages::HideIgnoreTouchPopup);
 
   state = SystemTaskState::GoingToSleep;
 };
