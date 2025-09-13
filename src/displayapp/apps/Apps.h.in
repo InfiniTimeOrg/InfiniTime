@@ -15,6 +15,7 @@ namespace Pinetime {
       Notifications,
       Timer,
       Alarm,
+      ScheduledReminders,
       FlashLight,
       BatteryInfo,
       Music,
