@@ -8,6 +8,7 @@ namespace Pinetime {
         static constexpr const char* batteryHalf = "\xEF\x89\x82";
         static constexpr const char* heartBeat = "\xEF\x88\x9E";
         static constexpr const char* bluetooth = "\xEF\x8A\x94";
+        static constexpr const char* shieldAlt = "\xEF\x8F\xAD";
         static constexpr const char* plug = "\xEF\x87\xA6";
         static constexpr const char* shoe = "\xEF\x95\x8B";
         static constexpr const char* clock = "\xEF\x80\x97";

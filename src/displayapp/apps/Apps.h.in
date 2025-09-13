@@ -43,6 +43,7 @@ namespace Pinetime {
       SettingChimes,
       SettingShakeThreshold,
       SettingBluetooth,
+      SettingOTA,
       Error
     };
 
