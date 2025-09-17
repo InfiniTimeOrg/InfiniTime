@@ -50,24 +50,25 @@ BatteryInfo::~BatteryInfo() {
 }
 
 void BatteryInfo::Refresh() {
+  using namespace Colors;
 
   batteryPercent = batteryController.PercentRemaining();
   batteryVoltage = batteryController.Voltage();
 
   if (batteryController.IsCharging()) {
-    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Lime));
+    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Color(Lime));
     lv_label_set_text_static(status, "Charging");
   } else if (batteryPercent == 100) {
-    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Blue));
+    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Color(Blue));
     lv_label_set_text_static(status, "Fully charged");
   } else if (batteryPercent > 15) {
-    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Green));
+    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Color(Green));
     lv_label_set_text_static(status, "Discharging");
   } else if (batteryPercent > 5) {
-    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Orange));
+    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Color(Orange));
     lv_label_set_text_static(status, "Battery low");
   } else {
-    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::Color(Colors::deepOrange));
+    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Color(deepOrange));
     lv_label_set_text_static(status, "Battery critical");
   }
 

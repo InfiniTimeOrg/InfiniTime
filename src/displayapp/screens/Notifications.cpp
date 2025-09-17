@@ -264,9 +264,10 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                                   Pinetime::Controllers::MotorController& motorController)
   : alertNotificationService {alertNotificationService}, motorController {motorController} {
+  using namespace Colors;
   container = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
-  lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Black));
+  lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, Color(Black));
   lv_obj_set_style_local_pad_all(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_pad_inner(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_border_width(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -287,7 +288,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_align(alert_count, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
 
   lv_obj_t* alert_type = lv_label_create(container, nullptr);
-  lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Orange));
+  lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Color(Orange));
   if (title == nullptr) {
     lv_label_set_text_static(alert_type, "Notification");
   } else {
@@ -338,7 +339,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_align(bt_reject, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
       label_reject = lv_label_create(bt_reject, nullptr);
       lv_label_set_text_static(label_reject, Symbols::phoneSlash);
-      lv_obj_set_style_local_bg_color(bt_reject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Red));
+      lv_obj_set_style_local_bg_color(bt_reject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Color(Red));
 
       bt_mute = lv_btn_create(container, nullptr);
       bt_mute->user_data = this;
@@ -347,7 +348,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_align(bt_mute, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
       label_mute = lv_label_create(bt_mute, nullptr);
       lv_label_set_text_static(label_mute, Symbols::volumMute);
-      lv_obj_set_style_local_bg_color(bt_mute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::LightGray));
+      lv_obj_set_style_local_bg_color(bt_mute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Color(LightGray));
     } break;
   }
 }
