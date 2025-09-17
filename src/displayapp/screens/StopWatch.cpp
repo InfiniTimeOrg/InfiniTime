@@ -5,7 +5,6 @@
 #include "displayapp/Colors.h"
 
 using namespace Pinetime::Applications::Screens;
-using namespace Colors;
 
 namespace {
   TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
@@ -56,7 +55,7 @@ StopWatch::StopWatch(System::SystemTask& systemTask) : wakeLock(systemTask) {
   lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
 
   lapText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(lapText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Color(LightGray));
+  lv_obj_set_style_local_text_color(lapText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::LightGray);
   lv_label_set_text_static(lapText, "\n");
   lv_label_set_long_mode(lapText, LV_LABEL_LONG_BREAK);
   lv_label_set_align(lapText, LV_LABEL_ALIGN_CENTER);
@@ -65,13 +64,13 @@ StopWatch::StopWatch(System::SystemTask& systemTask) : wakeLock(systemTask) {
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(msecTime, "00");
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Color(LightGray));
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::LightGray);
   lv_obj_align(msecTime, lapText, LV_ALIGN_OUT_TOP_MID, 0, 0);
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_label_set_text_static(time, "00:00");
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Color(LightGray));
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::LightGray);
   lv_obj_align(time, msecTime, LV_ALIGN_OUT_TOP_MID, 0, 0);
 
   SetInterfaceStopped();
@@ -85,8 +84,8 @@ StopWatch::~StopWatch() {
 }
 
 void StopWatch::SetInterfacePaused() {
-  lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Color(Red));
-  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Color(Blue));
+  lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::Red);
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::Blue);
   lv_label_set_text_static(txtPlayPause, Symbols::play);
   lv_label_set_text_static(txtStopLap, Symbols::stop);
 }
@@ -107,7 +106,7 @@ void StopWatch::SetInterfaceRunning() {
 void StopWatch::SetInterfaceStopped() {
   lv_obj_set_state(time, LV_STATE_DISABLED);
   lv_obj_set_state(msecTime, LV_STATE_DISABLED);
-  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Color(Blue));
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::Blue);
 
   lv_label_set_text_static(time, "00:00");
   lv_label_set_text_static(msecTime, "00");

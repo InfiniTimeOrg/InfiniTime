@@ -24,7 +24,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
     value {originalValue},
     pageIndicator(screenID, numScreens) {
   // Set the background to Black
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Black));
+  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, Colors::Black);
 
   if (numScreens > 1) {
     pageIndicator.Create();
@@ -48,7 +48,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 10, 15);
 
   lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Orange));
+  lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Orange);
   lv_label_set_text_static(icon, optionsSymbol);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);

@@ -174,7 +174,7 @@ void Counter::Create() {
     lv_obj_t* line = lv_line_create(counterContainer, nullptr);
     lv_line_set_points(line, linePoints, 2);
     lv_obj_set_style_local_line_width(line, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 1);
-    lv_obj_set_style_local_line_color(line, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::White));
+    lv_obj_set_style_local_line_color(line, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::White);
     lv_obj_set_style_local_line_opa(line, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
     return line;
   };

@@ -35,7 +35,7 @@ namespace Pinetime {
         static constexpr uint16_t height = 10;
         static constexpr uint16_t bufferSize = width * height;
         lv_color_t b[bufferSize];
-        Colors::Color selectColor = Colors::Named::White;
+        Colors::Color selectColor = Colors::White;
         uint8_t color = 2;
       };
     }

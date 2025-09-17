@@ -14,11 +14,11 @@ Twos::Twos() {
   };
 
   static constexpr colorPair colors[nColors] = {
-    {0xcdc0b4, Colors::Named::Black},
-    {0xefdfc6, Colors::Named::Black},
-    {0xef9263, Colors::Named::White},
-    {0xf76142, Colors::Named::White},
-    {0x007dc5, Colors::Named::White},
+    {0xcdc0b4, Colors::Black},
+    {0xefdfc6, Colors::Black},
+    {0xef9263, Colors::White},
+    {0xf76142, Colors::White},
+    {0x007dc5, Colors::White},
   };
 
   gridDisplay = lv_table_create(lv_scr_act(), nullptr);

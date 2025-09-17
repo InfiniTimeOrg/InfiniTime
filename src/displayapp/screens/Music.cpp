@@ -118,7 +118,7 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
   lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtArtist, LV_HOR_RES - 12);
   lv_label_set_text_static(txtArtist, "");
-  lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::LightGray);
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);

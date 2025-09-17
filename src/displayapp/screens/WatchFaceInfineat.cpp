@@ -430,9 +430,9 @@ void WatchFaceInfineat::SetBatteryLevel(uint8_t batteryPercent) {
 void WatchFaceInfineat::ToggleBatteryIndicatorColor(bool showSideCover) {
   if (!showSideCover) { // make indicator and notification icon color white
     lv_obj_set_style_local_image_recolor_opa(logoPine, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_100);
-    lv_obj_set_style_local_image_recolor(logoPine, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::White));
-    lv_obj_set_style_local_line_color(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Black));
-    lv_obj_set_style_local_bg_color(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::White));
+    lv_obj_set_style_local_image_recolor(logoPine, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, Colors::White);
+    lv_obj_set_style_local_line_color(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::Black);
+    lv_obj_set_style_local_bg_color(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::White);
   } else {
     lv_obj_set_style_local_image_recolor_opa(logoPine, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
     const std::array<Colors::Color, nLines>* colors = returnColor(static_cast<enum colors>(settingsController.GetInfineatColorIndex()));

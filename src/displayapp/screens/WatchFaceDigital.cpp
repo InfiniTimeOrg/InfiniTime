@@ -37,7 +37,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   statusIcons.Create();
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Lime));
+  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Lime);
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 

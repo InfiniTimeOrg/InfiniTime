@@ -18,10 +18,9 @@ Motion::Motion(Controllers::MotionController& motionController) : motionControll
   lv_chart_set_point_count(chart, 10);
 
   /*Add 3 data series*/
-  using namespace Colors;
-  ser1 = lv_chart_add_series(chart, Color(Red));
-  ser2 = lv_chart_add_series(chart, Color(Green));
-  ser3 = lv_chart_add_series(chart, Color(Yellow));
+  ser1 = lv_chart_add_series(chart, Colors::Red);
+  ser2 = lv_chart_add_series(chart, Colors::Green);
+  ser3 = lv_chart_add_series(chart, Colors::Yellow);
 
   lv_chart_init_points(chart, ser1, 0);
   lv_chart_init_points(chart, ser2, 0);

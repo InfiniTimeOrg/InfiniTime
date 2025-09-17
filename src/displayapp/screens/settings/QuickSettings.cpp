@@ -92,11 +92,11 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_style_local_bg_color(btn3,
                                   LV_BTN_PART_MAIN,
                                   static_cast<lv_state_t>(ButtonState::NotificationsOff),
-                                  Colors::Color(Colors::Named::Red));
+                                  Colors::Red);
   lv_obj_set_style_local_bg_color(btn3,
                                   LV_BTN_PART_MAIN,
                                   static_cast<lv_state_t>(ButtonState::Sleep),
-                                  Colors::Color(Colors::Named::Violet));
+                                  Colors::Violet);
   lv_obj_set_size(btn3, buttonWidth, buttonHeight);
   lv_obj_align(btn3, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, buttonXOffset, 0);
 

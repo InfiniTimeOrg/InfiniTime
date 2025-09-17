@@ -21,7 +21,7 @@ BatteryInfo::BatteryInfo(const Pinetime::Controllers::Battery& batteryController
   lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, InfiniTimeTheme::Colors::bgAlt);
   lv_obj_set_style_local_border_width(chargingArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 2);
   lv_obj_set_style_local_radius(chargingArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Lime));
+  lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::Lime);
 
   status = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(status, "Reading Battery status");
@@ -35,7 +35,7 @@ BatteryInfo::BatteryInfo(const Pinetime::Controllers::Battery& batteryController
   lv_obj_align(percent, chargingArc, LV_ALIGN_CENTER, 0, 0);
 
   voltage = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(voltage, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Orange));
+  lv_obj_set_style_local_text_color(voltage, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Orange);
   lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltage / 1000, batteryVoltage % 1000 / 10);
   lv_label_set_align(voltage, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(voltage, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -7);
@@ -56,19 +56,19 @@ void BatteryInfo::Refresh() {
   batteryVoltage = batteryController.Voltage();
 
   if (batteryController.IsCharging()) {
-    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Color(Lime));
+    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Lime);
     lv_label_set_text_static(status, "Charging");
   } else if (batteryPercent == 100) {
-    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Color(Blue));
+    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Blue);
     lv_label_set_text_static(status, "Fully charged");
   } else if (batteryPercent > 15) {
-    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Color(Green));
+    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Green);
     lv_label_set_text_static(status, "Discharging");
   } else if (batteryPercent > 5) {
-    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Color(Orange));
+    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Orange);
     lv_label_set_text_static(status, "Battery low");
   } else {
-    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Color(deepOrange));
+    lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, DeepOrange);
     lv_label_set_text_static(status, "Battery critical");
   }
 

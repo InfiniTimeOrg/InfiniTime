@@ -32,7 +32,7 @@ namespace Pinetime {
 
         std::mt19937 gen;
 
-        std::array<Colors::Color, 3> resultColors = {Colors::Named::Yellow, Colors::Named::Magenta, Colors::Named::Aqua};
+        std::array<Colors::Color, 3> resultColors = {Colors::Yellow, Colors::Magenta, Colors::Aqua};
         uint8_t currentColorIndex;
         void NextColor();
 

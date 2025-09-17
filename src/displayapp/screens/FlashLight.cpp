@@ -52,13 +52,13 @@ FlashLight::FlashLight(System::SystemTask& systemTask, Controllers::BrightnessCo
 
 FlashLight::~FlashLight() {
   lv_obj_clean(lv_scr_act());
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, Colors::Color(Colors::Named::Black));
+  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, Colors::Black);
   brightnessController.Set(previousBrightnessLevel);
 }
 
 void FlashLight::SetColors() {
-  Colors::Color bgColor = isOn ? Colors::Named::White : Colors::Named::Black;
-  Colors::Color fgColor = isOn ? Colors::Named::LightGray : Colors::Named::White;
+  Colors::Color bgColor = isOn ? Colors::White : Colors::Black;
+  Colors::Color fgColor = isOn ? Colors::LightGray : Colors::White;
 
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, bgColor);
   lv_obj_set_style_local_text_color(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, fgColor);

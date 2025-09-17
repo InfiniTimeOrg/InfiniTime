@@ -8,7 +8,7 @@ namespace InfiniTimeTheme {
     static constexpr ::Colors::Color bg = 0x5d697e;
     static constexpr ::Colors::Color bgAlt = 0x383838;
     static constexpr ::Colors::Color bgDark = 0x181818;
-    static constexpr ::Colors::Color highlight = ::Colors::Named::Green;
+    static constexpr ::Colors::Color highlight = ::Colors::Green;
   };
 };
 
