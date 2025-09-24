@@ -156,9 +156,11 @@ void WatchFaceDigital::Refresh() {
     if (heartbeatRunning.Get()) {
       lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
       lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());
+      lv_obj_set_hidden(heartbeatIcon, false);
+      lv_obj_set_hidden(heartbeatValue, false);
     } else {
-      lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1B1B1B));
-      lv_label_set_text_static(heartbeatValue, "");
+      lv_obj_set_hidden(heartbeatIcon, true);
+      lv_obj_set_hidden(heartbeatValue, true);
     }
 
     lv_obj_realign(heartbeatIcon);
