@@ -1,0 +1,58 @@
+@startuml
+
+group Step 1 [States::Start]
+CompanionApp -> Pinetime : ControlPoint Endpoint (Opcodes::StartDFU, ImageTypes::Application)
+Pinetime --> CompanionApp : ControlPoint Endpoint (Ack)
+end
+
+group Step 2 [States::Start]
+  CompanionApp --> Pinetime : Packet Endpoint (softdeviceSize: uint32_le, bootloaderSize: uint32_le, applicationSize: uint32_le)
+end
+
+group Step 3 [States::Init]
+  Pinetime --> CompanionApp : ControlPoint Endpoint (Opcodes::Response, Opcodes::InitDFUParameters, ErrorCodes::NoError)
+  CompanionApp -> Pinetime : ControlPoint Endpoint (Opcodes::InitDFUParameters, complete=0x00)
+  Pinetime --> CompanionApp : ControlPoint Endpoint (Ack)
+end
+
+group Step 4 [States::Init]
+  CompanionApp --> Pinetime : Packet Endpoint (<.dat init file>)
+  CompanionApp -> Pinetime : ControlPoint Endpoint (Opcodes::InitDFUParameters, complete=0x01)
+end
+
+group Step 5 [States::Init]
+  Pinetime --> CompanionApp : ControlPoint Endpoint (Opcodes::Response, Opcodes::InitDFUParameters, ErrorCodes::NoError)
+  CompanionApp -> Pinetime : ControlPoint Endpoint (Opcodes::PacketReceiptNotificationRequest, nbPacketsToNotify)
+  Pinetime --> CompanionApp : ControlPoint Endpoint (Ack)
+end
+
+group Step 6 [States::Init]
+  CompanionApp -> Pinetime : ControlPoint Endpoint (Opcodes::ReceiveFirmwareImage)
+  Pinetime --> CompanionApp : ControlPoint Endpoint (Ack)
+end
+
+group Step 7 [States::Data]
+  loop firmware in 20 bytes
+    CompanionApp --> Pinetime : Packet Endpoint (<firmware-chunk>)
+    alt nbPacketsToNotify chunks received
+      Pinetime --> CompanionApp : ControlPoint Endpoint (Opcodes::PacketReceiptNotification, bytesReceived: uint32_le)
+    end
+  end
+end
+
+group Step 8 [States::Validate]
+  Pinetime --> CompanionApp : ControlPoint Endpoint (Opcodes::Response, Opcodes::ReceiveFirmwareImage, ErrorCodes::NoError)
+  CompanionApp -> Pinetime : ControlPoint Endpoint (Opcodes::ValidateFirmware)
+  Pinetime --> CompanionApp : ControlPoint Endpoint (Ack)
+end
+
+alt validation succcess
+  group Step 9 [States::Validated]
+    Pinetime --> CompanionApp : ControlPoint Endpoint (Opcodes::Response, Opcodes::ValidateFirmware, ErrorCodes::NoError)
+    CompanionApp ->x Pinetime : ControlPoint Endpoint (Opcodes::ActivateImageAndReset)
+  end
+else crc mismatch
+  Pinetime --> CompanionApp : ControlPoint Endpoint (Opcodes::Response, Opcodes::ValidateFirmware, ErrorCodes::CrcError)
+end
+
+@enduml
