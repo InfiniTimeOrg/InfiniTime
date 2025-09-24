@@ -31,8 +31,6 @@
 #undef max
 #undef min
 
-#include "components/datetime/DateTimeController.h"
-
 int WeatherCallback(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt, void* arg);
 
 namespace Pinetime {
@@ -40,7 +38,7 @@ namespace Pinetime {
 
     class SimpleWeatherService {
     public:
-      explicit SimpleWeatherService(DateTime& dateTimeController);
+      explicit SimpleWeatherService();
 
       void Init();
 
@@ -164,8 +162,6 @@ namespace Pinetime {
         {0}};
 
       uint16_t eventHandle {};
-
-      Pinetime::Controllers::DateTime& dateTimeController;
 
       std::optional<CurrentWeather> currentWeather;
       std::optional<Forecast> forecast;
