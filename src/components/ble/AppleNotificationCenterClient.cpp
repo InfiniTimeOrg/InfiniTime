@@ -49,7 +49,7 @@ bool AppleNotificationCenterClient::OnDiscoveryEvent(uint16_t connectionHandle, 
       ble_gattc_disc_all_chrs(connectionHandle, ancsStartHandle, ancsEndHandle, OnANCSCharacteristicDiscoveredCallback, this);
     } else {
       NRF_LOG_INFO("ANCS not found");
-      onServiceDiscovered(connectionHandle);
+      MaybeFinishDiscovery(connectionHandle);
     }
     return true;
   }
@@ -69,7 +69,7 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
                                                                    const ble_gatt_chr* characteristic) {
   if (error->status != 0 && error->status != BLE_HS_EDONE) {
     NRF_LOG_INFO("ANCS Characteristic discovery ERROR");
-    onServiceDiscovered(connectionHandle);
+    MaybeFinishDiscovery(connectionHandle);
     return 0;
   }
 
@@ -82,22 +82,22 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
       ble_gattc_disc_all_dscs(connectionHandle, dataSourceHandle, ancsEndHandle, OnANCSDescriptorDiscoveryEventCallback, this);
     }
     if (isCharacteristicDiscovered == isControlCharacteristicDiscovered && isCharacteristicDiscovered == isDataCharacteristicDiscovered) {
-      onServiceDiscovered(connectionHandle);
+      MaybeFinishDiscovery(connectionHandle);
     }
   } else if (characteristic != nullptr) {
-      if (ble_uuid_cmp(&notificationSourceChar.u, &characteristic->uuid.u) == 0) {
-        NRF_LOG_INFO("ANCS Characteristic discovered: Notification Source");
-        notificationSourceHandle = characteristic->val_handle;
-        isCharacteristicDiscovered = true;
-      } else if (ble_uuid_cmp(&controlPointChar.u, &characteristic->uuid.u) == 0) {
-        NRF_LOG_INFO("ANCS Characteristic discovered: Control Point");
-        controlPointHandle = characteristic->val_handle;
-        isControlCharacteristicDiscovered = true;
-      } else if (ble_uuid_cmp(&dataSourceChar.u, &characteristic->uuid.u) == 0) {
-        NRF_LOG_INFO("ANCS Characteristic discovered: Data Source");
-        dataSourceHandle = characteristic->val_handle;
-        isDataCharacteristicDiscovered = true;
-      }
+    if (ble_uuid_cmp(&notificationSourceChar.u, &characteristic->uuid.u) == 0) {
+      NRF_LOG_INFO("ANCS Characteristic discovered: Notification Source");
+      notificationSourceHandle = characteristic->val_handle;
+      isCharacteristicDiscovered = true;
+    } else if (ble_uuid_cmp(&controlPointChar.u, &characteristic->uuid.u) == 0) {
+      NRF_LOG_INFO("ANCS Characteristic discovered: Control Point");
+      controlPointHandle = characteristic->val_handle;
+      isControlCharacteristicDiscovered = true;
+    } else if (ble_uuid_cmp(&dataSourceChar.u, &characteristic->uuid.u) == 0) {
+      NRF_LOG_INFO("ANCS Characteristic discovered: Data Source");
+      dataSourceHandle = characteristic->val_handle;
+      isDataCharacteristicDiscovered = true;
+    }
   }
   return 0;
 }
@@ -138,7 +138,7 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
       NRF_LOG_INFO(errorStr);
     }
     if (isDescriptorFound == isDataDescriptorFound)
-      onServiceDiscovered(connectionHandle);
+      MaybeFinishDiscovery(connectionHandle);
   }
   return 0;
 }
@@ -152,7 +152,7 @@ int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle,
     NRF_LOG_INFO("ANCS New alert subscribe ERROR");
   }
   if (isDescriptorFound == isControlDescriptorFound && isDescriptorFound == isDataDescriptorFound)
-    onServiceDiscovered(connectionHandle);
+    MaybeFinishDiscovery(connectionHandle);
 
   return 0;
 }
@@ -170,6 +170,13 @@ int AppleNotificationCenterClient::OnControlPointWrite(uint16_t /*connectionHand
   return 0;
 }
 
+void AppleNotificationCenterClient::MaybeFinishDiscovery(uint16_t connectionHandle) {
+  if (isCharacteristicDiscovered && isControlCharacteristicDiscovered && isDataCharacteristicDiscovered && isDescriptorFound &&
+      isControlDescriptorFound && isDataDescriptorFound && subscriptionsDone) {
+    onServiceDiscovered(connectionHandle);
+  }
+}
+
 void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
   if (event->notify_rx.attr_handle == notificationSourceHandle || event->notify_rx.attr_handle == notificationSourceDescriptorHandle) {
     NRF_LOG_INFO("ANCS Notification received");
@@ -183,11 +190,11 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     // os_mbuf_copydata(event->notify_rx.om, 3, 1, &categoryCount);
     os_mbuf_copydata(event->notify_rx.om, 4, 4, &ancsNotif.uuid);
 
-    //bool silent = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0;
-    // bool important = eventFlags & static_cast<uint8_t>(EventFlags::Important);
-    //bool preExisting = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) != 0;
-    // bool positiveAction = eventFlags & static_cast<uint8_t>(EventFlags::PositiveAction);
-    // bool negativeAction = eventFlags & static_cast<uint8_t>(EventFlags::NegativeAction);
+    // bool silent = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0;
+    //  bool important = eventFlags & static_cast<uint8_t>(EventFlags::Important);
+    // bool preExisting = (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) != 0;
+    //  bool positiveAction = eventFlags & static_cast<uint8_t>(EventFlags::PositiveAction);
+    //  bool negativeAction = eventFlags & static_cast<uint8_t>(EventFlags::NegativeAction);
 
     // If notification was removed, we remove it from the notifications map
     if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Removed) && notifications.contains(ancsNotif.uuid)) {
@@ -197,14 +204,14 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     }
 
     // If the notification is pre-existing, or if it is a silent notification, we do not add it to the list
-    if (notifications.contains(ancsNotif.uuid) || 
-        (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0 ||
+    if (notifications.contains(ancsNotif.uuid) || (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0 ||
         (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) != 0) {
       return;
     }
 
     // If new notification, add it to the notifications
-    if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Added) && (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) == 0) {
+    if (ancsNotif.eventId == static_cast<uint8_t>(EventIds::Added) &&
+        (ancsNotif.eventFlags & static_cast<uint8_t>(EventFlags::Silent)) == 0) {
       notifications.insert({ancsNotif.uuid, ancsNotif});
     } else {
       // If the notification is not added, we ignore it
@@ -287,8 +294,8 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     std::string decodedMessage = DecodeUtf8String(event->notify_rx.om, messageSize, 8 + titleSize + 1 + 2 + subTitleSize + 1 + 2);
 
-    //Debug event ids ands flags by putting them at front of message (in int format)
-    //decodedMessage = std::to_string(ancsNotif.uuid) + " " + decodedMessage;
+    // Debug event ids ands flags by putting them at front of message (in int format)
+    // decodedMessage = std::to_string(ancsNotif.uuid) + " " + decodedMessage;
 
     NRF_LOG_INFO("Decoded Title: %s", decodedTitle.c_str());
     NRF_LOG_INFO("Decoded SubTitle: %s", decodedSubTitle.c_str());

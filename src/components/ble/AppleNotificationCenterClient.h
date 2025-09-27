@@ -33,6 +33,7 @@ namespace Pinetime {
                                              uint16_t characteristicValueHandle,
                                              const ble_gatt_dsc* descriptor);
       int OnControlPointWrite(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* attribute);
+      void MaybeFinishDiscovery(uint16_t connectionHandle);
       void OnNotification(ble_gap_event* event);
       void Reset();
       void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
@@ -45,7 +46,8 @@ namespace Pinetime {
       static constexpr uint8_t maxSubtitleSize {15};
       static constexpr uint8_t maxMessageSize {120};
 
-      // The Apple Notification Center Service UUID are from https://developer.apple.com/library/archive/documentation/CoreBluetooth/Reference/AppleNotificationCenterServiceSpecification/Specification/Specification.html
+      // The Apple Notification Center Service UUID are from
+      // https://developer.apple.com/library/archive/documentation/CoreBluetooth/Reference/AppleNotificationCenterServiceSpecification/Specification/Specification.html
 
       // 7905F431-B5CE-4E99-A40F-4B1E122D00D0
       static constexpr ble_uuid128_t ancsUuid {
