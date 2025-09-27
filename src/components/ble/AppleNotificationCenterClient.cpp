@@ -148,6 +148,11 @@ int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle,
                                                       ble_gatt_attr* /*attribute*/) {
   if (error->status == 0) {
     NRF_LOG_INFO("ANCS New alert subscribe OK");
+
+    // Mark subscriptions complete only after both CCCDs are known
+    if (notificationSourceDescriptorHandle != 0 && dataSourceDescriptorHandle != 0) {
+      subscriptionsDone = true;
+    }
   } else {
     NRF_LOG_INFO("ANCS New alert subscribe ERROR");
   }
@@ -449,6 +454,7 @@ void AppleNotificationCenterClient::Reset() {
   isControlDescriptorFound = false;
   isDataCharacteristicDiscovered = false;
   isDataDescriptorFound = false;
+  subscriptionsDone = false;
 
   notifications.clear();
 }
