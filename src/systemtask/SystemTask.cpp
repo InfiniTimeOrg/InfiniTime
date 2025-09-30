@@ -40,6 +40,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
                        Controllers::AlarmController& alarmController,
+                       Controllers::ScheduledRemindersController& scheduledRemindersController,
                        Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Drivers::Hrs3300& heartRateSensor,
@@ -60,6 +61,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     bleController {bleController},
     dateTimeController {dateTimeController},
     alarmController {alarmController},
+    scheduledRemindersController {scheduledRemindersController},
     watchdog {watchdog},
     notificationManager {notificationManager},
     heartRateSensor {heartRateSensor},
@@ -128,6 +130,7 @@ void SystemTask::Work() {
   batteryController.Register(this);
   motionSensor.SoftReset();
   alarmController.Init(this);
+  scheduledRemindersController.Init(this);
 
   // Reset the TWI device because the motion sensor chip most probably crashed it...
   twiMaster.Sleep();
@@ -202,8 +205,16 @@ void SystemTask::Work() {
           GoToSleep();
           break;
         case Messages::OnNewTime:
+          NRF_LOG_INFO("[SystemTask] OnNewTime received, rescheduling reminders");
           if (alarmController.IsEnabled()) {
             alarmController.ScheduleAlarm();
+          }
+          // Schedule reminders for new time
+          for (uint8_t i = 0; i < scheduledRemindersController.GetReminderCount(); i++) {
+            if (scheduledRemindersController.IsReminderEnabled(i)) {
+              NRF_LOG_INFO("[SystemTask] Rescheduling reminder %d", i);
+              scheduledRemindersController.ScheduleReminder(i);
+            }
           }
           break;
         case Messages::OnNewNotification:
@@ -217,6 +228,10 @@ void SystemTask::Work() {
         case Messages::SetOffAlarm:
           GoToRunning();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
+          break;
+        case Messages::SetOffScheduledReminder:
+          GoToRunning();
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::ScheduledReminderTriggered);
           break;
         case Messages::BleConnected:
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NotifyDeviceActivity);
