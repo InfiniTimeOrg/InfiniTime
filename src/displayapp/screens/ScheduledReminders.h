@@ -3,7 +3,6 @@
 #include "displayapp/apps/Apps.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/Controllers.h"
-#include "systemtask/WakeLock.h"
 #include "Symbols.h"
 #include <array>
 
@@ -17,10 +16,6 @@ namespace Pinetime {
         
         bool OnTouchEvent(TouchEvents event) override;
         bool OnButtonPushed() override;
-        void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
-        void Refresh() override;
-        void SetAlerting();
-        void StopAlerting();
 
       private:
         void CreateContainer();
@@ -33,11 +28,13 @@ namespace Pinetime {
         void ToggleAllReminders();
         
         // Alerting reminder functionality
+        void CreateAlertingReminderDisplay();
+        void UpdateAlertingReminderDisplay();
+        void DismissAlertingReminder();
         uint8_t GetAlertingReminderIndex() const;
         bool HasAlertingReminder() const;
         
         Pinetime::Applications::AppControllers& controllers;
-        System::WakeLock wakeLock;
         lv_obj_t* container;
         lv_obj_t* subTitle;
         lv_obj_t* mainToggleButton;
@@ -49,12 +46,12 @@ namespace Pinetime {
         std::array<lv_obj_t*, 4> statusIndicators;
         
         // Alerting reminder UI elements
-        lv_obj_t* btnStop;
-        lv_obj_t* txtStop;
         lv_obj_t* alertingContainer;
         lv_obj_t* alertingTitle;
         lv_obj_t* alertingMessage;
         lv_obj_t* alertingTime;
+        lv_obj_t* dismissButton;
+        lv_obj_t* dismissLabel;
         
         static constexpr uint8_t maxReminders = 4;
       };
