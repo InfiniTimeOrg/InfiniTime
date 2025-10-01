@@ -29,7 +29,7 @@ namespace Pinetime {
         
         // Alerting reminder functionality
         void CreateAlertingReminderDisplay();
-        void UpdateAlertingReminderDisplay();
+        // void UpdateAlertingReminderDisplay();
         void DismissAlertingReminder();
         uint8_t GetAlertingReminderIndex() const;
         bool HasAlertingReminder() const;
@@ -60,7 +60,7 @@ namespace Pinetime {
     template <>
     struct AppTraits<Apps::ScheduledReminders> {
       static constexpr Apps app = Apps::ScheduledReminders;
-      static constexpr const char* icon = Screens::Symbols::music;
+      static constexpr const char* icon = Screens::Symbols::clock;
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::ScheduledReminders(controllers);

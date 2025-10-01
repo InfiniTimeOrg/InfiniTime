@@ -191,7 +191,7 @@ namespace {
  *
  */
 Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navService(nav) {
-  const auto& image = GetIcon("flag");
+  const auto image = GetIcon("flag");
   imgFlag = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_auto_size(imgFlag, false);
   lv_obj_set_size(imgFlag, 80, 80);

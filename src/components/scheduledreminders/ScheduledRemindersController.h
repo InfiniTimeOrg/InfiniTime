@@ -77,9 +77,9 @@ namespace Pinetime {
       static constexpr uint8_t GetReminderCount() { return reminderCount; }
 
     private:
-      static constexpr uint8_t reminderCount = 6;
-      static constexpr uint8_t dynamicTextCount = 4;
-      static constexpr uint8_t weeklyTextCount = 3;
+      static constexpr uint8_t reminderCount = 7;
+      static constexpr uint8_t dailyTextCount = 29;
+      static constexpr uint8_t weeklyTextCount = 8;
 
       struct ReminderSettings {
         uint8_t hours;
@@ -88,7 +88,7 @@ namespace Pinetime {
         ReminderType type = ReminderType::Daily;
         uint8_t dayOfMonth = 1; // For monthly reminders (1-31)
         uint8_t dayOfWeek = 0; // For weekly reminders (0=Sunday, 1=Monday, ..., 6=Saturday)
-        char name[16]; // Fixed size for reminder name
+        char name[256]; // Fixed size for reminder name
         bool isDynamicText = false; // If true, text rotates from a list
         uint8_t textIndex = 0; // Index into the dynamic text list
       };
@@ -109,28 +109,60 @@ namespace Pinetime {
       System::SystemTask* systemTask = nullptr;
       
       // Dynamic text options for daily rotating reminders
-      std::array<const char*, dynamicTextCount> dynamicTexts = {{
-        "Take a break",
-        "Stretch your legs", 
-        "Drink some water",
-        "Check your posture"
+      std::array<const char*, dailyTextCount> dailyTexts = {{
+        "Wear hearing aids for at least 8 hours/day for full benefit",
+        "Fill your med prescription regularly",
+        "Remain smoke-free with FDA approved therapies at no cost (1-800-QUIT NOW)",
+        "No water, hair/bodysprays, cleaners on hearing aids",
+        "Do not drop hearing aids",
+        "Very hot or windy places? Remove hearing aid",
+        "Noisy place? Remove hearing and wear ear plugs",
+        "Before MRI/CT scan - remove hearing aids",
+        "Clean reusable earplugs with soap and water after each use",
+        "Check and replace - Dirty eartube, eartips, waxguards",
+        "Remind others to face you and to speak clearly",
+        "Be in a well-lit room when talking",
+        "Stuck eartip? Try removing with fingers or go to emergency. No sharp objects in ear",
+        "Ear pain? Change eartip, try a different size. Use otoscope to check. See ENT",
+        "Check your medicine list for drugs that may harm hearing",
+        "Wear in workplace - for improved communication, job performance, safety",
+        "Fall, head injury? Get prompt medical help to check brain injury, worsening hearing",
+        "Doctor visits, hospital stays? Wear hearing aids to not miss any instruction",
+        "Be physically active to support brain health",
+        "Protect your head with helmet, when needed, for brain health",
+        "Support your brain health with daily wear of hearing aids",
+        "Use public assistive technology like hearing loops, with hearing aid telecoil",
+        "Be prepared for emergencies with special alerting devices",
+        "Check how to wear Personal Protective Equipment with hearing aids at work",
+        "Use vibrating/visual alerts to be prepared for emergencies",
+        "Check your vision and wear eyeglasses along with your hearing aids",
+        "Keep mentally active with reading, crafting, volunteering for brain health",
+        "Prevent falls by checking home safety, wearing proper shoes - for brain health",
+        "Follow a heart healthy diet such as DASH, MIND"
       }};
+    
 
       // Dynamic text options for weekly rotating reminders
       std::array<const char*, weeklyTextCount> weeklyTexts = {{
-        "Plan your week",
-        "Review goals",
-        "Relax and recharge"
+        "Wear in different places to get used to the new sounds",
+        "Clean excess earwax from ear with FDA listed drops",
+        "Check for FDA Red Flag conditions and see an ENT",
+        "Manage hypertension, diabetes for brain health",
+        "Quit smoking for free (1-800-QUIT-NOW)for brain health",
+        "Sleep for 6-8 hours daily for brain health",
+        "Limit or avoid alcohol for brain health",
+        "Stay connected with family and friends for brain health"
       }};
 
       // Hardcoded default reminders
       std::array<ReminderSettings, reminderCount> reminders = {{
-        {8, 0, true, ReminderType::Daily, 1, 0, "Morning", false, 0},      // 8:00 AM Daily
-        {12, 0, true, ReminderType::Daily, 1, 0, "Lunch", false, 0},       // 12:00 PM Daily
-        {17, 0, true, ReminderType::Daily, 1, 0, "Wellness", true, 0},     // 5:00 PM Daily with dynamic text
-        {18, 0, true, ReminderType::Monthly, 1, 0, "Rent Due", false, 0},  // 6:00 PM Monthly on 1st
-        {22, 0, true, ReminderType::Daily, 1, 0, "Bedtime", false, 0},     // 10:00 PM Daily
-        {19, 0, true, ReminderType::Weekly, 1, 6, "Weekend", true, 0}      // 7:00 PM Saturday with weekly dynamic text
+        {9, 0, true, ReminderType::Daily, 1, 0, "Are you wearing your hearing aid, taking your daily meds?", false, 0},      // 9:00 AM Daily
+        {17, 0, true, ReminderType::Daily, 1, 0, "Still wearing hearing aid? Before bed, take off, wipe all parts and store safely. Take your daily meds", false, 0},       // 5:00 PM Daily
+        {17, 30, true, ReminderType::Daily, 1, 0, "Dynamic Text", true, 0},     // 5:30 PM Daily with dynamic text
+        {21, 0, true, ReminderType::Daily, 1, 0, "Take your Daily Meds", false, 0},  // 9:00 PM Daily
+        {21, 30, true, ReminderType::Daily, 1, 0, "Check your step count for brain health", false, 0},  // 9:30 PM Daily
+        {13, 0, true, ReminderType::Weekly, 1, 6, "Dynamic Text", true, 0},  // 1:00 PM Saturday
+        {13, 0, true, ReminderType::Weekly, 1, 0, "Dynamic Text", true, 0},  // 1:00 PM Sunday
       }};
       
       std::array<ReminderData, reminderCount> reminderData;

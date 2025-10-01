@@ -267,10 +267,10 @@ const char* ScheduledRemindersController::GetCurrentDynamicText(uint8_t reminder
     }
     return weeklyTexts[textIndex];
   } else {
-    if (textIndex >= dynamicTextCount) {
+    if (textIndex >= dailyTextCount) {
       textIndex = 0; // Safety fallback
     }
-    return dynamicTexts[textIndex];
+    return dailyTexts[textIndex];
   }
 }
 
@@ -282,7 +282,7 @@ void ScheduledRemindersController::AdvanceDynamicText(uint8_t reminderIndex) {
   // Choose the appropriate text count based on reminder type
   uint8_t maxTextCount = (reminders[reminderIndex].type == Pinetime::Controllers::ReminderType::Weekly) 
                          ? weeklyTextCount 
-                         : dynamicTextCount;
+                         : dailyTextCount;
   
   reminders[reminderIndex].textIndex = (reminders[reminderIndex].textIndex + 1) % maxTextCount;
   remindersChanged = true;

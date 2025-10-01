@@ -205,34 +205,21 @@ uint8_t ScheduledReminders::GetAlertingReminderIndex() const {
 void ScheduledReminders::CreateAlertingReminderDisplay() {
   uint8_t alertingIndex = GetAlertingReminderIndex();
   
-  // Create alerting container
+  // Create alerting container - make it larger to accommodate longer text
   alertingContainer = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(alertingContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_border_width(alertingContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 2);
   lv_obj_set_style_local_border_color(alertingContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
-  lv_obj_set_size(alertingContainer, 200, 180);
+  lv_obj_set_size(alertingContainer, 220, 200); // Increased size for longer text
   lv_obj_align(alertingContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   
-  // Create alerting title
-  alertingTitle = lv_label_create(alertingContainer, nullptr);
-  lv_label_set_text_static(alertingTitle, "Reminder Alert!");
-  lv_label_set_align(alertingTitle, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(alertingTitle, alertingContainer, LV_ALIGN_IN_TOP_MID, 0, 10);
-  
-  // Create reminder name
+  // Create reminder message with text wrapping support
   alertingMessage = lv_label_create(alertingContainer, nullptr);
   lv_label_set_text(alertingMessage, controllers.scheduledRemindersController.GetReminderName(alertingIndex));
+  lv_label_set_long_mode(alertingMessage, LV_LABEL_LONG_BREAK); // Enable text wrapping
+  lv_obj_set_width(alertingMessage, 200); // Set width to allow wrapping within container
   lv_label_set_align(alertingMessage, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(alertingMessage, alertingContainer, LV_ALIGN_IN_TOP_MID, 0, 35);
-  
-  // Create time display
-  alertingTime = lv_label_create(alertingContainer, nullptr);
-  std::stringstream timeStr;
-  timeStr << std::setfill('0') << std::setw(2) << static_cast<int>(controllers.scheduledRemindersController.GetReminderHours(alertingIndex))
-          << ":" << std::setfill('0') << std::setw(2) << static_cast<int>(controllers.scheduledRemindersController.GetReminderMinutes(alertingIndex));
-  lv_label_set_text(alertingTime, timeStr.str().c_str());
-  lv_label_set_align(alertingTime, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(alertingTime, alertingContainer, LV_ALIGN_IN_TOP_MID, 0, 55);
+  lv_obj_align(alertingMessage, alertingContainer, LV_ALIGN_IN_TOP_MID, 0, 10);
   
   // Create dismiss button
   dismissButton = lv_btn_create(alertingContainer, nullptr);
@@ -247,22 +234,22 @@ void ScheduledReminders::CreateAlertingReminderDisplay() {
   lv_obj_align(dismissLabel, dismissButton, LV_ALIGN_CENTER, 0, 0);
 }
 
-void ScheduledReminders::UpdateAlertingReminderDisplay() {
-  if (!HasAlertingReminder()) {
-    return; // No alerting reminder to update
-  }
+// void ScheduledReminders::UpdateAlertingReminderDisplay() {
+//   if (!HasAlertingReminder()) {
+//     return; // No alerting reminder to update
+//   }
   
-  uint8_t alertingIndex = GetAlertingReminderIndex();
+//   uint8_t alertingIndex = GetAlertingReminderIndex();
   
-  // Update reminder name
-  lv_label_set_text(alertingMessage, controllers.scheduledRemindersController.GetReminderName(alertingIndex));
+//   // Update reminder name
+//   lv_label_set_text(alertingMessage, controllers.scheduledRemindersController.GetReminderName(alertingIndex));
   
-  // Update time display
-  std::stringstream timeStr;
-  timeStr << std::setfill('0') << std::setw(2) << static_cast<int>(controllers.scheduledRemindersController.GetReminderHours(alertingIndex))
-          << ":" << std::setfill('0') << std::setw(2) << static_cast<int>(controllers.scheduledRemindersController.GetReminderMinutes(alertingIndex));
-  lv_label_set_text(alertingTime, timeStr.str().c_str());
-}
+//   // // Update time display
+//   // std::stringstream timeStr;
+//   // timeStr << std::setfill('0') << std::setw(2) << static_cast<int>(controllers.scheduledRemindersController.GetReminderHours(alertingIndex))
+//   //         << ":" << std::setfill('0') << std::setw(2) << static_cast<int>(controllers.scheduledRemindersController.GetReminderMinutes(alertingIndex));
+//   // lv_label_set_text(alertingTime, timeStr.str().c_str());
+// }
 
 void ScheduledReminders::DismissAlertingReminder() {
   if (!HasAlertingReminder()) {
@@ -291,8 +278,6 @@ void ScheduledReminders::DismissAlertingReminder() {
 
   subTitle = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_width(subTitle, LV_HOR_RES);
-  lv_label_set_align(subTitle, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(subTitle, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 35);
   
   // Update the subtitle to show current state
   if (controllers.scheduledRemindersController.AreAllRemindersEnabled()) {
@@ -300,4 +285,8 @@ void ScheduledReminders::DismissAlertingReminder() {
   } else {
     lv_label_set_text_static(subTitle, "are Disabled");
   }
+  lv_label_set_align(subTitle, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(subTitle, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 35);
+
+  CreateMainToggle();
 }

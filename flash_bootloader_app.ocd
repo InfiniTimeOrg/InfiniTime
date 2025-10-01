@@ -1,0 +1,6 @@
+init
+
+program ./build/output/bootloader.bin
+program ./build/output/pinetime-mcuboot-app-image-1.15.0.bin verify 0x00008000
+
+reset
