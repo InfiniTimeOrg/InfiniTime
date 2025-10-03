@@ -14,20 +14,39 @@ namespace Pinetime::Applications {
   namespace Screens {
     class Timer : public Screen {
     public:
-      Timer(Controllers::Timer& timerController);
+      Timer(Controllers::Timer& timerController, Controllers::MotorController& motorController);
       ~Timer() override;
       void Refresh() override;
       void Reset();
       void ToggleRunning();
       void ButtonPressed();
       void MaskReset();
+      void SetTimerRinging();
+      void OnLauncherButtonClicked(lv_obj_t* obj);
+
+      bool launcherMode = true;
 
     private:
       void SetTimerRunning();
       void SetTimerStopped();
       void UpdateMask();
       void DisplayTime();
+      void CreateLauncherUI();
+      void CreateTimerUI(uint32_t startDurationMs, bool autoStart);
+      void AddTimerDuration(uint32_t duration);
+      uint32_t GetTimerDuration(uint8_t index) const;
+
       Pinetime::Controllers::Timer& timer;
+      Pinetime::Controllers::MotorController& motorController;
+
+      // Launcher UI elements
+      static constexpr int numRecentTimers = 3;
+      static uint32_t timerDurations[numRecentTimers];
+      lv_obj_t* btnRecent[numRecentTimers] = {nullptr};
+      lv_obj_t* btnCustom = nullptr;
+      lv_obj_t* labelRecent[numRecentTimers] = {nullptr};
+      lv_obj_t* labelCustom = nullptr;
+      lv_style_t btnStyle;
 
       lv_obj_t* btnPlayPause;
       lv_obj_t* txtPlayPause;
@@ -54,7 +73,7 @@ namespace Pinetime::Applications {
     static constexpr const char* icon = Screens::Symbols::hourGlass;
 
     static Screens::Screen* Create(AppControllers& controllers) {
-      return new Screens::Timer(controllers.timer);
+      return new Screens::Timer(controllers.timer, controllers.motorController);
     };
 
     static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
