@@ -132,6 +132,23 @@ size_t NotificationManager::NbNotifications() const {
   return size;
 }
 
+NotificationManager::Notification::Notification() {
+}
+
+NotificationManager::Notification::Notification(const char* message, uint8_t size) {
+  uint8_t effectiveSize = std::min(std::max(size, (uint8_t) 1), NotificationManager::MessageSize);
+  memcpy(this->message.data(), message, effectiveSize - 1);
+  this->message[effectiveSize - 1] = '\0';
+  this->size = effectiveSize;
+}
+
+NotificationManager::Notification::Notification(const struct os_mbuf* om, int off, uint8_t size) {
+  uint8_t effectiveSize = std::min(std::max(size, (uint8_t) 1), NotificationManager::MessageSize);
+  os_mbuf_copydata(om, off, effectiveSize - 1, this->message.data());
+  this->message[effectiveSize - 1] = '\0';
+  this->size = effectiveSize;
+}
+
 const char* NotificationManager::Notification::Message() const {
   const char* itField = std::find(message.begin(), message.begin() + size - 1, '\0');
   if (itField != message.begin() + size - 1) {
