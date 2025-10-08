@@ -24,7 +24,6 @@ namespace Pinetime {
         lv_opa_t alpha;
       };
 
-
       /// Describes what type of noise to use for a TextureLayer.
       enum class LayerNoise {
         Blank = 0,   // Solid color
@@ -63,10 +62,7 @@ namespace Pinetime {
         /// @param gradientEnd Same as gradientStart but for the gradient end value. Must be > gradientStart.
         /// @param color The color to use for the entire gradient.
         /// @param alpha The alpha to use for the entire gradient.
-        GradientData(float gradientStart,
-                     float gradientEnd,
-                     lv_color_t color,
-                     lv_opa_t alpha);
+        GradientData(float gradientStart, float gradientEnd, lv_color_t color, lv_opa_t alpha);
 
         /// Interpolate the gradient based on the given position. Returns black at 0 opacity if clipped off by clipLow or clipHigh.
         [[nodiscard]] ColorWithOpacity Interpolate(uint16_t chosenValue) const;
@@ -116,7 +112,6 @@ namespace Pinetime {
         bool clipHigh = false;
       };
 
-
       /// Struct containing data for Blank type noise
       /// @param color The color to fill this layer with.
       /// @param alpha The alpha value for the color to fill the layer with.
@@ -125,21 +120,18 @@ namespace Pinetime {
         lv_opa_t alpha;
       };
 
-
       /// Struct containing data for Simple type noise. Needs no additional information aside from the gradient.
       /// @param gradientData Contains information for the gradient to use.
       struct TextureLayerDataSimple {
         GradientData gradientData;
       };
 
-
       // type T must be a child type of TextureLayerDataBaseShiftable (I couldn't figure out how to check it in code)
       template <typename T>
       struct TextureLayerDataBaseMovable {
         /// @param gradientData Contains information about the gradient to use.
         /// @param scale The scale of the noise in pixels. Must be >0.
-        TextureLayerDataBaseMovable(const GradientData& gradientData,
-                                    uint16_t scale);
+        TextureLayerDataBaseMovable(const GradientData& gradientData, uint16_t scale);
 
         /// Chainable function to set the offsets for this noise.
         /// For any scales that do not divide evenly into 65536, the texture will have a seam between pixels -32768 and 32767.
@@ -168,39 +160,32 @@ namespace Pinetime {
         int16_t shiftY;
       };
 
-
       /// Struct containing data for Perlin type noise.
       struct TextureLayerDataPerlin : TextureLayerDataBaseMovable<TextureLayerDataPerlin> {
         using TextureLayerDataBaseMovable::TextureLayerDataBaseMovable;
       };
-
 
       /// Struct containing data for ShapeSquare type noise.
       struct TextureLayerDataSquare : TextureLayerDataBaseMovable<TextureLayerDataSquare> {
         using TextureLayerDataBaseMovable::TextureLayerDataBaseMovable;
       };
 
-
       /// Struct containing data for ShapeTriangle type noise.
       struct TextureLayerDataTriangle : TextureLayerDataBaseMovable<TextureLayerDataTriangle> {
         using TextureLayerDataBaseMovable::TextureLayerDataBaseMovable;
       };
-
 
       /// Struct containing data for ShapeCircle type noise.
       struct TextureLayerDataCircle : TextureLayerDataBaseMovable<TextureLayerDataCircle> {
         using TextureLayerDataBaseMovable::TextureLayerDataBaseMovable;
       };
 
-
       /// A layer to be used in TextureGenerator. Is more of a means of providing a single unified interface for all types of layers.
       class TextureLayer {
       public:
         /// @param noiseType The type of noise to use. See NoiseType for descriptions.
         /// @param textureLayerData The data to pass to the noise generator function. Must be one of the TextureLayerData[Type] structs.
-        TextureLayer(LayerNoise noiseType, const std::any& textureLayerData)
-          : noiseType{noiseType},
-            textureLayerData{textureLayerData} {
+        TextureLayer(LayerNoise noiseType, const std::any& textureLayerData) : noiseType {noiseType}, textureLayerData {textureLayerData} {
         }
 
         /// Calculate an entire layer and merge it into the provided buffer. Prefer using this over CalculatePixel directly.
@@ -250,7 +235,6 @@ namespace Pinetime {
         int16_t maxYBound = std::numeric_limits<int16_t>::max();
       };
 
-
       /// The overall generator for textures.
       class TextureGenerator {
       public:
@@ -278,9 +262,8 @@ namespace Pinetime {
         lv_color_t GetPixel(lv_coord_t x, lv_coord_t y) const;
 
       private:
-        std::vector<TextureLayer> layers{};
+        std::vector<TextureLayer> layers {};
       };
-
 
       /// You like eating moss, don't you? This can tell exactly how much you do.
       /// This is really just a specialized 2D bit array.
@@ -313,7 +296,6 @@ namespace Pinetime {
         uint16_t height;       // The height of the canvas
         uint32_t mossMunched;  // A count of how many pixels of moss have been eaten
       };
-
 
       /// Each type of paintable moss.
       enum class MossType : uint8_t {
@@ -373,7 +355,6 @@ namespace Pinetime {
         Max = AteAllMoss, // MUST be set to last real moss
         Min = Error,      // MUST be set to first real moss
       };
-
 
       /// Manages the sequence of events displayed between mosses
       class MossStory {
@@ -535,7 +516,6 @@ namespace Pinetime {
         MossType curMossType;     // Moss type to display right now
       };
 
-
       /// Simulates moss. Not enough to capture its true grace, but enough to offer a glimpse.
       class MossSimulator : public Screen {
       public:
@@ -623,16 +603,13 @@ namespace Pinetime {
       };
     }
 
-
     template <>
     struct AppTraits<Apps::MossSimulator> {
       static constexpr Apps app = Apps::MossSimulator;
       static constexpr const char* icon = Screens::Symbols::seedling;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::MossSimulator(controllers.lvgl,
-                                          controllers.motorController,
-                                          *controllers.systemTask);
+        return new Screens::MossSimulator(controllers.lvgl, controllers.motorController, *controllers.systemTask);
       }
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

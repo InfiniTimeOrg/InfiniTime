@@ -40,7 +40,6 @@
 // How long, in ticks, the user has to hold tap for at program start to enter the debug scene change state
 #define DEBUG_ENTRY_HOLD_TIME pdMS_TO_TICKS(1000)
 
-
 namespace {
   // Unused, so it must be commented out else the compiler throws a hissy fit.
   /// Cosine with integer return (range [-32767, 32767])
@@ -88,20 +87,17 @@ namespace {
   /// Take an integer coordinate and turn it into an angle.
   /// @return An angle in range [0,360)
   int16_t MakeAngleFromCoord(uint8_t x, uint8_t y) {
-    static constexpr uint8_t perlinHashTable[256] = {205, 193, 63, 54, 65, 190, 30, 137, 129, 32, 247, 221, 91, 202, 93, 102, 143, 68, 15,
-                                                     236, 225, 55, 114, 57, 185, 51, 252, 110, 123, 11, 154, 133, 101, 120, 141, 12, 7, 67,
-                                                     136, 216, 27, 209, 160, 104, 44, 22, 235, 4, 179, 9, 35, 237, 241, 37, 246, 142, 156,
-                                                     89, 113, 149, 81, 176, 0, 78, 175, 47, 6, 157, 164, 198, 167, 98, 169, 74, 25, 5, 40,
-                                                     146, 148, 116, 239, 108, 203, 48, 90, 226, 144, 242, 64, 159, 92, 88, 132, 130, 119,
-                                                     95, 204, 232, 103, 61, 206, 174, 62, 199, 56, 109, 145, 168, 210, 53, 58, 82, 131, 255,
-                                                     122, 250, 39, 126, 106, 16, 99, 83, 170, 177, 2, 105, 50, 84, 183, 66, 224, 230, 218,
-                                                     125, 195, 135, 75, 212, 31, 20, 45, 43, 33, 223, 52, 69, 23, 243, 19, 97, 152, 124,
-                                                     158, 72, 150, 166, 151, 161, 34, 191, 49, 77, 217, 178, 107, 229, 187, 253, 96, 147, 3,
-                                                     8, 42, 172, 10, 59, 233, 94, 215, 13, 222, 197, 238, 121, 211, 173, 41, 80, 115, 194,
-                                                     200, 79, 208, 1, 234, 244, 100, 182, 251, 70, 26, 180, 188, 86, 240, 227, 28, 228, 60,
-                                                     134, 196, 220, 128, 14, 163, 153, 192, 36, 254, 38, 249, 155, 21, 201, 213, 76, 117,
-                                                     171, 111, 85, 140, 112, 181, 245, 46, 138, 17, 184, 71, 127, 73, 231, 207, 189, 186,
-                                                     118, 219, 139, 248, 214, 165, 18, 24, 29, 87, 162};
+    static constexpr uint8_t perlinHashTable[256] = {
+      205, 193, 63,  54,  65,  190, 30,  137, 129, 32,  247, 221, 91,  202, 93,  102, 143, 68,  15,  236, 225, 55,  114, 57,  185, 51,
+      252, 110, 123, 11,  154, 133, 101, 120, 141, 12,  7,   67,  136, 216, 27,  209, 160, 104, 44,  22,  235, 4,   179, 9,   35,  237,
+      241, 37,  246, 142, 156, 89,  113, 149, 81,  176, 0,   78,  175, 47,  6,   157, 164, 198, 167, 98,  169, 74,  25,  5,   40,  146,
+      148, 116, 239, 108, 203, 48,  90,  226, 144, 242, 64,  159, 92,  88,  132, 130, 119, 95,  204, 232, 103, 61,  206, 174, 62,  199,
+      56,  109, 145, 168, 210, 53,  58,  82,  131, 255, 122, 250, 39,  126, 106, 16,  99,  83,  170, 177, 2,   105, 50,  84,  183, 66,
+      224, 230, 218, 125, 195, 135, 75,  212, 31,  20,  45,  43,  33,  223, 52,  69,  23,  243, 19,  97,  152, 124, 158, 72,  150, 166,
+      151, 161, 34,  191, 49,  77,  217, 178, 107, 229, 187, 253, 96,  147, 3,   8,   42,  172, 10,  59,  233, 94,  215, 13,  222, 197,
+      238, 121, 211, 173, 41,  80,  115, 194, 200, 79,  208, 1,   234, 244, 100, 182, 251, 70,  26,  180, 188, 86,  240, 227, 28,  228,
+      60,  134, 196, 220, 128, 14,  163, 153, 192, 36,  254, 38,  249, 155, 21,  201, 213, 76,  117, 171, 111, 85,  140, 112, 181, 245,
+      46,  138, 17,  184, 71,  127, 73,  231, 207, 189, 186, 118, 219, 139, 248, 214, 165, 18,  24,  29,  87,  162};
     // Use the x and y coords to make a fast and Good Enough random number, take bottom 5 bits, and map that to roughly 360 degrees
     return (int16_t) (perlinHashTable[perlinHashTable[x] + y] & 31) * (int16_t) 11;
   }
@@ -124,15 +120,13 @@ namespace {
     // below equation is doing this: ((abs(sin(angle * 4.5)) + 6)/7) * MUNCH_RADIUS
     // the 4.5 is 1/2 of the number of spokes (so here it has 9 spokes), and the 6 and 7 are how much to push the wave out by
     //  (so here the squiggle is in the outer 1/7 of the radius)
-    const uint32_t targetDistance = (int32_t) MOSS_MUNCH_RADIUS * (abs((int32_t) Sine(angle * 9 / 2)) + (32767 * 6)) / (
-                                      (int32_t) 32767 * 7);
+    const uint32_t targetDistance =
+      (int32_t) MOSS_MUNCH_RADIUS * (abs((int32_t) Sine(angle * 9 / 2)) + (32767 * 6)) / ((int32_t) 32767 * 7);
     return distanceSquared < targetDistance * targetDistance;
   }
 }
 
-
 using namespace Pinetime::Applications::Screens;
-
 
 // Constructor for gradient data. Common among most noise types.
 GradientData::GradientData(float gradientStart,
@@ -141,23 +135,15 @@ GradientData::GradientData(float gradientStart,
                            lv_opa_t fromAlpha,
                            lv_color_t toColor,
                            lv_opa_t toAlpha)
-  : fromColor(fromColor),
-    fromAlpha(fromAlpha),
-    toColor(toColor),
-    toAlpha(toAlpha) {
+  : fromColor(fromColor), fromAlpha(fromAlpha), toColor(toColor), toAlpha(toAlpha) {
   this->gradientStart = static_cast<uint16_t>(gradientStart * std::numeric_limits<uint16_t>::max());
   this->gradientEnd = static_cast<uint16_t>(gradientEnd * std::numeric_limits<uint16_t>::max());
 }
 
-
 // Constructor for gradient data with only a single color.
-GradientData::GradientData(float gradientStart,
-                           float gradientEnd,
-                           lv_color_t color,
-                           lv_opa_t alpha)
+GradientData::GradientData(float gradientStart, float gradientEnd, lv_color_t color, lv_opa_t alpha)
   : GradientData(gradientStart, gradientEnd, color, alpha, color, alpha) {
 }
-
 
 // Set clipping. Is a chainable function to allow easy reuse of gradients in texture construction.
 GradientData& GradientData::SetClip(bool low, bool high) {
@@ -166,14 +152,12 @@ GradientData& GradientData::SetClip(bool low, bool high) {
   return *this;
 }
 
-
 // Re-set endpoint locations. Is a chainable function to allow easy reuse of gradients in texture construction.
 GradientData& GradientData::SetEndpoints(float start, float end) {
   this->gradientStart = static_cast<uint16_t>(start * std::numeric_limits<uint16_t>::max());
   this->gradientEnd = static_cast<uint16_t>(end * std::numeric_limits<uint16_t>::max());
   return *this;
 }
-
 
 // Re-set colors. Is a chainable function to allow easy reuse of gradients in texture construction.
 GradientData& GradientData::SetColors(lv_color_t start, lv_color_t end) {
@@ -182,12 +166,10 @@ GradientData& GradientData::SetColors(lv_color_t start, lv_color_t end) {
   return *this;
 }
 
-
 // Re-set colors to a single value. Is a chainable function to allow easy reuse of gradients in texture construction.
 GradientData& GradientData::SetColor(lv_color_t color) {
   return SetColors(color, color);
 }
-
 
 // Re-set alphas. Is a chainable function to allow easy reuse of gradients in texture construction.
 GradientData& GradientData::SetAlphas(lv_opa_t start, lv_opa_t end) {
@@ -196,12 +178,10 @@ GradientData& GradientData::SetAlphas(lv_opa_t start, lv_opa_t end) {
   return *this;
 }
 
-
 // Re-set alphas to a single value. Is a chainable function to allow easy reuse of gradients in texture construction.
 GradientData& GradientData::SetAlpha(lv_opa_t alpha) {
   return SetAlphas(alpha, alpha);
 }
-
 
 // Perform color interpolation on the gradient. The range of the uint16_t represents the full range of the gradient.
 // 'From' is the left side, 'to' is the right side, and values between them have higher numbers going to the right side.
@@ -234,21 +214,17 @@ ColorWithOpacity GradientData::Interpolate(uint16_t chosenValue) const {
   if (fromAlpha == toAlpha) {
     mixAlpha = fromAlpha;
   } else {
-    mixAlpha = LV_MATH_UDIV255(((uint16_t)fromAlpha * (255 - placeInGradient)) + ((uint16_t)toAlpha * placeInGradient));
+    mixAlpha = LV_MATH_UDIV255(((uint16_t) fromAlpha * (255 - placeInGradient)) + ((uint16_t) toAlpha * placeInGradient));
   }
 
   // Construct final color and return
   return {mixColor, mixAlpha};
 }
 
-
 // Constructor for data to be used in various noise type texture layers
 template <typename T>
-TextureLayerDataBaseMovable<T>::TextureLayerDataBaseMovable(const GradientData& gradientData,
-                                                            uint16_t scale)
-  : gradientData(gradientData),
-    scaleX(scale),
-    scaleY(scale) {
+TextureLayerDataBaseMovable<T>::TextureLayerDataBaseMovable(const GradientData& gradientData, uint16_t scale)
+  : gradientData(gradientData), scaleX(scale), scaleY(scale) {
   if (scale == 0) {
     this->scaleX = 1;
     this->scaleY = 1;
@@ -266,7 +242,6 @@ TextureLayerDataBaseMovable<T>::TextureLayerDataBaseMovable(const GradientData& 
   }
 }
 
-
 // Allows the user to set the shift of the texture layer
 template <typename T>
 T& TextureLayerDataBaseMovable<T>::SetShift(int16_t x, int16_t y) {
@@ -283,7 +258,6 @@ T& TextureLayerDataBaseMovable<T>::SetShift(int16_t x, int16_t y) {
   return static_cast<T&>(*this);
 }
 
-
 // Allows the user to set the per-axis scale of the texture layer
 template <typename T>
 T& TextureLayerDataBaseMovable<T>::SetScale(uint16_t x, uint16_t y) {
@@ -292,13 +266,11 @@ T& TextureLayerDataBaseMovable<T>::SetScale(uint16_t x, uint16_t y) {
   return static_cast<T&>(*this);
 }
 
-
 // Allows the user to re-set the scale of the texture layer
 template <typename T>
 T& TextureLayerDataBaseMovable<T>::SetScale(uint16_t scale) {
   return SetScale(scale, scale);
 }
-
 
 // Calculate an entire layer of the TextureLayer and UPDATE the buffer with it. Agnostic of the internal layer type.
 // This is preferred to CalculatePixel particularly for Perlin type noise layers, since it enforces a structure which allows
@@ -314,7 +286,6 @@ void TextureLayer::CalculateLayer(lv_color_t* buffer, lv_coord_t x1, lv_coord_t 
     }
   }
 }
-
 
 // Calculate a single pixel of the TextureLayer and return it. Agnostic of the internal layer type.
 ColorWithOpacity TextureLayer::CalculatePixel(lv_coord_t x, lv_coord_t y) const {
@@ -340,7 +311,6 @@ ColorWithOpacity TextureLayer::CalculatePixel(lv_coord_t x, lv_coord_t y) const 
   return {LV_COLOR_BLACK, LV_OPA_0};
 }
 
-
 // Allows clipping a texture early if it doesn't need to cover the entire screen.
 // Meant to allow for fancier art, but can be used for optimization as well.
 TextureLayer& TextureLayer::SetBounds(int16_t minX, int16_t maxX, int16_t minY, int16_t maxY) {
@@ -351,13 +321,11 @@ TextureLayer& TextureLayer::SetBounds(int16_t minX, int16_t maxX, int16_t minY, 
   return *this;
 }
 
-
 // Calculate pixel color for a Blank noise type layer
 ColorWithOpacity TextureLayer::CalculateBlankPixel() const {
   const TextureLayerDataBlank data = std::any_cast<TextureLayerDataBlank>(textureLayerData);
   return {.color = data.color, .alpha = data.alpha};
 }
-
 
 // Calculate pixel color for a Simple noise type layer
 ColorWithOpacity TextureLayer::CalculateSimplePixel() const {
@@ -365,7 +333,6 @@ ColorWithOpacity TextureLayer::CalculateSimplePixel() const {
   const uint16_t randomResult = std::rand();
   return data.gradientData.Interpolate(randomResult);
 }
-
 
 // Calculate pixel color for a Perlin noise type layer
 // Positive X goes to the right, positive Y goes down
@@ -427,11 +394,7 @@ ColorWithOpacity TextureLayer::CalculatePerlinPixel(lv_coord_t x, lv_coord_t y) 
   const float dotProdBR = (cosineBRAngle * (inTileX - 1)) + (sineBRAngle * (inTileY - 1));
 
   // Calculate output from the Perlin noise
-  float floatResult = Smoothstep(
-    Smoothstep(dotProdTL, dotProdTR, inTileX),
-    Smoothstep(dotProdBL, dotProdBR, inTileX),
-    inTileY
-    );
+  float floatResult = Smoothstep(Smoothstep(dotProdTL, dotProdTR, inTileX), Smoothstep(dotProdBL, dotProdBR, inTileX), inTileY);
 
   // Since by default 2D Perlin only outputs between -sqrt(1/2) and sqrt(1/2)), need to multiply by sqrt(2) to get range -1 to 1
   floatResult *= std::numbers::sqrt2_v<float>;
@@ -450,7 +413,6 @@ ColorWithOpacity TextureLayer::CalculatePerlinPixel(lv_coord_t x, lv_coord_t y) 
   return data.gradientData.Interpolate((uint16_t) (floatResult * std::numeric_limits<uint16_t>::max()));
 }
 
-
 // Calculate pixel color for a SquareNoise "noise" type layer
 ColorWithOpacity TextureLayer::CalculateSquarePixel(lv_coord_t x, lv_coord_t y) const {
   const TextureLayerDataSquare data = std::any_cast<TextureLayerDataSquare>(textureLayerData);
@@ -467,7 +429,6 @@ ColorWithOpacity TextureLayer::CalculateSquarePixel(lv_coord_t x, lv_coord_t y) 
   // Use the result as the gradient
   return data.gradientData.Interpolate(std::max(inSquareX, inSquareY));
 }
-
 
 // Calculate pixel color for a TriangleNoise "noise" type layer
 // Returns values <=0.5 for points inside the triangle in the square, and the rest is filled in with values >0.5
@@ -488,7 +449,6 @@ ColorWithOpacity TextureLayer::CalculateTrianglePixel(lv_coord_t x, lv_coord_t y
   // Use the result as the gradient
   return data.gradientData.Interpolate(0xFFFF - inSquareY - inSquareX);
 }
-
 
 // Calculate pixel color for a CircleNoise "noise" type layer
 ColorWithOpacity TextureLayer::CalculateCirclePixel(lv_coord_t x, lv_coord_t y) const {
@@ -515,7 +475,6 @@ ColorWithOpacity TextureLayer::CalculateCirclePixel(lv_coord_t x, lv_coord_t y) 
   return data.gradientData.Interpolate((uint16_t) result);
 }
 
-
 // Get given a buffer and populate it with the texture described by the TextureGenerator.
 // The passed coordinates are what part of the image is being requested. The buffer still gets populated starting from 0.
 // Coordinates are inclusive.
@@ -528,7 +487,6 @@ void TextureGenerator::GetBlock(lv_color_t* buffer, lv_coord_t x1, lv_coord_t y1
   }
 }
 
-
 // Calculate a single pixel of the texture.
 lv_color_t TextureGenerator::GetPixel(lv_coord_t x, lv_coord_t y) const {
   lv_color_t workingValue = LV_COLOR_MAGENTA; // Magenta to make errors very visible
@@ -539,11 +497,8 @@ lv_color_t TextureGenerator::GetPixel(lv_coord_t x, lv_coord_t y) const {
   return workingValue;
 }
 
-
 // Construct a moss munch tracker object with the given size. Remember internally it's using a bit per coordinate, not a full byte.
-MossMunchTracker::MossMunchTracker(const uint16_t width, const uint16_t height)
-  : width(width),
-    height(height) {
+MossMunchTracker::MossMunchTracker(const uint16_t width, const uint16_t height) : width(width), height(height) {
   gridByteSize = width * height / 8;
   // Add one to the size if somehow the screen size is not a multiple of 8
   if ((width * height) % 8 != 0) {
@@ -553,12 +508,8 @@ MossMunchTracker::MossMunchTracker(const uint16_t width, const uint16_t height)
   Reset();
 }
 
-
 // Copy constructor to satisfy rule of 3.
-MossMunchTracker::MossMunchTracker(MossMunchTracker& other)
-  : width(other.width),
-    height(other.height),
-    mossMunched(other.mossMunched) {
+MossMunchTracker::MossMunchTracker(MossMunchTracker& other) : width(other.width), height(other.height), mossMunched(other.mossMunched) {
   gridByteSize = other.gridByteSize;
   grid = new uint8_t[gridByteSize];
   for (uint16_t i = 0; i < gridByteSize; i++) {
@@ -566,12 +517,10 @@ MossMunchTracker::MossMunchTracker(MossMunchTracker& other)
   }
 }
 
-
 // Destructor since tracker uses memory on heap.
 MossMunchTracker::~MossMunchTracker() {
   delete[] grid;
 }
-
 
 // Assignment operator to satisfy rule of 3.
 MossMunchTracker& MossMunchTracker::operator=(MossMunchTracker const& other) {
@@ -591,20 +540,17 @@ MossMunchTracker& MossMunchTracker::operator=(MossMunchTracker const& other) {
   return *this;
 }
 
-
 // Check if the tracked moss patch has been finished off.
 bool MossMunchTracker::IsFinished() const {
   // Checks if enough pixels have been eaten.
   return mossMunched >= (uint32_t) ((width * height) - MUNCH_LENIENCY);
 }
 
-
 // Reset the tracker grid to be full of moss again
 void MossMunchTracker::Reset() {
   std::fill_n(grid, gridByteSize, 0xFF);
   mossMunched = 0;
 }
-
 
 // Put a bite mark in the munch tracker at the given coordinates. Follows the same logic that drawing does, so there should
 // be no discrepancies between what is displayed and what is tracked as eaten.
@@ -620,7 +566,6 @@ bool MossMunchTracker::Munch(lv_coord_t centerX, lv_coord_t centerY) {
   return ateAnyMoss;
 }
 
-
 // Munch a single bit of moss.
 inline bool MossMunchTracker::MunchBit(lv_coord_t x, lv_coord_t y) {
   // Bounds checking is handled in Munch()
@@ -635,7 +580,6 @@ inline bool MossMunchTracker::MunchBit(lv_coord_t x, lv_coord_t y) {
   mossMunched++;
   return true;
 }
-
 
 // Create a MossStory object. Manages the simple story that goes with the moss eating.
 MossStory::MossStory() {
@@ -654,7 +598,6 @@ MossStory::MossStory() {
   UpdateCurrentVars(nextBeat);
 }
 
-
 // Updates relevant internal states
 void MossStory::IncrementStory() {
   mossEaten++;
@@ -662,7 +605,6 @@ void MossStory::IncrementStory() {
   const StoryBeat nextBeat = GetNextStoryBeat();
   UpdateCurrentVars(nextBeat);
 }
-
 
 // Return the text corresponding to the current scene
 const char* MossStory::GetCurrentSceneText() const {
@@ -686,7 +628,6 @@ const char* MossStory::GetCurrentSceneText() const {
   }
 }
 
-
 // Update scene, cycling around at the end
 void MossStory::DebugIncrementScene() {
   currentScene = (StoryScene) ((uint8_t) currentScene + 1);
@@ -704,7 +645,6 @@ void MossStory::DebugIncrementScene() {
   UpdateCurrentVars(nextBeat);
 }
 
-
 // Check if a StoryBeat has happened recently
 bool MossStory::IsInRecentBeats(StoryBeat storyBeat, uint16_t howRecent) const {
   if (howRecent > 5) {
@@ -717,7 +657,6 @@ bool MossStory::IsInRecentBeats(StoryBeat storyBeat, uint16_t howRecent) const {
   }
   return false;
 }
-
 
 // Count how many times a scene has happened recently
 uint16_t MossStory::CountInRecentScenes(StoryScene storyScene, uint16_t howRecent) const {
@@ -733,7 +672,6 @@ uint16_t MossStory::CountInRecentScenes(StoryScene storyScene, uint16_t howRecen
   return count;
 }
 
-
 // Helper function to allow condensing the GetNextStoryBeat*() functions SIGNIFICANTLY
 void MossStory::PushIfNotHappenedRecently(std::vector<StoryBeat>& possibleNextBeats, StoryBeat storyBeat, uint16_t howRecent) const {
   if (!IsInRecentBeats(storyBeat, howRecent)) {
@@ -741,12 +679,10 @@ void MossStory::PushIfNotHappenedRecently(std::vector<StoryBeat>& possibleNextBe
   }
 }
 
-
 // Just test a percent chance
 inline bool MossStory::PercentChance(const uint8_t chanceTrue) {
   return (std::rand() % 100) + 1 <= chanceTrue;
 }
-
 
 // Evaluates the current state and returns the next story beat. Does NOT update current state.
 // Structured like this so if certain criteria are met, the correct StoryBeat can be returned immediately rather than
@@ -771,10 +707,9 @@ MossStory::StoryBeat MossStory::GetNextStoryBeat() {
   return StoryBeat::Error;
 }
 
-
 // Get a Forest type storybeat
 MossStory::StoryBeat MossStory::GetNextStoryBeatForest() const {
-  std::vector<StoryBeat> possibleNextBeats{};
+  std::vector<StoryBeat> possibleNextBeats {};
 
   // Add mosses available anywhere
   StoryBeat addedContentReturn = PushSharedBeats(possibleNextBeats);
@@ -843,10 +778,9 @@ MossStory::StoryBeat MossStory::GetNextStoryBeatForest() const {
   return possibleNextBeats[std::rand() % possibleNextBeats.size()];
 }
 
-
 // Get a Civilization type storybeat
 MossStory::StoryBeat MossStory::GetNextStoryBeatCivilization() const {
-  std::vector<StoryBeat> possibleNextBeats{};
+  std::vector<StoryBeat> possibleNextBeats {};
 
   // Add mosses available anywhere
   StoryBeat addedContentReturn = PushSharedBeats(possibleNextBeats);
@@ -906,10 +840,9 @@ MossStory::StoryBeat MossStory::GetNextStoryBeatCivilization() const {
   return possibleNextBeats[std::rand() % possibleNextBeats.size()];
 }
 
-
 // Get a Cave type storybeat
 MossStory::StoryBeat MossStory::GetNextStoryBeatCave() const {
-  std::vector<StoryBeat> possibleNextBeats{};
+  std::vector<StoryBeat> possibleNextBeats {};
 
   // Add mosses available anywhere
   StoryBeat addedContentReturn = PushSharedBeats(possibleNextBeats);
@@ -919,9 +852,7 @@ MossStory::StoryBeat MossStory::GetNextStoryBeatCave() const {
 
   // Enable ability to leave on the third moss, increase chance at 5 (to 36% chance of leaving), and force leaving at 7
   // Don't need to check recent scenes, since this is the only way to get out of the cave
-  if ((timeInCurrentScene >= 3 && PercentChance(20)) ||
-      (timeInCurrentScene >= 5 && PercentChance(20)) ||
-      timeInCurrentScene >= 7) {
+  if ((timeInCurrentScene >= 3 && PercentChance(20)) || (timeInCurrentScene >= 5 && PercentChance(20)) || timeInCurrentScene >= 7) {
     return StoryBeat::CaveExitForest;
   }
   // All other cave mosses
@@ -942,10 +873,9 @@ MossStory::StoryBeat MossStory::GetNextStoryBeatCave() const {
   return possibleNextBeats[std::rand() % possibleNextBeats.size()];
 }
 
-
 // Get a House type storybeat
 MossStory::StoryBeat MossStory::GetNextStoryBeatHouse() const {
-  std::vector<StoryBeat> possibleNextBeats{};
+  std::vector<StoryBeat> possibleNextBeats {};
 
   // Add mosses available anywhere
   StoryBeat addedContentReturn = PushSharedBeats(possibleNextBeats);
@@ -955,9 +885,7 @@ MossStory::StoryBeat MossStory::GetNextStoryBeatHouse() const {
 
   // Enable ability to leave on the third moss, increase chance at 5 (to 36% chance of leaving), and force leaving at 7
   // Don't need to check recent scenes, since this is the only way to get out of the house
-  if ((timeInCurrentScene >= 3 && PercentChance(20)) ||
-      (timeInCurrentScene >= 5 && PercentChance(20)) ||
-      timeInCurrentScene >= 7) {
+  if ((timeInCurrentScene >= 3 && PercentChance(20)) || (timeInCurrentScene >= 5 && PercentChance(20)) || timeInCurrentScene >= 7) {
     return StoryBeat::HouseExitCiv;
   }
   // All other house mosses
@@ -979,18 +907,15 @@ MossStory::StoryBeat MossStory::GetNextStoryBeatHouse() const {
   return possibleNextBeats[std::rand() % possibleNextBeats.size()];
 }
 
-
 // Only returns StoryBeat::CycleMoss to simply cycle through moss
 MossStory::StoryBeat MossStory::GetNextStoryBeatAllMoss() {
   return StoryBeat::CycleMoss;
 }
 
-
 // Only returns StoryBeat::Egg
 MossStory::StoryBeat MossStory::GetNextStoryBeatEgg() {
   return StoryBeat::Egg;
 }
-
 
 // Add story beats shared between Forest and Civilization scenes
 MossStory::StoryBeat MossStory::PushSharedCivForestBeats(std::vector<StoryBeat>& possibleNextBeats) const {
@@ -1029,7 +954,6 @@ MossStory::StoryBeat MossStory::PushSharedCivForestBeats(std::vector<StoryBeat>&
   return StoryBeat::Error;
 }
 
-
 // Add story beats shared between all scenes (mostly easter eggs)
 MossStory::StoryBeat MossStory::PushSharedBeats(std::vector<StoryBeat>& possibleNextBeats) const {
   // Zero chance for these easter egg mosses if early in the story
@@ -1055,7 +979,6 @@ MossStory::StoryBeat MossStory::PushSharedBeats(std::vector<StoryBeat>& possible
   // Did not have a moss type that HAD to happen, so indicate as much
   return StoryBeat::Error;
 }
-
 
 // Updates internal variables with the correct text and moss type, and push the beat onto recentEvents
 // Also manages changing the current scene
@@ -1407,7 +1330,7 @@ void MossStory::UpdateCurrentVars(StoryBeat storyBeat) {
       // If finished off all moss, give a special text
       if (curMossType == MossType::AteAllMoss) {
         curStoryText = "There's no more\nmoss in sight. You\nBLJ into a parallel\nuniverse to get more\n"
-          "moss, but not before\neating your reward.";
+                       "moss, but not before\neating your reward.";
       } else {
         switch (std::rand() % 6) {
           default:
@@ -1481,13 +1404,9 @@ void MossStory::UpdateCurrentVars(StoryBeat storyBeat) {
   }
 }
 
-
 // The constructor for the main app object.
 MossSimulator::MossSimulator(Components::LittleVgl& lvgl, Controllers::MotorController& motorController, System::SystemTask& systemTask)
-  : munchTracker(LV_HOR_RES, LV_VER_RES),
-    lvgl(lvgl),
-    motorController(motorController),
-    wakeLock(systemTask) {
+  : munchTracker(LV_HOR_RES, LV_VER_RES), lvgl(lvgl), motorController(motorController), wakeLock(systemTask) {
   // Acquire wake lock for the duration of the application
   wakeLock.Lock();
 
@@ -1512,14 +1431,12 @@ MossSimulator::MossSimulator(Components::LittleVgl& lvgl, Controllers::MotorCont
   SwitchToDbgEntry();
 }
 
-
 MossSimulator::~MossSimulator() {
   // Release wake lock and delete data that needs to be explicitly deleted
   wakeLock.Release();
   lv_obj_clean(lv_scr_act());
   lv_task_del(taskRefresh);
 }
-
 
 // Handle tap inputs.
 bool MossSimulator::OnTouchEvent(uint16_t x, uint16_t y) {
@@ -1576,7 +1493,6 @@ bool MossSimulator::OnTouchEvent(uint16_t x, uint16_t y) {
   return true;
 }
 
-
 // Cycle scene if in the DbgSceneSelect state, else do nothing
 bool MossSimulator::OnButtonPushed() {
   if (state == DbgSceneSelect) {
@@ -1589,7 +1505,6 @@ bool MossSimulator::OnButtonPushed() {
   }
   return false;
 }
-
 
 // Simple function which delegates out the refresh call to whatever needs it, according to the state.
 void MossSimulator::Refresh() {
@@ -1610,7 +1525,6 @@ void MossSimulator::Refresh() {
       break;
   }
 }
-
 
 // Creates a texture generator based on what moss the story wants.
 void MossSimulator::CreateTexGen() {
@@ -1640,9 +1554,9 @@ void MossSimulator::CreateTexGen() {
       // Blank green background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Bit of white speckling. Goes on bottom to make it seem intermittent.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
       // Layers of Perlin to give it a nice texture
       const GradientData darkenGradient = GradientData(0.0, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_50);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 40)));
@@ -1650,8 +1564,8 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
       break;
     }
     case MossType::Blue: {
@@ -1661,9 +1575,9 @@ void MossSimulator::CreateTexGen() {
       // Blank blue background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Bit of white speckling. Goes on bottom to make it seem intermittent.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
       // Layers of Perlin to give it a nice texture
       const GradientData darkenGradient = GradientData(0.0, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_50);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 40)));
@@ -1671,8 +1585,8 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
       break;
     }
     case MossType::Digital: {
@@ -1697,8 +1611,8 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(lightGreenGradient.SetEndpoints(0.0, 0.2), 100)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(lightGreenGradient.SetEndpoints(0.0, 0.3), 150)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(lightGreenGradient.SetEndpoints(0.0, 0.5), 180)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(lightGreenGradient.SetEndpoints(0.0, 0.25), 200)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(lightGreenGradient.SetEndpoints(0.0, 0.25), 200)));
       break;
     }
     case MossType::Gray: {
@@ -1714,8 +1628,8 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
       break;
     }
     case MossType::Dark: {
@@ -1730,8 +1644,8 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
       break;
     }
     case MossType::DarkGlowyBlue: {
@@ -1747,8 +1661,8 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // Add glowy aqua spots
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.7, 1.0, glowCol, LV_OPA_0, glowCol, LV_OPA_100), 20)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(GradientData(0.7, 1.0, glowCol, LV_OPA_0, glowCol, LV_OPA_100), 20)));
       break;
     }
     case MossType::DarkGlowyOrange: {
@@ -1767,10 +1681,8 @@ void MossSimulator::CreateTexGen() {
       // Because orange is a lot duller than aqua, artificially make the spots brighter by making two gradients: high opacity center spots
       //  surrounded by the 'dropoff' gradient.
       // Works well to emulate a 3 point linear gradient, but expensive to calculate since it's 2 Perlin noise layers.
-      const GradientData orangeCenterGradient =
-        GradientData(0.8, 1.0, glowCol, LV_OPA_80, glowCol, LV_OPA_100).SetClip(true, false);
-      const GradientData orangeOuterGradient = GradientData(0.65, 0.8, glowCol, LV_OPA_0, glowCol, LV_OPA_80).
-        SetClip(true, true);
+      const GradientData orangeCenterGradient = GradientData(0.8, 1.0, glowCol, LV_OPA_80, glowCol, LV_OPA_100).SetClip(true, false);
+      const GradientData orangeOuterGradient = GradientData(0.65, 0.8, glowCol, LV_OPA_0, glowCol, LV_OPA_80).SetClip(true, true);
       const int16_t shiftX = std::rand();
       const int16_t shiftY = std::rand();
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(orangeOuterGradient, 20).SetShift(shiftX, shiftY)));
@@ -1785,9 +1697,9 @@ void MossSimulator::CreateTexGen() {
       // Blank yellowish-green background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Bit of white speckling. Goes on bottom to make it seem intermittent.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
       // Layers of Perlin to give it a nice texture
       const GradientData darkenGradient = GradientData(0.0, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_50);
       const GradientData orangeGradient = GradientData(0.0, 1.0, darkenOrangeCol, LV_OPA_0, darkenOrangeCol, LV_OPA_50);
@@ -1796,8 +1708,8 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(orangeGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(orangeGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
       break;
     }
     case MossType::SpanishMossquisition: {
@@ -1806,12 +1718,10 @@ void MossSimulator::CreateTexGen() {
       // Dark tannish background layer
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Three layers of overlaid stretched moss to make it look sort of like it's hanging down
-      TextureLayerDataPerlin edgeLGrad = TextureLayerDataPerlin(
-        GradientData(0.4, 0.5, lightGrayish, LV_OPA_0, lightGrayish, LV_OPA_100).SetClip(true, true),
-        0);
-      TextureLayerDataPerlin edgeRGrad = TextureLayerDataPerlin(
-        GradientData(0.5, 0.6, lightGrayish, LV_OPA_100, lightGrayish, LV_OPA_0).SetClip(true, true),
-        0);
+      TextureLayerDataPerlin edgeLGrad =
+        TextureLayerDataPerlin(GradientData(0.4, 0.5, lightGrayish, LV_OPA_0, lightGrayish, LV_OPA_100).SetClip(true, true), 0);
+      TextureLayerDataPerlin edgeRGrad =
+        TextureLayerDataPerlin(GradientData(0.5, 0.6, lightGrayish, LV_OPA_100, lightGrayish, LV_OPA_0).SetClip(true, true), 0);
       int16_t shiftX = std::rand();
       int16_t shiftY = std::rand();
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, edgeLGrad.SetScale(6, 24).SetShift(shiftX, shiftY)));
@@ -1838,15 +1748,15 @@ void MossSimulator::CreateTexGen() {
       // Limit shiftX and shiftY harshly to guarantee that auto-correction in SetShift doesn't kick in and mess up the layer alignment.
       const int16_t shiftX = std::rand() & 0x3FFF;
       const int16_t shiftY = std::rand() & 0x3FFF;
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(soulGradient.SetEndpoints(0.7, 1.0).SetColor(soulBot), 0).SetScale(60, 20)
-                                          .SetShift(shiftX, shiftY + 15)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(soulGradient.SetEndpoints(0.65, 1.0).SetColor(soulMid), 0).SetScale(60, 20)
-                                          .SetShift(shiftX, shiftY + 7)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(soulGradient.SetEndpoints(0.55, 1.0).SetColor(soulTop), 0).SetScale(60, 20)
-                                          .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(soulGradient.SetEndpoints(0.7, 1.0).SetColor(soulBot), 0).SetScale(60, 20).SetShift(shiftX, shiftY + 15)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(soulGradient.SetEndpoints(0.65, 1.0).SetColor(soulMid), 0).SetScale(60, 20).SetShift(shiftX, shiftY + 7)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(soulGradient.SetEndpoints(0.55, 1.0).SetColor(soulTop), 0).SetScale(60, 20).SetShift(shiftX, shiftY)));
       break;
     }
     case MossType::Fiery: {
@@ -1858,24 +1768,22 @@ void MossSimulator::CreateTexGen() {
       // Blank green background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Bit of white speckling. Goes on bottom to make it seem intermittent.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
       // Layers of Perlin to set it alight
-      const GradientData flameGradient = GradientData(0.4, 1.0, flameColorEdge, LV_OPA_50, flameColorInner, LV_OPA_100).
-        SetClip(true, false);
-      const GradientData flameUpperGradient = GradientData(0.0, 1.0, smokeCol, LV_OPA_0, smokeCol, LV_OPA_40).
-        SetClip(true, false);
+      const GradientData flameGradient =
+        GradientData(0.4, 1.0, flameColorEdge, LV_OPA_50, flameColorInner, LV_OPA_100).SetClip(true, false);
+      const GradientData flameUpperGradient = GradientData(0.0, 1.0, smokeCol, LV_OPA_0, smokeCol, LV_OPA_40).SetClip(true, false);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(flameGradient, 30)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(flameGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(flameUpperGradient, 20)));
       // Orange and black speckles for fire bits and smoke
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, flameColorEdge, LV_OPA_0, flameColorEdge, LV_OPA_70))));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, smokeCol, LV_OPA_0, smokeCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, flameColorEdge, LV_OPA_0, flameColorEdge, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, smokeCol, LV_OPA_0, smokeCol, LV_OPA_70))));
       break;
     }
     case MossType::RedGlow: {
@@ -1887,21 +1795,17 @@ void MossSimulator::CreateTexGen() {
       // Blank dark red background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Bit of light red speckling. Goes on bottom to make it seem intermittent.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, redSpeckleCol, LV_OPA_0, redSpeckleCol, LV_OPA_60))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, redSpeckleCol, LV_OPA_0, redSpeckleCol, LV_OPA_60))));
       // Layers of Perlin to give it a nice texture
       const GradientData brightenGradient = GradientData(0.0, 1.0, brightenCol, LV_OPA_0, brightenCol, LV_OPA_70);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(brightenGradient, 40)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(brightenGradient, 10)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6,
-                                                                              1.0,
-                                                                              speckleOverlayStartCol,
-                                                                              LV_OPA_0,
-                                                                              speckleOverlayStopCol,
-                                                                              LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, speckleOverlayStartCol, LV_OPA_0, speckleOverlayStopCol, LV_OPA_70))));
       break;
     }
     case MossType::Bread: {
@@ -1911,18 +1815,17 @@ void MossSimulator::CreateTexGen() {
       constexpr lv_color_t breadCrustCol = LV_COLOR_MAKE(0x66, 0x40, 0x07);
       // Blank tan background with speckles for texture
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.7, 1.0, breadDarkenCol, LV_OPA_0, breadDarkenCol, LV_OPA_10))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.7, 1.0, breadDarkenCol, LV_OPA_0, breadDarkenCol, LV_OPA_10))));
       // Holes in the bread
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(
-                                            GradientData(0.68, 1.0, breadHoleCol, LV_OPA_80, breadHoleCol, LV_OPA_100).SetClip(true, false),
-                                            15)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.68, 1.0, breadHoleCol, LV_OPA_80, breadHoleCol, LV_OPA_100).SetClip(true, false), 15)));
       // Crust around the edge
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(GradientData(0.90, 1.0, breadCrustCol, LV_OPA_100).SetClip(true, false),
-                                                                 240).SetShift(0, 0)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare,
+                     TextureLayerDataSquare(GradientData(0.90, 1.0, breadCrustCol, LV_OPA_100).SetClip(true, false), 240).SetShift(0, 0)));
       break;
     }
     case MossType::Carpet: {
@@ -1932,38 +1835,35 @@ void MossSimulator::CreateTexGen() {
       constexpr lv_color_t carpetFluffColor = LV_COLOR_MAKE(0x2F, 0x4C, 0x1A);
       constexpr lv_color_t edgeBGColor = LV_COLOR_MAKE(0x36, 0x1A, 0x09);
       // Base fluffy carpet texture
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.3, 1.0, carpetBaseCol, LV_OPA_100, carpetBaseColDark, LV_OPA_100))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.3, 1.0, carpetBaseCol, LV_OPA_100, carpetBaseColDark, LV_OPA_100))));
       // Border around the center carpet texture
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(GradientData(0.917, 1.0, carpetEdgeColor, LV_OPA_100).SetClip(true, false),
-                                                                 0).SetShift(0, 15).SetScale(240, 210)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare,
+                     TextureLayerDataSquare(GradientData(0.917, 1.0, carpetEdgeColor, LV_OPA_100).SetClip(true, false), 0)
+                       .SetShift(0, 15)
+                       .SetScale(240, 210)));
       // Fluff on top and bottom edges to make it clearer it's a carpet
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(
-                                            GradientData(0.5, 0.5, carpetFluffColor, LV_OPA_100, edgeBGColor, LV_OPA_100),
-                                            0).SetShift(0, 0).SetScale(15, 15)).SetBounds(
-        std::numeric_limits<int16_t>::min(),
-        std::numeric_limits<int16_t>::max(),
-        std::numeric_limits<int16_t>::min(),
-        14));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(
-                                            GradientData(0.5, 0.5, edgeBGColor, LV_OPA_100, carpetFluffColor, LV_OPA_100),
-                                            0).SetShift(20, 0).SetScale(15, 15)).SetBounds(
-        std::numeric_limits<int16_t>::min(),
-        std::numeric_limits<int16_t>::max(),
-        226,
-        std::numeric_limits<int16_t>::max()));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeTriangle,
+                     TextureLayerDataTriangle(GradientData(0.5, 0.5, carpetFluffColor, LV_OPA_100, edgeBGColor, LV_OPA_100), 0)
+                       .SetShift(0, 0)
+                       .SetScale(15, 15))
+          .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), std::numeric_limits<int16_t>::min(), 14));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeTriangle,
+                     TextureLayerDataTriangle(GradientData(0.5, 0.5, edgeBGColor, LV_OPA_100, carpetFluffColor, LV_OPA_100), 0)
+                       .SetShift(20, 0)
+                       .SetScale(15, 15))
+          .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), 226, std::numeric_limits<int16_t>::max()));
       break;
     }
     case MossType::TVStatic: {
       // Pure grayscale noise
       constexpr lv_color_t fromCol = LV_COLOR_WHITE;
       constexpr lv_color_t toCol = LV_COLOR_BLACK;
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple({0.0, 1.0, fromCol, LV_OPA_100, toCol, LV_OPA_100})));
+      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple, TextureLayerDataSimple({0.0, 1.0, fromCol, LV_OPA_100, toCol, LV_OPA_100})));
       break;
     }
     case MossType::Cultivated: {
@@ -1976,9 +1876,8 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 40)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, darkenColor, LV_OPA_0, darkenColor, LV_OPA_40))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenColor, LV_OPA_0, darkenColor, LV_OPA_40))));
       break;
     }
     case MossType::Mousse: {
@@ -1987,13 +1886,12 @@ void MossSimulator::CreateTexGen() {
       constexpr lv_color_t holeCol = LV_COLOR_MAKE(0x89, 0x4B, 0x30);
       // Blank tan background with speckles for texture
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.9, 1.0, bgDarkenCol, LV_OPA_0, bgDarkenCol, LV_OPA_10))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.9, 1.0, bgDarkenCol, LV_OPA_0, bgDarkenCol, LV_OPA_10))));
       // Holes in the mousse
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(
-                                            GradientData(0.68, 1.0, holeCol, LV_OPA_50, holeCol, LV_OPA_100).SetClip(true, false),
-                                            5)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.68, 1.0, holeCol, LV_OPA_50, holeCol, LV_OPA_100).SetClip(true, false), 5)));
       break;
     }
     case MossType::Sunrise: {
@@ -2004,9 +1902,9 @@ void MossSimulator::CreateTexGen() {
       // Blank orange background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Bit of purple speckling. Goes on bottom to make it seem intermittent.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, purpleSpeckleCol, LV_OPA_0, purpleSpeckleCol, LV_OPA_60))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, purpleSpeckleCol, LV_OPA_0, purpleSpeckleCol, LV_OPA_60))));
       // Layers of Perlin to give it a nice texture
       const GradientData lightenGradient = GradientData(0.0, 1.0, lightenCol, LV_OPA_0, lightenCol, LV_OPA_40);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(lightenGradient, 40)));
@@ -2014,8 +1912,8 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(lightenGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(lightenGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, lightenCol, LV_OPA_0, lightenCol, LV_OPA_50))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, lightenCol, LV_OPA_0, lightenCol, LV_OPA_50))));
       break;
     }
     case MossType::Suspicious: {
@@ -2027,28 +1925,28 @@ void MossSimulator::CreateTexGen() {
       // Blank green background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Bit of white speckling. Goes on bottom to make it seem intermittent.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
       // Layers of Perlin to give it a nice texture
       const GradientData darkenGradient = GradientData(0.0, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_50);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 40)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 15)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
       // Red and yellow speckles to make it 'suspicious'
       const int16_t shiftX = std::rand();
       const int16_t shiftY = std::rand();
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(
-                                            GradientData(0.83, 1.0, sus1Col, LV_OPA_50, sus1Col, LV_OPA_70).SetClip(true, false),
-                                            10).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(
-                                            GradientData(0.0, 0.17, sus2Col, LV_OPA_70, sus2Col, LV_OPA_50).SetClip(false, true),
-                                            10).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.83, 1.0, sus1Col, LV_OPA_50, sus1Col, LV_OPA_70).SetClip(true, false), 10)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.0, 0.17, sus2Col, LV_OPA_70, sus2Col, LV_OPA_50).SetClip(false, true), 10)
+                       .SetShift(shiftX, shiftY)));
       break;
     }
     case MossType::TreeMoss: {
@@ -2058,10 +1956,10 @@ void MossSimulator::CreateTexGen() {
       constexpr lv_color_t lightMossColor = LV_COLOR_MAKE(0x10, 0x90, 0x10);
       // Background bark
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(barkDark, LV_OPA_100)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(
-                                            GradientData(0.4, 0.6, barkLight, LV_OPA_100, barkLight, LV_OPA_100).SetClip(true, true),
-                                            0).SetScale(20, 80)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.4, 0.6, barkLight, LV_OPA_100, barkLight, LV_OPA_100).SetClip(true, true), 0)
+                       .SetScale(20, 80)));
       // Overlaid moss
       // Uses the same color and gradient several times
       GradientData darkenGradient = GradientData(0.4, 1.0, LV_COLOR_BLACK, LV_OPA_30, LV_COLOR_BLACK, LV_OPA_100).SetClip(true, false);
@@ -2069,9 +1967,9 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient.SetColor(darkMossColor), 15)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient.SetColor(darkMossColor), 5)));
       // Speckling to give the illusion of detail
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, LV_COLOR_BLACK, LV_OPA_0, lightMossColor, LV_OPA_50))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, LV_COLOR_BLACK, LV_OPA_0, lightMossColor, LV_OPA_50))));
       break;
     }
     case MossType::MossMoss: {
@@ -2081,9 +1979,9 @@ void MossSimulator::CreateTexGen() {
       // Blank green background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Bit of white speckling. Goes on bottom to make it seem intermittent.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
       // Layers of Perlin to give it a nice texture
       const GradientData darkenGradient = GradientData(0.0, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_50);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 40)));
@@ -2091,8 +1989,8 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
       break;
     }
     case MossType::QueerPride: {
@@ -2108,24 +2006,25 @@ void MossSimulator::CreateTexGen() {
       // The values here (and for all Queer* mosses) were obtained by generating a lot of Perlin noise and observing its output,
       //  then partitioning the results such that each segment has equal amounts of area.
       // Side note: the distribution of values generated by Perlin noise looks really weird.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.0, 0.352, redCol, LV_OPA_100).SetClip(false, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.352, 0.436, orangeCol, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.436, 0.5, yellowCol, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.5, 0.564, greenCol, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.564, 0.647, blueCol, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.647, 1.0, purpleCol, LV_OPA_100).SetClip(true, false),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.0, 0.352, redCol, LV_OPA_100).SetClip(false, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.352, 0.436, orangeCol, LV_OPA_100).SetClip(true, true), prideScale)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.436, 0.5, yellowCol, LV_OPA_100).SetClip(true, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.5, 0.564, greenCol, LV_OPA_100).SetClip(true, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.564, 0.647, blueCol, LV_OPA_100).SetClip(true, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.647, 1.0, purpleCol, LV_OPA_100).SetClip(true, false), prideScale).SetShift(shiftX, shiftY)));
       break;
     }
     case MossType::QueerTrans: {
@@ -2135,15 +2034,17 @@ void MossSimulator::CreateTexGen() {
       constexpr uint16_t prideScale = 60;
       const int16_t shiftX = std::rand();
       const int16_t shiftY = std::rand();
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.0, 0.463, transBlue, LV_OPA_100).SetClip(false, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.463, 0.626, transPink, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.626, 1.0, transWhite, LV_OPA_100).SetClip(true, false),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.0, 0.463, transBlue, LV_OPA_100).SetClip(false, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.463, 0.626, transPink, LV_OPA_100).SetClip(true, true), prideScale)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.626, 1.0, transWhite, LV_OPA_100).SetClip(true, false), prideScale)
+                       .SetShift(shiftX, shiftY)));
       break;
     }
     case MossType::QueerLesbian: {
@@ -2155,23 +2056,26 @@ void MossSimulator::CreateTexGen() {
       constexpr uint16_t prideScale = 60;
       const int16_t shiftX = std::rand();
       const int16_t shiftY = std::rand();
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.0, 0.373, lesbianOrange, LV_OPA_100).SetClip(false, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(
-                                            GradientData(0.373, 0.463, lesbianLightOrange, LV_OPA_100).SetClip(true, true),
-                                            prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.463, 0.538, lesbianWhite, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(
-                                            GradientData(0.538, 0.626, lesbianLightPurplish, LV_OPA_100).SetClip(true, true),
-                                            prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.626, 1.0, lesbianPurplish, LV_OPA_100).SetClip(true, false),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.0, 0.373, lesbianOrange, LV_OPA_100).SetClip(false, true), prideScale)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.373, 0.463, lesbianLightOrange, LV_OPA_100).SetClip(true, true), prideScale)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.463, 0.538, lesbianWhite, LV_OPA_100).SetClip(true, true), prideScale)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.538, 0.626, lesbianLightPurplish, LV_OPA_100).SetClip(true, true), prideScale)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.626, 1.0, lesbianPurplish, LV_OPA_100).SetClip(true, false), prideScale)
+                       .SetShift(shiftX, shiftY)));
       break;
     }
     case MossType::QueerGay: {
@@ -2186,27 +2090,29 @@ void MossSimulator::CreateTexGen() {
       const int16_t shiftX = std::rand();
       const int16_t shiftY = std::rand();
       // 7 stripes hurts performance-wise... But implementing proper multi-point gradients would hurt more.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.0, 0.337, gayGreen3, LV_OPA_100).SetClip(false, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.337, 0.419, gayGreen2, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.419, 0.474, gayGreen1, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.474, 0.529, gayWhite, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.529, 0.584, gayBlue1, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.584, 0.663, gayBlue2, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.663, 1.0, gayBlue3, LV_OPA_100).SetClip(true, false),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.0, 0.337, gayGreen3, LV_OPA_100).SetClip(false, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.337, 0.419, gayGreen2, LV_OPA_100).SetClip(true, true), prideScale)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.419, 0.474, gayGreen1, LV_OPA_100).SetClip(true, true), prideScale)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.474, 0.529, gayWhite, LV_OPA_100).SetClip(true, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.529, 0.584, gayBlue1, LV_OPA_100).SetClip(true, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.584, 0.663, gayBlue2, LV_OPA_100).SetClip(true, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.663, 1.0, gayBlue3, LV_OPA_100).SetClip(true, false), prideScale).SetShift(shiftX, shiftY)));
       break;
     }
     case MossType::QueerBi: {
@@ -2217,15 +2123,15 @@ void MossSimulator::CreateTexGen() {
       const int16_t shiftX = std::rand();
       const int16_t shiftY = std::rand();
       // Thresholds in this flag moss were adjusted because it looked a bit strange with accurate 2:1:2 color ratios.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.0, 0.46, biMagenta, LV_OPA_100).SetClip(false, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.46, 0.54, biPurple, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.54, 1.0, biBlue, LV_OPA_100).SetClip(true, false),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.0, 0.46, biMagenta, LV_OPA_100).SetClip(false, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.46, 0.54, biPurple, LV_OPA_100).SetClip(true, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.54, 1.0, biBlue, LV_OPA_100).SetClip(true, false), prideScale).SetShift(shiftX, shiftY)));
       break;
     }
     case MossType::QueerPan: {
@@ -2235,15 +2141,17 @@ void MossSimulator::CreateTexGen() {
       constexpr uint16_t prideScale = 60;
       const int16_t shiftX = std::rand();
       const int16_t shiftY = std::rand();
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.0, 0.438, panMagenta, LV_OPA_100).SetClip(false, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.438, 0.564, panYellow, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.564, 1.0, panCyan, LV_OPA_100).SetClip(true, false),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.0, 0.438, panMagenta, LV_OPA_100).SetClip(false, true), prideScale)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.438, 0.564, panYellow, LV_OPA_100).SetClip(true, true), prideScale)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.564, 1.0, panCyan, LV_OPA_100).SetClip(true, false), prideScale).SetShift(shiftX, shiftY)));
       break;
     }
     case MossType::QueerEnby: {
@@ -2254,18 +2162,19 @@ void MossSimulator::CreateTexGen() {
       constexpr uint16_t prideScale = 60;
       const int16_t shiftX = std::rand();
       const int16_t shiftY = std::rand();
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.0, 0.4, enbyYellow, LV_OPA_100).SetClip(false, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.4, 0.5, enbyWhite, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.5, 0.6, enbyPurple, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.6, 1.0, enbyDarkGray, LV_OPA_100).SetClip(true, false),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.0, 0.4, enbyYellow, LV_OPA_100).SetClip(false, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.4, 0.5, enbyWhite, LV_OPA_100).SetClip(true, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.5, 0.6, enbyPurple, LV_OPA_100).SetClip(true, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.6, 1.0, enbyDarkGray, LV_OPA_100).SetClip(true, false), prideScale)
+                       .SetShift(shiftX, shiftY)));
       break;
     }
     case MossType::QueerAce: {
@@ -2276,18 +2185,19 @@ void MossSimulator::CreateTexGen() {
       constexpr uint16_t prideScale = 60;
       const int16_t shiftX = std::rand();
       const int16_t shiftY = std::rand();
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.0, 0.4, aceBlackish, LV_OPA_100).SetClip(false, false),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.4, 0.5, aceGray, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.5, 0.6, aceWhite, LV_OPA_100).SetClip(true, true),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.6, 1.0, acePurple, LV_OPA_100).SetClip(true, false),
-                                                                 prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.0, 0.4, aceBlackish, LV_OPA_100).SetClip(false, false), prideScale)
+                       .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.4, 0.5, aceGray, LV_OPA_100).SetClip(true, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.5, 0.6, aceWhite, LV_OPA_100).SetClip(true, true), prideScale).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.6, 1.0, acePurple, LV_OPA_100).SetClip(true, false), prideScale).SetShift(shiftX, shiftY)));
       break;
     }
     case MossType::Grass: {
@@ -2307,9 +2217,9 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(strandBGGradient, 0).SetScale(4, 20)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(strandFGGradient, 0).SetScale(3, 30)));
       // Fake high resolution perlin layer that's not actually perlin. Likely unnoticeable but meh.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, bgMottleCol, LV_OPA_0, bgMottleCol, LV_OPA_70).SetClip(true, false))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, bgMottleCol, LV_OPA_0, bgMottleCol, LV_OPA_70).SetClip(true, false))));
       break;
     }
     case MossType::Big: {
@@ -2324,19 +2234,14 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 80)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 40)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 15).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(darkenGradient.SetEndpoints(0.5, 1.0), 15).SetShift(shiftX, shiftY - 4)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(darkenGradient.SetEndpoints(0.6, 1.0), 15).SetShift(shiftX, shiftY - 8)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient.SetEndpoints(0.5, 1.0), 15).SetShift(shiftX, shiftY - 4)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient.SetEndpoints(0.6, 1.0), 15).SetShift(shiftX, shiftY - 8)));
       // High resolution noise to give it a nicer texture
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6,
-                                                         1.0,
-                                                         brightenColor,
-                                                         LV_OPA_0,
-                                                         brightenColor,
-                                                         LV_OPA_40).SetClip(true, false))));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Simple,
+        TextureLayerDataSimple(GradientData(0.6, 1.0, brightenColor, LV_OPA_0, brightenColor, LV_OPA_40).SetClip(true, false))));
       break;
     }
     case MossType::Zombie: {
@@ -2346,17 +2251,17 @@ void MossSimulator::CreateTexGen() {
       // Blank dark green background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Bit of white speckling. Goes on bottom to make it seem intermittent.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
       // Layers of Perlin to give it a nice texture
       const GradientData darkenGradient = GradientData(0.0, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_50);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 40)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 15)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
       break;
     }
     case MossType::Moon: {
@@ -2371,28 +2276,20 @@ void MossSimulator::CreateTexGen() {
       const int16_t shiftY = std::rand() & 0x3FFF;
       GradientData wigglyMoonGrad = GradientData(0.0, 0.4, moonColor, LV_OPA_50, moonColor, LV_OPA_100).SetClip(false, true);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(wigglyMoonGrad, 50).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(wigglyMoonGrad.SetColors(bgColor, bgColor), 50).SetShift(
-                                            shiftX - 10,
-                                            shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(wigglyMoonGrad.SetColors(bgColor, bgColor), 50).SetShift(shiftX - 10, shiftY)));
       // Add a big moon in the center. Has an outline to fade out nearby wigglyMoon squiggles, then place the big moon just about centered.
-      const GradientData centerMoonOutlineGrad = GradientData(1 / std::numbers::sqrt2_v<float> / 2,
-                                                              4.f / 3.f / std::numbers::sqrt2_v<float>,
-                                                              bgColor,
-                                                              LV_OPA_100,
-                                                              bgColor,
-                                                              LV_OPA_0).SetClip(false, true);
+      const GradientData centerMoonOutlineGrad =
+        GradientData(1 / std::numbers::sqrt2_v<float> / 2, 4.f / 3.f / std::numbers::sqrt2_v<float>, bgColor, LV_OPA_100, bgColor, LV_OPA_0)
+          .SetClip(false, true);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(centerMoonOutlineGrad, 240).SetShift(-10, 0)));
-      GradientData centerMoon = GradientData(0,
-                                             1 / std::numbers::sqrt2_v<float> / 2,
-                                             LV_COLOR_BLACK,
-                                             LV_OPA_100,
-                                             LV_COLOR_BLACK,
-                                             LV_OPA_100).SetClip(false, true);
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(centerMoon.SetColors(moonColor, moonColor), 240).SetShift(0, 0)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(centerMoon.SetColors(bgColor, bgColor), 240).SetShift(-20, 0)));
+      GradientData centerMoon =
+        GradientData(0, 1 / std::numbers::sqrt2_v<float> / 2, LV_COLOR_BLACK, LV_OPA_100, LV_COLOR_BLACK, LV_OPA_100).SetClip(false, true);
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(centerMoon.SetColors(moonColor, moonColor), 240).SetShift(0, 0)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(centerMoon.SetColors(bgColor, bgColor), 240).SetShift(-20, 0)));
       // Layers of Perlin to give it a nice texture
       // Uses the same color and gradient several times
       const GradientData darkenGradient = GradientData(0.0, 1.0, darkenColor, LV_OPA_0, darkenColor, LV_OPA_50).SetClip(true, false);
@@ -2400,9 +2297,9 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 15)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // Fake high resolution perlin layer that's not actually perlin. Likely unnoticeable but meh.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, darkenColor, LV_OPA_0, darkenColor, LV_OPA_70).SetClip(true, false))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, darkenColor, LV_OPA_0, darkenColor, LV_OPA_70).SetClip(true, false))));
       break;
     }
     case MossType::Aurora: {
@@ -2419,17 +2316,17 @@ void MossSimulator::CreateTexGen() {
       GradientData auroraMainGrad = GradientData(0.46, 1.0, LV_COLOR_BLACK, LV_OPA_20, LV_COLOR_BLACK, LV_OPA_80).SetClip(true, false);
       GradientData auroraSubGrad = GradientData(0.6, 1.0, LV_COLOR_BLACK, LV_OPA_40, LV_COLOR_BLACK, LV_OPA_90).SetClip(true, false);
       // First layer of aurora: dark purple
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(auroraMainGrad.SetColors(aurora1, aurora1), 0).SetScale(10, 120)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(auroraMainGrad.SetColors(aurora1, aurora1), 0).SetScale(10, 120)));
       // Second layer of aurora: green. Creates object used in layer 3 as well.
       int16_t shiftX = std::rand();
       int16_t shiftY = std::rand();
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(auroraMainGrad.SetColors(aurora2Start, aurora2End), 0).SetScale(10, 120).
-                                          SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(auroraSubGrad.SetColors(aurora2Start, aurora2End), 0).SetScale(10, 120).
-                                          SetShift(shiftX, shiftY + 60)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(auroraMainGrad.SetColors(aurora2Start, aurora2End), 0).SetScale(10, 120).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(auroraSubGrad.SetColors(aurora2Start, aurora2End), 0).SetScale(10, 120).SetShift(shiftX, shiftY + 60)));
       // Square layer to fade out green and dark purple auroras toward the top.
       // Uses a square quadruple the edge length of the screen and positions it so the viewed area is at the top middle of the square.
       const GradientData auroraBlocker = GradientData(0.5, 1.0, graySky, LV_OPA_0, graySky, LV_OPA_100).SetClip(true, false);
@@ -2437,15 +2334,14 @@ void MossSimulator::CreateTexGen() {
       // Third layer of aurora: purple-pink
       shiftX = std::rand();
       shiftY = std::rand();
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(auroraMainGrad.SetColors(aurora3Start, aurora3End), 0).SetScale(10, 180).
-                                          SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(auroraSubGrad.SetColors(aurora3Start, aurora3End), 0).SetScale(10, 180).
-                                          SetShift(shiftX, shiftY + 90)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(auroraMainGrad.SetColors(aurora3Start, aurora3End), 0).SetScale(10, 180).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(auroraSubGrad.SetColors(aurora3Start, aurora3End), 0).SetScale(10, 180).SetShift(shiftX, shiftY + 90)));
       // Stars
-      const TextureLayerDataSimple whiteSimpleData(
-        GradientData(0.97, 1.0, starColor, LV_OPA_0, starColor, LV_OPA_60).SetClip(true, false));
+      const TextureLayerDataSimple whiteSimpleData(GradientData(0.97, 1.0, starColor, LV_OPA_0, starColor, LV_OPA_60).SetClip(true, false));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple, whiteSimpleData));
       break;
     }
@@ -2461,16 +2357,16 @@ void MossSimulator::CreateTexGen() {
       // Blank green background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Bit of white speckling. Goes on bottom to make it seem intermittent.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
       // Layers of Perlin to give it a nice texture
       const GradientData darkenGradient = GradientData(0.0, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_50);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 30)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
       // Wibbly wobbly "Good Lorde i am Greatley Sickened" effect
       constexpr lv_opa_t sickOpa = LV_OPA_50;
       const GradientData layer1 = GradientData(0.0, 0.4, sick1, sickOpa, sick2, sickOpa).SetClip(false, true);
@@ -2520,22 +2416,22 @@ void MossSimulator::CreateTexGen() {
       const GradientData highlightInvGrad = GradientData(0.0, 0.10, windowBase, LV_OPA_100).SetClip(false, true);
       int16_t shiftX = -40;
       int16_t shiftY = -90;
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(highlightGrad, 120).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(highlightInvGrad, 120).SetShift(shiftX + 3, shiftY + 3)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeTriangle, TextureLayerDataTriangle(highlightGrad, 120).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeTriangle, TextureLayerDataTriangle(highlightInvGrad, 120).SetShift(shiftX + 3, shiftY + 3)));
       shiftX += 7;
       shiftY += 7;
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(highlightGrad, 120).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(highlightInvGrad, 120).SetShift(shiftX + 3, shiftY + 3)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeTriangle, TextureLayerDataTriangle(highlightGrad, 120).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeTriangle, TextureLayerDataTriangle(highlightInvGrad, 120).SetShift(shiftX + 3, shiftY + 3)));
       shiftX += 7;
       shiftY += 7;
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(highlightGrad, 120).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(highlightInvGrad, 120).SetShift(shiftX + 3, shiftY + 3)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeTriangle, TextureLayerDataTriangle(highlightGrad, 120).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeTriangle, TextureLayerDataTriangle(highlightInvGrad, 120).SetShift(shiftX + 3, shiftY + 3)));
       // Square border
       // 4px border
       const GradientData windowBorder = GradientData(0.9833, 1.0, border, LV_OPA_100, border, LV_OPA_100).SetClip(true, false);
@@ -2552,26 +2448,20 @@ void MossSimulator::CreateTexGen() {
       const GradientData curtainBGDarkenGrad = GradientData(0.53, 1.0, darkColor, LV_OPA_0, darkerColor, LV_OPA_100).SetClip(true, false);
       const uint16_t shiftX = std::rand() & 0x3FFF;
       const uint16_t shiftY = std::rand() & 0x3FFF;
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(curtainBGGrad, 0).SetScale(20, 360).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(curtainBGDarkenGrad, 0).SetScale(20, 360).SetShift(shiftX - 5, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(curtainBGGrad, 0).SetScale(20, 360).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(curtainBGDarkenGrad, 0).SetScale(20, 360).SetShift(shiftX - 5, shiftY)));
       // Circles at the top to emulate holes
       const GradientData holeGrad = GradientData(0.0, 1 / std::numbers::sqrt2_v<float> / 2, holeColor, LV_OPA_100).SetClip(false, true);
       texGen.AddTextureLayer(
-        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(holeGrad, 0).SetScale(17, 25).SetShift(0, 0)).SetBounds(
-          std::numeric_limits<int16_t>::min(),
-          std::numeric_limits<int16_t>::max(),
-          std::numeric_limits<int16_t>::min(),
-          25));
+        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(holeGrad, 0).SetScale(17, 25).SetShift(0, 0))
+          .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), std::numeric_limits<int16_t>::min(), 25));
       // Squares going between these holes
       const GradientData poleGrad = GradientData(0.0, 0.35, holeColor, LV_OPA_100).SetClip(false, true);
       texGen.AddTextureLayer(
-        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(poleGrad, 0).SetScale(34, 21).SetShift(17, 2)).SetBounds(
-          std::numeric_limits<int16_t>::min(),
-          std::numeric_limits<int16_t>::max(),
-          std::numeric_limits<int16_t>::min(),
-          25));
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(poleGrad, 0).SetScale(34, 21).SetShift(17, 2))
+          .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), std::numeric_limits<int16_t>::min(), 25));
       break;
     }
     case MossType::Brick: {
@@ -2584,14 +2474,14 @@ void MossSimulator::CreateTexGen() {
       const GradientData brickGrad = GradientData(0.0, 0.45652, brickRed, LV_OPA_100, brickRed, LV_OPA_100).SetClip(false, true);
       const int16_t shiftX = std::rand() & 0x3FFF;
       const int16_t shiftY = std::rand() & 0x3FFF;
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(brickGrad, 0).SetScale(44, 46).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(brickGrad, 0).SetScale(44, 46).SetShift(shiftX + 21, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(brickGrad, 0).SetScale(44, 46).SetShift(shiftX + 24, shiftY + 23)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(brickGrad, 0).SetScale(44, 46).SetShift(shiftX + 45, shiftY + 23)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(brickGrad, 0).SetScale(44, 46).SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(brickGrad, 0).SetScale(44, 46).SetShift(shiftX + 21, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(brickGrad, 0).SetScale(44, 46).SetShift(shiftX + 24, shiftY + 23)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(brickGrad, 0).SetScale(44, 46).SetShift(shiftX + 45, shiftY + 23)));
       // And some noise to give it :sparkles: texture :sparkles:
       const GradientData fluffyDarkenGrad = GradientData(0.0, 1.0, overlayCol, LV_OPA_0, overlayCol, LV_OPA_20).SetClip(false, false);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(fluffyDarkenGrad)));
@@ -2633,50 +2523,48 @@ void MossSimulator::CreateTexGen() {
       // Mostly using bounds limiting for squares because it's more accurate and easier to work with for art like this.
       // Sky background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(skyCol, LV_OPA_100)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.7, 1.0, skyNoiseCol, LV_OPA_0, skyNoiseCol, LV_OPA_100).SetClip(true, false))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.7, 1.0, skyNoiseCol, LV_OPA_0, skyNoiseCol, LV_OPA_100).SetClip(true, false))));
       // Grass on bottom
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(grassCol, LV_OPA_100)).SetBounds(
-        std::numeric_limits<int16_t>::min(),
-        std::numeric_limits<int16_t>::max(),
-        210,
-        std::numeric_limits<int16_t>::max()));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(grassCol, LV_OPA_100))
+          .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), 210, std::numeric_limits<int16_t>::max()));
       // Sun at top left
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(0.5, 1 / std::numbers::sqrt2_v<float>, sunCol, LV_OPA_100, sunCol, LV_OPA_0).
-                                            SetClip(false, true),
-                                            80).SetShift(-40, -40)).SetBounds(
-        std::numeric_limits<int16_t>::min(),
-        40,
-        std::numeric_limits<int16_t>::min(),
-        40));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle,
+                     TextureLayerDataCircle(
+                       GradientData(0.5, 1 / std::numbers::sqrt2_v<float>, sunCol, LV_OPA_100, sunCol, LV_OPA_0).SetClip(false, true),
+                       80)
+                       .SetShift(-40, -40))
+          .SetBounds(std::numeric_limits<int16_t>::min(), 40, std::numeric_limits<int16_t>::min(), 40));
       // House base
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(houseWallCol, LV_OPA_100)).SetBounds(40, 200, 110, 210));
       // Smoke coming out of the chimney
-      TextureLayerDataCircle smokeData = TextureLayerDataCircle(
-        GradientData(0.0, 1 / std::numbers::sqrt2_v<float>, smokeCol, LV_OPA_100).SetClip(false, true),
-        25);
+      TextureLayerDataCircle smokeData =
+        TextureLayerDataCircle(GradientData(0.0, 1 / std::numbers::sqrt2_v<float>, smokeCol, LV_OPA_100).SetClip(false, true), 25);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, smokeData.SetShift(157, 23)).SetBounds(157, 181, 23, 47));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, smokeData.SetShift(150, 1)).SetBounds(150, 174, 1, 25));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, smokeData.SetShift(165, -9)).SetBounds(165, 189, -9, 15));
       // House chimney
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(chimneyCol, LV_OPA_100)).SetBounds(157, 180, 44, 95));
       // House roof
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(GradientData(0.0, 0.5, roofCol, LV_OPA_100).SetClip(false, true), 0).
-                                          SetScale(220, 80).SetShift(10, 30)).SetBounds(10, 230, 30, 109));
+      texGen.AddTextureLayer(
+        TextureLayer(
+          LayerNoise::ShapeTriangle,
+          TextureLayerDataTriangle(GradientData(0.0, 0.5, roofCol, LV_OPA_100).SetClip(false, true), 0).SetScale(220, 80).SetShift(10, 30))
+          .SetBounds(10, 230, 30, 109));
       // House window
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(windowCol, LV_OPA_100)).SetBounds(70, 110, 140, 180));
       // House door
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(doorCol, LV_OPA_100)).SetBounds(135, 175, 135, 210));
       // House door handle
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(0.5, 1 / std::numbers::sqrt2_v<float>, doorHandleCol, LV_OPA_100).
-                                            SetClip(false, true),
-                                            7).SetShift(167, 170)).SetBounds(167, 173, 170, 176));
+      texGen.AddTextureLayer(
+        TextureLayer(
+          LayerNoise::ShapeCircle,
+          TextureLayerDataCircle(GradientData(0.5, 1 / std::numbers::sqrt2_v<float>, doorHandleCol, LV_OPA_100).SetClip(false, true), 7)
+            .SetShift(167, 170))
+          .SetBounds(167, 173, 170, 176));
       break;
     }
     case MossType::GoodLooking: {
@@ -2687,36 +2575,32 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Set of abs
       // Pectorals, made of two stretched circles and a rectangle
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(0.6, 1 / std::numbers::sqrt2_v<float>, abColor, LV_OPA_100).SetClip(true, true),
-                                            0).SetScale(120, 50).SetShift(0, 45)).SetBounds(10, 230, 70, 94));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(
-                                            GradientData(0.5,
-                                                         0.5,
-                                                         abColor,
-                                                         LV_OPA_100,
-                                                         bgCol,
-                                                         LV_OPA_100).SetClip(false, false),
-                                            0).SetScale(21, 15).SetShift(110, 60)).SetBounds(
-        111,
-        129,
-        65,
-        74));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle,
+                     TextureLayerDataCircle(GradientData(0.6, 1 / std::numbers::sqrt2_v<float>, abColor, LV_OPA_100).SetClip(true, true), 0)
+                       .SetScale(120, 50)
+                       .SetShift(0, 45))
+          .SetBounds(10, 230, 70, 94));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeTriangle,
+                     TextureLayerDataTriangle(GradientData(0.5, 0.5, abColor, LV_OPA_100, bgCol, LV_OPA_100).SetClip(false, false), 0)
+                       .SetScale(21, 15)
+                       .SetShift(110, 60))
+          .SetBounds(111, 129, 65, 74));
       // Pair of (male) nips
-      TextureLayerDataCircle nipData = TextureLayerDataCircle(
-        GradientData(0.0, 1 / std::numbers::sqrt2_v<float>, abColor, LV_OPA_100).SetClip(false, true),
-        0).SetScale(20, 10);
+      TextureLayerDataCircle nipData =
+        TextureLayerDataCircle(GradientData(0.0, 1 / std::numbers::sqrt2_v<float>, abColor, LV_OPA_100).SetClip(false, true), 0)
+          .SetScale(20, 10);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, nipData.SetShift(30, 70)).SetBounds(30, 49, 70, 79));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, nipData.SetShift(190, 70)).SetBounds(190, 209, 70, 79));
       // Six-pack of abs
       TextureLayerDataCircle abCurveData = TextureLayerDataCircle(
-        // very roughly even sized lines in corner and along center
-        GradientData(0.68, 0.75, abColor, LV_OPA_100).SetClip(true, true),
-        0).SetScale(120, 40);
-      TextureLayerDataSquare abStraightData = TextureLayerDataSquare(GradientData(0.0, 1.f / 3.f, abColor, LV_OPA_100).SetClip(false, true),
-                                                                     60);
+                                             // very roughly even sized lines in corner and along center
+                                             GradientData(0.68, 0.75, abColor, LV_OPA_100).SetClip(true, true),
+                                             0)
+                                             .SetScale(120, 40);
+      TextureLayerDataSquare abStraightData =
+        TextureLayerDataSquare(GradientData(0.0, 1.f / 3.f, abColor, LV_OPA_100).SetClip(false, true), 60);
       for (int i = 0; i < 3; i++) {
         const int addY = 40 * i;
         texGen.AddTextureLayer(
@@ -2731,8 +2615,8 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
       break;
     }
     case MossType::Irradiated: {
@@ -2742,17 +2626,17 @@ void MossSimulator::CreateTexGen() {
       // Blank green background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Bit of white speckling. Goes on bottom to make it seem intermittent.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, whiteSpeckleCol, LV_OPA_0, whiteSpeckleCol, LV_OPA_60))));
       // Layers of Perlin to give it a nice texture
       const GradientData darkenGradient = GradientData(0.0, 1.0, lightenColor, LV_OPA_0, lightenColor, LV_OPA_50);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 40)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 15)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, lightenColor, LV_OPA_0, lightenColor, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, lightenColor, LV_OPA_0, lightenColor, LV_OPA_70))));
       break;
     }
     case MossType::Monster: {
@@ -2768,15 +2652,9 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // Add red splotchiness
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(
-                                            GradientData(0.55,
-                                                         1.0,
-                                                         splotchColor,
-                                                         LV_OPA_0,
-                                                         splotchColor,
-                                                         LV_OPA_100).SetClip(true, false),
-                                            20)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::Perlin,
+        TextureLayerDataPerlin(GradientData(0.55, 1.0, splotchColor, LV_OPA_0, splotchColor, LV_OPA_100).SetClip(true, false), 20)));
       break;
     }
     case MossType::Frowny: {
@@ -2786,31 +2664,28 @@ void MossSimulator::CreateTexGen() {
       // Background + face
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Face base
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(0, 1 / std::numbers::sqrt2_v<float>, faceColor, LV_OPA_100).SetClip(false, true),
-                                            240).SetShift(0, 0)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::ShapeCircle,
+        TextureLayerDataCircle(GradientData(0, 1 / std::numbers::sqrt2_v<float>, faceColor, LV_OPA_100).SetClip(false, true), 240)
+          .SetShift(0, 0)));
       // Eyes
-      TextureLayerDataCircle eyeData = TextureLayerDataCircle(
-        GradientData(0,
-                     1 / std::numbers::sqrt2_v<float>,
-                     faceElements,
-                     LV_OPA_100,
-                     faceElements,
-                     LV_OPA_100).SetClip(false, true),
-        0).SetScale(30, 40);
+      TextureLayerDataCircle eyeData =
+        TextureLayerDataCircle(
+          GradientData(0, 1 / std::numbers::sqrt2_v<float>, faceElements, LV_OPA_100, faceElements, LV_OPA_100).SetClip(false, true),
+          0)
+          .SetScale(30, 40);
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, eyeData.SetShift(65, 60)).SetBounds(65, 94, 60, 99));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, eyeData.SetShift(145, 60)).SetBounds(145, 175, 60, 99));
       // Frown
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(0.6,
-                                                         1 / std::numbers::sqrt2_v<float>,
-                                                         faceElements,
-                                                         LV_OPA_100,
-                                                         faceElements,
-                                                         LV_OPA_100).SetClip(true, true),
-                                            0).SetScale(120, 120).SetShift(60, 140)).SetBounds(60, 179, 140, 189));
+      texGen.AddTextureLayer(
+        TextureLayer(
+          LayerNoise::ShapeCircle,
+          TextureLayerDataCircle(
+            GradientData(0.6, 1 / std::numbers::sqrt2_v<float>, faceElements, LV_OPA_100, faceElements, LV_OPA_100).SetClip(true, true),
+            0)
+            .SetScale(120, 120)
+            .SetShift(60, 140))
+          .SetBounds(60, 179, 140, 189));
       break;
     }
     case MossType::Blanket: {
@@ -2826,38 +2701,37 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Center thick line and its accompanying intersection darkening helper
       GradientData centerThickGrad = GradientData(0.73333, 1.0, centerThick, LV_OPA_50, centerThick, LV_OPA_50);
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(centerThickGrad.SetEndpoints(0.73333, 1.0).SetClip(true, false), 80).
-                                          SetShift(shiftX + 41, shiftY + 41)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(centerThickGrad.SetEndpoints(0.0, 0.3).SetClip(false, true), 80).SetShift(
-                                            shiftX,
-                                            shiftY)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::ShapeSquare,
+        TextureLayerDataSquare(centerThickGrad.SetEndpoints(0.73333, 1.0).SetClip(true, false), 80).SetShift(shiftX + 41, shiftY + 41)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare,
+                     TextureLayerDataSquare(centerThickGrad.SetEndpoints(0.0, 0.3).SetClip(false, true), 80).SetShift(shiftX, shiftY)));
       // Additional offset center thick line and its accompanying intersection darkening helper
       GradientData centerOffsetThickGrad = GradientData(0.9, 1.0, centerThick, LV_OPA_50, centerThick, LV_OPA_50);
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(centerOffsetThickGrad.SetEndpoints(0.9, 1.0).SetClip(true, false), 80).
-                                          SetShift(shiftX + 31, shiftY + 31)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(centerOffsetThickGrad.SetEndpoints(0.0, 0.1).SetClip(false, true), 80).
-                                          SetShift(shiftX - 9, shiftY - 9)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::ShapeSquare,
+        TextureLayerDataSquare(centerOffsetThickGrad.SetEndpoints(0.9, 1.0).SetClip(true, false), 80).SetShift(shiftX + 31, shiftY + 31)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::ShapeSquare,
+        TextureLayerDataSquare(centerOffsetThickGrad.SetEndpoints(0.0, 0.1).SetClip(false, true), 80).SetShift(shiftX - 9, shiftY - 9)));
       // Two offset squares to make an underlay for the edge thin lines
       // This produces uneven overlaps in the corners, but I'll just call that giving it character (also it's practically invisible)
       const GradientData edgeUnderlayGrad = GradientData(0.85, 1.0, edgeUnderlay, LV_OPA_30, edgeUnderlay, LV_OPA_30).SetClip(true, false);
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(edgeUnderlayGrad, 80).SetShift(shiftX + 11, shiftY + 11)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(edgeUnderlayGrad, 80).SetShift(shiftX + 68, shiftY + 68)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(edgeUnderlayGrad, 80).SetShift(shiftX + 11, shiftY + 11)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(edgeUnderlayGrad, 80).SetShift(shiftX + 68, shiftY + 68)));
       // And finally, the edge thin lines
       const GradientData edgeThinGrad = GradientData(0.983333, 1.0, edgeThin, LV_OPA_100, edgeThin, LV_OPA_100).SetClip(true, false);
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(edgeThinGrad, 80).SetShift(shiftX + 8, shiftY + 8)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(edgeThinGrad, 80).SetShift(shiftX + 14, shiftY + 14)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(edgeThinGrad, 80).SetShift(shiftX + 66, shiftY + 66)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(edgeThinGrad, 80).SetShift(shiftX + 71, shiftY + 71)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(edgeThinGrad, 80).SetShift(shiftX + 8, shiftY + 8)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(edgeThinGrad, 80).SetShift(shiftX + 14, shiftY + 14)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(edgeThinGrad, 80).SetShift(shiftX + 66, shiftY + 66)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare, TextureLayerDataSquare(edgeThinGrad, 80).SetShift(shiftX + 71, shiftY + 71)));
       break;
     }
     case MossType::DarkBubbly: {
@@ -2874,9 +2748,9 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 40)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       // Fake high resolution perlin layer that's not actually perlin. Likely unnoticeable but meh.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(
-                                            GradientData(0.6, 1.0, darkenColor, LV_OPA_0, darkenColor, LV_OPA_70).SetClip(true, false))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple,
+                     TextureLayerDataSimple(GradientData(0.6, 1.0, darkenColor, LV_OPA_0, darkenColor, LV_OPA_70).SetClip(true, false))));
       // Simple frothiness on the bottom. No highlight because it didn't look good.
       int16_t shiftX = std::rand() & 0x3FFF;
       int16_t shiftY = std::rand() & 0x3FFF;
@@ -2889,40 +2763,41 @@ void MossSimulator::CreateTexGen() {
                                                  bubbleColor,
                                                  LV_OPA_30,
                                                  bubbleColor,
-                                                 LV_OPA_100).SetClip(false, true);
-      GradientData bubbleHighlightGradient = GradientData(0.0, 1 / std::numbers::sqrt2_v<float> / 16, bubbleHighlightColor, LV_OPA_100).
-        SetClip(false, true);
+                                                 LV_OPA_100)
+                                      .SetClip(false, true);
+      GradientData bubbleHighlightGradient =
+        GradientData(0.0, 1 / std::numbers::sqrt2_v<float> / 16, bubbleHighlightColor, LV_OPA_100).SetClip(false, true);
       shiftX = std::rand() & 0x3FFF;
       shiftY = std::rand() & 0x3FFF;
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bubbleGradient, 240).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(bubbleHighlightGradient, 240).SetShift(shiftX - 15, shiftY - 15)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bubbleHighlightGradient, 240).SetShift(shiftX - 15, shiftY - 15)));
       shiftX = std::rand() & 0x3FFF;
       shiftY = std::rand() & 0x3FFF;
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bubbleGradient, 180).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(bubbleHighlightGradient, 180).SetShift(shiftX - 10, shiftY - 10)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bubbleHighlightGradient, 180).SetShift(shiftX - 10, shiftY - 10)));
       shiftX = std::rand() & 0x3FFF;
       shiftY = std::rand() & 0x3FFF;
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bubbleGradient, 140).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(bubbleHighlightGradient, 140).SetShift(shiftX - 7, shiftY - 7)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bubbleHighlightGradient, 140).SetShift(shiftX - 7, shiftY - 7)));
       shiftX = std::rand() & 0x3FFF;
       shiftY = std::rand() & 0x3FFF;
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bubbleGradient, 100).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(bubbleHighlightGradient, 100).SetShift(shiftX - 7, shiftY - 7)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bubbleHighlightGradient, 100).SetShift(shiftX - 7, shiftY - 7)));
       shiftX = std::rand() & 0x3FFF;
       shiftY = std::rand() & 0x3FFF;
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            bubbleGradient.SetEndpoints(1 / std::numbers::sqrt2_v<float> / 12,
-                                                                        1 / std::numbers::sqrt2_v<float> / 6),
-                                            120).SetShift(shiftX, shiftY)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            bubbleHighlightGradient.SetEndpoints(0.0, 1 / std::numbers::sqrt2_v<float> / 24),
-                                            120).SetShift(shiftX - 5, shiftY - 5)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::ShapeCircle,
+        TextureLayerDataCircle(bubbleGradient.SetEndpoints(1 / std::numbers::sqrt2_v<float> / 12, 1 / std::numbers::sqrt2_v<float> / 6),
+                               120)
+          .SetShift(shiftX, shiftY)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle,
+                     TextureLayerDataCircle(bubbleHighlightGradient.SetEndpoints(0.0, 1 / std::numbers::sqrt2_v<float> / 24), 120)
+                       .SetShift(shiftX - 5, shiftY - 5)));
       break;
     }
     case MossType::Mossta: {
@@ -2936,39 +2811,40 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(mosstaBG, LV_OPA_100)));
       // The actual mossta strands. Some dark, some light.
       GradientData mosstaGrad = GradientData(0.44, 0.56, LV_COLOR_BLACK, LV_OPA_20, LV_COLOR_BLACK, LV_OPA_20).SetClip(true, true);
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(mosstaGrad.SetColors(mosstaStrandsDark, mosstaStrandsDark), 20)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(mosstaGrad.SetColors(mosstaStrandsDark, mosstaStrandsDark), 20)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(mosstaGrad.SetColors(mosstaStrandsLight, mosstaStrandsLight), 20)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(mosstaGrad.SetColors(mosstaStrandsLight, mosstaStrandsLight), 20)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(mosstaGrad.SetColors(mosstaStrandsDark, mosstaStrandsDark), 20)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(mosstaGrad.SetColors(mosstaStrandsDark, mosstaStrandsDark), 20)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(mosstaGrad.SetColors(mosstaStrandsLight, mosstaStrandsLight), 20)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(mosstaGrad.SetColors(mosstaStrandsLight, mosstaStrandsLight), 20)));
       // Add a shadow to the bottom right of the mossta to give it depth. Also makes it look like an Orb.
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(3.f / 4.f / std::numbers::sqrt2_v<float>,
-                                                         7.f / 8.f / std::numbers::sqrt2_v<float>,
-                                                         mosstaShadow,
-                                                         LV_OPA_0,
-                                                         mosstaShadow,
-                                                         LV_OPA_50).SetClip(true, false),
-                                            240).SetShift(-20, -20)));
+                                          TextureLayerDataCircle(GradientData(3.f / 4.f / std::numbers::sqrt2_v<float>,
+                                                                              7.f / 8.f / std::numbers::sqrt2_v<float>,
+                                                                              mosstaShadow,
+                                                                              LV_OPA_0,
+                                                                              mosstaShadow,
+                                                                              LV_OPA_50)
+                                                                   .SetClip(true, false),
+                                                                 240)
+                                            .SetShift(-20, -20)));
       // Plate
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(3.f / 4.f / std::numbers::sqrt2_v<float>,
-                                                         7.f / 8.f / std::numbers::sqrt2_v<float>,
-                                                         plateCol,
-                                                         LV_OPA_0,
-                                                         plateCol,
-                                                         LV_OPA_100).SetClip(true, false),
-                                            240).SetShift(0, 0)));
+                                          TextureLayerDataCircle(GradientData(3.f / 4.f / std::numbers::sqrt2_v<float>,
+                                                                              7.f / 8.f / std::numbers::sqrt2_v<float>,
+                                                                              plateCol,
+                                                                              LV_OPA_0,
+                                                                              plateCol,
+                                                                              LV_OPA_100)
+                                                                   .SetClip(true, false),
+                                                                 240)
+                                            .SetShift(0, 0)));
       // Border of plate
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(0.8, 1.0, bgCol, LV_OPA_100, bgCol, LV_OPA_100).SetClip(true, false),
-                                            240).SetShift(0, 0)));
+      texGen.AddTextureLayer(TextureLayer(
+        LayerNoise::ShapeCircle,
+        TextureLayerDataCircle(GradientData(0.8, 1.0, bgCol, LV_OPA_100, bgCol, LV_OPA_100).SetClip(true, false), 240).SetShift(0, 0)));
       break;
     }
     case MossType::Gold: {
@@ -2984,23 +2860,23 @@ void MossSimulator::CreateTexGen() {
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 10)));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin, TextureLayerDataPerlin(darkenGradient, 5)));
       // High resolution noise on top to give it an even nicer texture.
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.6, 1.0, darkenCol, LV_OPA_0, darkenCol, LV_OPA_70))));
       // Sparkles on top
       // Three layers of large sparkles, abusing the shape of circle textures
       // The endpoint opacities are intentionally in this order. Makes it look exotic.
       GradientData bigStarGrad = GradientData(0, 1.0, sparkleCol, LV_OPA_100, sparkleCol, LV_OPA_20).SetClip(true, false);
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(bigStarGrad.SetEndpoints(0.97, 1.0), 0).SetScale(120, 160)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(bigStarGrad.SetEndpoints(0.965, 1.0), 0).SetScale(140, 180)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(bigStarGrad.SetEndpoints(0.96, 1.0), 0).SetScale(150, 190)));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(bigStarGrad.SetEndpoints(0.95, 1.0), 0).SetScale(160, 200)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bigStarGrad.SetEndpoints(0.97, 1.0), 0).SetScale(120, 160)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bigStarGrad.SetEndpoints(0.965, 1.0), 0).SetScale(140, 180)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bigStarGrad.SetEndpoints(0.96, 1.0), 0).SetScale(150, 190)));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle, TextureLayerDataCircle(bigStarGrad.SetEndpoints(0.95, 1.0), 0).SetScale(160, 200)));
       // Single pixel sparkles
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.999, 1.0, sparkleCol, LV_OPA_100).SetClip(true, false))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.999, 1.0, sparkleCol, LV_OPA_100).SetClip(true, false))));
       break;
     }
     case MossType::AteAllMoss: {
@@ -3014,89 +2890,117 @@ void MossSimulator::CreateTexGen() {
       // Blank dark gray background
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(bgCol, LV_OPA_100)));
       // Trophy body base
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(0, 1 / std::numbers::sqrt2_v<float>, trophyBaseCol, LV_OPA_100).
-                                            SetClip(false, true),
-                                            0).SetScale(136, 324).SetShift(52, -150)).SetBounds(52, 188, 12, 174));
+      texGen.AddTextureLayer(
+        TextureLayer(
+          LayerNoise::ShapeCircle,
+          TextureLayerDataCircle(GradientData(0, 1 / std::numbers::sqrt2_v<float>, trophyBaseCol, LV_OPA_100).SetClip(false, true), 0)
+            .SetScale(136, 324)
+            .SetShift(52, -150))
+          .SetBounds(52, 188, 12, 174));
       // Handle bottoms
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(7.f / 8.f / std::numbers::sqrt2_v<float>,
-                                                         1 / std::numbers::sqrt2_v<float>,
-                                                         trophyBaseCol,
-                                                         LV_OPA_100).SetClip(true, true),
-                                            0).SetScale(108, 224).SetShift(12, -100)).SetBounds(12, 228, 12, 123));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle,
+                     TextureLayerDataCircle(
+                       GradientData(7.f / 8.f / std::numbers::sqrt2_v<float>, 1 / std::numbers::sqrt2_v<float>, trophyBaseCol, LV_OPA_100)
+                         .SetClip(true, true),
+                       0)
+                       .SetScale(108, 224)
+                       .SetShift(12, -100))
+          .SetBounds(12, 228, 12, 123));
       // Handle tops
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(3.f / 4.f / std::numbers::sqrt2_v<float>,
-                                                         1 / std::numbers::sqrt2_v<float>,
-                                                         trophyBaseCol,
-                                                         LV_OPA_100).SetClip(true, true),
-                                            0).SetScale(120, 50).SetShift(0, -22)).SetBounds(12, 228, 12, 28));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle,
+                     TextureLayerDataCircle(
+                       GradientData(3.f / 4.f / std::numbers::sqrt2_v<float>, 1 / std::numbers::sqrt2_v<float>, trophyBaseCol, LV_OPA_100)
+                         .SetClip(true, true),
+                       0)
+                       .SetScale(120, 50)
+                       .SetShift(0, -22))
+          .SetBounds(12, 228, 12, 28));
       // Trophy body highlight
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(0.5,
-                                                         1 / std::numbers::sqrt2_v<float>,
-                                                         trophyHilightCol,
-                                                         LV_OPA_100,
-                                                         trophyHilightCol,
-                                                         LV_OPA_0).SetClip(false, true),
-                                            0).SetScale(32, 158).SetShift(76, -67)).SetBounds(76, 108, 12, 91));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle,
+                     TextureLayerDataCircle(
+                       GradientData(0.5, 1 / std::numbers::sqrt2_v<float>, trophyHilightCol, LV_OPA_100, trophyHilightCol, LV_OPA_0)
+                         .SetClip(false, true),
+                       0)
+                       .SetScale(32, 158)
+                       .SetShift(76, -67))
+          .SetBounds(76, 108, 12, 91));
       // Trophy body shadow
       texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(17.f / 20.f / std::numbers::sqrt2_v<float>,
-                                                         19.f / 20.f / std::numbers::sqrt2_v<float>,
-                                                         trophyShadowCol,
-                                                         LV_OPA_0,
-                                                         trophyShadowCol,
-                                                         LV_OPA_100).SetClip(true, false),
-                                            0).SetScale(171, 224).SetShift(30, -49)).SetBounds(70, 171, 125, 174));
+                                          TextureLayerDataCircle(GradientData(17.f / 20.f / std::numbers::sqrt2_v<float>,
+                                                                              19.f / 20.f / std::numbers::sqrt2_v<float>,
+                                                                              trophyShadowCol,
+                                                                              LV_OPA_0,
+                                                                              trophyShadowCol,
+                                                                              LV_OPA_100)
+                                                                   .SetClip(true, false),
+                                                                 0)
+                                            .SetScale(171, 224)
+                                            .SetShift(30, -49))
+                               .SetBounds(70, 171, 125, 174));
       // Clip trophy body shadow
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeCircle,
-                                          TextureLayerDataCircle(
-                                            GradientData(1 / std::numbers::sqrt2_v<float>, 1, bgCol, LV_OPA_100).SetClip(true, false),
-                                            0).SetScale(136, 324).SetShift(52, -150)).SetBounds(70, 171, 125, 174));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeCircle,
+                     TextureLayerDataCircle(GradientData(1 / std::numbers::sqrt2_v<float>, 1, bgCol, LV_OPA_100).SetClip(true, false), 0)
+                       .SetScale(136, 324)
+                       .SetShift(52, -150))
+          .SetBounds(70, 171, 125, 174));
       // Trophy shaft
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(
-                                            GradientData(0.85, 0.95, trophyShadowCol, LV_OPA_100, trophyBaseCol, LV_OPA_100),
-                                            240).SetShift(110, 70)).SetBounds(110, 130, 172, 208));
+      texGen.AddTextureLayer(
+        TextureLayer(
+          LayerNoise::ShapeSquare,
+          TextureLayerDataSquare(GradientData(0.85, 0.95, trophyShadowCol, LV_OPA_100, trophyBaseCol, LV_OPA_100), 240).SetShift(110, 70))
+          .SetBounds(110, 130, 172, 208));
       // Trophy base
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(barkDark, LV_OPA_100)).SetBounds(60, 180, 208, 239));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Perlin,
-                                          TextureLayerDataPerlin(GradientData(0.4, 0.6, barkLight, LV_OPA_100).SetClip(true, true), 0).
-                                          SetScale(5, 20)).SetBounds(60, 180, 208, 239));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Perlin,
+                     TextureLayerDataPerlin(GradientData(0.4, 0.6, barkLight, LV_OPA_100).SetClip(true, true), 0).SetScale(5, 20))
+          .SetBounds(60, 180, 208, 239));
       // Letter E
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(GradientData(0.705, 1.0, trophyTextCol, LV_OPA_100).SetClip(true, false),
-                                                                 0).SetScale(34, 17).SetShift(74, 38)).SetBounds(73, 94, 35, 74));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare,
+                     TextureLayerDataSquare(GradientData(0.705, 1.0, trophyTextCol, LV_OPA_100).SetClip(true, false), 0)
+                       .SetScale(34, 17)
+                       .SetShift(74, 38))
+          .SetBounds(73, 94, 35, 74));
       // letter A
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(GradientData(0.37, 0.55, trophyTextCol, LV_OPA_100).SetClip(true, true),
-                                                                   0).SetScale(37, 40).SetShift(98, 35)).SetBounds(98, 135, 35, 74));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeTriangle,
+                     TextureLayerDataTriangle(GradientData(0.37, 0.55, trophyTextCol, LV_OPA_100).SetClip(true, true), 0)
+                       .SetScale(37, 40)
+                       .SetShift(98, 35))
+          .SetBounds(98, 135, 35, 74));
       texGen.AddTextureLayer(TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(trophyTextCol, LV_OPA_100)).SetBounds(106, 127, 59, 64));
       // letter T
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(GradientData(0.857, 1.0, trophyTextCol, LV_OPA_100).SetClip(true, false),
-                                                                 42).SetShift(151, 37)).SetBounds(137, 165, 35, 74));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare,
+                     TextureLayerDataSquare(GradientData(0.857, 1.0, trophyTextCol, LV_OPA_100).SetClip(true, false), 42).SetShift(151, 37))
+          .SetBounds(137, 165, 35, 74));
       // character #
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(GradientData(0.368, 1.0, trophyTextCol, LV_OPA_100).SetClip(true, false),
-                                                                 0).SetScale(93, 19).SetShift(63, 101)).SetBounds(93, 125, 101, 119));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeSquare,
-                                          TextureLayerDataSquare(GradientData(0.368, 1.0, trophyTextCol, LV_OPA_100).SetClip(true, false),
-                                                                 0).SetScale(19, 113).SetShift(100, 55)).SetBounds(100, 118, 91, 129));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare,
+                     TextureLayerDataSquare(GradientData(0.368, 1.0, trophyTextCol, LV_OPA_100).SetClip(true, false), 0)
+                       .SetScale(93, 19)
+                       .SetShift(63, 101))
+          .SetBounds(93, 125, 101, 119));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeSquare,
+                     TextureLayerDataSquare(GradientData(0.368, 1.0, trophyTextCol, LV_OPA_100).SetClip(true, false), 0)
+                       .SetScale(19, 113)
+                       .SetShift(100, 55))
+          .SetBounds(100, 118, 91, 129));
       // number 1
       texGen.AddTextureLayer(
         TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(trophyTextCol, LV_OPA_100)).SetBounds(134, 145, 87, 129));
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::ShapeTriangle,
-                                          TextureLayerDataTriangle(
-                                            GradientData(0.5, 0.5, trophyTextCol, LV_OPA_100, trophyBaseCol, LV_OPA_100),
-                                            0).SetScale(44, 13).SetShift(116, 87)).SetBounds(127, 137, 87, 99));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::ShapeTriangle,
+                     TextureLayerDataTriangle(GradientData(0.5, 0.5, trophyTextCol, LV_OPA_100, trophyBaseCol, LV_OPA_100), 0)
+                       .SetScale(44, 13)
+                       .SetShift(116, 87))
+          .SetBounds(127, 137, 87, 99));
       break;
     }
     case MossType::Egg: {
@@ -3127,82 +3031,56 @@ void MossSimulator::CreateTexGen() {
             // Big dots
             texGen.AddTextureLayer(
               TextureLayer(LayerNoise::ShapeCircle,
-                           TextureLayerDataCircle(GradientData(0.0,
-                                                               3.f / 4.f / std::numbers::sqrt2_v<float>,
-                                                               decoCols[std::rand() % decoColCount],
-                                                               LV_OPA_100).SetClip(false, true),
-                                                  40).SetShift(std::rand(), rowOffset)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset,
-                rowOffset + 39));
+                           TextureLayerDataCircle(
+                             GradientData(0.0, 3.f / 4.f / std::numbers::sqrt2_v<float>, decoCols[std::rand() % decoColCount], LV_OPA_100)
+                               .SetClip(false, true),
+                             40)
+                             .SetShift(std::rand(), rowOffset))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset, rowOffset + 39));
             break;
           case 1:
             // Dots and lines
             texGen.AddTextureLayer(
               TextureLayer(LayerNoise::ShapeCircle,
-                           TextureLayerDataCircle(GradientData(0.0,
-                                                               2.f / 3.f / std::numbers::sqrt2_v<float>,
-                                                               decoCols[std::rand() % decoColCount],
-                                                               LV_OPA_100).SetClip(false, true),
-                                                  30).SetShift(std::rand(), rowOffset + 5)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 5,
-                rowOffset + 34));
+                           TextureLayerDataCircle(
+                             GradientData(0.0, 2.f / 3.f / std::numbers::sqrt2_v<float>, decoCols[std::rand() % decoColCount], LV_OPA_100)
+                               .SetClip(false, true),
+                             30)
+                             .SetShift(std::rand(), rowOffset + 5))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 5, rowOffset + 34));
             texGen.AddTextureLayer(
-              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 2,
-                rowOffset + 8));
+              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 2, rowOffset + 8));
             texGen.AddTextureLayer(
-              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 32,
-                rowOffset + 38));
+              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 32, rowOffset + 38));
             break;
           case 2:
             // Thick line
             texGen.AddTextureLayer(
-              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 10,
-                rowOffset + 30));
+              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 10, rowOffset + 30));
             break;
           case 3:
             // Thin lines
             texGen.AddTextureLayer(
-              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 4,
-                rowOffset + 10));
+              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 4, rowOffset + 10));
             texGen.AddTextureLayer(
-              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 15,
-                rowOffset + 25));
+              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 15, rowOffset + 25));
             texGen.AddTextureLayer(
-              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 30,
-                rowOffset + 36));
+              TextureLayer(LayerNoise::Blank, TextureLayerDataBlank(decoCols[std::rand() % decoColCount], LV_OPA_100))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 30, rowOffset + 36));
             break;
           case 4:
             // Triangle wavy line
             texGen.AddTextureLayer(
-              TextureLayer(LayerNoise::ShapeTriangle,
-                           TextureLayerDataTriangle(
-                             GradientData(0.4, 0.6, decoCols[std::rand() % decoColCount], LV_OPA_100).SetClip(true, true),
-                             30).SetShift(std::rand(), rowOffset + 5)).SetBounds(std::numeric_limits<int16_t>::min(),
-                                                                                 std::numeric_limits<int16_t>::max(),
-                                                                                 rowOffset + 5,
-                                                                                 rowOffset + 34));
+              TextureLayer(
+                LayerNoise::ShapeTriangle,
+                TextureLayerDataTriangle(GradientData(0.4, 0.6, decoCols[std::rand() % decoColCount], LV_OPA_100).SetClip(true, true), 30)
+                  .SetShift(std::rand(), rowOffset + 5))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 5, rowOffset + 34));
             break;
           case 5: {
             // 6 point stars
@@ -3210,20 +3088,16 @@ void MossSimulator::CreateTexGen() {
             const lv_color_t triangleCol = decoCols[std::rand() % decoColCount];
             texGen.AddTextureLayer(
               TextureLayer(LayerNoise::ShapeTriangle,
-                           TextureLayerDataTriangle(GradientData(0.0, 0.4, triangleCol, LV_OPA_100).SetClip(false, true), 0).
-                           SetScale(36, 31).SetShift(xOffset, rowOffset - 3)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 3,
-                rowOffset + 27));
+                           TextureLayerDataTriangle(GradientData(0.0, 0.4, triangleCol, LV_OPA_100).SetClip(false, true), 0)
+                             .SetScale(36, 31)
+                             .SetShift(xOffset, rowOffset - 3))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 3, rowOffset + 27));
             texGen.AddTextureLayer(
               TextureLayer(LayerNoise::ShapeTriangle,
-                           TextureLayerDataTriangle(GradientData(0.6, 1.0, triangleCol, LV_OPA_100).SetClip(true, false), 0).
-                           SetScale(36, 31).SetShift(xOffset + 18, rowOffset + 12)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 12,
-                rowOffset + 36));
+                           TextureLayerDataTriangle(GradientData(0.6, 1.0, triangleCol, LV_OPA_100).SetClip(true, false), 0)
+                             .SetScale(36, 31)
+                             .SetShift(xOffset + 18, rowOffset + 12))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 12, rowOffset + 36));
             break;
           }
           case 6: {
@@ -3233,26 +3107,20 @@ void MossSimulator::CreateTexGen() {
             // Math hard, brain soft. I eyeballed most of the values here after failing to calculate them correctly.
             texGen.AddTextureLayer(
               TextureLayer(LayerNoise::ShapeCircle,
-                           TextureLayerDataCircle(GradientData(0.74f / std::numbers::sqrt2_v<float>,
-                                                               0.95f / std::numbers::sqrt2_v<float>,
-                                                               circleCol,
-                                                               LV_OPA_100).SetClip(true, true),
-                                                  100).SetShift(xOffset, rowOffset + 3)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 4,
-                rowOffset + 19));
+                           TextureLayerDataCircle(
+                             GradientData(0.74f / std::numbers::sqrt2_v<float>, 0.95f / std::numbers::sqrt2_v<float>, circleCol, LV_OPA_100)
+                               .SetClip(true, true),
+                             100)
+                             .SetShift(xOffset, rowOffset + 3))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 4, rowOffset + 19));
             texGen.AddTextureLayer(
               TextureLayer(LayerNoise::ShapeCircle,
-                           TextureLayerDataCircle(GradientData(0.74f / std::numbers::sqrt2_v<float>,
-                                                               0.95f / std::numbers::sqrt2_v<float>,
-                                                               circleCol,
-                                                               LV_OPA_100).SetClip(true, true),
-                                                  100).SetShift(xOffset + 50, rowOffset - 63)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 19,
-                rowOffset + 35));
+                           TextureLayerDataCircle(
+                             GradientData(0.74f / std::numbers::sqrt2_v<float>, 0.95f / std::numbers::sqrt2_v<float>, circleCol, LV_OPA_100)
+                               .SetClip(true, true),
+                             100)
+                             .SetShift(xOffset + 50, rowOffset - 63))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 19, rowOffset + 35));
             break;
           }
           case 7:
@@ -3261,45 +3129,36 @@ void MossSimulator::CreateTexGen() {
             const lv_color_t triangleCol = decoCols[std::rand() % decoColCount];
             texGen.AddTextureLayer(
               TextureLayer(LayerNoise::ShapeTriangle,
-                           TextureLayerDataTriangle(GradientData(0.0, 0.333, triangleCol, LV_OPA_100).SetClip(false, true), 0).
-                           SetScale(54, 27).SetShift(xOffset, rowOffset - 8)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 2,
-                rowOffset + 19));
+                           TextureLayerDataTriangle(GradientData(0.0, 0.333, triangleCol, LV_OPA_100).SetClip(false, true), 0)
+                             .SetScale(54, 27)
+                             .SetShift(xOffset, rowOffset - 8))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 2, rowOffset + 19));
             texGen.AddTextureLayer(
               TextureLayer(LayerNoise::ShapeTriangle,
-                           TextureLayerDataTriangle(GradientData(0.667, 1.0, triangleCol, LV_OPA_100).SetClip(true, false), 0).
-                           SetScale(54, 27).SetShift(xOffset + 27, rowOffset + 19)).SetBounds(
-                std::numeric_limits<int16_t>::min(),
-                std::numeric_limits<int16_t>::max(),
-                rowOffset + 19,
-                rowOffset + 38));
+                           TextureLayerDataTriangle(GradientData(0.667, 1.0, triangleCol, LV_OPA_100).SetClip(true, false), 0)
+                             .SetScale(54, 27)
+                             .SetShift(xOffset + 27, rowOffset + 19))
+                .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), rowOffset + 19, rowOffset + 38));
             break;
         }
       }
       // Bit of noise to try to emulate the dimpled surface of an egg
-      texGen.AddTextureLayer(TextureLayer(LayerNoise::Simple,
-                                          TextureLayerDataSimple(GradientData(0.8, 1.0, dimpleCol, LV_OPA_0, dimpleCol, LV_OPA_20))));
+      texGen.AddTextureLayer(
+        TextureLayer(LayerNoise::Simple, TextureLayerDataSimple(GradientData(0.8, 1.0, dimpleCol, LV_OPA_0, dimpleCol, LV_OPA_20))));
       // Create overall egg shape by overwriting everything left with a flat color
       texGen.AddTextureLayer(
-        TextureLayer(LayerNoise::ShapeCircle,
-                     TextureLayerDataCircle(
-                       GradientData(1.f / 2.f / std::numbers::sqrt2_v<float>, 1.0, bgCol, LV_OPA_100).SetClip(true, false),
-                       360).SetShift(-60, -30)).SetBounds(
-          std::numeric_limits<int16_t>::min(),
-          std::numeric_limits<int16_t>::max(),
-          150,
-          std::numeric_limits<int16_t>::max()));
+        TextureLayer(
+          LayerNoise::ShapeCircle,
+          TextureLayerDataCircle(GradientData(1.f / 2.f / std::numbers::sqrt2_v<float>, 1.0, bgCol, LV_OPA_100).SetClip(true, false), 360)
+            .SetShift(-60, -30))
+          .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), 150, std::numeric_limits<int16_t>::max()));
       texGen.AddTextureLayer(
-        TextureLayer(LayerNoise::ShapeCircle,
-                     TextureLayerDataCircle(
-                       GradientData(1.f / 2.f / std::numbers::sqrt2_v<float>, 1.0, bgCol, LV_OPA_100).SetClip(true, false),
-                       0).SetScale(360, 600).SetShift(-60, -150)).SetBounds(
-          std::numeric_limits<int16_t>::min(),
-          std::numeric_limits<int16_t>::max(),
-          std::numeric_limits<int16_t>::min(),
-          150));
+        TextureLayer(
+          LayerNoise::ShapeCircle,
+          TextureLayerDataCircle(GradientData(1.f / 2.f / std::numbers::sqrt2_v<float>, 1.0, bgCol, LV_OPA_100).SetClip(true, false), 0)
+            .SetScale(360, 600)
+            .SetShift(-60, -150))
+          .SetBounds(std::numeric_limits<int16_t>::min(), std::numeric_limits<int16_t>::max(), std::numeric_limits<int16_t>::min(), 150));
       break;
     }
   }
@@ -3326,9 +3185,8 @@ void MossSimulator::RefreshGrowing() {
   // Try not to take much more than 3/4 of the default refresh rate time (not using task refresh rate because that's variable here)
   // This loop also gets broken if DrawGrowingTile() finishes and sets the state out of Growing
   const uint32_t refreshStartTime = xTaskGetTickCount();
-  for (unsigned int i = 0; i < numTilesToDraw &&
-                           state == Growing &&
-                           xTaskGetTickCount() - refreshStartTime < LV_DISP_DEF_REFR_PERIOD * 3 / 4;
+  for (unsigned int i = 0;
+       i < numTilesToDraw && state == Growing && xTaskGetTickCount() - refreshStartTime < LV_DISP_DEF_REFR_PERIOD * 3 / 4;
        i++) {
     DrawGrowingTile();
   }
@@ -3342,7 +3200,6 @@ void MossSimulator::RefreshGrowing() {
                        std::max(xTaskGetTickCount() - refreshStartTime + pdMS_TO_TICKS(5), (uint32_t) LV_DISP_DEF_REFR_PERIOD));
   }
 }
-
 
 // Draws a single tile in the spiral drawn during growing phase.
 void MossSimulator::DrawGrowingTile() {
@@ -3417,7 +3274,6 @@ void MossSimulator::DrawGrowingTile() {
   growingChunk++;
 }
 
-
 // Refresh function for eating state. Simply keeps checking if user is done eating, then increments story.
 void MossSimulator::RefreshEating() {
   // Check if user is still holding tap somehow
@@ -3431,12 +3287,10 @@ void MossSimulator::RefreshEating() {
   }
 }
 
-
 // Refresh function for storydisp state. Just checks if user is still holding tap.
 void MossSimulator::RefreshStoryDisp() {
   PollStillHoldingTap();
 }
-
 
 // Refresh function for DgbSceneSelect state. Just checks if user is still holding tap and moves to StoryDisp state when they let go.
 void MossSimulator::RefreshDbgEntry() {
@@ -3452,19 +3306,16 @@ void MossSimulator::RefreshDbgEntry() {
   }
 }
 
-
 // Used during eating phase, draws a bite mark where the user clicked. ONLY draws to the screen, munch tracking is handled elsewhere.
 void MossSimulator::DrawBiteMark(lv_coord_t centerX, lv_coord_t centerY) {
   lv_area_t accumArea;
 
   // Go through each row and accumulate pixels until a pixel that shouldn't be drawn is found, then draw the accumulated pixels
-  for (lv_coord_t y = std::max(centerY - MOSS_MUNCH_RADIUS, 0); y <= std::min(centerY + MOSS_MUNCH_RADIUS, LV_VER_RES - 1); y
-       ++) {
+  for (lv_coord_t y = std::max(centerY - MOSS_MUNCH_RADIUS, 0); y <= std::min(centerY + MOSS_MUNCH_RADIUS, LV_VER_RES - 1); y++) {
     accumArea.y1 = y;
     accumArea.y2 = y;
     accumArea.x1 = -1;
-    for (lv_coord_t x = std::max(centerX - MOSS_MUNCH_RADIUS, 0); x <= std::min(centerX + MOSS_MUNCH_RADIUS, LV_HOR_RES - 1); x
-         ++) {
+    for (lv_coord_t x = std::max(centerX - MOSS_MUNCH_RADIUS, 0); x <= std::min(centerX + MOSS_MUNCH_RADIUS, LV_HOR_RES - 1); x++) {
       if (IsPointInBiteMark(x, y, centerX, centerY)) {
         if (accumArea.x1 == -1) {
           accumArea.x1 = x;
@@ -3486,7 +3337,6 @@ void MossSimulator::DrawBiteMark(lv_coord_t centerX, lv_coord_t centerY) {
   }
 }
 
-
 // Set up everything and switch to growing phase. Expects story to already have been incremented.
 void MossSimulator::SwitchToGrowing() {
   CreateTexGen();
@@ -3502,7 +3352,6 @@ void MossSimulator::SwitchToGrowing() {
   state = Growing;
 }
 
-
 // Set up everything and switch to eating phase.
 // The app cannot initialize to Eating state, since this function doesn't initialize some critical variables like the
 //  other two SwitchTo* functions do.
@@ -3515,7 +3364,6 @@ void MossSimulator::SwitchToEating() {
   munchTracker.Reset();
   state = Eating;
 }
-
 
 // Set up everything and switch to storydisp phase.
 // Does NOT populate the contents of storyText or sceneText, that must be done before this function call.
@@ -3535,7 +3383,6 @@ void MossSimulator::SwitchToStoryDisp() {
   state = StoryDisp;
 }
 
-
 // Set up everything and switch to debug scene select phase. Similar to SwitchToStoryDisp.
 void MossSimulator::SwitchToDbgSceneSelect() {
   lv_task_set_period(taskRefresh, LV_DISP_DEF_REFR_PERIOD);
@@ -3553,7 +3400,6 @@ void MossSimulator::SwitchToDbgSceneSelect() {
   state = DbgSceneSelect;
 }
 
-
 // Set up everything and switch to debug entry phase.
 void MossSimulator::SwitchToDbgEntry() {
   lv_task_set_period(taskRefresh, LV_DISP_DEF_REFR_PERIOD);
@@ -3565,7 +3411,6 @@ void MossSimulator::SwitchToDbgEntry() {
   remainingTapHoldLeniency = 1;
   state = DbgEntry;
 }
-
 
 // Checks if user is still holding tap for purposes of not allowing accidental inputs when switching state. Has a rejection timeout as well.
 // (e.g. user finishes eating moss and then immediately accidentally clicks through storydisp because they were still holding)
