@@ -2,6 +2,7 @@
 #include <drivers/Hrs3300.h>
 #include <components/heartrate/HeartRateController.h>
 #include <nrf_log.h>
+#include <optional>
 
 using namespace Pinetime::Applications;
 
@@ -24,7 +25,7 @@ void HeartRateTask::Process(void* instance) {
 }
 
 void HeartRateTask::Work() {
-  int lastBpm = 0;
+  std::optional<uint8_t> lastBpm = std::nullopt;
   while (true) {
     Messages msg;
     uint32_t delay;
@@ -47,7 +48,7 @@ void HeartRateTask::Work() {
         case Messages::WakeUp:
           state = States::Running;
           if (measurementStarted) {
-            lastBpm = 0;
+            lastBpm = std::nullopt;
             StartMeasurement();
           }
           break;
@@ -55,7 +56,7 @@ void HeartRateTask::Work() {
           if (measurementStarted) {
             break;
           }
-          lastBpm = 0;
+          lastBpm = std::nullopt;
           StartMeasurement();
           measurementStarted = true;
           break;
@@ -79,7 +80,7 @@ void HeartRateTask::Work() {
         // Reset all DAQ buffers
         ppg.Reset(true);
         // Force state to NotEnoughData (below)
-        lastBpm = 0;
+        lastBpm = std::nullopt;
         bpm = 0;
       } else if (bpm < 0) {
         // Reset all DAQ buffers except HRS buffer
@@ -94,7 +95,7 @@ void HeartRateTask::Work() {
       }
 
       if (bpm != 0) {
-        lastBpm = bpm;
+        lastBpm = std::make_optional(bpm);
         controller.Update(Controllers::HeartRateController::States::Running, lastBpm);
       }
     }

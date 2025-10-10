@@ -1,10 +1,11 @@
 #include "components/heartrate/HeartRateController.h"
 #include <heartratetask/HeartRateTask.h>
 #include <systemtask/SystemTask.h>
+#include <optional>
 
 using namespace Pinetime::Controllers;
 
-void HeartRateController::Update(HeartRateController::States newState, uint8_t heartRate) {
+void HeartRateController::Update(HeartRateController::States newState, std::optional<uint8_t> heartRate) {
   this->state = newState;
   if (this->heartRate != heartRate) {
     this->heartRate = heartRate;
