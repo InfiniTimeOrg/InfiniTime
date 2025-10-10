@@ -122,7 +122,7 @@ void Counter::SetValueChangedEventCallback(void* userData, void (*handler)(void*
 
 void Counter::Create() {
   counterContainer = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(counterContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(counterContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, InfiniTimeTheme::Colors::bgAlt);
 
   number = lv_label_create(counterContainer, nullptr);
   lv_obj_set_style_local_text_font(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &font);
@@ -144,7 +144,7 @@ void Counter::Create() {
   UpdateLabel();
 
   upBtn = lv_btn_create(counterContainer, nullptr);
-  lv_obj_set_style_local_bg_color(upBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(upBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, InfiniTimeTheme::Colors::bgAlt);
   lv_obj_set_size(upBtn, width, btnHeight);
   lv_obj_align(upBtn, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
   upBtn->user_data = this;
@@ -156,7 +156,7 @@ void Counter::Create() {
   lv_obj_align(upLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
 
   downBtn = lv_btn_create(counterContainer, nullptr);
-  lv_obj_set_style_local_bg_color(downBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(downBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, InfiniTimeTheme::Colors::bgAlt);
   lv_obj_set_size(downBtn, width, btnHeight);
   lv_obj_align(downBtn, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   downBtn->user_data = this;
@@ -174,7 +174,7 @@ void Counter::Create() {
     lv_obj_t* line = lv_line_create(counterContainer, nullptr);
     lv_line_set_points(line, linePoints, 2);
     lv_obj_set_style_local_line_width(line, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 1);
-    lv_obj_set_style_local_line_color(line, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_obj_set_style_local_line_color(line, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::White);
     lv_obj_set_style_local_line_opa(line, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
     return line;
   };

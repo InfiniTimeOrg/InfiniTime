@@ -11,7 +11,7 @@ BatteryIcon::BatteryIcon(bool colorOnLowBattery) : colorOnLowBattery {colorOnLow
 void BatteryIcon::Create(lv_obj_t* parent) {
   batteryImg = lv_img_create(parent, nullptr);
   lv_img_set_src(batteryImg, &batteryicon);
-  lv_obj_set_style_local_image_recolor(batteryImg, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_image_recolor(batteryImg, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, Colors::Black);
 
   batteryJuice = lv_obj_create(batteryImg, nullptr);
   lv_obj_set_width(batteryJuice, 8);
@@ -30,16 +30,16 @@ void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
     static constexpr int lowBatteryThreshold = 15;
     static constexpr int criticalBatteryThreshold = 5;
     if (percentage > lowBatteryThreshold) {
-      SetColor(LV_COLOR_WHITE);
+      SetColor(Colors::White);
     } else if (percentage > criticalBatteryThreshold) {
-      SetColor(LV_COLOR_ORANGE);
+      SetColor(Colors::Orange);
     } else {
-      SetColor(Colors::deepOrange);
+      SetColor(Colors::DeepOrange);
     }
   }
 }
 
-void BatteryIcon::SetColor(lv_color_t color) {
+void BatteryIcon::SetColor(Colors::Color color) {
   lv_obj_set_style_local_image_recolor(batteryImg, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, color);
   lv_obj_set_style_local_image_recolor_opa(batteryImg, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_obj_set_style_local_bg_color(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, color);

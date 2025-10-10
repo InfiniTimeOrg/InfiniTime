@@ -2,22 +2,23 @@
 #include <cstdio>
 #include <cstdlib>
 #include <lvgl/lvgl.h>
+#include "displayapp/Colors.h"
 
 using namespace Pinetime::Applications::Screens;
 
 Twos::Twos() {
 
   struct colorPair {
-    lv_color_t bg;
-    lv_color_t fg;
+    Colors::Color bg;
+    Colors::Color fg;
   };
 
   static constexpr colorPair colors[nColors] = {
-    {LV_COLOR_MAKE(0xcd, 0xc0, 0xb4), LV_COLOR_BLACK},
-    {LV_COLOR_MAKE(0xef, 0xdf, 0xc6), LV_COLOR_BLACK},
-    {LV_COLOR_MAKE(0xef, 0x92, 0x63), LV_COLOR_WHITE},
-    {LV_COLOR_MAKE(0xf7, 0x61, 0x42), LV_COLOR_WHITE},
-    {LV_COLOR_MAKE(0x00, 0x7d, 0xc5), LV_COLOR_WHITE},
+    {0xcdc0b4, Colors::Black},
+    {0xefdfc6, Colors::Black},
+    {0xef9263, Colors::White},
+    {0xf76142, Colors::White},
+    {0x007dc5, Colors::White},
   };
 
   gridDisplay = lv_table_create(lv_scr_act(), nullptr);
@@ -25,7 +26,7 @@ Twos::Twos() {
   for (size_t i = 0; i < nColors; i++) {
     lv_style_init(&cellStyles[i]);
 
-    lv_style_set_border_color(&cellStyles[i], LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
+    lv_style_set_border_color(&cellStyles[i], LV_STATE_DEFAULT, Colors::Color(0xbbada0));
     lv_style_set_border_width(&cellStyles[i], LV_STATE_DEFAULT, 3);
     lv_style_set_bg_opa(&cellStyles[i], LV_STATE_DEFAULT, LV_OPA_COVER);
     lv_style_set_bg_color(&cellStyles[i], LV_STATE_DEFAULT, colors[i].bg);

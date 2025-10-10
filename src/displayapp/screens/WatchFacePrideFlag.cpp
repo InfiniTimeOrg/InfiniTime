@@ -37,10 +37,10 @@ namespace {
   template <std::size_t N>
   class PrideFlagData {
   public:
-    constexpr PrideFlagData(const std::array<lv_color_t, N>& sectionColours,
-                            lv_color_t defaultTopLabelColour,
-                            lv_color_t labelTimeColour,
-                            lv_color_t defaultBottomLabelColour)
+    constexpr PrideFlagData(const std::array<Colors::Color, N>& sectionColours,
+                            Colors::Color defaultTopLabelColour,
+                            Colors::Color labelTimeColour,
+                            Colors::Color defaultBottomLabelColour)
       : sectionColours {sectionColours},
         defaultTopLabelColour {defaultTopLabelColour},
         labelTimeColour {labelTimeColour},
@@ -49,36 +49,36 @@ namespace {
       spacing = static_cast<uint8_t>(1.5f * static_cast<float>(N) + 40.5f);
     }
 
-    std::array<lv_color_t, N> sectionColours;
-    lv_color_t defaultTopLabelColour;
-    lv_color_t labelTimeColour;
-    lv_color_t defaultBottomLabelColour;
+    std::array<Colors::Color, N> sectionColours;
+    Colors::Color defaultTopLabelColour;
+    Colors::Color labelTimeColour;
+    Colors::Color defaultBottomLabelColour;
     uint8_t spacing;
   };
 
-  constexpr lv_color_t lightBlue = LV_COLOR_MAKE(0x00, 0xbf, 0xf3);
-  constexpr lv_color_t lightPink = LV_COLOR_MAKE(0xf4, 0x9a, 0xc1);
-  constexpr lv_color_t hotPink = LV_COLOR_MAKE(0xd6, 0x02, 0x70);
-  constexpr lv_color_t grayPurple = LV_COLOR_MAKE(0x9b, 0x4f, 0x96);
-  constexpr lv_color_t darkBlue = LV_COLOR_MAKE(0x00, 0x38, 0xa8);
-  constexpr lv_color_t orange = LV_COLOR_MAKE(0xef, 0x76, 0x27);
-  constexpr lv_color_t lightOrange = LV_COLOR_MAKE(0xff, 0x9b, 0x55);
-  constexpr lv_color_t lightPurple = LV_COLOR_MAKE(0xd4, 0x61, 0xa6);
-  constexpr lv_color_t darkPurple = LV_COLOR_MAKE(0xb5, 0x56, 0x90);
-  constexpr lv_color_t magenta = LV_COLOR_MAKE(0xa5, 0x00, 0x62);
-  constexpr lv_color_t darkGreen = LV_COLOR_MAKE(0x07, 0x8d, 0x70);
-  constexpr lv_color_t cyan = LV_COLOR_MAKE(0x26, 0xce, 0xaa);
-  constexpr lv_color_t lightGreen = LV_COLOR_MAKE(0x98, 0xe8, 0xc1);
-  constexpr lv_color_t indigo = LV_COLOR_MAKE(0x50, 0x49, 0xcc);
-  constexpr lv_color_t steelBlue = LV_COLOR_MAKE(0x3d, 0x1a, 0x78);
-  constexpr std::array<lv_color_t, 7> gayColours {darkGreen, cyan, lightGreen, LV_COLOR_WHITE, lightBlue, indigo, steelBlue};
-  constexpr std::array<lv_color_t, 5> transColours {lightBlue, lightPink, LV_COLOR_WHITE, lightPink, lightBlue};
-  constexpr std::array<lv_color_t, 5> biColours {hotPink, hotPink, grayPurple, darkBlue, darkBlue};
-  constexpr std::array<lv_color_t, 7> lesbianColours {LV_COLOR_RED, orange, lightOrange, LV_COLOR_WHITE, lightPurple, darkPurple, magenta};
-  constexpr PrideFlagData gayFlagData(gayColours, LV_COLOR_BLACK, LV_COLOR_BLACK, LV_COLOR_WHITE);
-  constexpr PrideFlagData transFlagData(transColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
-  constexpr PrideFlagData biFlagData(biColours, LV_COLOR_BLACK, LV_COLOR_WHITE, LV_COLOR_BLACK);
-  constexpr PrideFlagData lesbianFlagData(lesbianColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
+  constexpr Colors::Color lightBlue = 0x00bff3;
+  constexpr Colors::Color lightPink = 0xf49ac1;
+  constexpr Colors::Color hotPink = 0xd60270;
+  constexpr Colors::Color grayPurple = 0x9b4f96;
+  constexpr Colors::Color darkBlue = 0x0038a8;
+  constexpr Colors::Color orange = 0xef7627;
+  constexpr Colors::Color lightOrange = 0xff9b55;
+  constexpr Colors::Color lightPurple = 0xd461a6;
+  constexpr Colors::Color darkPurple = 0xb55690;
+  constexpr Colors::Color magenta = 0xa50062;
+  constexpr Colors::Color darkGreen = 0x078d70;
+  constexpr Colors::Color cyan = 0x26ceaa;
+  constexpr Colors::Color lightGreen = 0x98e8c1;
+  constexpr Colors::Color indigo = 0x5049cc;
+  constexpr Colors::Color steelBlue = 0x3d1a78;
+  constexpr std::array<Colors::Color, 7> gayColours {darkGreen, cyan, lightGreen, Colors::White, lightBlue, indigo, steelBlue};
+  constexpr std::array<Colors::Color, 5> transColours {lightBlue, lightPink, Colors::White, lightPink, lightBlue};
+  constexpr std::array<Colors::Color, 5> biColours {hotPink, hotPink, grayPurple, darkBlue, darkBlue};
+  constexpr std::array<Colors::Color, 7> lesbianColours {Colors::Red, orange, lightOrange, Colors::White, lightPurple, darkPurple, magenta};
+  constexpr PrideFlagData gayFlagData(gayColours, Colors::Black, Colors::Black, Colors::White);
+  constexpr PrideFlagData transFlagData(transColours, Colors::White, Colors::Black, Colors::White);
+  constexpr PrideFlagData biFlagData(biColours, Colors::Black, Colors::White, Colors::Black);
+  constexpr PrideFlagData lesbianFlagData(lesbianColours, Colors::White, Colors::Black, Colors::White);
 }
 
 WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController,
@@ -106,7 +106,7 @@ WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController
 
   notificationText = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(notificationText, nullptr, LV_ALIGN_IN_LEFT_MID, 0, -110);
-  lv_obj_set_style_local_text_color(notificationText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(notificationText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Black);
 
   btnClose = lv_btn_create(lv_scr_act(), nullptr);
   btnClose->user_data = this;
