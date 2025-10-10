@@ -24,6 +24,8 @@
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
+#include "components/ble/BleController.h"
+#include "utility/DirtyValue.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -34,7 +36,7 @@ namespace Pinetime {
     namespace Screens {
       class Music : public Screen {
       public:
-        Music(Pinetime::Controllers::MusicService& music);
+        Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble& bleController, Controllers::DateTime& dateTimeController);
 
         ~Music() override;
 
@@ -46,6 +48,12 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
 
         void UpdateLength();
+
+        void RefreshTrackInfo(bool force);
+
+        void SetDisconnectedUI();
+
+        void SetConnectedUI();
 
         lv_obj_t* btnPrev;
         lv_obj_t* btnPlayPause;
@@ -59,13 +67,14 @@ namespace Pinetime {
         lv_obj_t* imgDisc;
         lv_obj_t* imgDiscAnim;
         lv_obj_t* txtTrackDuration;
+        lv_obj_t* txtCurrentPosition;
+        lv_obj_t* barTrackDuration;
 
         lv_style_t btn_style;
 
-        /** For the spinning disc animation */
-        bool frameB;
-
         Pinetime::Controllers::MusicService& musicService;
+        const Controllers::Ble& bleController;
+        Pinetime::Controllers::DateTime& dateTimeController;
 
         std::string artist;
         std::string album;
@@ -75,12 +84,15 @@ namespace Pinetime {
         int totalLength = 0;
         /** Current position in seconds */
         int currentPosition;
-        /** Last time an animation update or timer was incremented */
-        TickType_t lastIncrement = 0;
 
         bool playing;
 
+        bool lastConnected = false;
+
         lv_task_t* taskRefresh;
+
+        Utility::DirtyValue<bool> bleState {};
+        Utility::DirtyValue<bool> bleRadioEnabled {};
 
         /** Watchapp */
       };
@@ -92,7 +104,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::music;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Music(*controllers.musicService);
+        return new Screens::Music(*controllers.musicService, controllers.bleController, controllers.dateTimeController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
