@@ -34,6 +34,8 @@ namespace Pinetime {
         Id id = 0;
         bool valid = false;
 
+        uint32_t ancsUid = 0;
+
         const char* Message() const;
         const char* Title() const;
       };
