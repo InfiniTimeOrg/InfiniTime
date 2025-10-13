@@ -21,6 +21,7 @@
 #include <timers.h>
 #include <cstdint>
 #include <array>
+
 #include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
@@ -45,6 +46,7 @@ namespace Pinetime {
       void DisableReminder(uint8_t reminderIndex);
       void SetOffReminderNow(uint8_t reminderIndex);
       void StopAlerting();
+      void StopAlertingForReminder(uint8_t reminderIndex);
       
       // Getters for individual reminders
       uint8_t GetReminderHours(uint8_t reminderIndex) const;
@@ -54,14 +56,6 @@ namespace Pinetime {
       const char* GetReminderName(uint8_t reminderIndex) const;
       const char* GetCurrentDynamicText(uint8_t reminderIndex) const;
       void AdvanceDynamicText(uint8_t reminderIndex);
-      ReminderType GetReminderType(uint8_t reminderIndex) const;
-      uint8_t GetReminderDayOfMonth(uint8_t reminderIndex) const;
-      
-      // Control individual reminders
-      void EnableReminder(uint8_t reminderIndex);
-      void ToggleReminder(uint8_t reminderIndex);
-      void SetReminderType(uint8_t reminderIndex, ReminderType type);
-      void SetReminderDayOfMonth(uint8_t reminderIndex, uint8_t dayOfMonth);
       
       // Control all reminders
       void EnableAllReminders();
@@ -69,17 +63,23 @@ namespace Pinetime {
       void ToggleAllReminders();
       bool AreAllRemindersEnabled() const;
       
-      // Debug/test functions
-      void TestReminder(uint8_t reminderIndex);
-      void ForceRescheduleAll();
-      
       // Get total count of reminders
       static constexpr uint8_t GetReminderCount() { return reminderCount; }
+
+    public:
+      struct ReminderData {
+        bool isAlerting = false;
+        TimerHandle_t timer;
+        std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> reminderTime;
+        Pinetime::Controllers::ScheduledRemindersController* controller;
+        uint8_t reminderIndex;
+      };
 
     private:
       static constexpr uint8_t reminderCount = 7;
       static constexpr uint8_t dailyTextCount = 29;
       static constexpr uint8_t weeklyTextCount = 8;
+      // std::array<StaticTimer_t, reminderCount> timerStorage;
 
       struct ReminderSettings {
         uint8_t hours;
@@ -91,16 +91,6 @@ namespace Pinetime {
         char name[256]; // Fixed size for reminder name
         bool isDynamicText = false; // If true, text rotates from a list
         uint8_t textIndex = 0; // Index into the dynamic text list
-      };
-
-      struct ReminderData {
-        bool isAlerting = false;
-        TimerHandle_t timer;
-        std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> reminderTime;
-        struct {
-          Pinetime::Controllers::ScheduledRemindersController* controller;
-          uint8_t reminderIndex;
-        } timerData;
       };
 
       bool remindersChanged = false;
@@ -156,6 +146,7 @@ namespace Pinetime {
 
       // Hardcoded default reminders
       std::array<ReminderSettings, reminderCount> reminders = {{
+        // Hours, Minutes, Enabled, Type, DayOfMonth, DayOfWeek, Name, DynamicText, TextIndex
         {9, 0, true, ReminderType::Daily, 1, 0, "Are you wearing your hearing aid, taking your daily meds?", false, 0},      // 9:00 AM Daily
         {17, 0, true, ReminderType::Daily, 1, 0, "Still wearing hearing aid? Before bed, take off, wipe all parts and store safely. Take your daily meds", false, 0},       // 5:00 PM Daily
         {17, 30, true, ReminderType::Daily, 1, 0, "Dynamic Text", true, 0},     // 5:30 PM Daily with dynamic text

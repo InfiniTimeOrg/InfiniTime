@@ -29,15 +29,19 @@ ScheduledRemindersController::ScheduledRemindersController(Controllers::DateTime
 }
 
 namespace {
-  struct TimerData {
-    Pinetime::Controllers::ScheduledRemindersController* controller;
-    uint8_t reminderIndex;
-  };
-  
   void SetOffReminder(TimerHandle_t xTimer) {
-    auto* timerData = static_cast<TimerData*>(pvTimerGetTimerID(xTimer));
-    NRF_LOG_INFO("[ScheduledRemindersController] Timer callback triggered for reminder %d", timerData->reminderIndex);
-    timerData->controller->SetOffReminderNow(timerData->reminderIndex);
+    auto* reminderData = static_cast<Pinetime::Controllers::ScheduledRemindersController::ReminderData*>(pvTimerGetTimerID(xTimer));
+    NRF_LOG_INFO("[ScheduledRemindersController] Timer callback triggered for reminder %d", reminderData->reminderIndex);
+    NRF_LOG_INFO("[ScheduledRemindersController] Timer data: controller=%p, reminderIndex=%d, isAlerting=%d", 
+                 reminderData->controller, reminderData->reminderIndex, reminderData->isAlerting);
+    
+    // Validate the reminder index
+    if (reminderData->reminderIndex >= 7) {
+      NRF_LOG_ERROR("[ScheduledRemindersController] Invalid reminder index %d in timer callback", reminderData->reminderIndex);
+      return;
+    }
+    
+    reminderData->controller->SetOffReminderNow(reminderData->reminderIndex);
   }
 }
 
@@ -47,11 +51,19 @@ void ScheduledRemindersController::Init(System::SystemTask* systemTask) {
   // Create timers for each reminder with timer data
   for (uint8_t i = 0; i < reminderCount; i++) {
     // Set up timer data
-    reminderData[i].timerData.controller = this;
-    reminderData[i].timerData.reminderIndex = i;
+    reminderData[i].controller = this;
+    reminderData[i].reminderIndex = i;
+    reminderData[i].isAlerting = false;
     
-    reminderData[i].timer = xTimerCreate("Reminder", 1, pdFALSE, &reminderData[i].timerData, SetOffReminder);
-    NRF_LOG_INFO("[ScheduledRemindersController] Created timer for reminder %d", i);
+    char timerName[16];
+    snprintf(timerName, sizeof(timerName), "Reminder%d", i);
+
+    reminderData[i].timer = xTimerCreate(
+      timerName,
+      pdMS_TO_TICKS(1000),   // dummy initial period
+      pdFALSE,               // one-shot
+      &reminderData[i],      // unique ID
+      SetOffReminder);
   }
   
   LoadSettingsFromFile();
@@ -85,101 +97,93 @@ void ScheduledRemindersController::ScheduleReminder(uint8_t reminderIndex) {
   ScheduleReminderInternal(reminderIndex);
 }
 
-void ScheduledRemindersController::ScheduleReminderInternal(uint8_t reminderIndex) {
-  if (reminderIndex >= reminderCount || !reminders[reminderIndex].isEnabled) {
-    NRF_LOG_WARNING("[ScheduledRemindersController] Cannot schedule reminder %d: index=%d, enabled=%d", 
-                    reminderIndex, reminderIndex >= reminderCount ? 0 : 1, reminders[reminderIndex].isEnabled);
+void Pinetime::Controllers::ScheduledRemindersController::ScheduleReminderInternal(uint8_t reminderIndex) {
+  if (reminderIndex >= reminderCount) {
     return;
   }
-  
-  NRF_LOG_INFO("[ScheduledRemindersController] Scheduling reminder %d (%s) at %02d:%02d", 
-               reminderIndex, reminders[reminderIndex].name, 
-               reminders[reminderIndex].hours, reminders[reminderIndex].minutes);
-  
-  // Stop existing timer
-  xTimerStop(reminderData[reminderIndex].timer, 0);
 
-  auto now = dateTimeController.CurrentDateTime();
-  reminderData[reminderIndex].reminderTime = now;
-  time_t ttReminderTime = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::system_clock::duration>(reminderData[reminderIndex].reminderTime));
-  tm* tmReminderTime = std::localtime(&ttReminderTime);
-  
-  // Debug current time
-  NRF_LOG_INFO("[ScheduledRemindersController] Current time: %02d:%02d:%02d", 
-               dateTimeController.Hours(), dateTimeController.Minutes(), dateTimeController.Seconds());
+  auto& settings = reminders[reminderIndex];
+  auto& rdata    = reminderData[reminderIndex];
 
-  // Use the same logic as AlarmController for daily reminders
-  if (reminders[reminderIndex].type == Pinetime::Controllers::ReminderType::Daily) {
-    // If the time being set has already passed today, the reminder should be set for tomorrow
-    if (reminders[reminderIndex].hours < dateTimeController.Hours() ||
-        (reminders[reminderIndex].hours == dateTimeController.Hours() && reminders[reminderIndex].minutes <= dateTimeController.Minutes())) {
-      tmReminderTime->tm_mday += 1;
-      // tm_wday doesn't update automatically
-      tmReminderTime->tm_wday = (tmReminderTime->tm_wday + 1) % 7;
-    }
-  } else if (reminders[reminderIndex].type == Pinetime::Controllers::ReminderType::Monthly) {
-    // Monthly reminder logic
-    uint8_t targetDay = reminders[reminderIndex].dayOfMonth;
-    uint8_t currentDay = dateTimeController.Day();
-    
-    // Set the target day of month
-    tmReminderTime->tm_mday = targetDay;
-    
-    // If the target day has already passed this month, set for next month
-    if (targetDay < currentDay ||
-        (targetDay == currentDay && 
-         (reminders[reminderIndex].hours < dateTimeController.Hours() ||
-          (reminders[reminderIndex].hours == dateTimeController.Hours() && reminders[reminderIndex].minutes <= dateTimeController.Minutes())))) {
-      tmReminderTime->tm_mon += 1;
-      // Handle year rollover
-      if (tmReminderTime->tm_mon > 11) {
-        tmReminderTime->tm_mon = 0;
-        tmReminderTime->tm_year += 1;
-      }
-    }
-  } else if (reminders[reminderIndex].type == Pinetime::Controllers::ReminderType::Weekly) {
-    // Weekly reminder logic
-    uint8_t targetDayOfWeek = reminders[reminderIndex].dayOfWeek;
-    // Convert Days enum to uint8_t (Days::Sunday=7, Monday=1, ..., Saturday=6)
-    uint8_t currentDayOfWeek = static_cast<uint8_t>(dateTimeController.DayOfWeek());
-    if (currentDayOfWeek == 7) currentDayOfWeek = 0; // Convert Sunday from 7 to 0
-    
-    // Calculate days until target day of week
-    int8_t daysUntilTarget = (targetDayOfWeek - currentDayOfWeek + 7) % 7;
-    
-    // If it's the target day but time has passed, or if it's not the target day
-    if (daysUntilTarget == 0 && 
-        (reminders[reminderIndex].hours < dateTimeController.Hours() ||
-         (reminders[reminderIndex].hours == dateTimeController.Hours() && reminders[reminderIndex].minutes <= dateTimeController.Minutes()))) {
-      daysUntilTarget = 7; // Next week
-    } else if (daysUntilTarget == 0) {
-      daysUntilTarget = 0; // Today, time hasn't passed yet
-    }
-    
-    // Add the days to get to the target day
-    tmReminderTime->tm_mday += daysUntilTarget;
-    
-    // Update day of week (tm_wday doesn't update automatically)
-    tmReminderTime->tm_wday = (tmReminderTime->tm_wday + daysUntilTarget) % 7;
+  xTimerStop(rdata.timer, 0);
+
+  // Only schedule enabled reminders
+  if (!settings.isEnabled) {
+    return;
   }
 
-  tmReminderTime->tm_hour = reminders[reminderIndex].hours;
-  tmReminderTime->tm_min = reminders[reminderIndex].minutes;
-  tmReminderTime->tm_sec = 0;
-  tmReminderTime->tm_isdst = -1; // use system timezone setting to determine DST
+  // Base on "now"
+  auto now = dateTimeController.CurrentDateTime();
+  std::time_t ttNow = std::chrono::system_clock::to_time_t(
+      std::chrono::time_point_cast<std::chrono::system_clock::duration>(now));
+  std::tm* tmTarget = std::localtime(&ttNow);
 
-  // Convert back to a time_point
-  reminderData[reminderIndex].reminderTime = std::chrono::system_clock::from_time_t(std::mktime(tmReminderTime));
-  auto secondsToReminder = std::chrono::duration_cast<std::chrono::seconds>(reminderData[reminderIndex].reminderTime - now).count();
-  
-  // Use the same approach as AlarmController - no minimum check, let FreeRTOS handle it
-  NRF_LOG_INFO("[ScheduledRemindersController] Scheduling reminder %d for %ld seconds", reminderIndex, secondsToReminder);
-  
-  // Use the same timer approach as AlarmController
-  xTimerChangePeriod(reminderData[reminderIndex].timer, secondsToReminder * configTICK_RATE_HZ, 0);
-  xTimerStart(reminderData[reminderIndex].timer, 0);
-  
-  NRF_LOG_INFO("[ScheduledRemindersController] Successfully started timer for reminder %d", reminderIndex);
+  // Initialize to current date/time, then set target H:M:S
+  tmTarget->tm_sec  = 0;
+  tmTarget->tm_min  = settings.minutes;
+  tmTarget->tm_hour = settings.hours;
+
+  // Decide next fire date based on recurrence
+  switch (settings.type) {
+    case ReminderType::Daily: {
+      // If target time today has passed, move to tomorrow
+      bool passedToday =
+          (settings.hours < dateTimeController.Hours()) ||
+          (settings.hours == dateTimeController.Hours() && settings.minutes <= dateTimeController.Minutes());
+      if (passedToday) {
+        tmTarget->tm_mday += 1;
+        tmTarget->tm_wday = (tmTarget->tm_wday + 1) % 7;
+      }
+      break;
+    }
+
+    case ReminderType::Weekly: {
+      // dayOfWeek: 0=Sun..6=Sat, matches std::tm::tm_wday
+      int todayW  = tmTarget->tm_wday;             // 0..6
+      int targetW = static_cast<int>(settings.dayOfWeek) % 7;
+      int delta   = (targetW - todayW + 7) % 7;
+
+      // If same day but time already passed, push a full week
+      bool timePassedToday =
+          (delta == 0) &&
+          ((settings.hours < dateTimeController.Hours()) ||
+           (settings.hours == dateTimeController.Hours() && settings.minutes <= dateTimeController.Minutes()));
+      if (timePassedToday) {
+        delta = 7;
+      } else if (delta == 0) {
+        // same day later today → delta stays 0
+      }
+
+      tmTarget->tm_mday += delta;
+      // tm_wday will be normalized by mktime below
+      break;
+    }
+  }
+
+  // Respect DST automatically
+  tmTarget->tm_isdst = -1;
+
+  // Convert back to time_point
+  std::time_t ttTarget = std::mktime(tmTarget);
+  auto targetTime = std::chrono::system_clock::from_time_t(ttTarget);
+
+  // Store for reference/diagnostics
+  rdata.reminderTime = targetTime;
+
+  // Compute delay
+  auto secondsToReminder = std::chrono::duration_cast<std::chrono::seconds>(targetTime - now).count();
+  if (secondsToReminder < 1) {
+    // Safety: ensure at least 1 second to avoid 0/negative periods caused by rounding
+    secondsToReminder = 1;
+  }
+
+  // Using the same style as AlarmController (seconds * configTICK_RATE_HZ). Alternatively: pdMS_TO_TICKS(seconds*1000).
+  xTimerChangePeriod(rdata.timer, secondsToReminder * configTICK_RATE_HZ, 0);
+  xTimerStart(rdata.timer, 0);
+
+  // (Optional) mark change and/or log
+  remindersChanged = true;
+  NRF_LOG_INFO("[ScheduledRemindersController] Scheduled reminder %d in %ld sec", reminderIndex, (long)secondsToReminder);
 }
 
 
@@ -203,12 +207,30 @@ void ScheduledRemindersController::SetOffReminderNow(uint8_t reminderIndex) {
 
 void ScheduledRemindersController::StopAlerting() {
   // Stop alerting for all reminders and schedule next instance (like AlarmController)
+  NRF_LOG_INFO("[ScheduledRemindersController] StopAlerting called");
   for (uint8_t i = 0; i < reminderCount; i++) {
     if (reminderData[i].isAlerting) {
+      NRF_LOG_INFO("[ScheduledRemindersController] Stopping alerting for reminder %d", i);
       reminderData[i].isAlerting = false;
       // Schedule next instance (all reminders are recurring by nature)
       ScheduleReminderInternal(i);
     }
+  }
+}
+
+void ScheduledRemindersController::StopAlertingForReminder(uint8_t reminderIndex) {
+  if (reminderIndex >= reminderCount) {
+    NRF_LOG_ERROR("[ScheduledRemindersController] Invalid reminder index %d for StopAlertingForReminder", reminderIndex);
+    return;
+  }
+  
+  if (reminderData[reminderIndex].isAlerting) {
+    NRF_LOG_INFO("[ScheduledRemindersController] Stopping alerting for specific reminder %d", reminderIndex);
+    reminderData[reminderIndex].isAlerting = false;
+    // Schedule next instance (all reminders are recurring by nature)
+    ScheduleReminderInternal(reminderIndex);
+  } else {
+    NRF_LOG_WARNING("[ScheduledRemindersController] Reminder %d was not alerting when StopAlertingForReminder was called", reminderIndex);
   }
 }
 
@@ -288,85 +310,6 @@ void ScheduledRemindersController::AdvanceDynamicText(uint8_t reminderIndex) {
   remindersChanged = true;
 }
 
-Pinetime::Controllers::ReminderType ScheduledRemindersController::GetReminderType(uint8_t reminderIndex) const {
-  if (reminderIndex >= reminderCount) {
-    return Pinetime::Controllers::ReminderType::Daily;
-  }
-  return reminders[reminderIndex].type;
-}
-
-uint8_t ScheduledRemindersController::GetReminderDayOfMonth(uint8_t reminderIndex) const {
-  if (reminderIndex >= reminderCount) {
-    return 1;
-  }
-  return reminders[reminderIndex].dayOfMonth;
-}
-
-void ScheduledRemindersController::EnableReminder(uint8_t reminderIndex) {
-  if (reminderIndex >= reminderCount) {
-    return;
-  }
-  
-  if (!reminders[reminderIndex].isEnabled) {
-    reminders[reminderIndex].isEnabled = true;
-    remindersChanged = true;
-    ScheduleReminderInternal(reminderIndex);
-  }
-}
-
-void ScheduledRemindersController::ToggleReminder(uint8_t reminderIndex) {
-  if (reminderIndex >= reminderCount) {
-    return;
-  }
-  
-  if (reminders[reminderIndex].isEnabled) {
-    xTimerStop(reminderData[reminderIndex].timer, 0);
-    reminders[reminderIndex].isEnabled = false;
-    remindersChanged = true;
-  } else {
-    EnableReminder(reminderIndex);
-  }
-}
-
-void ScheduledRemindersController::SetReminderType(uint8_t reminderIndex, Pinetime::Controllers::ReminderType type) {
-  if (reminderIndex >= reminderCount) {
-    return;
-  }
-  
-  if (reminders[reminderIndex].type != type) {
-    reminders[reminderIndex].type = type;
-    remindersChanged = true;
-    
-    // If reminder is enabled, reschedule it with new type
-    if (reminders[reminderIndex].isEnabled) {
-      xTimerStop(reminderData[reminderIndex].timer, 0);
-      ScheduleReminderInternal(reminderIndex);
-    }
-  }
-}
-
-void ScheduledRemindersController::SetReminderDayOfMonth(uint8_t reminderIndex, uint8_t dayOfMonth) {
-  if (reminderIndex >= reminderCount) {
-    return;
-  }
-  
-  // Validate day of month (1-31)
-  if (dayOfMonth < 1 || dayOfMonth > 31) {
-    return;
-  }
-  
-  if (reminders[reminderIndex].dayOfMonth != dayOfMonth) {
-    reminders[reminderIndex].dayOfMonth = dayOfMonth;
-    remindersChanged = true;
-    
-    // If reminder is enabled and is monthly, reschedule it
-    if (reminders[reminderIndex].isEnabled && reminders[reminderIndex].type == Pinetime::Controllers::ReminderType::Monthly) {
-      xTimerStop(reminderData[reminderIndex].timer, 0);
-      ScheduleReminderInternal(reminderIndex);
-    }
-  }
-}
-
 void ScheduledRemindersController::EnableAllReminders() {
   for (uint8_t i = 0; i < reminderCount; i++) {
     if (!reminders[i].isEnabled) {
@@ -437,24 +380,3 @@ void ScheduledRemindersController::SaveSettingsToFile() const {
   fs.FileClose(&reminderFile);
   NRF_LOG_INFO("[ScheduledRemindersController] Saved reminder settings to file");
 }
-
-void ScheduledRemindersController::TestReminder(uint8_t reminderIndex) {
-  if (reminderIndex >= reminderCount) {
-    NRF_LOG_ERROR("[ScheduledRemindersController] Invalid reminder index for test: %d", reminderIndex);
-    return;
-  }
-  
-  NRF_LOG_INFO("[ScheduledRemindersController] Testing reminder %d: %s", reminderIndex, reminders[reminderIndex].name);
-  SetOffReminderNow(reminderIndex);
-}
-
-void ScheduledRemindersController::ForceRescheduleAll() {
-  NRF_LOG_INFO("[ScheduledRemindersController] Force rescheduling all reminders");
-  for (uint8_t i = 0; i < reminderCount; i++) {
-    if (reminders[i].isEnabled) {
-      NRF_LOG_INFO("[ScheduledRemindersController] Force rescheduling reminder %d", i);
-      ScheduleReminderInternal(i);
-    }
-  }
-}
-

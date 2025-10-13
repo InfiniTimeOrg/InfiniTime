@@ -256,8 +256,9 @@ void ScheduledReminders::DismissAlertingReminder() {
     return; // No alerting reminder to dismiss
   }
   
-  // Stop the alerting reminder
-  controllers.scheduledRemindersController.StopAlerting();
+  // Get the specific alerting reminder index and stop only that one
+  uint8_t alertingIndex = GetAlertingReminderIndex();
+  controllers.scheduledRemindersController.StopAlertingForReminder(alertingIndex);
   
   // Clean up alerting UI
   if (alertingContainer) {
