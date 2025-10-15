@@ -31,8 +31,8 @@ namespace Pinetime {
 
       uint16_t stepCountHandle;
       uint16_t motionValuesHandle;
-      std::atomic_bool stepCountNoficationEnabled {false};
-      std::atomic_bool motionValuesNoficationEnabled {false};
+      std::atomic_bool stepCountNotificationEnabled {false};
+      std::atomic_bool motionValuesNotificationEnabled {false};
     };
   }
 }
