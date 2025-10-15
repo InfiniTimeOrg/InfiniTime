@@ -21,7 +21,6 @@ namespace Pinetime {
 
       void SubscribeNotification(uint16_t attributeHandle);
       void UnsubscribeNotification(uint16_t attributeHandle);
-      bool IsMotionNotificationSubscribed() const;
 
     private:
       NimbleController& nimble;
