@@ -209,13 +209,8 @@ void SystemTask::Work() {
           if (alarmController.IsEnabled()) {
             alarmController.ScheduleAlarm();
           }
-          // Schedule reminders for new time
-          for (uint8_t i = 0; i < scheduledRemindersController.GetReminderCount(); i++) {
-            if (scheduledRemindersController.IsReminderEnabled(i)) {
-              NRF_LOG_INFO("[SystemTask] Rescheduling reminder %d", i);
-              scheduledRemindersController.ScheduleReminder(i);
-            }
-          }
+          // Reschedule the single timer to find the next upcoming reminder
+          scheduledRemindersController.RescheduleTimer();
           break;
         case Messages::OnNewNotification:
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::On) {

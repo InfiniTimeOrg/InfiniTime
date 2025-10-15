@@ -65,11 +65,15 @@ namespace Pinetime {
       
       // Get total count of reminders
       static constexpr uint8_t GetReminderCount() { return reminderCount; }
+      
+      // Public methods needed for timer callback
+      uint8_t FindNextReminder() const;
+      void RescheduleTimer();
+      uint8_t GetCurrentlyScheduledReminder() const;
 
     public:
       struct ReminderData {
         bool isAlerting = false;
-        TimerHandle_t timer;
         std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> reminderTime;
         Pinetime::Controllers::ScheduledRemindersController* controller;
         uint8_t reminderIndex;
@@ -97,6 +101,10 @@ namespace Pinetime {
       Controllers::DateTime& dateTimeController;
       Controllers::FS& fs;
       System::SystemTask* systemTask = nullptr;
+      
+      // Single timer for all reminders
+      TimerHandle_t reminderTimer;
+      uint8_t currentlyScheduledReminder = 7; // Track which reminder is currently scheduled
       
       // Dynamic text options for daily rotating reminders
       std::array<const char*, dailyTextCount> dailyTexts = {{
@@ -149,7 +157,7 @@ namespace Pinetime {
         // Hours, Minutes, Enabled, Type, DayOfMonth, DayOfWeek, Name, DynamicText, TextIndex
         {9, 0, true, ReminderType::Daily, 1, 0, "Are you wearing your hearing aid, taking your daily meds?", false, 0},      // 9:00 AM Daily
         {17, 0, true, ReminderType::Daily, 1, 0, "Still wearing hearing aid? Before bed, take off, wipe all parts and store safely. Take your daily meds", false, 0},       // 5:00 PM Daily
-        {17, 30, true, ReminderType::Daily, 1, 0, "Dynamic Text", true, 0},     // 5:30 PM Daily with dynamic text
+        {17, 45, true, ReminderType::Daily, 1, 0, "Dynamic Text", true, 0},     // 5:30 PM Daily with dynamic text
         {21, 0, true, ReminderType::Daily, 1, 0, "Take your Daily Meds", false, 0},  // 9:00 PM Daily
         {21, 30, true, ReminderType::Daily, 1, 0, "Check your step count for brain health", false, 0},  // 9:30 PM Daily
         {13, 0, true, ReminderType::Weekly, 1, 6, "Dynamic Text", true, 0},  // 1:00 PM Saturday
@@ -161,6 +169,10 @@ namespace Pinetime {
       void LoadSettingsFromFile();
       void SaveSettingsToFile() const;
       void ScheduleReminderInternal(uint8_t reminderIndex);
+      void ScheduleNextReminder();
+      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> 
+        CalculateNextReminderTime(uint8_t reminderIndex, 
+          const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& now) const;
     };
   }
 }
