@@ -1,6 +1,21 @@
-// Key modifications for WatchFaceDigital.cpp
+#include "displayapp/screens/WatchFaceDigital.h"
 
-// In the constructor, you'll need to adjust the positions and sizes:
+#include <date/date.h>
+#include <lvgl/lvgl.h>
+#include <cstdio>
+#include "displayapp/screens/BatteryIcon.h"
+#include "displayapp/screens/BleIcon.h"
+#include "displayapp/screens/NotificationIcon.h"
+#include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/WeatherSymbols.h"
+#include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
+#include "components/ble/NotificationManager.h"
+#include "components/heartrate/HeartRateController.h"
+#include "components/motion/MotionController.h"
+#include "components/settings/Settings.h"
+
+using namespace Pinetime::Applications::Screens;
 
 WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    const Controllers::Battery& batteryController,
@@ -11,7 +26,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    Controllers::MotionController& motionController)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
-    notificationManager {notificationManager},
+                                       notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
@@ -81,6 +96,11 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   // Set up task timer
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
+}
+
+WatchFaceDigital::~WatchFaceDigital() {
+  lv_task_del(taskRefresh);
+  lv_obj_clean(lv_scr_act());
 }
 
 // In the Refresh() method, update the Praxiom Age calculation
