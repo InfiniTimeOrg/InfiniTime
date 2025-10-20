@@ -33,7 +33,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     motionController {motionController},
     weatherService {weatherService},
     statusIcons(batteryController, bleController, alarmController),
-    basePraxiomAge(0),
+    basePraxiomAge(53),  // Demo age - will be replaced when phone app connects
     lastSyncTime(0) {
 
   // Create Praxiom brand gradient background (Orange/Amber to Teal/Cyan)
@@ -59,7 +59,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
 
   // Create Praxiom Age number - BOLD large digits - BLACK
   labelPraxiomAgeNumber = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(labelPraxiomAgeNumber, "--");
+  lv_label_set_text_static(labelPraxiomAgeNumber, "53");  // Initial demo value
   lv_obj_set_style_local_text_font(labelPraxiomAgeNumber, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(labelPraxiomAgeNumber, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_obj_align(labelPraxiomAgeNumber, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
@@ -170,10 +170,8 @@ float WatchFaceDigital::CalculateRealtimeAdjustment() {
 
 // Calculate final Praxiom Age
 int WatchFaceDigital::GetCurrentPraxiomAge() {
-  if (basePraxiomAge == 0) {
-    // No sync from phone yet - show placeholder
-    return -1;
-  }
+  // Demo mode: basePraxiomAge = 53 until phone app connects and updates it
+  // Real mode: basePraxiomAge updated by phone app via UpdateBasePraxiomAge()
   
   float adjustment = CalculateRealtimeAdjustment();
   int finalAge = basePraxiomAge + (int)adjustment;
@@ -237,11 +235,7 @@ void WatchFaceDigital::Refresh() {
   
   if (currentMinute != lastMinute) {
     int praxiomAge = GetCurrentPraxiomAge();
-    if (praxiomAge == -1) {
-      lv_label_set_text_static(labelPraxiomAgeNumber, "--");
-    } else {
-      lv_label_set_text_fmt(labelPraxiomAgeNumber, "%d", praxiomAge);
-    }
+    lv_label_set_text_fmt(labelPraxiomAgeNumber, "%d", praxiomAge);
     lv_obj_realign(labelPraxiomAgeNumber);
     lastMinute = currentMinute;
     
