@@ -57,11 +57,11 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_text_color(labelPraxiomAge, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_obj_align(labelPraxiomAge, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
 
-  // Create Praxiom Age number - BOLD large digits - BLACK
+  // Create Praxiom Age number - BOLD large digits - WHITE (neutral color)
   labelPraxiomAgeNumber = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(labelPraxiomAgeNumber, "53");  // Initial demo value
-  lv_obj_set_style_local_text_font(labelPraxiomAgeNumber, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(labelPraxiomAgeNumber, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
+  lv_obj_set_style_local_text_font(labelPraxiomAgeNumber, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);  // BOLD font
+  lv_obj_set_style_local_text_color(labelPraxiomAgeNumber, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFFFFF));  // Start with white
   lv_obj_align(labelPraxiomAgeNumber, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
 
   // Time label - BLACK
@@ -183,6 +183,22 @@ int WatchFaceDigital::GetCurrentPraxiomAge() {
   return finalAge;
 }
 
+// Get color based on Praxiom Age difference from base age
+lv_color_t WatchFaceDigital::GetPraxiomAgeColor(int currentAge, int baseAge) {
+  int difference = currentAge - baseAge;
+  
+  if (difference < -2) {
+    // More than 2 years younger - GREEN (excellent health)
+    return lv_color_hex(0x00FF00);
+  } else if (difference > 2) {
+    // More than 2 years older - RED (poor health)
+    return lv_color_hex(0xFF0000);
+  } else {
+    // Within ±2 years - WHITE (neutral/good health)
+    return lv_color_hex(0xFFFFFF);
+  }
+}
+
 void WatchFaceDigital::Refresh() {
   statusIcons.Update();
 
@@ -229,13 +245,20 @@ void WatchFaceDigital::Refresh() {
     lv_obj_realign(stepValue);
   }
 
-  // Update Praxiom Age every minute
+  // Update Praxiom Age every minute with dynamic color
   static uint8_t lastMinute = 0;
   uint8_t currentMinute = dateTimeController.Minutes();
   
   if (currentMinute != lastMinute) {
     int praxiomAge = GetCurrentPraxiomAge();
+    
+    // Update the number
     lv_label_set_text_fmt(labelPraxiomAgeNumber, "%d", praxiomAge);
+    
+    // Update the color based on difference from base age
+    lv_color_t ageColor = GetPraxiomAgeColor(praxiomAge, basePraxiomAge);
+    lv_obj_set_style_local_text_color(labelPraxiomAgeNumber, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, ageColor);
+    
     lv_obj_realign(labelPraxiomAgeNumber);
     lastMinute = currentMinute;
     
