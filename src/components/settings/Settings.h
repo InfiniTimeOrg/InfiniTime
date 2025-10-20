@@ -4,6 +4,7 @@
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 #include "displayapp/apps/Apps.h"
+#include "displayapp/Colors.h"
 #include <nrf_log.h>
 
 namespace Pinetime {
@@ -15,35 +16,15 @@ namespace Pinetime {
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t { SingleTap = 0, DoubleTap = 1, RaiseWrist = 2, Shake = 3, LowerWrist = 4 };
-      enum class Colors : uint8_t {
-        White,
-        Silver,
-        Gray,
-        Black,
-        Red,
-        Maroon,
-        Yellow,
-        Olive,
-        Lime,
-        Green,
-        Cyan,
-        Teal,
-        Blue,
-        Navy,
-        Magenta,
-        Purple,
-        Orange,
-        Pink
-      };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
       enum class PrideFlag : uint8_t { Gay, Trans, Bi, Lesbian };
       enum class DfuAndFsMode : uint8_t { Disabled, Enabled, EnabledTillReboot };
 
       struct PineTimeStyle {
-        Colors ColorTime = Colors::Teal;
-        Colors ColorBar = Colors::Teal;
-        Colors ColorBG = Colors::Black;
+        Colors::Color ColorTime = Colors::Teal;
+        Colors::Color ColorBar = Colors::Teal;
+        Colors::Color ColorBG = Colors::Black;
         PTSGaugeStyle gaugeStyle = PTSGaugeStyle::Full;
         PTSWeather weatherEnable = PTSWeather::Off;
       };
@@ -85,33 +66,33 @@ namespace Pinetime {
         return settings.chimesOption;
       };
 
-      void SetPTSColorTime(Colors colorTime) {
+      void SetPTSColorTime(Colors::Color colorTime) {
         if (colorTime != settings.PTS.ColorTime)
           settingsChanged = true;
         settings.PTS.ColorTime = colorTime;
       };
 
-      Colors GetPTSColorTime() const {
+      Colors::Color GetPTSColorTime() const {
         return settings.PTS.ColorTime;
       };
 
-      void SetPTSColorBar(Colors colorBar) {
+      void SetPTSColorBar(Colors::Color colorBar) {
         if (colorBar != settings.PTS.ColorBar)
           settingsChanged = true;
         settings.PTS.ColorBar = colorBar;
       };
 
-      Colors GetPTSColorBar() const {
+      Colors::Color GetPTSColorBar() const {
         return settings.PTS.ColorBar;
       };
 
-      void SetPTSColorBG(Colors colorBG) {
+      void SetPTSColorBG(Colors::Color colorBG) {
         if (colorBG != settings.PTS.ColorBG)
           settingsChanged = true;
         settings.PTS.ColorBG = colorBG;
       };
 
-      Colors GetPTSColorBG() const {
+      Colors::Color GetPTSColorBG() const {
         return settings.PTS.ColorBG;
       };
 

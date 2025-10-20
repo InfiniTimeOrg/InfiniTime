@@ -53,7 +53,7 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
 
   lv_style_init(&btn_style);
   lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, 20);
-  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, InfiniTimeTheme::Colors::bgAlt);
 
   btnVolDown = lv_btn_create(lv_scr_act(), nullptr);
   btnVolDown->user_data = this;
@@ -118,7 +118,7 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
   lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtArtist, LV_HOR_RES - 12);
   lv_label_set_text_static(txtArtist, "");
-  lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::LightGray);
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
