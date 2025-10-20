@@ -41,6 +41,12 @@ namespace Pinetime {
 
         void Refresh() override;
 
+        // Called by BLE service to update base Praxiom Age from phone
+        void UpdateBasePraxiomAge(int age);
+        
+        // Get current calculated Praxiom Age (for sending back to phone)
+        int GetCurrentPraxiomAge();
+
       private:
         uint8_t displayedHour = -1;
         uint8_t displayedMinute = -1;
@@ -77,6 +83,13 @@ namespace Pinetime {
 
         lv_task_t* taskRefresh;
         Widgets::StatusIcons statusIcons;
+        
+        // Praxiom Age calculation variables
+        int basePraxiomAge;  // Base age from phone app biomarker calculation
+        uint64_t lastSyncTime;  // Last sync timestamp
+        
+        // Helper functions
+        float CalculateRealtimeAdjustment();
       };
     }
 
