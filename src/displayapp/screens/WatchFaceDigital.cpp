@@ -1,6 +1,5 @@
 #include "displayapp/screens/WatchFaceDigital.h"
 
-#include <date/date.h>
 #include <lvgl/lvgl.h>
 #include <cstdio>
 #include "displayapp/screens/BatteryIcon.h"
@@ -26,7 +25,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    Controllers::MotionController& motionController)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
-                                       notificationManager {notificationManager},
+    notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
@@ -103,7 +102,6 @@ WatchFaceDigital::~WatchFaceDigital() {
   lv_obj_clean(lv_scr_act());
 }
 
-// In the Refresh() method, update the Praxiom Age calculation
 void WatchFaceDigital::Refresh() {
   statusIcons.Update();
 
