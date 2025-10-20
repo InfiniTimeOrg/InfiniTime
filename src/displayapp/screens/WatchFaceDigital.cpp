@@ -32,7 +32,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     heartRateController {heartRateController},
     motionController {motionController},
     weatherService {weatherService},
-    statusIcons(batteryController, bleController) {
+    statusIcons(batteryController, bleController, alarmController) {
 
   statusIcons.Create();
   lv_obj_align(statusIcons.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -8, 0);
