@@ -34,15 +34,16 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     weatherService {weatherService},
     statusIcons(batteryController, bleController, alarmController) {
 
-  // Create gradient background
-  lv_obj_t* background_gradient_down = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(background_gradient_down, 240, 240);
-  lv_obj_set_pos(background_gradient_down, 0, 0);
-  lv_obj_set_style_local_radius(background_gradient_down, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_bg_color(background_gradient_down, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_obj_set_style_local_bg_grad_color(background_gradient_down, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x050505));
-  lv_obj_set_style_local_bg_grad_dir(background_gradient_down, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
-  lv_obj_set_style_local_border_width(background_gradient_down, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+  // Create Praxiom-inspired gradient background (orange to teal approximation)
+  lv_obj_t* background_gradient = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(background_gradient, 240, 240);
+  lv_obj_set_pos(background_gradient, 0, 0);
+  lv_obj_set_style_local_radius(background_gradient, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+  // Gradient from dark orange/red to dark teal/cyan
+  lv_obj_set_style_local_bg_color(background_gradient, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1a0a00));  // Dark orange-brown
+  lv_obj_set_style_local_bg_grad_color(background_gradient, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x001a1a));  // Dark teal
+  lv_obj_set_style_local_bg_grad_dir(background_gradient, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+  lv_obj_set_style_local_border_width(background_gradient, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
 
   statusIcons.Create();
   lv_obj_align(statusIcons.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -8, 0);
@@ -56,7 +57,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
 
   // Create Praxiom Age number - BOLD large digits
   labelPraxiomAgeNumber = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(labelPraxiomAgeNumber, "42");
+  lv_label_set_text_static(labelPraxiomAgeNumber, "--");
   lv_obj_set_style_local_text_font(labelPraxiomAgeNumber, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(labelPraxiomAgeNumber, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFFFFF));
   lv_obj_align(labelPraxiomAgeNumber, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
@@ -110,6 +111,62 @@ WatchFaceDigital::~WatchFaceDigital() {
   lv_obj_clean(lv_scr_act());
 }
 
+// Simplified Praxiom Age calculation using available sensors
+// NOTE: This is a PROXY calculation - real Praxiom Age requires lab biomarkers
+int WatchFaceDigital::CalculateProxyPraxiomAge() {
+  // Get user's chronological age (would need to be stored in settings)
+  // For demo, assuming age 40
+  int chronologicalAge = 40;
+  
+  // Get available sensor data
+  uint8_t currentHeartRate = heartRateController.HeartRate();
+  uint32_t currentSteps = motionController.NbSteps();
+  
+  // Simplified health scoring (0-100 scale)
+  // Heart rate component (optimal resting HR: 60-70 bpm)
+  float hrScore = 100.0f;
+  if (currentHeartRate > 0) {
+    if (currentHeartRate < 60) {
+      hrScore = 100.0f - (60 - currentHeartRate) * 2.0f;
+    } else if (currentHeartRate > 70) {
+      hrScore = 100.0f - (currentHeartRate - 70) * 1.5f;
+    }
+    if (hrScore < 0) hrScore = 0;
+  }
+  
+  // Activity component (optimal: >8000 steps)
+  float activityScore = 100.0f;
+  if (currentSteps < 8000) {
+    activityScore = (currentSteps / 8000.0f) * 100.0f;
+  }
+  
+  // Combined health score (simplified proxy)
+  float healthScore = (hrScore * 0.6f + activityScore * 0.4f);
+  
+  // Apply age-stratified adjustment
+  float alpha, beta;
+  if (chronologicalAge < 50) {
+    alpha = 0.08f;
+    beta = 0.15f;
+  } else if (chronologicalAge <= 70) {
+    alpha = 0.12f;
+    beta = 0.20f;
+  } else {
+    alpha = 0.15f;
+    beta = 0.25f;
+  }
+  
+  // Calculate Bio-Age deviation (simplified formula)
+  float deviation = (100.0f - healthScore) * (alpha + beta) / 2.0f;
+  int bioAge = chronologicalAge + (int)deviation;
+  
+  // Ensure reasonable bounds
+  if (bioAge < chronologicalAge - 10) bioAge = chronologicalAge - 10;
+  if (bioAge > chronologicalAge + 20) bioAge = chronologicalAge + 20;
+  
+  return bioAge;
+}
+
 void WatchFaceDigital::Refresh() {
   statusIcons.Update();
 
@@ -158,8 +215,15 @@ void WatchFaceDigital::Refresh() {
     lv_obj_realign(stepValue);
   }
 
-  // Update Praxiom Age
-  static int praxiomAge = 42;
-  lv_label_set_text_fmt(labelPraxiomAgeNumber, "%d", praxiomAge);
-  lv_obj_realign(labelPraxiomAgeNumber);
+  // Calculate and update Praxiom Age (proxy calculation using available sensors)
+  // Update every minute to avoid excessive calculations
+  static uint8_t lastMinute = 0;
+  uint8_t currentMinute = dateTimeController.Minutes();
+  
+  if (currentMinute != lastMinute) {
+    int praxiomAge = CalculateProxyPraxiomAge();
+    lv_label_set_text_fmt(labelPraxiomAgeNumber, "%d", praxiomAge);
+    lv_obj_realign(labelPraxiomAgeNumber);
+    lastMinute = currentMinute;
+  }
 }
