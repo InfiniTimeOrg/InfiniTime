@@ -19,52 +19,51 @@ using namespace Pinetime::Applications::Screens;
 WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    const Controllers::Battery& batteryController,
                                    const Controllers::Ble& bleController,
+                                   const Controllers::AlarmController& alarmController,
                                    Controllers::NotificationManager& notificationManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
-                                   Controllers::MotionController& motionController)
+                                   Controllers::MotionController& motionController,
+                                   Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
+    weatherService {weatherService},
     statusIcons(batteryController, bleController) {
 
   statusIcons.Create();
   lv_obj_align(statusIcons.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -8, 0);
 
-  // Create and position Praxiom Age label (text) - same size as before
+  // Create and position Praxiom Age label (text)
   labelPraxiomAge = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(labelPraxiomAge, "Praxiom Age");
   lv_obj_set_style_local_text_font(labelPraxiomAge, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_obj_set_style_local_text_color(labelPraxiomAge, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
-  // Position at center, above the Praxiom Age number
   lv_obj_align(labelPraxiomAge, lv_scr_act(), LV_ALIGN_CENTER, 0, -40);
 
-  // Create Praxiom Age number - now with clock digit size (jetbrains_mono_76)
+  // Create Praxiom Age number - large clock digits
   labelPraxiomAgeNumber = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(labelPraxiomAgeNumber, "42");
   lv_obj_set_style_local_text_font(labelPraxiomAgeNumber, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(labelPraxiomAgeNumber, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFFFFF));
-  // Position at center of screen
   lv_obj_align(labelPraxiomAgeNumber, lv_scr_act(), LV_ALIGN_CENTER, 0, 10);
 
-  // Time label - now smaller (use jetbrains_mono_42 instead of 76)
-  labelTime = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(labelTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text(labelTime, "00:00");
-  // Position where Praxiom Age number was (bottom area)
-  lv_obj_align(labelTime, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -60);
+  // Time label - smaller font (note: using label_time with underscore)
+  label_time = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_label_set_text(label_time, "00:00");
+  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -60);
 
-  // Date label - move lower, halfway between Praxiom Age and bottom
-  labelDate = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_set_style_local_text_color(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  // Calculate position: halfway between center and bottom
-  lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_CENTER, 0, 80);
+  // Date label
+  label_date = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 80);
 
-  // Heart rate icon and label - keep unchanged
+  // Heart rate icon and label
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
   lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
@@ -75,7 +74,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_label_set_text_static(heartbeatValue, "");
   lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
-  // Step icon and label - keep unchanged
+  // Step icon and label
   stepIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text_static(stepIcon, Symbols::shoe);
@@ -86,13 +85,12 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_label_set_text_static(stepValue, "0");
   lv_obj_align(stepValue, stepIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
-  // Create notification label
+  // Notification icon
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
-  // Set up task timer
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
 }
@@ -115,19 +113,19 @@ void WatchFaceDigital::Refresh() {
     uint8_t hour = dateTimeController.Hours();
     uint8_t minute = dateTimeController.Minutes();
 
-    // Update time with smaller font
-    lv_label_set_text_fmt(labelTime, "%02d:%02d", hour, minute);
+    // Update time (using label_time with underscore)
+    lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
 
     currentDate = std::chrono::time_point_cast<std::chrono::days>(currentDateTime.Get());
     if (currentDate.IsUpdated()) {
       uint16_t year = dateTimeController.Year();
       uint8_t day = dateTimeController.Day();
-      lv_label_set_text_fmt(labelDate,
+      lv_label_set_text_fmt(label_date,
                             "%s %d %d",
                             dateTimeController.DayOfWeekShortToString(),
                             day,
                             year);
-      lv_obj_realign(labelDate);
+      lv_obj_realign(label_date);
     }
   }
 
@@ -141,7 +139,6 @@ void WatchFaceDigital::Refresh() {
       lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1B1B1B));
       lv_label_set_text_static(heartbeatValue, "");
     }
-
     lv_obj_realign(heartbeatValue);
   }
 
@@ -151,16 +148,9 @@ void WatchFaceDigital::Refresh() {
     lv_obj_realign(stepValue);
   }
 
-  // Update Praxiom Age calculation (example calculation - adjust as needed)
-  // This is where you'd integrate your actual Praxiom Age calculation
-  int praxiomAge = CalculatePraxiomAge(); // Your calculation method
+  // Update Praxiom Age - simple placeholder calculation
+  // Replace this with your actual Praxiom Age calculation
+  static int praxiomAge = 42;
   lv_label_set_text_fmt(labelPraxiomAgeNumber, "%d", praxiomAge);
   lv_obj_realign(labelPraxiomAgeNumber);
-}
-
-// Add your Praxiom Age calculation method
-int WatchFaceDigital::CalculatePraxiomAge() {
-  // Your Praxiom Age calculation logic here
-  // This is just a placeholder
-  return 42;
 }
