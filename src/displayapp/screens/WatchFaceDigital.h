@@ -90,6 +90,7 @@ namespace Pinetime {
         
         // Helper functions
         float CalculateRealtimeAdjustment();
+        lv_color_t GetPraxiomAgeColor(int currentAge, int baseAge);
       };
     }
 
