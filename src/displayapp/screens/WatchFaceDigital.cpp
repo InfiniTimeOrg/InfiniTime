@@ -16,6 +16,10 @@
 
 using namespace Pinetime::Applications::Screens;
 
+// Praxiom brand colors
+#define PRAX_ORANGE 0xFF8C00
+#define PRAX_TEAL   0x00CFC1
+
 WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    const Controllers::Battery& batteryController,
                                    const Controllers::Ble& bleController,
@@ -33,6 +37,17 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     motionController {motionController},
     weatherService {weatherService},
     statusIcons(batteryController, bleController, alarmController) {
+
+  // Create Praxiom gradient background
+  lv_obj_t* gradient_bg = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(gradient_bg, LV_HOR_RES, LV_VER_RES);
+  static lv_style_t style_bg;
+  lv_style_init(&style_bg);
+  lv_style_set_bg_color(&style_bg, LV_STATE_DEFAULT, lv_color_hex(PRAX_ORANGE));
+  lv_style_set_bg_grad_color(&style_bg, LV_STATE_DEFAULT, lv_color_hex(PRAX_TEAL));
+  lv_style_set_bg_grad_dir(&style_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+  lv_obj_add_style(gradient_bg, LV_OBJ_PART_MAIN, &style_bg);
+  lv_obj_move_background(gradient_bg);
 
   statusIcons.Create();
 
@@ -52,6 +67,12 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
   lv_label_set_text(temperature, "");
   lv_obj_align(temperature, nullptr, LV_ALIGN_IN_TOP_MID, 20, 50);
+
+  // Create Praxiom Age label - positioned between top and time digits
+  label_bioage = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(label_bioage, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFFFFF));
+  lv_label_set_text_static(label_bioage, "Praxiom Age: 52");
+  lv_obj_align(label_bioage, lv_scr_act(), LV_ALIGN_CENTER, 0, -60);  // Positioned higher up
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
