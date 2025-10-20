@@ -57,6 +57,8 @@ namespace Pinetime {
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;
         lv_obj_t* label_date;
+        lv_obj_t* labelPraxiomAge;          // "Praxiom Age" text label
+        lv_obj_t* labelPraxiomAgeNumber;    // Praxiom Age number label
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
         lv_obj_t* stepIcon;
