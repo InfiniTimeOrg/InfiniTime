@@ -32,8 +32,7 @@ namespace Pinetime {
   namespace Controllers {
     enum class ReminderType : uint8_t {
       Daily = 0,
-      Monthly = 1,
-      Weekly = 2
+      Weekly = 1
     };
 
     class ScheduledRemindersController {
