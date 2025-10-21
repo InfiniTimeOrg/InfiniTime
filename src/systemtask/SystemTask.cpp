@@ -213,6 +213,7 @@ void SystemTask::Work() {
           }
           break;
         case Messages::SetOffAlarm:
+          unlockedByButton = true; // unlock so it is possible to press red stop button
           GoToRunning();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
           break;
@@ -222,6 +223,7 @@ void SystemTask::Work() {
           bleDiscoveryTimer = 5;
           break;
         case Messages::BleFirmwareUpdateStarted:
+          unlockedByButton = true; // prevent no screen-locked popup on firmware update
           GoToRunning();
           wakeLocksHeld++;
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::BleFirmwareUpdateStarted);
@@ -249,7 +251,14 @@ void SystemTask::Work() {
             break;
           }
           if (state == SystemTaskState::Running) {
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
+            if (unlockedByButton) {
+              displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
+            } else {
+              auto gesture = touchHandler.GestureGet();
+              if (gesture != Pinetime::Applications::TouchEvents::None) {
+                displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowIgnoreTouchPopup);
+              }
+            }
           } else {
             // If asleep, check for touch panel wake triggers
             auto gesture = touchHandler.GestureGet();
@@ -271,6 +280,7 @@ void SystemTask::Work() {
             action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Press);
             // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
             if (IsSleeping()) {
+              unlockedByButton = true;
               fastWakeUpDone = true;
               GoToRunning();
               break;
@@ -312,6 +322,8 @@ void SystemTask::Work() {
           } else {
             state = SystemTaskState::AODSleeping;
           }
+          // lock when going to sleep
+          unlockedByButton = false;
           break;
         case Messages::OnNewDay:
           motionSensor.ResetStepCounter();
@@ -415,12 +427,14 @@ void SystemTask::GoToSleep() {
     return;
   }
   NRF_LOG_INFO("[systemtask] Going to sleep");
+  displayApp.PushMessage(Pinetime::Applications::Display::Messages::HideIgnoreTouchPopup);
   if (settingsController.GetAlwaysOnDisplay()) {
     displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToAOD);
   } else {
     displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
   }
   heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
+  unlockedByButton = false;
 
   state = SystemTaskState::GoingToSleep;
 };
@@ -460,10 +474,21 @@ void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
     case Actions::Click:
       // If the first action after fast wakeup is a click, it should be ignored.
       if (!fastWakeUpDone) {
-        displayApp.PushMessage(Applications::Display::Messages::ButtonPushed);
+        if (!unlockedByButton) {
+          // the first button event unlocks the touch input
+          unlockedByButton = true;
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::HideIgnoreTouchPopup);
+        } else {
+          displayApp.PushMessage(Applications::Display::Messages::ButtonPushed);
+        }
       }
       break;
     case Actions::DoubleClick:
+      if (!unlockedByButton) {
+        // the first button event unlocks the touch input
+        unlockedByButton = true;
+        displayApp.PushMessage(Pinetime::Applications::Display::Messages::HideIgnoreTouchPopup);
+      }
       displayApp.PushMessage(Applications::Display::Messages::ButtonDoubleClicked);
       break;
     case Actions::LongPress:
