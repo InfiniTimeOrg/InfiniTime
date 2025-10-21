@@ -365,17 +365,22 @@ void DisplayApp::Refresh() {
         LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
         break;
       case Messages::TimerDone:
-        if (state != States::Running) {
-          PushMessageToSystemTask(System::Messages::GoToRunning);
-        }
-        if (currentApp == Apps::Timer) {
-          lv_disp_trig_activity(nullptr);
-          auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
-          timer->Reset();
+        if (timer.timerOverflowIntervals > 0) {
+          timer.StopTimer();
+          timer.StartTimer(std::chrono::milliseconds(timer.timerOverflowIntervals * timer.maxTimerMS));
         } else {
-          LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Up);
+          if (state != States::Running) {
+            PushMessageToSystemTask(System::Messages::GoToRunning);
+          }
+          if (currentApp == Apps::Timer) {
+            lv_disp_trig_activity(nullptr);
+            auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
+            timer->Reset();
+          } else {
+            LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Up);
+          }
+          motorController.RunForDuration(35);
         }
-        motorController.RunForDuration(35);
         break;
       case Messages::AlarmTriggered:
         if (currentApp == Apps::Alarm) {
