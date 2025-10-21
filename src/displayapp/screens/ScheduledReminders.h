@@ -50,8 +50,8 @@ namespace Pinetime {
         lv_obj_t* alertingTitle;
         lv_obj_t* alertingMessage;
         lv_obj_t* alertingTime;
-        lv_obj_t* dismissButton;
-        lv_obj_t* dismissLabel;
+        // lv_obj_t* dismissButton;
+        // lv_obj_t* dismissLabel;
         
         static constexpr uint8_t maxReminders = 4;
       };

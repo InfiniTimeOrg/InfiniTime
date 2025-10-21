@@ -12,8 +12,8 @@ ScheduledReminders::ScheduledReminders(Pinetime::Applications::AppControllers& c
   alertingTitle = nullptr;
   alertingMessage = nullptr;
   alertingTime = nullptr;
-  dismissButton = nullptr;
-  dismissLabel = nullptr;
+  // dismissButton = nullptr;
+  // dismissLabel = nullptr;
   
   CreateContainer();
   
@@ -222,16 +222,16 @@ void ScheduledReminders::CreateAlertingReminderDisplay() {
   lv_obj_align(alertingMessage, alertingContainer, LV_ALIGN_IN_TOP_MID, 0, 10);
   
   // Create dismiss button
-  dismissButton = lv_btn_create(alertingContainer, nullptr);
-  lv_obj_set_size(dismissButton, 120, 40);
-  lv_obj_align(dismissButton, alertingContainer, LV_ALIGN_IN_BOTTOM_MID, 0, -20);
-  lv_obj_set_style_local_bg_color(dismissButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+  // dismissButton = lv_btn_create(alertingContainer, nullptr);
+  // lv_obj_set_size(dismissButton, 120, 40);
+  // lv_obj_align(dismissButton, alertingContainer, LV_ALIGN_IN_BOTTOM_MID, 0, -20);
+  // lv_obj_set_style_local_bg_color(dismissButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
   
   // Create dismiss label
-  dismissLabel = lv_label_create(dismissButton, nullptr);
-  lv_label_set_text_static(dismissLabel, "Dismiss");
-  lv_label_set_align(dismissLabel, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(dismissLabel, dismissButton, LV_ALIGN_CENTER, 0, 0);
+  // dismissLabel = lv_label_create(dismissButton, nullptr);
+  // lv_label_set_text_static(dismissLabel, "Dismiss");
+  // lv_label_set_align(dismissLabel, LV_LABEL_ALIGN_CENTER);
+  // lv_obj_align(dismissLabel, dismissButton, LV_ALIGN_CENTER, 0, 0);
 }
 
 // void ScheduledReminders::UpdateAlertingReminderDisplay() {
@@ -267,8 +267,8 @@ void ScheduledReminders::DismissAlertingReminder() {
     alertingTitle = nullptr;
     alertingMessage = nullptr;
     alertingTime = nullptr;
-    dismissButton = nullptr;
-    dismissLabel = nullptr;
+    // dismissButton = nullptr;
+    // dismissLabel = nullptr;
   }
   
   // Create a minimal normal interface to prevent blank screen
