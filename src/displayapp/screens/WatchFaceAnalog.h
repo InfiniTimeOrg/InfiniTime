@@ -91,7 +91,7 @@ namespace Pinetime {
     template <>
     struct WatchFaceTraits<WatchFace::Analog> {
       static constexpr WatchFace watchFace = WatchFace::Analog;
-      static constexpr const char* name = "Analog face";
+      static constexpr const char* name = "Analog";
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::WatchFaceAnalog(controllers.dateTimeController,

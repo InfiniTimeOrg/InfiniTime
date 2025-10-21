@@ -149,6 +149,10 @@ void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
   fullRefresh = true;
 }
 
+bool LittleVgl::IsScrolling() {
+  return scrollDirection != LittleVgl::FullRefreshDirections::None;
+}
+
 void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   uint16_t y1, y2, width, height = 0;
 

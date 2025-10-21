@@ -419,6 +419,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingChimes.cpp
         displayapp/screens/settings/SettingShakeThreshold.cpp
         displayapp/screens/settings/SettingBluetooth.cpp
+        displayapp/screens/settings/SettingOTA.cpp
 
         ## Watch faces
         displayapp/screens/WatchFaceAnalog.cpp
@@ -427,6 +428,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/WatchFaceTerminal.cpp
         displayapp/screens/WatchFacePineTimeStyle.cpp
         displayapp/screens/WatchFaceCasioStyleG7710.cpp
+        displayapp/screens/WatchFacePrideFlag.cpp
 
         ##
 
