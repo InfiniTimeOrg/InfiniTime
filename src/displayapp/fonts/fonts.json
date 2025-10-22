@@ -38,7 +38,7 @@
       "sources": [
          {
             "file": "JetBrainsMono-ExtraBold.ttf",
-            "range": "0x30-0x3a"
+            "range": "0x30-0x3a, 0x0300-0x0362"
          }
       ],
       "bpp": 1,
