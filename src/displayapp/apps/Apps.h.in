@@ -44,6 +44,8 @@ namespace Pinetime {
       SettingShakeThreshold,
       SettingBluetooth,
       SettingOTA,
+      SettingNotifVibration,
+      SettingChimeVibration,
       Error
     };
 

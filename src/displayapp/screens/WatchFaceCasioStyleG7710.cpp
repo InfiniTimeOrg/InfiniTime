@@ -6,13 +6,23 @@
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/WeatherSymbols.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
+#include "components/ble/SimpleWeatherService.h"
+
 using namespace Pinetime::Applications::Screens;
+
+namespace {
+  void event_handler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<WatchFaceCasioStyleG7710*>(obj->user_data);
+    screen->UpdateSelected(obj, event);
+  }
+}
 
 WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
                                                    const Controllers::Battery& batteryController,
@@ -21,7 +31,8 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
                                                    Controllers::Settings& settingsController,
                                                    Controllers::HeartRateController& heartRateController,
                                                    Controllers::MotionController& motionController,
-                                                   Controllers::FS& filesystem)
+                                                   Controllers::FS& filesystem,
+                                                   Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
     batteryIcon(false),
     dateTimeController {dateTimeController},
@@ -30,7 +41,8 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
     notificatioManager {notificatioManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
-    motionController {motionController} {
+    motionController {motionController},
+    weatherService {weatherService} {
 
   lfs_file f = {};
   if (filesystem.FileOpen(&f, "/fonts/lv_font_dots_40.bin", LFS_O_RDONLY) >= 0) {
@@ -90,6 +102,34 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_font(label_day_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
   lv_label_set_text_static(label_day_of_year, "181-184");
 
+  weatherIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
+  lv_label_set_text_static(weatherIcon, "");
+
+  lv_obj_set_auto_realign(weatherIcon, true);
+  if (settingsController.GetCasioWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {
+    lv_obj_set_hidden(weatherIcon, false);
+  } else {
+    lv_obj_set_hidden(weatherIcon, true);
+  }
+
+  label_temperature = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(label_temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_label_set_text(label_temperature, "");
+
+  label_temperature_segment = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(label_temperature_segment, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_obj_set_style_local_text_font(label_temperature_segment, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
+  lv_label_set_text(label_temperature_segment, "");
+
+  lv_obj_set_hidden(label_temperature_segment, true);
+  lv_obj_set_hidden(label_temperature, true);
+
+  if (settingsController.GetCasioWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {
+    UpdateWeatherPosition();
+  }
+
   lv_style_init(&style_line);
   lv_style_set_line_width(&style_line, LV_STATE_DEFAULT, 2);
   lv_style_set_line_color(&style_line, LV_STATE_DEFAULT, color_text);
@@ -116,7 +156,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_align(line_day_of_year, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 60);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 70);
+  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -45, 70);
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_style_local_text_font(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
   lv_label_set_text_static(label_date, "6-30");
@@ -167,6 +207,36 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  btnWeather = lv_btn_create(lv_scr_act(), nullptr);
+  btnWeather->user_data = this;
+  lv_obj_set_size(btnWeather, 160, 60);
+  lv_obj_align(btnWeather, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_bg_opa(btnWeather, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_obj_t* lblWeather = lv_label_create(btnWeather, nullptr);
+  lv_label_set_text_static(lblWeather, "Weather");
+  lv_obj_set_event_cb(btnWeather, event_handler);
+  lv_obj_set_hidden(btnWeather, true);
+
+  btnSegment = lv_btn_create(lv_scr_act(), nullptr);
+  btnSegment->user_data = this;
+  lv_obj_set_size(btnSegment, 160, 60);
+  lv_obj_align(btnSegment, lv_scr_act(), LV_ALIGN_CENTER, 0, 80);
+  lv_obj_set_style_local_bg_opa(btnSegment, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_obj_t* lblSegment = lv_label_create(btnSegment, nullptr);
+  lv_label_set_text_static(lblSegment, "Segment");
+  lv_obj_set_event_cb(btnSegment, event_handler);
+  lv_obj_set_hidden(btnSegment, true);
+
+  btnClose = lv_btn_create(lv_scr_act(), nullptr);
+  btnClose->user_data = this;
+  lv_obj_set_size(btnClose, 60, 60);
+  lv_obj_align(btnClose, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
+  lv_obj_set_style_local_bg_opa(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_obj_t* lblClose = lv_label_create(btnClose, nullptr);
+  lv_label_set_text_static(lblClose, "X");
+  lv_obj_set_event_cb(btnClose, event_handler);
+  lv_obj_set_hidden(btnClose, true);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -310,6 +380,91 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_obj_realign(stepValue);
     lv_obj_realign(stepIcon);
   }
+
+  if (settingsController.GetCasioWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {
+    DrawWeather();
+  }
+
+  if (!lv_obj_get_hidden(btnClose)) {
+    if ((savedTick > 0) && (lv_tick_get() - savedTick > 3000)) {
+      CloseMenu();
+      savedTick = 0;
+    }
+  }
+}
+
+void WatchFaceCasioStyleG7710::UpdateWeatherPosition() {
+  lv_obj_set_hidden(label_day_of_year, false);
+  lv_obj_set_hidden(label_week_number, false);
+  lv_obj_set_hidden(label_day_of_week, false);
+
+  lv_obj_set_hidden(weatherIcon, true);
+  lv_obj_set_hidden(label_temperature_segment, true);
+  lv_obj_set_hidden(label_temperature, true);
+
+  if (settingsController.GetCasioWeather() == Controllers::Settings::PTSWeather::Off) {
+    return;
+  }
+
+  lv_obj_set_hidden(weatherIcon, false);
+
+  switch (settingsController.GetCasioWeatherSegment()) {
+    case Controllers::Settings::CasioWeatherSegment::DayCounter:
+      lv_obj_set_hidden(label_day_of_year, true);
+
+      lv_obj_set_hidden(label_temperature_segment, false);
+      lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 110, 30);
+      lv_obj_align(label_temperature_segment, nullptr, LV_ALIGN_IN_TOP_RIGHT, -5, 30);
+      break;
+    case Controllers::Settings::CasioWeatherSegment::WeekNumber:
+      lv_obj_set_hidden(label_week_number, true);
+
+      lv_obj_set_hidden(label_temperature, false);
+      lv_obj_align(weatherIcon, label_day_of_week, LV_ALIGN_CENTER, 0, -50);
+      lv_label_set_align(label_temperature, LV_LABEL_ALIGN_CENTER);
+      lv_obj_align(label_temperature, label_day_of_week, LV_ALIGN_CENTER, 0, -27);
+      break;
+    case Controllers::Settings::CasioWeatherSegment::DayOfWeek:
+      lv_obj_set_hidden(label_day_of_week, true);
+
+      lv_obj_set_hidden(label_temperature, false);
+      lv_obj_align(weatherIcon, label_day_of_week, LV_ALIGN_CENTER, 0, -12);
+      lv_label_set_align(label_temperature, LV_LABEL_ALIGN_CENTER);
+      lv_obj_align(label_temperature, label_day_of_week, LV_ALIGN_CENTER, 0, 11);
+      break;
+  }
+
+  DrawWeather();
+}
+
+void WatchFaceCasioStyleG7710::DrawWeather() {
+  currentWeather = weatherService.Current();
+
+  if (currentWeather.IsUpdated()) {
+    auto optCurrentWeather = currentWeather.Get();
+
+    if (optCurrentWeather) {
+      int16_t temp = optCurrentWeather->temperature.Celsius();
+      char tempUnit = 'C';
+
+      if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
+        temp = optCurrentWeather->temperature.Fahrenheit();
+        tempUnit = 'F';
+      }
+
+      lv_label_set_text_fmt(label_temperature, "%d°%c", temp, tempUnit);
+      lv_label_set_text_fmt(label_temperature_segment, "%d°%c", temp, tempUnit);
+      lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
+    } else {
+      lv_label_set_text_static(label_temperature, "");
+      lv_label_set_text_static(label_temperature_segment, "");
+      lv_label_set_text(weatherIcon, "");
+    }
+
+    lv_obj_realign(label_temperature);
+    lv_obj_realign(label_temperature_segment);
+    lv_obj_realign(weatherIcon);
+  }
 }
 
 bool WatchFaceCasioStyleG7710::IsAvailable(Pinetime::Controllers::FS& filesystem) {
@@ -331,4 +486,81 @@ bool WatchFaceCasioStyleG7710::IsAvailable(Pinetime::Controllers::FS& filesystem
 
   filesystem.FileClose(&file);
   return true;
+}
+
+bool WatchFaceCasioStyleG7710::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  if (lv_obj_get_hidden(btnClose) == false) {
+    savedTick = lv_tick_get();
+  }
+  if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnClose)) {
+    lv_obj_set_hidden(btnWeather, false);
+    lv_obj_set_hidden(btnSegment, false);
+
+    lv_obj_set_hidden(btnClose, false);
+    savedTick = lv_tick_get();
+    return true;
+  }
+  if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnClose) == false)) {
+    return true;
+  }
+  return false;
+}
+
+void WatchFaceCasioStyleG7710::CloseMenu() {
+  settingsController.SaveSettings();
+  lv_obj_set_hidden(btnWeather, true);
+  lv_obj_set_hidden(btnSegment, true);
+
+  lv_obj_set_hidden(btnClose, true);
+}
+
+bool WatchFaceCasioStyleG7710::OnButtonPushed() {
+  if (!lv_obj_get_hidden(btnClose)) {
+    CloseMenu();
+    return true;
+  }
+
+  return false;
+}
+
+void WatchFaceCasioStyleG7710::HandleWeatherButton() {
+  if (lv_obj_get_hidden(weatherIcon)) {
+    settingsController.SetCasioWeather(Controllers::Settings::PTSWeather::On);
+  } else {
+    settingsController.SetCasioWeather(Controllers::Settings::PTSWeather::Off);
+  }
+
+  UpdateWeatherPosition();
+}
+
+void WatchFaceCasioStyleG7710::HandleSegmentButton() {
+  switch (settingsController.GetCasioWeatherSegment()) {
+    case Controllers::Settings::CasioWeatherSegment::DayCounter:
+      settingsController.SetCasioWeatherSegment(Controllers::Settings::CasioWeatherSegment::WeekNumber);
+      break;
+    case Controllers::Settings::CasioWeatherSegment::WeekNumber:
+      settingsController.SetCasioWeatherSegment(Controllers::Settings::CasioWeatherSegment::DayOfWeek);
+      break;
+    case Controllers::Settings::CasioWeatherSegment::DayOfWeek:
+      settingsController.SetCasioWeatherSegment(Controllers::Settings::CasioWeatherSegment::DayCounter);
+      break;
+  }
+
+  UpdateWeatherPosition();
+}
+
+void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event) {
+  if (event == LV_EVENT_CLICKED) {
+    if (object == btnWeather) {
+      HandleWeatherButton();
+    }
+
+    if (object == btnSegment) {
+      HandleSegmentButton();
+    }
+
+    if (object == btnClose) {
+      CloseMenu();
+    }
+  }
 }
