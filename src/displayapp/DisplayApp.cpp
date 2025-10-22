@@ -50,6 +50,7 @@
 #include "displayapp/screens/settings/SettingChimes.h"
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingBluetooth.h"
+#include "displayapp/screens/settings/SettingOTA.h"
 #include "displayapp/screens/settings/SettingNotifVibration.h"
 #include "displayapp/screens/settings/SettingChimeVibration.h"
 
@@ -624,6 +625,8 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::SettingBluetooth:
       currentScreen = std::make_unique<Screens::SettingBluetooth>(this, settingsController);
       break;
+    case Apps::SettingOTA:
+      currentScreen = std::make_unique<Screens::SettingOTA>(this, settingsController);
     case Apps::SettingNotifVibration:
       currentScreen = std::make_unique<Screens::SettingNotifVibration>(settingsController, motorController);
       break;

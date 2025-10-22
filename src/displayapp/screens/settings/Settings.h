@@ -48,6 +48,8 @@ namespace Pinetime {
           {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
 
           {Symbols::check, "Firmware", Apps::FirmwareValidation},
+
+          {Symbols::shieldAlt, "Over-the-air", Apps::SettingOTA},
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
           {Symbols::list, "About", Apps::SysInfo},
 

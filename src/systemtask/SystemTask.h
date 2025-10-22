@@ -85,6 +85,14 @@ namespace Pinetime {
         return nimbleController;
       };
 
+      Pinetime::Controllers::NotificationManager& GetNotificationManager() {
+        return notificationManager;
+      };
+
+      Pinetime::Controllers::Settings& GetSettings() {
+        return settingsController;
+      };
+
       bool IsSleeping() const {
         return state != SystemTaskState::Running;
       }
@@ -131,7 +139,6 @@ namespace Pinetime {
       void GoToRunning();
       void GoToSleep();
       void UpdateMotion();
-      bool stepCounterMustBeReset = false;
       static constexpr TickType_t batteryMeasurementPeriod = pdMS_TO_TICKS(10 * 60 * 1000);
 
       SystemMonitor monitor;
