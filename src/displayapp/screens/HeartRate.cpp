@@ -84,10 +84,11 @@ void HeartRate::Refresh() {
       lv_label_set_text_static(label_hr, "---");
       break;
     default:
-      if (heartRateController.HeartRate() == 0) {
+      auto hb = heartRateController.HeartRate();
+      if (!hb) {
         lv_label_set_text_static(label_hr, "---");
       } else {
-        lv_label_set_text_fmt(label_hr, "%03d", heartRateController.HeartRate());
+        lv_label_set_text_fmt(label_hr, "%03d", hb.value());
       }
   }
 
