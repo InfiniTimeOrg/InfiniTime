@@ -41,6 +41,12 @@ namespace Pinetime {
 
         void Refresh() override;
 
+        // Called by BLE service to update base Praxiom Age from phone
+        void UpdateBasePraxiomAge(int age);
+        
+        // Get current calculated Praxiom Age (for sending back to phone)
+        int GetCurrentPraxiomAge();
+
       private:
         uint8_t displayedHour = -1;
         uint8_t displayedMinute = -1;
@@ -57,6 +63,8 @@ namespace Pinetime {
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;
         lv_obj_t* label_date;
+        lv_obj_t* labelPraxiomAge;          // "Praxiom Age" text label
+        lv_obj_t* labelPraxiomAgeNumber;    // Praxiom Age number label
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
         lv_obj_t* stepIcon;
@@ -64,6 +72,7 @@ namespace Pinetime {
         lv_obj_t* notificationIcon;
         lv_obj_t* weatherIcon;
         lv_obj_t* temperature;
+        lv_obj_t* label_bioage;  // NEW: Bio-Age label
 
         Controllers::DateTime& dateTimeController;
         Controllers::NotificationManager& notificationManager;
@@ -74,6 +83,14 @@ namespace Pinetime {
 
         lv_task_t* taskRefresh;
         Widgets::StatusIcons statusIcons;
+        
+        // Praxiom Age calculation variables
+        int basePraxiomAge;  // Base age from phone app biomarker calculation
+        uint64_t lastSyncTime;  // Last sync timestamp
+        
+        // Helper functions
+        float CalculateRealtimeAdjustment();
+        lv_color_t GetPraxiomAgeColor(int currentAge, int baseAge);
       };
     }
 
