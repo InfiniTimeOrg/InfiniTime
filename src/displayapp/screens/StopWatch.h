@@ -36,6 +36,7 @@ namespace Pinetime {
         bool OnButtonPushed() override;
 
       private:
+        void updateLapDisplay();
         void SetInterfacePaused();
         void SetInterfaceRunning();
         void SetInterfaceStopped();
@@ -51,7 +52,7 @@ namespace Pinetime {
         TickType_t blinkTime = 0;
         static constexpr int maxLapCount = 20;
         TickType_t laps[maxLapCount + 1];
-        static constexpr int displayedLaps = 2;
+        static constexpr int displayedLaps = 3;
         int lapsDone = 0;
         lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
         lv_obj_t* lapText;
