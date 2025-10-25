@@ -15,9 +15,9 @@ namespace Pinetime {
 
       void StopTimer();
 
-      std::chrono::milliseconds GetTimeRemaining();
+      std::chrono::milliseconds GetTimeRemaining() const;
 
-      bool IsRunning();
+      bool IsRunning() const;
 
     private:
       TimerHandle_t timer;
