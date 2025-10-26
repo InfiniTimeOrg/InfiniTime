@@ -13,7 +13,6 @@
 #include "components/motion/MotionController.h"
 #include "components/ble/SimpleWeatherService.h"
 #include "components/settings/Settings.h"
-#include "components/alarm/AlarmController.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -25,8 +24,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController,
-                                   Controllers::SimpleWeatherService& weatherService,
-                                   Controllers::AlarmController& alarmController)
+                                   Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
@@ -34,7 +32,6 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     heartRateController {heartRateController},
     motionController {motionController},
     weatherService {weatherService},
-    alarmController {alarmController},
     statusIcons(batteryController, bleController, alarmController) {
 
   statusIcons.Create();
@@ -88,11 +85,6 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
-
-  alarmIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
-  lv_label_set_text_static(alarmIcon, Symbols::bell);
-  lv_obj_align(alarmIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -198,14 +190,5 @@ void WatchFaceDigital::Refresh() {
     }
     lv_obj_realign(temperature);
     lv_obj_realign(weatherIcon);
-  }
-
-  alarmSet = alarmController.IsEnabled();
-  if (alarmSet.Get()) {
-    lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x6AA84F));
-    lv_obj_realign(alarmIcon);
-  } else {
-    lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1B1B1B));
-    lv_obj_realign(alarmIcon);
   }
 }
