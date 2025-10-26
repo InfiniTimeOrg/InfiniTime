@@ -1,0 +1,20 @@
+# Nie kopiuj do obrazu niepotrzebnych rzeczy
+.git
+.github
+.gitignore
+*.md
+*.txt
+*.log
+*.zip
+*.hex
+*.bin
+build/
+dist/
+node_modules/
+__pycache__/
+*.pyc
+nRF5_SDK*/
+NRF5_SDK*/
+sdk/
+libs/
+tools/
