@@ -1,41 +1,44 @@
-name: Build (no Docker required)
+name: Docker (optional)
 
 on:
   push:
     branches: [ main, master, guardian-beacon ]
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: recursive   # jeśli masz submoduły, to je pobierze
 
-      # --- [OPCJONALNE] Logowanie do Docker Hub – odpali się tylko gdy są sekrety ---
+      # Logowanie tylko jeśli są sekrety
       - name: Log in to Docker Hub (optional)
-        if: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
+        if: ${{ secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Tu daj swoje kroki budowania (jeśli jeszcze nie mamy SDK, to na razie pomijamy)
-      - name: Print repo tree (diagnostic)
-        run: |
-          echo "Repo content:"
-          ls -la
-          echo
-          echo "If you want to build firmware, we will add SDK step later."
+      - name: Set up QEMU
+        if: ${{ secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}
+        uses: docker/setup-qemu-action@v3
 
-      # --- [OPCJONALNE] Build and push Docker image – też odpali się tylko z sekretami ---
-      - name: Build & Push Docker image (optional)
-        if: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
+      - name: Set up Buildx
+        if: ${{ secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & Push image (optional)
+        if: ${{ secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/guardian-beacon:latest
+
+      # Gdy sekretów nie ma – pokaż informację i zakończ sukcesem
+      - name: Skip message
+        if: ${{ ! (secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN) }}
+        run: echo "Skipping Docker login/push: Docker Hub secrets not configured."
