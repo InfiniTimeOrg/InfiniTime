@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(pinetime-app C CXX ASM)
 
+# allow toggling our beacon code
+option(ENABLE_GUARDIAN_BEACON "Build Guardian beacon module" ON)
 
 # define some variables just for this example to determine file locations
 set(NRF_PROJECT_NAME pinetime-app)
@@ -27,7 +29,6 @@ if (NOT DEFINED ARM_GCC_TOOLCHAIN)
 endif ()
 set(CMAKE_OSX_SYSROOT "/")
 set(CMAKE_OSX_DEPLOYMENT_TARGET "")
-
 
 set(SDK_SOURCE_FILES
         # Startup
@@ -197,9 +198,9 @@ set(LVGL_SRC
         libs/lvgl/src/lv_draw/lv_draw_mask.h
         libs/lvgl/src/lv_draw/lv_draw_rect.h
         libs/lvgl/src/lv_draw/lv_draw_triangle.h
-        libs/lvgl/src/lv_draw/lv_img_buf.h
-        libs/lvgl/src/lv_draw/lv_img_cache.h
-        libs/lvgl/src/lv_draw/lv_img_decoder.h
+        libs/lvgl/src/lv_img_buf.h
+        libs/lvgl/src/lv_img_cache.h
+        libs/lvgl/src/lv_img_decoder.h
         libs/lvgl/src/lv_font/lv_font.h
         libs/lvgl/src/lv_font/lv_font_fmt_txt.h
         libs/lvgl/src/lv_font/lv_font_loader.h
@@ -230,8 +231,6 @@ set(LVGL_SRC
         libs/lvgl/src/lv_themes/lv_theme.h
         libs/lvgl/src/lv_themes/lv_theme_empty.h
         libs/lvgl/src/lv_themes/lv_theme_material.h
-        #libs/lvgl/src/lv_themes/lv_theme_mono.h
-        #libs/lvgl/src/lv_themes/lv_theme_template.h
         libs/lvgl/src/lv_widgets/lv_arc.h
         libs/lvgl/src/lv_widgets/lv_bar.h
         libs/lvgl/src/lv_widgets/lv_btn.h
@@ -263,93 +262,6 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_switch.h
         libs/lvgl/src/lv_widgets/lv_table.h
         libs/lvgl/src/lv_widgets/lv_tabview.h
-        libs/lvgl/src/lv_widgets/lv_textarea.h
-        libs/lvgl/src/lv_widgets/lv_tileview.h
-        libs/lvgl/src/lv_widgets/lv_win.h
-        libs/lvgl/src/lv_core/lv_disp.c
-        libs/lvgl/src/lv_core/lv_group.c
-        libs/lvgl/src/lv_core/lv_indev.c
-        libs/lvgl/src/lv_core/lv_obj.c
-        libs/lvgl/src/lv_core/lv_refr.c
-        libs/lvgl/src/lv_core/lv_style.c
-        libs/lvgl/src/lv_draw/lv_draw_arc.c
-        libs/lvgl/src/lv_draw/lv_draw_blend.c
-        libs/lvgl/src/lv_draw/lv_draw_img.c
-        libs/lvgl/src/lv_draw/lv_draw_label.c
-        libs/lvgl/src/lv_draw/lv_draw_line.c
-        libs/lvgl/src/lv_draw/lv_draw_mask.c
-        libs/lvgl/src/lv_draw/lv_draw_rect.c
-        libs/lvgl/src/lv_draw/lv_draw_triangle.c
-        libs/lvgl/src/lv_draw/lv_img_buf.c
-        libs/lvgl/src/lv_draw/lv_img_cache.c
-        libs/lvgl/src/lv_draw/lv_img_decoder.c
-        libs/lvgl/src/lv_font/lv_font.c
-        #libs/lvgl/src/lv_font/lv_font_dejavu_16_persian_hebrew.c
-        libs/lvgl/src/lv_font/lv_font_fmt_txt.c
-        libs/lvgl/src/lv_font/lv_font_loader.c
-        # LVGL Fonts
-        libs/lvgl/src/lv_font/lv_font_montserrat_14.c
-        libs/lvgl/src/lv_font/lv_font_montserrat_18.c
-        libs/lvgl/src/lv_font/lv_font_montserrat_22.c
-        libs/lvgl/src/lv_font/lv_font_montserrat_28.c
-        #
-        libs/lvgl/src/lv_hal/lv_hal_disp.c
-        libs/lvgl/src/lv_hal/lv_hal_indev.c
-        libs/lvgl/src/lv_hal/lv_hal_tick.c
-        libs/lvgl/src/lv_misc/lv_anim.c
-        libs/lvgl/src/lv_misc/lv_area.c
-        libs/lvgl/src/lv_misc/lv_async.c
-        libs/lvgl/src/lv_misc/lv_bidi.c
-        libs/lvgl/src/lv_misc/lv_color.c
-        libs/lvgl/src/lv_misc/lv_debug.c
-        libs/lvgl/src/lv_misc/lv_fs.c
-        libs/lvgl/src/lv_misc/lv_gc.c
-        libs/lvgl/src/lv_misc/lv_ll.c
-        libs/lvgl/src/lv_misc/lv_log.c
-        libs/lvgl/src/lv_misc/lv_math.c
-        libs/lvgl/src/lv_misc/lv_mem.c
-        libs/lvgl/src/lv_misc/lv_printf.c
-        libs/lvgl/src/lv_misc/lv_task.c
-        libs/lvgl/src/lv_misc/lv_templ.c
-        libs/lvgl/src/lv_misc/lv_txt.c
-        libs/lvgl/src/lv_misc/lv_txt_ap.c
-        libs/lvgl/src/lv_misc/lv_utils.c
-        libs/lvgl/src/lv_themes/lv_theme.c
-        libs/lvgl/src/lv_themes/lv_theme_empty.c
-        libs/lvgl/src/lv_themes/lv_theme_material.c
-        #libs/lvgl/src/lv_themes/lv_theme_mono.c
-        #libs/lvgl/src/lv_themes/lv_theme_template.c
-        libs/lvgl/src/lv_widgets/lv_arc.c
-        libs/lvgl/src/lv_widgets/lv_bar.c
-        libs/lvgl/src/lv_widgets/lv_btn.c
-        libs/lvgl/src/lv_widgets/lv_btnmatrix.c
-        libs/lvgl/src/lv_widgets/lv_calendar.c
-        libs/lvgl/src/lv_widgets/lv_canvas.c
-        libs/lvgl/src/lv_widgets/lv_chart.c
-        libs/lvgl/src/lv_widgets/lv_checkbox.c
-        libs/lvgl/src/lv_widgets/lv_cont.c
-        libs/lvgl/src/lv_widgets/lv_cpicker.c
-        libs/lvgl/src/lv_widgets/lv_dropdown.c
-        libs/lvgl/src/lv_widgets/lv_gauge.c
-        libs/lvgl/src/lv_widgets/lv_img.c
-        libs/lvgl/src/lv_widgets/lv_imgbtn.c
-        libs/lvgl/src/lv_widgets/lv_keyboard.c
-        libs/lvgl/src/lv_widgets/lv_label.c
-        libs/lvgl/src/lv_widgets/lv_led.c
-        libs/lvgl/src/lv_widgets/lv_line.c
-        libs/lvgl/src/lv_widgets/lv_linemeter.c
-        libs/lvgl/src/lv_widgets/lv_list.c
-        libs/lvgl/src/lv_widgets/lv_msgbox.c
-        libs/lvgl/src/lv_widgets/lv_objmask.c
-        libs/lvgl/src/lv_widgets/lv_objx_templ.c
-        libs/lvgl/src/lv_widgets/lv_page.c
-        libs/lvgl/src/lv_widgets/lv_roller.c
-        libs/lvgl/src/lv_widgets/lv_slider.c
-        libs/lvgl/src/lv_widgets/lv_spinbox.c
-        libs/lvgl/src/lv_widgets/lv_spinner.c
-        libs/lvgl/src/lv_widgets/lv_switch.c
-        libs/lvgl/src/lv_widgets/lv_table.c
-        libs/lvgl/src/lv_widgets/lv_tabview.c
         libs/lvgl/src/lv_widgets/lv_textarea.c
         libs/lvgl/src/lv_widgets/lv_tileview.c
         libs/lvgl/src/lv_widgets/lv_win.c
@@ -492,7 +404,13 @@ list(APPEND SOURCE_FILES
         touchhandler/TouchHandler.cpp
 
         utility/Math.cpp
-        )
+)
+
+# >>> ADD: our Guardian beacon module
+if (ENABLE_GUARDIAN_BEACON)
+  list(APPEND SOURCE_FILES guardian/BeaconGuard.cpp)
+endif()
+# <<< ADD
 
 list(APPEND RECOVERY_SOURCE_FILES
         stdlib.c
@@ -559,7 +477,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         touchhandler/TouchHandler.cpp
 
         utility/Math.cpp
-        )
+)
 
 list(APPEND RECOVERYLOADER_SOURCE_FILES
         stdlib.c
@@ -581,11 +499,9 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
         components/brightness/BrightnessController.cpp
 
         recoveryLoader.cpp
-        )
-
+)
 
 set(INCLUDE_FILES
-
         ${CMAKE_CURRENT_BINARY_DIR}/src/Version.h
         BootloaderVersion.h
         logging/Logger.h
@@ -678,13 +594,20 @@ set(INCLUDE_FILES
         buttonhandler/ButtonHandler.h
         touchhandler/TouchHandler.h
         utility/Math.h
-        )
+
+        # >>> ADD header for Guardian
+        guardian/BeaconGuard.h
+        # <<< ADD
+)
 
 include_directories(
         ${CMAKE_BINARY_DIR}/src # include generated files like Version.h
         .
         ../
+        # >>> ADD include so headers resolve cleanly
+        guardian
 )
+
 include_directories(SYSTEM
         libs/
         FreeRTOS/
@@ -769,13 +692,9 @@ include_directories(SYSTEM
         "${NRF5_SDK_PATH}/external/fprintf/"
         "${NRF5_SDK_PATH}/external/thedotfactory_fonts"
         "${NRF5_SDK_PATH}/components/libraries/gpiote"
-
 )
 
-link_directories(
-        ../
-)
-
+link_directories(../)
 
 set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -ftree-vrp -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin -fshort-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -fstack-usage -fno-exceptions -fno-non-call-exceptions)
 set(WARNING_FLAGS -Wall -Wextra -Warray-bounds=2 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-nonliteral -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-expansion-to-defined -Wreturn-type -Werror=return-type -Werror)
@@ -795,10 +714,6 @@ add_definitions(-DLFS_CONFIG=libs/lfs_config.h)
 
 # _sbrk is purposefully not implemented so that builds fail when it is used
 add_link_options(-Wl,-wrap=malloc -Wl,-wrap=free -Wl,-wrap=calloc -Wl,-wrap=realloc -Wl,-wrap=_malloc_r -Wl,-wrap=_sbrk)
-
-# Note: Only use this for debugging
-# Derive the low frequency clock from the main clock (SYNT)
-# add_definitions(-DCLOCK_CONFIG_LF_SRC=2)
 
 # Target hardware configuration options
 add_definitions(-DTARGET_DEVICE_${TARGET_DEVICE})
@@ -834,19 +749,9 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 
   # NRF SDK Logging
   add_definitions(-DNRF_LOG_ENABLED=1)
-  # add_definitions(-DNRF_LOG_BACKEND_RTT_ENABLED=1)
-  # add_definitions(-DNRF_LOG_BACKEND_SERIAL_USES_RTT=1)
 
-  # NRF SDK individual modules logging
-  # add_definitions(-DCLOCK_CONFIG_LOG_ENABLED=1)
-  # add_definitions(-DCLOCK_CONFIG_LOG_LEVEL=4)
-  # add_definitions(-DRTC_CONFIG_LOG_ENABLED=1)
-  # add_definitions(-DRTC_CONFIG_LOG_LEVEL=4)
-  
   # Nimble Logging
   add_definitions(-DMYNEWT_VAL_NEWT_FEATURE_LOGCFG=1)
-  # add_definitions(-DMYNEWT_VAL_LOG_LEVEL=0)
-  # add_definitions(-DMYNEWT_VAL_BLE_HS_LOG_LVL=0)
 endif()
 
 add_subdirectory(displayapp/fonts)
@@ -856,7 +761,7 @@ target_compile_options(infinitime_fonts PUBLIC
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+)
 
 add_subdirectory(displayapp/apps)
 
@@ -870,7 +775,7 @@ target_compile_options(nrf-sdk PRIVATE
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+)
 
 # NimBLE
 add_library(nimble STATIC ${NIMBLE_SRC} ${TINYCRYPT_SRC})
@@ -882,7 +787,7 @@ target_compile_options(nimble PRIVATE
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+)
 
 # lvgl
 add_library(lvgl STATIC ${LVGL_SRC})
@@ -894,7 +799,7 @@ target_compile_options(lvgl PRIVATE
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+)
 
 # LITTLEFS_SRC
 add_library(littlefs STATIC ${LITTLEFS_SRC})
@@ -906,7 +811,7 @@ target_compile_options(littlefs PRIVATE
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+)
 
 # Build autonomous binary (without support for bootloader)
 set(EXECUTABLE_NAME "pinetime-app")
@@ -922,12 +827,12 @@ target_compile_options(${EXECUTABLE_NAME} PUBLIC
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+)
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_FILE_NAME}.map"
-        )
+)
 
 add_custom_command(TARGET ${EXECUTABLE_NAME}
         POST_BUILD
@@ -957,12 +862,12 @@ target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+)
 
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_MCUBOOT_FILE_NAME}.map"
-        )
+)
 
 add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
         POST_BUILD
@@ -972,7 +877,7 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
         COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 1 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_FILE_NAME}.hex ${IMAGE_MCUBOOT_FILE_NAME_HEX}
         COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 1 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_FILE_NAME}.bin ${IMAGE_MCUBOOT_FILE_NAME_BIN}
         COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_FILE_NAME}"
-        )
+)
 
 if(BUILD_RESOURCES)
   add_dependencies(${EXECUTABLE_MCUBOOT_NAME} GenerateResources)
@@ -983,7 +888,7 @@ if(BUILD_DFU)
           POST_BUILD
           COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_MCUBOOT_FILE_NAME_HEX} ${DFU_MCUBOOT_FILE_NAME}
           COMMENT "post build (DFU) steps for ${EXECUTABLE_MCUBOOT_FILE_NAME}"
-          )
+  )
 endif()
 
 # InfiniTime recovery firmware (autonomous)
@@ -1000,12 +905,12 @@ target_compile_options(${EXECUTABLE_RECOVERY_NAME} PUBLIC
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+)
 
 set_target_properties(${EXECUTABLE_RECOVERY_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_RECOVERY_FILE_NAME}.map"
-        )
+)
 
 add_custom_command(TARGET ${EXECUTABLE_RECOVERY_NAME}
         POST_BUILD
@@ -1013,7 +918,7 @@ add_custom_command(TARGET ${EXECUTABLE_RECOVERY_NAME}
         COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_RECOVERY_FILE_NAME}.out "${EXECUTABLE_RECOVERY_FILE_NAME}.bin"
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_RECOVERY_FILE_NAME}.out "${EXECUTABLE_RECOVERY_FILE_NAME}.hex"
         COMMENT "post build steps for ${EXECUTABLE_RECOVERY_FILE_NAME}"
-        )
+)
 
 # InfiniTime recovery firmware (mcuboot)
 set(EXECUTABLE_RECOVERY_MCUBOOT_NAME "pinetime-mcuboot-recovery")
@@ -1032,12 +937,12 @@ target_compile_options(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+)
 
 set_target_properties(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_GRAPHICS_FILE_NAME}.map"
-        )
+)
 
 add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
         POST_BUILD
@@ -1048,14 +953,14 @@ add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
         COMMAND ${CMAKE_OBJCOPY} -I ihex -O binary ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME_HEX} "${IMAGE_RECOVERY_MCUBOOT_FILE_NAME}.bin"
         COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME}.bin recoveryImage > recoveryImage.h
         COMMENT "post build steps for ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}"
-        )
+)
 
 if(BUILD_DFU)
   add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
           POST_BUILD
           COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME_HEX} ${DFU_RECOVERY_MCUBOOT_FILE_NAME}
           COMMENT "post build (DFU) steps for ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}"
-          )
+  )
 endif()
 
 # Build binary that writes the recovery image into the SPI flash memory
@@ -1071,16 +976,16 @@ target_compile_options(${EXECUTABLE_RECOVERYLOADER_NAME} PUBLIC
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+)
 target_include_directories(${EXECUTABLE_RECOVERYLOADER_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
-        )
+)
 add_dependencies(${EXECUTABLE_RECOVERYLOADER_NAME} ${EXECUTABLE_RECOVERY_MCUBOOT_NAME})
 
 set_target_properties(${EXECUTABLE_RECOVERYLOADER_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.map"
-        )
+)
 
 add_custom_command(TARGET ${EXECUTABLE_RECOVERYLOADER_NAME}
         POST_BUILD
@@ -1088,7 +993,7 @@ add_custom_command(TARGET ${EXECUTABLE_RECOVERYLOADER_NAME}
         COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.bin"
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.hex"
         COMMENT "post build steps for ${EXECUTABLE_RECOVERYLOADER_FILE_NAME}"
-        )
+)
 
 # Build binary that writes the recovery image (MCUBoot version)
 set(EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME "pinetime-mcuboot-recovery-loader")
@@ -1106,16 +1011,16 @@ target_compile_options(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PUBLIC
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+)
 target_include_directories(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
-        )
+)
 add_dependencies(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} ${EXECUTABLE_RECOVERY_MCUBOOT_NAME})
 
 set_target_properties(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.map"
-        )
+)
 
 add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
         POST_BUILD
@@ -1126,17 +1031,16 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
         COMMAND ${CMAKE_OBJCOPY} -I ihex -O binary ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME_HEX} "${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.bin"
         COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.bin recoveryLoaderImage > recoveryLoaderImage.h
         COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}"
-        )
+)
 
 if(BUILD_DFU)
   add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
           POST_BUILD
           COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME_HEX} ${DFU_MCUBOOT_RECOVERYLOADER_FILE_NAME}
           COMMENT "post build (DFU) steps for ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}"
-          )
+)
 endif()
 
 if(BUILD_RESOURCES)
   add_subdirectory(resources)
 endif()
-
