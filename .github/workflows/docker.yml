@@ -1,62 +1,51 @@
-name: Build firmware (Guardian Beacon)
+name: Build & Push Docker image (GHCR)
 
 on:
-  workflow_dispatch: {}
   push:
-    branches: [ main ]
-    paths-ignore:
-      - ".github/workflows/docker.yml"
-      - "README.md"
+    branches: [ main, master, guardian-beacon ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout (with submodules)
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Prepare lowercase owner
+        id: prep
+        run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
         with:
-          submodules: recursive
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Show tree (debug)
-        run: |
-          git submodule status || true
-          ls -la
-
-      - name: Build with our Docker image
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/src" ghcr.io/koman10/guardian-beacon:latest bash -lc '
-            set -euxo pipefail
-            cd /src
-
-            # [WAŻNE] Jeżeli repo to fork InfiniTime – nic nie zmieniaj.
-            # Obraz zawiera toolchain + SDK + skrypty.
-
-            # Czy mamy skrypt budujący z repo InfiniTime?
-            if [ -x scripts/build.sh ]; then
-              # Standardowy sposób na InfiniTime:
-              # -t pinetime -> target PineTime
-              # -r         -> Release
-              ./scripts/build.sh -t pinetime -r
-              # Po zakończeniu artefakty zwykle są w ./build
-            else
-              # Fallback: „klasyczny” CMake/Ninja
-              cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DTARGET_DEVICE=PINETIME
-              cmake --build build -j"$(nproc)"
-            fi
-
-            echo "== Zawartość build =="
-            ls -lh build || true
-            ls -lh build/*.bin build/*.hex build/*.zip 2>/dev/null || true
-          '
-
-      - name: Upload firmware artifacts
-        uses: actions/upload-artifact@v4
+      - name: Build & Push (GHCR)
+        uses: docker/build-push-action@v5
         with:
-          name: guardian-firmware
-          path: |
-            build/*.bin
-            build/*.hex
-            build/*.zip
-            build/*.out
-          if-no-files-found: warn
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ steps.prep.outputs.OWNER_LC }}/guardian-beacon:latest
+          labels: |
+            org.opencontainers.image.title=Guardian-Beacon
+            org.opencontainers.image.description=Minimalny obraz CI/CD Guardian Beacon
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.licenses=MIT
+
+
