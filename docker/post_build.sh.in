@@ -8,14 +8,30 @@ export PROJECT_VERSION="@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT
 
 mkdir -p "$OUTPUT_DIR"
 
-cp "$SOURCES_DIR"/bootloader/bootloader-5.0.4.bin $OUTPUT_DIR/bootloader.bin
-cp "$BUILD_DIR/src/pinetime-mcuboot-app-image-$PROJECT_VERSION.bin" "$OUTPUT_DIR/pinetime-mcuboot-app-image-$PROJECT_VERSION.bin"
-cp "$BUILD_DIR/src/pinetime-mcuboot-app-dfu-$PROJECT_VERSION.zip" "$OUTPUT_DIR/pinetime-mcuboot-app-dfu-$PROJECT_VERSION.zip"
-
-cp "$BUILD_DIR/src/pinetime-mcuboot-recovery-loader-image-$PROJECT_VERSION.bin" "$OUTPUT_DIR/pinetime-mcuboot-recovery-loader-image-$PROJECT_VERSION.bin"
-cp "$BUILD_DIR/src/pinetime-mcuboot-recovery-loader-dfu-$PROJECT_VERSION.zip" "$OUTPUT_DIR/pinetime-mcuboot-recovery-loader-dfu-$PROJECT_VERSION.zip"
-
-cp "$BUILD_DIR/src/resources/infinitime-resources-$PROJECT_VERSION.zip" "$OUTPUT_DIR/infinitime-resources-$PROJECT_VERSION.zip"
+if test -f "$SOURCES_DIR"/bootloader/bootloader-5.0.4.bin; then
+    echo "copying bootloader"
+    cp "$SOURCES_DIR"/bootloader/bootloader-5.0.4.bin $OUTPUT_DIR/bootloader.bin
+fi
+if test -f "$BUILD_DIR/src/pinetime-mcuboot-app-image-$PROJECT_VERSION.bin"; then
+    echo "copying pinetime-mcuboot-app-image....bin"
+    cp "$BUILD_DIR/src/pinetime-mcuboot-app-image-$PROJECT_VERSION.bin" "$OUTPUT_DIR/pinetime-mcuboot-app-image-$PROJECT_VERSION.bin"
+fi
+if test -f "$BUILD_DIR/src/pinetime-mcuboot-app-dfu-$PROJECT_VERSION.zip"; then
+    echo "copying pinetime-mcuboot-app-dfu....zip"
+    cp "$BUILD_DIR/src/pinetime-mcuboot-app-dfu-$PROJECT_VERSION.zip" "$OUTPUT_DIR/pinetime-mcuboot-app-dfu-$PROJECT_VERSION.zip"
+fi
+if test -f "$BUILD_DIR/src/pinetime-mcuboot-recovery-loader-image-$PROJECT_VERSION.bin"; then
+    echo "copying pinetime-mcuboot-recovery-loader-image....bin"
+    cp "$BUILD_DIR/src/pinetime-mcuboot-recovery-loader-image-$PROJECT_VERSION.bin" "$OUTPUT_DIR/pinetime-mcuboot-recovery-loader-image-$PROJECT_VERSION.bin"
+fi
+if test -f "$BUILD_DIR/src/pinetime-mcuboot-recovery-loader-dfu-$PROJECT_VERSION.zip"; then
+    echo "copying pinetime-mcuboot-recovery-loader-dfu....zip"
+    cp "$BUILD_DIR/src/pinetime-mcuboot-recovery-loader-dfu-$PROJECT_VERSION.zip" "$OUTPUT_DIR/pinetime-mcuboot-recovery-loader-dfu-$PROJECT_VERSION.zip"
+fi
+if test -f "$BUILD_DIR/src/resources/infinitime-resources-$PROJECT_VERSION.zip"; then
+    echo "copying infinitime-resources....zip"
+    cp "$BUILD_DIR/src/resources/infinitime-resources-$PROJECT_VERSION.zip" "$OUTPUT_DIR/infinitime-resources-$PROJECT_VERSION.zip"
+fi 
 
 mkdir -p "$OUTPUT_DIR/src"
 cp $BUILD_DIR/src/*.bin "$OUTPUT_DIR/src/"
@@ -24,3 +40,4 @@ cp $BUILD_DIR/src/*.out "$OUTPUT_DIR/src/"
 cp $BUILD_DIR/src/*.map "$OUTPUT_DIR/src/"
 
 ls -RUv1 "$OUTPUT_DIR" | sed 's;^\([^/]\); \1;g'
+
