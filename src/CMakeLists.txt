@@ -85,7 +85,7 @@ set(SDK_SOURCE_FILES
 
         # GPIOTE
         "${NRF5_SDK_PATH}/components/libraries/gpiote/app_gpiote.c"
-        )
+)
 
 set(TINYCRYPT_SRC
         libs/mynewt-nimble/ext/tinycrypt/src/aes_encrypt.c
@@ -93,7 +93,7 @@ set(TINYCRYPT_SRC
         libs/mynewt-nimble/ext/tinycrypt/src/cmac_mode.c
         libs/mynewt-nimble/ext/tinycrypt/src/ecc.c
         libs/mynewt-nimble/ext/tinycrypt/src/ecc_dh.c
-        )
+)
 
 set(NIMBLE_SRC
         libs/mynewt-nimble/porting/npl/freertos/src/nimble_port_freertos.c
@@ -166,15 +166,16 @@ set(NIMBLE_SRC
         libs/mynewt-nimble/nimble/host/services/gap/src/ble_svc_gap.c
         libs/mynewt-nimble/nimble/host/services/gatt/src/ble_svc_gatt.c
         libs/mynewt-nimble/nimble/host/util/src/addr.c
-        )
+)
 
 set(LITTLEFS_SRC
         libs/littlefs/lfs_util.h
         libs/littlefs/lfs.h
         libs/littlefs/lfs_util.c
         libs/littlefs/lfs.c
-        )
+)
 
+# --- LVGL headers: poprawione ścieżki do lv_draw/*
 set(LVGL_SRC
         libs/lv_conf.h
         libs/lvgl/lvgl.h
@@ -198,9 +199,9 @@ set(LVGL_SRC
         libs/lvgl/src/lv_draw/lv_draw_mask.h
         libs/lvgl/src/lv_draw/lv_draw_rect.h
         libs/lvgl/src/lv_draw/lv_draw_triangle.h
-        libs/lvgl/src/lv_img_buf.h
-        libs/lvgl/src/lv_img_cache.h
-        libs/lvgl/src/lv_img_decoder.h
+        libs/lvgl/src/lv_draw/lv_img_buf.h
+        libs/lvgl/src/lv_draw/lv_img_cache.h
+        libs/lvgl/src/lv_draw/lv_img_decoder.h
         libs/lvgl/src/lv_font/lv_font.h
         libs/lvgl/src/lv_font/lv_font_fmt_txt.h
         libs/lvgl/src/lv_font/lv_font_loader.h
@@ -265,11 +266,12 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_textarea.c
         libs/lvgl/src/lv_widgets/lv_tileview.c
         libs/lvgl/src/lv_widgets/lv_win.c
-        )
+)
 
 list(APPEND IMAGE_FILES
         displayapp/icons/battery/batteryicon.c
-        )
+)
+
 list(APPEND SOURCE_FILES
         stdlib.c
         FreeRTOS/heap_4_infinitime.c
@@ -370,7 +372,6 @@ list(APPEND SOURCE_FILES
         components/ble/AlertNotificationService.cpp
         components/ble/MusicService.cpp
         components/ble/SimpleWeatherService.cpp
-        components/ble/NavigationService.cpp
         components/ble/BatteryInformationService.cpp
         components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
@@ -406,11 +407,20 @@ list(APPEND SOURCE_FILES
         utility/Math.cpp
 )
 
-# >>> ADD: our Guardian beacon module
+# === Guardian Beacon Module (optional, safe) ===
 if (ENABLE_GUARDIAN_BEACON)
-  list(APPEND SOURCE_FILES guardian/BeaconGuard.cpp)
+  message(STATUS "✅ Guardian Beacon enabled – compiling BeaconGuard.cpp")
+  if(EXISTS "${CMAKE_SOURCE_DIR}/src/guardian/BeaconGuard.cpp")
+    list(APPEND SOURCE_FILES guardian/BeaconGuard.cpp)
+    list(APPEND INCLUDE_FILES guardian/BeaconGuard.h)
+    include_directories(${CMAKE_SOURCE_DIR}/src/guardian)
+  else()
+    message(WARNING "⚠️ Guardian Beacon enabled, but src/guardian/BeaconGuard.cpp not found.")
+  endif()
+else()
+  message(STATUS "❌ Guardian Beacon disabled")
 endif()
-# <<< ADD
+# === End Guardian ===
 
 list(APPEND RECOVERY_SOURCE_FILES
         stdlib.c
@@ -450,7 +460,6 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
-        components/ble/NavigationService.cpp
         components/ble/HeartRateService.cpp
         components/ble/MotionService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
@@ -595,16 +604,14 @@ set(INCLUDE_FILES
         touchhandler/TouchHandler.h
         utility/Math.h
 
-        # >>> ADD header for Guardian
+        # Guardian header (jeśli kompilujemy)
         guardian/BeaconGuard.h
-        # <<< ADD
 )
 
 include_directories(
-        ${CMAKE_BINARY_DIR}/src # include generated files like Version.h
+        ${CMAKE_BINARY_DIR}/src
         .
         ../
-        # >>> ADD include so headers resolve cleanly
         guardian
 )
 
@@ -941,7 +948,7 @@ target_compile_options(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC
 
 set_target_properties(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PROPERTIES
         SUFFIX ".out"
-        LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_GRAPHICS_FILE_NAME}.map"
+        LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.map"
 )
 
 add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
@@ -1037,7 +1044,7 @@ if(BUILD_DFU)
   add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
           POST_BUILD
           COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME_HEX} ${DFU_MCUBOOT_RECOVERYLOADER_FILE_NAME}
-          COMMENT "post build (DFU) steps for ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}"
+          COMMENT "post build (DFU) steps for ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}"
 )
 endif()
 
