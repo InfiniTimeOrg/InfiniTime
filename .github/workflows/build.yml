@@ -18,14 +18,12 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Mark repo as safe (Git warnings fix)
-        run: |
-          git config --global --add safe.directory "${{ github.workspace }}"
+      - name: Mark repo as safe
+        run: git config --global --add safe.directory "${{ github.workspace }}"
 
-      - name: Show tree (debug)
-        run: |
-          git submodule status || true
-          ls -la
+      # Jeśli pakiet GHCR jest prywatny, zaloguj się
+      - name: Docker login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build with our Docker image
         run: |
@@ -34,19 +32,17 @@ jobs:
             cd /src
             echo "== Building firmware inside container =="
 
-            # Ścieżki toolchain/SDK dostępne w obrazie:
+            # Toolchain + SDK w obrazie
             export ARM_NONE_EABI_TOOLCHAIN_PATH=/opt/gcc-arm-none-eabi-10.3-2021.10
             export NRF5_SDK_PATH=/opt/nRF5_SDK_15.3.0_59ac345
 
             if [ -f scripts/build.sh ]; then
-              # Standardowy build InfiniTime (jeśli skrypt istnieje)
               ./scripts/build.sh -t pinetime -r
             else
-              # Fallback: klasyczne CMake/Ninja
               cmake -S . -B build -G Ninja \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DARM_NONE_EABI_TOOLCHAIN_PATH="${ARM_NONE_EABI_TOOLCHAIN_PATH}" \
-                -DNRF5_SDK_PATH="${NRF5_SDK_PATH}" \
+                -DARM_NONE_EABI_TOOLCHAIN_PATH="$ARM_NONE_EABI_TOOLCHAIN_PATH" \
+                -DNRF5_SDK_PATH="$NRF5_SDK_PATH" \
                 -DBUILD_DFU=1 -DBUILD_RESOURCES=1
               cmake --build build -j"$(nproc)"
             fi
