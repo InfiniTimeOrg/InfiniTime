@@ -182,97 +182,86 @@ set(LITTLEFS_SRC
 )
 
 # ====== LVGL (z repo) ======
+# LVGL źródła – tylko pliki .c
 set(LVGL_SRC
-  libs/lv_conf.h
-  libs/lvgl/lvgl.h
+    libs/lv_conf.h
+    libs/lvgl/lvgl.h
 
-  libs/lvgl/src/lvgl.h
-  libs/lvgl/src/lv_api_map.h
-  libs/lvgl/src/lv_conf_internal.h
-  libs/lvgl/src/lv_core/lv_disp.h
-  libs/lvgl/src/lv_core/lv_group.h
-  libs/lvgl/src/lv_core/lv_indev.h
-  libs/lvgl/src/lv_core/lv_obj.h
-  libs/lvgl/src/lv_core/lv_obj_style_dec.h
-  libs/lvgl/src/lv_core/lv_refr.h
-  libs/lvgl/src/lv_core/lv_style.h
-  libs/lvgl/src/lv_draw/lv_draw.h
-  libs/lvgl/src/lv_draw/lv_draw_arc.h
-  libs/lvgl/src/lv_draw/lv_draw_blend.h
-  libs/lvgl/src/lv_draw/lv_draw_img.h
-  libs/lvgl/src/lv_draw/lv_draw_label.h
-  libs/lvgl/src/lv_draw/lv_draw_line.h
-  libs/lvgl/src/lv_draw/lv_draw_mask.h
-  libs/lvgl/src/lv_draw/lv_draw_rect.h
-  libs/lvgl/src/lv_draw/lv_draw_triangle.h
-  libs/lvgl/src/lv_img_buf.h
-  libs/lvgl/src/lv_img_cache.h
-  libs/lvgl/src/lv_img_decoder.h
-  libs/lvgl/src/lv_font/lv_font.h
-  libs/lvgl/src/lv_font/lv_font_fmt_txt.h
-  libs/lvgl/src/lv_font/lv_font_loader.h
-  libs/lvgl/src/lv_font/lv_symbol_def.h
-  libs/lvgl/src/lv_hal/lv_hal.h
-  libs/lvgl/src/lv_hal/lv_hal_disp.h
-  libs/lvgl/src/lv_hal/lv_hal_indev.h
-  libs/lvgl/src/lv_hal/lv_hal_tick.h
-  libs/lvgl/src/lv_misc/lv_anim.h
-  libs/lvgl/src/lv_misc/lv_area.h
-  libs/lvgl/src/lv_misc/lv_async.h
-  libs/lvgl/src/lv_misc/lv_bidi.h
-  libs/lvgl/src/lv_misc/lv_color.h
-  libs/lvgl/src/lv_misc/lv_debug.h
-  libs/lvgl/src/lv_misc/lv_fs.h
-  libs/lvgl/src/lv_misc/lv_gc.h
-  libs/lvgl/src/lv_misc/lv_ll.h
-  libs/lvgl/src/lv_misc/lv_log.h
-  libs/lvgl/src/lv_misc/lv_math.h
-  libs/lvgl/src/lv_misc/lv_mem.h
-  libs/lvgl/src/lv_misc/lv_printf.h
-  libs/lvgl/src/lv_misc/lv_task.h
-  libs/lvgl/src/lv_misc/lv_templ.h
-  libs/lvgl/src/lv_misc/lv_txt.h
-  libs/lvgl/src/lv_misc/lv_txt_ap.h
-  libs/lvgl/src/lv_misc/lv_types.h
-  libs/lvgl/src/lv_misc/lv_utils.h
-  libs/lvgl/src/lv_themes/lv_theme.h
-  libs/lvgl/src/lv_themes/lv_theme_empty.h
-  libs/lvgl/src/lv_themes/lv_theme_material.h
-  libs/lvgl/src/lv_widgets/lv_arc.h
-  libs/lvgl/src/lv_widgets/lv_bar.h
-  libs/lvgl/src/lv_widgets/lv_btn.h
-  libs/lvgl/src/lv_widgets/lv_btnmatrix.h
-  libs/lvgl/src/lv_widgets/lv_calendar.h
-  libs/lvgl/src/lv_widgets/lv_canvas.h
-  libs/lvgl/src/lv_widgets/lv_chart.h
-  libs/lvgl/src/lv_widgets/lv_checkbox.h
-  libs/lvgl/src/lv_widgets/lv_cont.h
-  libs/lvgl/src/lv_widgets/lv_cpicker.h
-  libs/lvgl/src/lv_widgets/lv_dropdown.h
-  libs/lvgl/src/lv_widgets/lv_gauge.h
-  libs/lvgl/src/lv_widgets/lv_img.h
-  libs/lvgl/src/lv_widgets/lv_imgbtn.h
-  libs/lvgl/src/lv_widgets/lv_keyboard.h
-  libs/lvgl/src/lv_widgets/lv_label.h
-  libs/lvgl/src/lv_widgets/lv_led.h
-  libs/lvgl/src/lv_widgets/lv_line.h
-  libs/lvgl/src/lv_widgets/lv_linemeter.h
-  libs/lvgl/src/lv_widgets/lv_list.h
-  libs/lvgl/src/lv_widgets/lv_msgbox.h
-  libs/lvgl/src/lv_widgets/lv_objmask.h
-  libs/lvgl/src/lv_widgets/lv_objx_templ.h
-  libs/lvgl/src/lv_widgets/lv_page.h
-  libs/lvgl/src/lv_widgets/lv_roller.h
-  libs/lvgl/src/lv_widgets/lv_slider.h
-  libs/lvgl/src/lv_widgets/lv_spinbox.h
-  libs/lvgl/src/lv_widgets/lv_spinner.h
-  libs/lvgl/src/lv_widgets/lv_switch.h
-  libs/lvgl/src/lv_widgets/lv_table.h
-  libs/lvgl/src/lv_widgets/lv_tabview.h
-  libs/lvgl/src/lv_widgets/lv_textarea.c
-  libs/lvgl/src/lv_widgets/lv_tileview.c
-  libs/lvgl/src/lv_widgets/lv_win.c
+    libs/lvgl/src/lv_core/lv_disp.c
+    libs/lvgl/src/lv_core/lv_group.c
+    libs/lvgl/src/lv_core/lv_indev.c
+    libs/lvgl/src/lv_core/lv_obj.c
+    libs/lvgl/src/lv_core/lv_refr.c
+    libs/lvgl/src/lv_core/lv_style.c
+
+    libs/lvgl/src/lv_draw/lv_draw.c
+    libs/lvgl/src/lv_draw/lv_draw_arc.c
+    libs/lvgl/src/lv_draw/lv_draw_img.c
+    libs/lvgl/src/lv_draw/lv_draw_label.c
+    libs/lvgl/src/lv_draw/lv_draw_line.c
+    libs/lvgl/src/lv_draw/lv_draw_rect.c
+    libs/lvgl/src/lv_draw/lv_draw_triangle.c
+
+    libs/lvgl/src/lv_font/lv_font.c
+    libs/lvgl/src/lv_font/lv_font_fmt_txt.c
+    libs/lvgl/src/lv_font/lv_symbol_def.c
+
+    libs/lvgl/src/lv_hal/lv_hal_disp.c
+    libs/lvgl/src/lv_hal/lv_hal_indev.c
+    libs/lvgl/src/lv_hal/lv_hal_tick.c
+
+    libs/lvgl/src/lv_misc/lv_anim.c
+    libs/lvgl/src/lv_misc/lv_area.c
+    libs/lvgl/src/lv_misc/lv_color.c
+    libs/lvgl/src/lv_misc/lv_debug.c
+    libs/lvgl/src/lv_misc/lv_fs.c
+    libs/lvgl/src/lv_misc/lv_gc.c
+    libs/lvgl/src/lv_misc/lv_ll.c
+    libs/lvgl/src/lv_misc/lv_log.c
+    libs/lvgl/src/lv_misc/lv_math.c
+    libs/lvgl/src/lv_misc/lv_mem.c
+    libs/lvgl/src/lv_misc/lv_printf.c
+    libs/lvgl/src/lv_misc/lv_task.c
+    libs/lvgl/src/lv_misc/lv_txt.c
+    libs/lvgl/src/lv_misc/lv_types.c
+    libs/lvgl/src/lv_misc/lv_utils.c
+
+    libs/lvgl/src/lv_themes/lv_theme.c
+    libs/lvgl/src/lv_themes/lv_theme_empty.c
+    libs/lvgl/src/lv_themes/lv_theme_material.c
+
+    libs/lvgl/src/lv_widgets/lv_arc.c
+    libs/lvgl/src/lv_widgets/lv_bar.c
+    libs/lvgl/src/lv_widgets/lv_btn.c
+    libs/lvgl/src/lv_widgets/lv_btnmatrix.c
+    libs/lvgl/src/lv_widgets/lv_calendar.c
+    libs/lvgl/src/lv_widgets/lv_canvas.c
+    libs/lvgl/src/lv_widgets/lv_chart.c
+    libs/lvgl/src/lv_widgets/lv_checkbox.c
+    libs/lvgl/src/lv_widgets/lv_cont.c
+    libs/lvgl/src/lv_widgets/lv_dropdown.c
+    libs/lvgl/src/lv_widgets/lv_gauge.c
+    libs/lvgl/src/lv_widgets/lv_img.c
+    libs/lvgl/src/lv_widgets/lv_imgbtn.c
+    libs/lvgl/src/lv_widgets/lv_keyboard.c
+    libs/lvgl/src/lv_widgets/lv_label.c
+    libs/lvgl/src/lv_widgets/lv_led.c
+    libs/lvgl/src/lv_widgets/lv_line.c
+    libs/lvgl/src/lv_widgets/lv_list.c
+    libs/lvgl/src/lv_widgets/lv_msgbox.c
+    libs/lvgl/src/lv_widgets/lv_page.c
+    libs/lvgl/src/lv_widgets/lv_roller.c
+    libs/lvgl/src/lv_widgets/lv_slider.c
+    libs/lvgl/src/lv_widgets/lv_spinbox.c
+    libs/lvgl/src/lv_widgets/lv_spinner.c
+    libs/lvgl/src/lv_widgets/lv_switch.c
+    libs/lvgl/src/lv_widgets/lv_table.c
+    libs/lvgl/src/lv_widgets/lv_tabview.c
+    libs/lvgl/src/lv_widgets/lv_textarea.c
+    libs/lvgl/src/lv_widgets/lv_tileview.c
+    libs/lvgl/src/lv_widgets/lv_win.c
 )
+
 
 # ====== App źródła ======
 list(APPEND IMAGE_FILES
