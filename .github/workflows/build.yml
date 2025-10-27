@@ -62,3 +62,6 @@ jobs:
             build/*.zip
             build/*.out
           if-no-files-found: warn
+            on:
+  workflow_dispatch: {}
+
