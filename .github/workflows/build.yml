@@ -3,20 +3,22 @@ name: Build firmware (Guardian Beacon)
 on:
   workflow_dispatch: {}
   push:
-    branches:
-      - main
-      - guardian-beacon
+    branches: [ main, guardian-beacon ]
     paths-ignore:
       - ".github/workflows/docker.yml"
       - "README.md"
 
 permissions:
   contents: read
-  packages: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      SDK_ZIP_URL: https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
+      SDK_DIR: ${{ github.workspace }}/_nrf5sdk
+      TOOLCHAIN_DIR: /usr
 
     steps:
       - name: Checkout (with submodules)
@@ -27,35 +29,36 @@ jobs:
       - name: Mark repo as safe
         run: git config --global --add safe.directory "${{ github.workspace }}"
 
-      - name: Docker login to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin"
-
-      - name: Build with our Docker image
+      - name: Install build tools
         run: |
-          docker run --rm -v "${{ github.workspace }}:/src" ghcr.io/${{ github.repository_owner }}/guardian-beacon:latest /bin/bash -lc '
-            set -eux
-            cd /src
-            echo "== Building firmware inside container =="
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build build-essential python3 python3-pip \
+            gcc-arm-none-eabi binutils-arm-none-eabi
 
-            # Te ścieżki są osadzone w obrazie
-            export ARM_NONE_EABI_TOOLCHAIN_PATH="$ARM_NONE_EABI_TOOLCHAIN_PATH"
-            export NRF5_SDK_PATH="$NRF5_SDK_PATH"
+      - name: Download nRF5 SDK 15.3.0
+        run: |
+          mkdir -p "$SDK_DIR"
+          curl -L "$SDK_ZIP_URL" -o /tmp/nrf5sdk.zip
+          unzip -q /tmp/nrf5sdk.zip -d "$SDK_DIR"
+          # po rozpakowaniu powstaje katalog nRF5_SDK_15.3.0_59ac345
+          ls -la "$SDK_DIR"
 
-            if [ -f scripts/build.sh ]; then
-              ./scripts/build.sh -t pinetime -r
-            else
-              cmake -S . -B build -G Ninja \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DARM_NONE_EABI_TOOLCHAIN_PATH="$ARM_NONE_EABI_TOOLCHAIN_PATH" \
-                -DNRF5_SDK_PATH="$NRF5_SDK_PATH" \
-                -DBUILD_DFU=1 -DBUILD_RESOURCES=1
-              cmake --build build -j"$(nproc)"
-            fi
+      - name: Configure (CMake)
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DARM_NONE_EABI_TOOLCHAIN_PATH="${TOOLCHAIN_DIR}" \
+            -DNRF5_SDK_PATH="${SDK_DIR}/nRF5_SDK_15.3.0_59ac345" \
+            -DBUILD_DFU=1 -DBUILD_RESOURCES=1
 
-            echo "== Build complete =="
-            ls -lh build || true
-            ls -lh build/*.bin build/*.hex build/*.zip 2>/dev/null || true
-          '
+      - name: Build
+        run: cmake --build build -j"$(nproc)"
+
+      - name: Show build outputs
+        run: |
+          ls -lh build || true
+          ls -lh build/*.bin build/*.hex build/*.zip 2>/dev/null || true
 
       - name: Upload firmware artifacts
         uses: actions/upload-artifact@v4
