@@ -34,14 +34,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             cmake ninja-build build-essential python3 python3-pip \
-            gcc-arm-none-eabi binutils-arm-none-eabi
+            gcc-arm-none-eabi binutils-arm-none-eabi nodejs npm
+          # 🔹 instalujemy lv_font_conv do generowania czcionek
+          sudo npm install -g lv_font_conv
+          lv_font_conv --version || echo "lv_font_conv zainstalowany"
 
       - name: Download nRF5 SDK 15.3.0
         run: |
           mkdir -p "$SDK_DIR"
           curl -L "$SDK_ZIP_URL" -o /tmp/nrf5sdk.zip
           unzip -q /tmp/nrf5sdk.zip -d "$SDK_DIR"
-          # po rozpakowaniu powstaje katalog nRF5_SDK_15.3.0_59ac345
           ls -la "$SDK_DIR"
 
       - name: Configure (CMake)
