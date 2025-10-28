@@ -32,7 +32,7 @@ SettingSteps::SettingSteps(Pinetime::Controllers::Settings& settingsController) 
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
   lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+  lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::Orange);
 
   lv_label_set_text_static(icon, Symbols::shoe);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
@@ -51,7 +51,7 @@ SettingSteps::SettingSteps(Pinetime::Controllers::Settings& settingsController) 
   btnPlus->user_data = this;
   lv_obj_set_size(btnPlus, btnWidth, btnHeight);
   lv_obj_align(btnPlus, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  lv_obj_set_style_local_bg_color(btnPlus, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(btnPlus, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, InfiniTimeTheme::Colors::bgAlt);
   lv_obj_t* lblPlus = lv_label_create(btnPlus, nullptr);
   lv_obj_set_style_local_text_font(lblPlus, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_label_set_text_static(lblPlus, "+");
@@ -62,7 +62,7 @@ SettingSteps::SettingSteps(Pinetime::Controllers::Settings& settingsController) 
   lv_obj_set_size(btnMinus, btnWidth, btnHeight);
   lv_obj_set_event_cb(btnMinus, event_handler);
   lv_obj_align(btnMinus, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  lv_obj_set_style_local_bg_color(btnMinus, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(btnMinus, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, InfiniTimeTheme::Colors::bgAlt);
   lv_obj_t* lblMinus = lv_label_create(btnMinus, nullptr);
   lv_obj_set_style_local_text_font(lblMinus, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_label_set_text_static(lblMinus, "-");

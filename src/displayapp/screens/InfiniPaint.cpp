@@ -1,7 +1,7 @@
 #include "displayapp/screens/InfiniPaint.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/LittleVgl.h"
-#include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/Colors.h"
 
 #include <algorithm> // std::fill
 
@@ -9,7 +9,7 @@ using namespace Pinetime::Applications::Screens;
 
 InfiniPaint::InfiniPaint(Pinetime::Components::LittleVgl& lvgl, Pinetime::Controllers::MotorController& motor)
   : lvgl {lvgl}, motor {motor} {
-  std::fill(b, b + bufferSize, selectColor);
+  std::fill(b, b + bufferSize, static_cast<lv_color_t>(selectColor));
 }
 
 InfiniPaint::~InfiniPaint() {
@@ -22,28 +22,28 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       color = (color + 1) % 8;
       switch (color) {
         case 0:
-          selectColor = LV_COLOR_MAGENTA;
+          selectColor = Colors::Magenta;
           break;
         case 1:
-          selectColor = Colors::green;
+          selectColor = Colors::Green;
           break;
         case 2:
-          selectColor = LV_COLOR_WHITE;
+          selectColor = Colors::White;
           break;
         case 3:
-          selectColor = LV_COLOR_RED;
+          selectColor = Colors::Red;
           break;
         case 4:
-          selectColor = LV_COLOR_CYAN;
+          selectColor = Colors::Cyan;
           break;
         case 5:
-          selectColor = LV_COLOR_YELLOW;
+          selectColor = Colors::Yellow;
           break;
         case 6:
-          selectColor = LV_COLOR_BLUE;
+          selectColor = Colors::Blue;
           break;
         case 7:
-          selectColor = LV_COLOR_BLACK;
+          selectColor = Colors::Black;
           break;
 
         default:
@@ -51,7 +51,7 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
           break;
       }
 
-      std::fill(b, b + bufferSize, selectColor);
+      std::fill(b, b + bufferSize, static_cast<lv_color_t>(selectColor));
       motor.RunForDuration(35);
       return true;
     default:

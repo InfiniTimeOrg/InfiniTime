@@ -22,6 +22,9 @@
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
 #include <lvgl/lvgl.h>
 #include <cstdio>
+#include <array>
+#include <algorithm>
+#include <random>
 #include "displayapp/Colors.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/BleIcon.h"
@@ -37,6 +40,26 @@
 #include "components/ble/SimpleWeatherService.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Colors;
+
+constexpr std::array<uint32_t, 18> StyleColors {White,
+                                                Silver,
+                                                Gray,
+                                                Black,
+                                                Red,
+                                                Maroon,
+                                                Yellow,
+                                                Olive,
+                                                Lime,
+                                                Green,
+                                                Cyan,
+                                                Teal,
+                                                Blue,
+                                                Navy,
+                                                Magenta,
+                                                Purple,
+                                                Orange,
+                                                Pink};
 
 namespace {
   void event_handler(lv_obj_t* obj, lv_event_t event) {
@@ -53,6 +76,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
                                                Controllers::MotionController& motionController,
                                                Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
+    needle_colors {White},
     batteryIcon(false),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
@@ -64,7 +88,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
 
   // Create a 200px wide background rectangle
   timebar = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorBG()));
+  lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetPTSColorBG());
   lv_obj_set_style_local_radius(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(timebar, 200, 240);
   lv_obj_align(timebar, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
@@ -72,49 +96,49 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   // Display the time
   timeDD1 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
-  lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorTime()));
+  lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetPTSColorTime());
   lv_label_set_text_static(timeDD1, "00");
   lv_obj_align(timeDD1, timebar, LV_ALIGN_IN_TOP_MID, 5, 5);
 
   timeDD2 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
-  lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorTime()));
+  lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetPTSColorTime());
   lv_label_set_text_static(timeDD2, "00");
   lv_obj_align(timeDD2, timebar, LV_ALIGN_IN_BOTTOM_MID, 5, -5);
 
   timeAMPM = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorTime()));
+  lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetPTSColorTime());
   lv_obj_set_style_local_text_line_space(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, -3);
   lv_label_set_text_static(timeAMPM, "");
   lv_obj_align(timeAMPM, timebar, LV_ALIGN_IN_BOTTOM_LEFT, 2, -20);
 
   // Create a 40px wide bar down the right side of the screen
   sidebar = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorBar()));
+  lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetPTSColorBar());
   lv_obj_set_style_local_radius(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(sidebar, 40, 240);
   lv_obj_align(sidebar, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   // Display icons
   batteryIcon.Create(sidebar);
-  batteryIcon.SetColor(LV_COLOR_BLACK);
+  batteryIcon.SetColor(Black);
   lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_MID, 10, 2);
 
   plugIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(plugIcon, Symbols::plug);
-  lv_obj_set_style_local_text_color(plugIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(plugIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_obj_align(plugIcon, sidebar, LV_ALIGN_IN_TOP_MID, 10, 2);
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, -10, 2);
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorTime()));
+  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetPTSColorTime());
   lv_obj_align(notificationIcon, timebar, LV_ALIGN_IN_TOP_LEFT, 5, 5);
 
   weatherIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
   lv_label_set_text(weatherIcon, Symbols::ban);
   lv_obj_align(weatherIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 35);
@@ -126,7 +150,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   }
 
   temperature = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_label_set_text(temperature, "--");
   lv_obj_align(temperature, sidebar, LV_ALIGN_IN_TOP_MID, 0, 65);
   if (settingsController.GetPTSWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {
@@ -137,7 +161,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
 
   // Calendar icon
   calendarOuter = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(calendarOuter, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_color(calendarOuter, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::Black);
   lv_obj_set_style_local_radius(calendarOuter, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(calendarOuter, 34, 34);
   if (settingsController.GetPTSWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {
@@ -147,59 +171,60 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   }
 
   calendarInner = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(calendarInner, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_bg_color(calendarInner, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, White);
   lv_obj_set_style_local_radius(calendarInner, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(calendarInner, 27, 27);
   lv_obj_align(calendarInner, calendarOuter, LV_ALIGN_CENTER, 0, 0);
 
   calendarBar1 = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(calendarBar1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_color(calendarBar1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_obj_set_style_local_radius(calendarBar1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(calendarBar1, 3, 12);
   lv_obj_align(calendarBar1, calendarOuter, LV_ALIGN_IN_TOP_MID, -6, -3);
 
   calendarBar2 = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(calendarBar2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_color(calendarBar2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_obj_set_style_local_radius(calendarBar2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(calendarBar2, 3, 12);
   lv_obj_align(calendarBar2, calendarOuter, LV_ALIGN_IN_TOP_MID, 6, -3);
 
   calendarCrossBar1 = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(calendarCrossBar1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_color(calendarCrossBar1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_obj_set_style_local_radius(calendarCrossBar1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(calendarCrossBar1, 8, 3);
   lv_obj_align(calendarCrossBar1, calendarBar1, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   calendarCrossBar2 = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(calendarCrossBar2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_color(calendarCrossBar2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_obj_set_style_local_radius(calendarCrossBar2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(calendarCrossBar2, 8, 3);
   lv_obj_align(calendarCrossBar2, calendarBar2, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   // Display date
   dateDayOfWeek = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(dateDayOfWeek, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(dateDayOfWeek, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_label_set_text_static(dateDayOfWeek, "THU");
   lv_obj_align(dateDayOfWeek, calendarOuter, LV_ALIGN_CENTER, 0, -32);
 
   dateDay = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(dateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(dateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_label_set_text_static(dateDay, "25");
   lv_obj_align(dateDay, calendarOuter, LV_ALIGN_CENTER, 0, 3);
 
   dateMonth = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(dateMonth, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(dateMonth, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_label_set_text_static(dateMonth, "MAR");
   lv_obj_align(dateMonth, calendarOuter, LV_ALIGN_CENTER, 0, 32);
 
   // Step count gauge
-  if (settingsController.GetPTSColorBar() == Pinetime::Controllers::Settings::Colors::White) {
-    needle_colors[0] = LV_COLOR_BLACK;
+  if (settingsController.GetPTSColorBar() == White) {
+    needle_colors = Black;
   } else {
-    needle_colors[0] = LV_COLOR_WHITE;
+    needle_colors = White;
   }
   stepGauge = lv_gauge_create(lv_scr_act(), nullptr);
-  lv_gauge_set_needle_count(stepGauge, 1, needle_colors);
+  lv_color_t needle_color_arg[1] = {needle_colors};
+  lv_gauge_set_needle_count(stepGauge, 1, needle_color_arg);
   lv_gauge_set_range(stepGauge, 0, 100);
   lv_gauge_set_value(stepGauge, 0, 0);
   if (settingsController.GetPTSGaugeStyle() == Pinetime::Controllers::Settings::PTSGaugeStyle::Full) {
@@ -224,13 +249,13 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   lv_obj_set_style_local_line_opa(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_obj_set_style_local_scale_width(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 4);
   lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 4);
-  lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_obj_set_style_local_line_opa(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 3);
   lv_obj_set_style_local_pad_inner(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 4);
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_label_set_text_static(stepValue, "0");
   lv_obj_align(stepValue, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   if (settingsController.GetPTSGaugeStyle() == Pinetime::Controllers::Settings::PTSGaugeStyle::Numeric) {
@@ -240,7 +265,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   }
 
   stepIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_TOP_MID, 0, 0);
   if (settingsController.GetPTSGaugeStyle() == Pinetime::Controllers::Settings::PTSGaugeStyle::Numeric) {
@@ -251,7 +276,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
 
   // Display seconds
   timeDD3 = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(timeDD3, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(timeDD3, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Black);
   lv_label_set_text_static(timeDD3, ":00");
   lv_obj_align(timeDD3, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   if (settingsController.GetPTSGaugeStyle() == Pinetime::Controllers::Settings::PTSGaugeStyle::Half) {
@@ -534,8 +559,8 @@ void WatchFacePineTimeStyle::Refresh() {
     lv_label_set_text_fmt(stepValue, "%luK", (stepCount.Get() / 1000));
     lv_obj_realign(stepValue);
     if (stepCount.Get() > settingsController.GetStepsGoal()) {
-      lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-      lv_obj_set_style_local_scale_grad_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+      lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, White);
+      lv_obj_set_style_local_scale_grad_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, White);
     }
   }
 
@@ -578,9 +603,9 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
         valueTime = GetNext(valueTime);
       }
       settingsController.SetPTSColorTime(valueTime);
-      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, valueTime);
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, valueTime);
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, valueTime);
     }
     if (object == btnPrevTime) {
       valueTime = GetPrevious(valueTime);
@@ -588,35 +613,35 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
         valueTime = GetPrevious(valueTime);
       }
       settingsController.SetPTSColorTime(valueTime);
-      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, valueTime);
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, valueTime);
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, valueTime);
     }
     if (object == btnNextBar) {
       valueBar = GetNext(valueBar);
-      if (valueBar == Controllers::Settings::Colors::Black) {
+      if (valueBar == Black) {
         valueBar = GetNext(valueBar);
       }
-      if (valueBar == Controllers::Settings::Colors::White) {
-        needle_colors[0] = LV_COLOR_BLACK;
+      if (valueBar == White) {
+        needle_colors = Black;
       } else {
-        needle_colors[0] = LV_COLOR_WHITE;
+        needle_colors = White;
       }
       settingsController.SetPTSColorBar(valueBar);
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBar));
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueBar);
     }
     if (object == btnPrevBar) {
       valueBar = GetPrevious(valueBar);
-      if (valueBar == Controllers::Settings::Colors::Black) {
+      if (valueBar == Black) {
         valueBar = GetPrevious(valueBar);
       }
-      if (valueBar == Controllers::Settings::Colors::White) {
-        needle_colors[0] = LV_COLOR_BLACK;
+      if (valueBar == White) {
+        needle_colors = Black;
       } else {
-        needle_colors[0] = LV_COLOR_WHITE;
+        needle_colors = White;
       }
       settingsController.SetPTSColorBar(valueBar);
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBar));
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueBar);
     }
     if (object == btnNextBG) {
       valueBG = GetNext(valueBG);
@@ -624,7 +649,7 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
         valueBG = GetNext(valueBG);
       }
       settingsController.SetPTSColorBG(valueBG);
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueBG);
     }
     if (object == btnPrevBG) {
       valueBG = GetPrevious(valueBG);
@@ -632,42 +657,44 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
         valueBG = GetPrevious(valueBG);
       }
       settingsController.SetPTSColorBG(valueBG);
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueBG);
     }
     if (object == btnReset) {
-      needle_colors[0] = LV_COLOR_WHITE;
-      settingsController.SetPTSColorTime(Controllers::Settings::Colors::Teal);
-      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
-      settingsController.SetPTSColorBar(Controllers::Settings::Colors::Teal);
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
-      settingsController.SetPTSColorBG(Controllers::Settings::Colors::Black);
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Black));
+      needle_colors = White;
+      settingsController.SetPTSColorTime(Teal);
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Teal);
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Teal);
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Teal);
+      settingsController.SetPTSColorBar(Teal);
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Teal);
+      settingsController.SetPTSColorBG(Black);
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Black);
     }
     if (object == btnRandom) {
-      valueTime = static_cast<Controllers::Settings::Colors>(rand() % 17);
-      valueBar = static_cast<Controllers::Settings::Colors>(rand() % 17);
-      valueBG = static_cast<Controllers::Settings::Colors>(rand() % 17);
+      static std::mt19937 g(std::random_device {}());
+      std::uniform_int_distribution<std::size_t> distrib(0, StyleColors.size() - 1);
+      valueTime = StyleColors[distrib(g)];
+      valueBar = StyleColors[distrib(g)];
+      valueBG = StyleColors[distrib(g)];
       if (valueTime == valueBG) {
         valueBG = GetNext(valueBG);
       }
-      if (valueBar == Controllers::Settings::Colors::Black) {
+      if (valueBar == Black) {
         valueBar = GetPrevious(valueBar);
       }
-      if (valueBar == Controllers::Settings::Colors::White) {
-        needle_colors[0] = LV_COLOR_BLACK;
+      if (valueBar == White) {
+        needle_colors = Black;
       } else {
-        needle_colors[0] = LV_COLOR_WHITE;
+        needle_colors = White;
       }
-      settingsController.SetPTSColorTime(static_cast<Controllers::Settings::Colors>(valueTime));
-      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
-      settingsController.SetPTSColorBar(static_cast<Controllers::Settings::Colors>(valueBar));
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBar));
-      settingsController.SetPTSColorBG(static_cast<Controllers::Settings::Colors>(valueBG));
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
+      settingsController.SetPTSColorTime(valueTime);
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, valueTime);
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, valueTime);
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, valueTime);
+      settingsController.SetPTSColorBar(valueBar);
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueBar);
+      settingsController.SetPTSColorBG(valueBG);
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueBG);
     }
     if (object == btnClose) {
       CloseMenu();
@@ -756,25 +783,20 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
   }
 }
 
-Pinetime::Controllers::Settings::Colors WatchFacePineTimeStyle::GetNext(Pinetime::Controllers::Settings::Colors color) {
-  auto colorAsInt = static_cast<uint8_t>(color);
-  Pinetime::Controllers::Settings::Colors nextColor;
-  if (colorAsInt < 17) {
-    nextColor = static_cast<Controllers::Settings::Colors>(colorAsInt + 1);
+Color WatchFacePineTimeStyle::GetNext(Color color) {
+  auto itNextColor = std::next(std::find(StyleColors.begin(), StyleColors.end(), color));
+  if (itNextColor != std::end(StyleColors)) {
+    return *itNextColor;
   } else {
-    nextColor = static_cast<Controllers::Settings::Colors>(0);
+    return *std::begin(StyleColors);
   }
-  return nextColor;
 }
 
-Pinetime::Controllers::Settings::Colors WatchFacePineTimeStyle::GetPrevious(Pinetime::Controllers::Settings::Colors color) {
-  auto colorAsInt = static_cast<uint8_t>(color);
-  Pinetime::Controllers::Settings::Colors prevColor;
-
-  if (colorAsInt > 0) {
-    prevColor = static_cast<Controllers::Settings::Colors>(colorAsInt - 1);
+Color WatchFacePineTimeStyle::GetPrevious(Color color) {
+  auto itPreviousColor = std::next(std::find(StyleColors.rbegin(), StyleColors.rend(), color));
+  if (itPreviousColor != std::rend(StyleColors)) {
+    return *itPreviousColor;
   } else {
-    prevColor = static_cast<Controllers::Settings::Colors>(17);
+    return *std::rbegin(StyleColors);
   }
-  return prevColor;
 }

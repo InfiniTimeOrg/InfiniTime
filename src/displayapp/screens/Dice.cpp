@@ -9,7 +9,7 @@ using namespace Pinetime::Applications::Screens;
 
 namespace {
   lv_obj_t* MakeLabel(lv_font_t* font,
-                      lv_color_t color,
+                      Colors::Color color,
                       lv_label_long_mode_t longMode,
                       uint8_t width,
                       lv_label_align_t labelAlignment,
@@ -50,7 +50,7 @@ Dice::Dice(Controllers::MotionController& motionController,
   gen.seed(sseq);
 
   lv_obj_t* nCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
-                                      LV_COLOR_WHITE,
+                                      Colors::White,
                                       LV_LABEL_LONG_EXPAND,
                                       0,
                                       LV_LABEL_ALIGN_CENTER,
@@ -61,7 +61,7 @@ Dice::Dice(Controllers::MotionController& motionController,
                                       0);
 
   lv_obj_t* dCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
-                                      LV_COLOR_WHITE,
+                                      Colors::White,
                                       LV_LABEL_LONG_EXPAND,
                                       0,
                                       LV_LABEL_ALIGN_CENTER,
@@ -113,7 +113,7 @@ Dice::Dice(Controllers::MotionController& motionController,
   lv_obj_align(btnRoll, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   btnRollLabel = MakeLabel(&jetbrains_mono_bold_20,
-                           LV_COLOR_WHITE,
+                           Colors::White,
                            LV_LABEL_LONG_EXPAND,
                            0,
                            LV_LABEL_ALIGN_CENTER,

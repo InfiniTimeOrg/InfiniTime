@@ -60,7 +60,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
 
   lv_style_init(&btn_style);
   lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, buttonHeight / 4);
-  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, InfiniTimeTheme::Colors::bgAlt);
 
   btn1 = lv_btn_create(lv_scr_act(), nullptr);
   btn1->user_data = this;
@@ -89,9 +89,14 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   btn3->user_data = this;
   lv_obj_set_event_cb(btn3, ButtonEventHandler);
   lv_obj_add_style(btn3, LV_BTN_PART_MAIN, &btn_style);
-  lv_obj_set_style_local_bg_color(btn3, LV_BTN_PART_MAIN, static_cast<lv_state_t>(ButtonState::NotificationsOff), LV_COLOR_RED);
-  static constexpr lv_color_t violet = LV_COLOR_MAKE(0x60, 0x00, 0xff);
-  lv_obj_set_style_local_bg_color(btn3, LV_BTN_PART_MAIN, static_cast<lv_state_t>(ButtonState::Sleep), violet);
+  lv_obj_set_style_local_bg_color(btn3,
+                                  LV_BTN_PART_MAIN,
+                                  static_cast<lv_state_t>(ButtonState::NotificationsOff),
+                                  Colors::Red);
+  lv_obj_set_style_local_bg_color(btn3,
+                                  LV_BTN_PART_MAIN,
+                                  static_cast<lv_state_t>(ButtonState::Sleep),
+                                  Colors::Violet);
   lv_obj_set_size(btn3, buttonWidth, buttonHeight);
   lv_obj_align(btn3, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, buttonXOffset, 0);
 
