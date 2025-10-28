@@ -15,13 +15,22 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::MotorController& motorController,
                              System::SystemTask& systemTask,
-                             Modes mode)
+                             Modes mode,
+                             Controllers::FS& filesystem)
   : app {app},
     notificationManager {notificationManager},
     alertNotificationService {alertNotificationService},
     motorController {motorController},
     wakeLock(systemTask),
     mode {mode} {
+
+  lfs_file f = {};
+  if (filesystem.FileOpen(&f, "/fonts/lang_pack.bin", LFS_O_RDONLY) >= 0) {
+    filesystem.FileClose(&f);
+    lang_pack = lv_font_load("F:/fonts/lang_pack.bin");
+    jetbrains_mono_bold_20.fallback = lang_pack;
+  }
+
 
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
@@ -66,6 +75,10 @@ Notifications::~Notifications() {
   // make sure we stop any vibrations before exiting
   motorController.StopRinging();
   lv_obj_clean(lv_scr_act());
+
+  if (lang_pack != nullptr) {
+    lv_font_free(lang_pack);
+  }
 }
 
 void Notifications::Refresh() {
