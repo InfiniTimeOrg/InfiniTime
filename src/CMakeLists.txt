@@ -183,83 +183,35 @@ set(LITTLEFS_SRC
 
 # ====== LVGL (z repo) ======
 # LVGL źródła – tylko pliki .c
-set(LVGL_SRC
-    libs/lv_conf.h
-    libs/lvgl/lvgl.h
+# ===============================
+# LVGL — auto-detect all .c files
+# ===============================
+# Usuń wcześniejsze set(LVGL_SRC ...) i add_library(lvgl ...) jeśli są
 
-    libs/lvgl/src/lv_core/lv_disp.c
-    libs/lvgl/src/lv_core/lv_group.c
-    libs/lvgl/src/lv_core/lv_indev.c
-    libs/lvgl/src/lv_core/lv_obj.c
-    libs/lvgl/src/lv_core/lv_refr.c
-    libs/lvgl/src/lv_core/lv_style.c
+# Zbierz wszystkie źródła C z LVGL (bez nagłówków)
+file(GLOB_RECURSE LVGL_SRC
+    "${CMAKE_CURRENT_SOURCE_DIR}/libs/lvgl/src/*.c"
+)
 
-    libs/lvgl/src/lv_draw/lv_draw.c
-    libs/lvgl/src/lv_draw/lv_draw_arc.c
-    libs/lvgl/src/lv_draw/lv_draw_img.c
-    libs/lvgl/src/lv_draw/lv_draw_label.c
-    libs/lvgl/src/lv_draw/lv_draw_line.c
-    libs/lvgl/src/lv_draw/lv_draw_rect.c
-    libs/lvgl/src/lv_draw/lv_draw_triangle.c
+if(NOT LVGL_SRC)
+  message(FATAL_ERROR "Nie znaleziono plików źródłowych LVGL w: ${CMAKE_CURRENT_SOURCE_DIR}/libs/lvgl/src")
+endif()
 
-    libs/lvgl/src/lv_font/lv_font.c
-    libs/lvgl/src/lv_font/lv_font_fmt_txt.c
-    libs/lvgl/src/lv_font/lv_symbol_def.c
+add_library(lvgl STATIC ${LVGL_SRC})
 
-    libs/lvgl/src/lv_hal/lv_hal_disp.c
-    libs/lvgl/src/lv_hal/lv_hal_indev.c
-    libs/lvgl/src/lv_hal/lv_hal_tick.c
+target_include_directories(lvgl SYSTEM PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/libs"           # lv_conf.h
+    "${CMAKE_CURRENT_SOURCE_DIR}/libs/lvgl"
+    "${CMAKE_CURRENT_SOURCE_DIR}/libs/lvgl/src"
+)
 
-    libs/lvgl/src/lv_misc/lv_anim.c
-    libs/lvgl/src/lv_misc/lv_area.c
-    libs/lvgl/src/lv_misc/lv_color.c
-    libs/lvgl/src/lv_misc/lv_debug.c
-    libs/lvgl/src/lv_misc/lv_fs.c
-    libs/lvgl/src/lv_misc/lv_gc.c
-    libs/lvgl/src/lv_misc/lv_ll.c
-    libs/lvgl/src/lv_misc/lv_log.c
-    libs/lvgl/src/lv_misc/lv_math.c
-    libs/lvgl/src/lv_misc/lv_mem.c
-    libs/lvgl/src/lv_misc/lv_printf.c
-    libs/lvgl/src/lv_misc/lv_task.c
-    libs/lvgl/src/lv_misc/lv_txt.c
-    libs/lvgl/src/lv_misc/lv_types.c
-    libs/lvgl/src/lv_misc/lv_utils.c
-
-    libs/lvgl/src/lv_themes/lv_theme.c
-    libs/lvgl/src/lv_themes/lv_theme_empty.c
-    libs/lvgl/src/lv_themes/lv_theme_material.c
-
-    libs/lvgl/src/lv_widgets/lv_arc.c
-    libs/lvgl/src/lv_widgets/lv_bar.c
-    libs/lvgl/src/lv_widgets/lv_btn.c
-    libs/lvgl/src/lv_widgets/lv_btnmatrix.c
-    libs/lvgl/src/lv_widgets/lv_calendar.c
-    libs/lvgl/src/lv_widgets/lv_canvas.c
-    libs/lvgl/src/lv_widgets/lv_chart.c
-    libs/lvgl/src/lv_widgets/lv_checkbox.c
-    libs/lvgl/src/lv_widgets/lv_cont.c
-    libs/lvgl/src/lv_widgets/lv_dropdown.c
-    libs/lvgl/src/lv_widgets/lv_gauge.c
-    libs/lvgl/src/lv_widgets/lv_img.c
-    libs/lvgl/src/lv_widgets/lv_imgbtn.c
-    libs/lvgl/src/lv_widgets/lv_keyboard.c
-    libs/lvgl/src/lv_widgets/lv_label.c
-    libs/lvgl/src/lv_widgets/lv_led.c
-    libs/lvgl/src/lv_widgets/lv_line.c
-    libs/lvgl/src/lv_widgets/lv_list.c
-    libs/lvgl/src/lv_widgets/lv_msgbox.c
-    libs/lvgl/src/lv_widgets/lv_page.c
-    libs/lvgl/src/lv_widgets/lv_roller.c
-    libs/lvgl/src/lv_widgets/lv_slider.c
-    libs/lvgl/src/lv_widgets/lv_spinbox.c
-    libs/lvgl/src/lv_widgets/lv_spinner.c
-    libs/lvgl/src/lv_widgets/lv_switch.c
-    libs/lvgl/src/lv_widgets/lv_table.c
-    libs/lvgl/src/lv_widgets/lv_tabview.c
-    libs/lvgl/src/lv_widgets/lv_textarea.c
-    libs/lvgl/src/lv_widgets/lv_tileview.c
-    libs/lvgl/src/lv_widgets/lv_win.c
+# (opcjonalnie) te same flagi co wcześniej dla innych targetów
+target_compile_options(lvgl PRIVATE
+    ${COMMON_FLAGS}
+    $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+    $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+    $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+    $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
 )
 
 
