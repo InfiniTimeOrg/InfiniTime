@@ -64,7 +64,7 @@ _Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devi
 ### Build, flash and debug
 
 - [InfiniTime simulator](https://github.com/InfiniTimeOrg/InfiniSim)
-- [Build the project](doc/buildAndProgram.md)
+- [Build the project](doc/buildA ndProgram.md)
 - [Build the project with Docker](doc/buildWithDocker.md)
 - [Build the project with VSCode](doc/buildWithVScode.md)
 - [Flash the firmware using OpenOCD and STLinkV2](doc/openOCD.md)

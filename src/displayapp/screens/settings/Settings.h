@@ -6,6 +6,7 @@
 #include "displayapp/screens/ScreenList.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/List.h"
+#include "displayapp/apps/Apps.h"
 
 namespace Pinetime {
 
@@ -50,7 +51,7 @@ namespace Pinetime {
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
           {Symbols::list, "About", Apps::SysInfo},
 
-          // {Symbols::none, "None", Apps::None},
+          {Symbols::clock, "Pomodoro", Apps::SettingPomodoro},
           // {Symbols::none, "None", Apps::None},
           // {Symbols::none, "None", Apps::None},
           // {Symbols::none, "None", Apps::None},

@@ -14,6 +14,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/timer/Timer.h"
 #include "components/alarm/AlarmController.h"
+#include "components/pomodoro/PomodoroController.h"
 #include "touchhandler/TouchHandler.h"
 
 #include "displayapp/Messages.h"
@@ -102,6 +103,7 @@ namespace Pinetime {
       Pinetime::Controllers::FirmwareValidator validator;
       Pinetime::Components::LittleVgl lvgl;
       Pinetime::Controllers::Timer timer;
+      Pinetime::Controllers::PomodoroController pomodoroController;
 
       AppControllers controllers;
       TaskHandle_t taskHandle;

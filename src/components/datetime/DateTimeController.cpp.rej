@@ -1,0 +1,13 @@
+@@ -104,7 +104,11 @@
+   // Notify the system task that the time has changed
+   systemTasksMsgQueue.Push(Pinetime::System::Messages::OnNewTime);
+ 
++#ifdef INFINITIME_MACOS_CHRONO_FIX
++  std::time_t currentTime = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::system_clock::duration>(currentDateTime));
++#else
+   std::time_t currentTime = std::chrono::system_clock::to_time_t(currentDateTime);
++#endif
+   UpdateTime(currentTime);
+ 
+   NRF_LOG_INFO("New time: %d", currentTime);
+\ No newline at end of line

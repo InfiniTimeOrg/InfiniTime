@@ -470,6 +470,8 @@ list(APPEND SOURCE_FILES
         components/motor/MotorController.cpp
         components/settings/Settings.cpp
         components/timer/Timer.cpp
+        components/pomodoro/PomodoroController.cpp
+        components/pomodoro/SessionStatistics.cpp
         components/alarm/AlarmController.cpp
         components/fs/FS.cpp
         drivers/Cst816s.cpp
@@ -658,6 +660,8 @@ set(INCLUDE_FILES
         components/ble/SimpleWeatherService.h
         components/settings/Settings.h
         components/timer/Timer.h
+        components/pomodoro/PomodoroController.h
+        components/pomodoro/SessionStatistics.h
         components/alarm/AlarmController.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
