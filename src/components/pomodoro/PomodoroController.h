@@ -7,9 +7,11 @@
 #include <timers.h>
 #include "components/timer/Timer.h"
 #include "components/settings/Settings.h"
+#include "components/pomodoro/SessionStatistics.h"
 
 namespace Pinetime {
   namespace Controllers {
+    class DateTime;
     
     class PomodoroController {
     public:
@@ -28,7 +30,7 @@ namespace Pinetime {
       
       using TimerCallback = std::function<void()>;
       
-      PomodoroController(Settings& settingsController);
+      PomodoroController(Settings& settingsController, DateTime& dateTimeController);
       
       // Session control methods
       void StartWorkSession();
@@ -48,6 +50,11 @@ namespace Pinetime {
       bool IsLongBreakDue() const;
       void ResetSessionCounter();
       
+      // Statistics methods
+      uint8_t GetDailyCompletedSessions() const;
+      std::chrono::minutes GetDailyWorkTime() const;
+      void CheckAndResetDailyStatistics();
+      
       // Configuration methods
       void SetSessionsBeforeLongBreak(uint8_t sessions);
       
@@ -60,6 +67,7 @@ namespace Pinetime {
     private:
       Timer timer;
       Settings& settingsController;
+      SessionStatistics sessionStatistics;
       
       SessionState currentState;
       SessionType currentSessionType;

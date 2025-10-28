@@ -13,16 +13,12 @@ PomodoroTimer::PomodoroTimer(AppControllers& controllers) : controllers(controll
   displaySessionType = Controllers::PomodoroController::SessionType::Work;
   displayCompletedSessions = 0;
   displayCyclePosition = 0;
+  displayDailyWorkTime = std::chrono::minutes {0};
 
   // Initialize notification components (initially hidden)
   notificationContainer = nullptr;
   lblNotification = nullptr;
   taskHideNotification = nullptr;
-  
-  // Initialize settings modal components (initially hidden)
-  settingsModal = nullptr;
-  settingsContainer = nullptr;
-  settingsModalVisible = false;
 
   // Create session type label at the top
   lblSessionType = lv_label_create(lv_scr_act(), nullptr);
@@ -65,21 +61,22 @@ PomodoroTimer::PomodoroTimer(AppControllers& controllers) : controllers(controll
   lv_label_set_text_static(lblStartPause, "START");
   lv_obj_align(lblStartPause, btnStartPause, LV_ALIGN_CENTER, 0, 0);
 
-  // Create settings button
-  btnSettings = lv_btn_create(lv_scr_act(), nullptr);
-  btnSettings->user_data = this;
-  lv_obj_set_size(btnSettings, 80, 35);
-  lv_obj_align(btnSettings, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -15, -15);
-  lv_obj_set_style_local_bg_color(btnSettings, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_obj_set_event_cb(btnSettings, SettingsEventHandler);
+  // Create reset button
+  btnReset = lv_btn_create(lv_scr_act(), nullptr);
+  btnReset->user_data = this;
+  lv_obj_set_size(btnReset, 80, 35);
+  lv_obj_align(btnReset, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -15, -15);
+  lv_obj_set_style_local_bg_color(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_event_cb(btnReset, ResetEventHandler);
 
-  lblSettings = lv_label_create(btnSettings, nullptr);
-  lv_label_set_text_static(lblSettings, "SET");
-  lv_obj_align(lblSettings, btnSettings, LV_ALIGN_CENTER, 0, 0);
+  lblReset = lv_label_create(btnReset, nullptr);
+  lv_label_set_text_static(lblReset, "RESET");
+  lv_obj_align(lblReset, btnReset, LV_ALIGN_CENTER, 0, 0);
 
-  // Create daily statistics display (positioned at top corners)
+  // Create daily statistics display (positioned at top left - shows completed sessions)
   lblDailyStats = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lblDailyStats, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_text_font(lblDailyStats, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   lv_label_set_text_static(lblDailyStats, "0");
   lv_obj_align(lblDailyStats, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, 35);
 
@@ -88,6 +85,12 @@ PomodoroTimer::PomodoroTimer(AppControllers& controllers) : controllers(controll
   lv_obj_set_style_local_text_color(lblCycleProgress, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_label_set_text_static(lblCycleProgress, "2/4");
   lv_obj_align(lblCycleProgress, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -10, 35);
+
+  // Create daily work time display (positioned below daily stats)
+  lblDailyWorkTime = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(lblDailyWorkTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_label_set_text_static(lblDailyWorkTime, "0h 0m");
+  lv_obj_align(lblDailyWorkTime, lblDailyStats, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 2);
 
   // Apply initial theme
   ApplySessionTheme();
@@ -119,13 +122,23 @@ PomodoroTimer::~PomodoroTimer() {
 void PomodoroTimer::Refresh() {
   auto& pomodoroController = controllers.pomodoroController;
 
-  // Update time display
+  // Check for midnight reset (this will reset statistics if a new day has started)
+  pomodoroController.CheckAndResetDailyStatistics();
+
+  // Update time display - always update to ensure seconds are shown
   auto timeRemaining = pomodoroController.GetTimeRemaining();
   auto seconds = std::chrono::duration_cast<std::chrono::seconds>(timeRemaining);
 
-  displaySeconds = seconds;
-  if (displaySeconds.IsUpdated()) {
+  // Always update the display when timer is active to show seconds counting down
+  if (pomodoroController.GetCurrentState() == Controllers::PomodoroController::SessionState::Active) {
+    displaySeconds = seconds;
     UpdateTimeDisplay();
+  } else {
+    // When not active, only update if value changed
+    displaySeconds = seconds;
+    if (displaySeconds.IsUpdated()) {
+      UpdateTimeDisplay();
+    }
   }
 
   // Update session state
@@ -161,6 +174,13 @@ void PomodoroTimer::Refresh() {
   displayCyclePosition = cyclePosition;
   if (displayCyclePosition.IsUpdated()) {
     UpdateProgressDisplay();
+  }
+
+  // Update daily work time
+  auto dailyWorkTime = pomodoroController.GetDailyWorkTime();
+  displayDailyWorkTime = dailyWorkTime;
+  if (displayDailyWorkTime.IsUpdated()) {
+    UpdateStatisticsDisplay();
   }
 }
 
@@ -250,21 +270,28 @@ void PomodoroTimer::UpdateControlButtons() {
   bool buttonEnabled = true; // All states should allow button interaction
   lv_obj_set_click(btnStartPause, buttonEnabled);
 
-  // Update settings button - disable during active sessions to prevent accidental changes
-  bool settingsEnabled = (currentState == Controllers::PomodoroController::SessionState::Ready ||
-                          currentState == Controllers::PomodoroController::SessionState::Completed);
-  lv_obj_set_click(btnSettings, settingsEnabled);
+  // Update reset button - enable when there's an active or paused session
+  bool resetEnabled = (currentState == Controllers::PomodoroController::SessionState::Active ||
+                       currentState == Controllers::PomodoroController::SessionState::Paused);
+  lv_obj_set_click(btnReset, resetEnabled);
 
-  // Visual feedback for disabled settings button
-  lv_color_t settingsColor = settingsEnabled ? Colors::bgAlt : Colors::bgDark;
-  lv_obj_set_style_local_bg_color(btnSettings, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, settingsColor);
+  // Visual feedback for disabled reset button
+  lv_color_t resetColor = resetEnabled ? Colors::deepOrange : Colors::bgDark;
+  lv_obj_set_style_local_bg_color(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, resetColor);
 }
 
 void PomodoroTimer::UpdateStatisticsDisplay() {
   auto& pomodoroController = controllers.pomodoroController;
-  auto completedSessions = pomodoroController.GetCompletedWorkSessions();
 
-  lv_label_set_text_fmt(lblDailyStats, "%d", completedSessions);
+  // Update daily completed sessions count
+  auto dailyCompletedSessions = pomodoroController.GetDailyCompletedSessions();
+  lv_label_set_text_fmt(lblDailyStats, "%d", dailyCompletedSessions);
+
+  // Update daily work time display
+  auto dailyWorkTime = pomodoroController.GetDailyWorkTime();
+  auto hours = dailyWorkTime.count() / 60;
+  auto minutes = dailyWorkTime.count() % 60;
+  lv_label_set_text_fmt(lblDailyWorkTime, "%ldh %ldm", hours, minutes);
 }
 
 void PomodoroTimer::ApplySessionTheme() {
@@ -275,7 +302,6 @@ void PomodoroTimer::ApplySessionTheme() {
   // Get theme colors for current session type
   auto primaryColor = GetSessionThemeColor(sessionType);
   auto secondaryColor = GetSessionSecondaryColor(sessionType);
-  auto backgroundTint = GetSessionBackgroundTint(sessionType);
 
   // Apply primary theme color to main elements
   lv_obj_set_style_local_text_color(lblSessionType, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, primaryColor);
@@ -285,9 +311,6 @@ void PomodoroTimer::ApplySessionTheme() {
   auto totalSeconds = std::chrono::duration_cast<std::chrono::seconds>(timeRemaining).count();
   auto sessionDuration = GetSessionDurationSeconds(sessionType);
   UpdateProgressBarColor(totalSeconds, sessionDuration);
-
-  // Apply subtle background tinting for different session types
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, backgroundTint);
 
   // Apply theme to time display - make it more prominent during work sessions
   if (sessionType == Controllers::PomodoroController::SessionType::Work) {
@@ -365,19 +388,6 @@ lv_color_t PomodoroTimer::GetSessionSecondaryColor(Controllers::PomodoroControll
   }
 }
 
-lv_color_t PomodoroTimer::GetSessionBackgroundTint(Controllers::PomodoroController::SessionType type) {
-  switch (type) {
-    case Controllers::PomodoroController::SessionType::Work:
-      return LV_COLOR_MAKE(0x20, 0x18, 0x18); // Subtle warm tint for work sessions
-    case Controllers::PomodoroController::SessionType::ShortBreak:
-      return LV_COLOR_MAKE(0x18, 0x20, 0x18); // Subtle green tint for short breaks
-    case Controllers::PomodoroController::SessionType::LongBreak:
-      return LV_COLOR_MAKE(0x18, 0x18, 0x20); // Subtle blue tint for long breaks
-    default:
-      return Colors::bgDark;
-  }
-}
-
 void PomodoroTimer::StartPauseEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<PomodoroTimer*>(obj->user_data);
 
@@ -429,33 +439,12 @@ void PomodoroTimer::StartPauseEventHandler(lv_obj_t* obj, lv_event_t event) {
 }
 
 void PomodoroTimer::HandleSessionCompletion() {
-  auto& pomodoroController = controllers.pomodoroController;
-  auto currentSessionType = pomodoroController.GetCurrentSessionType();
-
-  // Determine next session type based on current session and cycle position
-  if (currentSessionType == Controllers::PomodoroController::SessionType::Work) {
-    // Work session completed, determine break type
-    if (pomodoroController.IsLongBreakDue()) {
-      // Time for a long break
-      // The controller should handle setting the session type internally
-      // For now, we'll just reset to ready state
-    } else {
-      // Time for a short break
-      // The controller should handle setting the session type internally
-    }
-  } else {
-    // Break completed, next should be work session
-    // The controller should handle setting the session type internally
-  }
-
-  // The controller should transition to ready state automatically
-  // We just need to update the UI
   UpdateSessionTypeDisplay();
   UpdateProgressDisplay();
   ApplySessionTheme();
 }
 
-void PomodoroTimer::SettingsEventHandler(lv_obj_t* obj, lv_event_t event) {
+void PomodoroTimer::ResetEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<PomodoroTimer*>(obj->user_data);
 
   // Handle button press visual feedback
@@ -467,27 +456,19 @@ void PomodoroTimer::SettingsEventHandler(lv_obj_t* obj, lv_event_t event) {
     return;
   }
 
-  if (event == LV_EVENT_LONG_PRESSED) {
-    // Long press to cancel current session (if active or paused)
-    auto currentState = screen->controllers.pomodoroController.GetCurrentState();
-    if (currentState == Controllers::PomodoroController::SessionState::Active ||
-        currentState == Controllers::PomodoroController::SessionState::Paused) {
-      screen->controllers.pomodoroController.CancelSession();
-      screen->UpdateControlButtons();
-      screen->UpdateTimeDisplay();
-
-      // Visual feedback for cancellation
-      lv_obj_set_style_local_bg_color(obj, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::deepOrange);
-    }
-    return;
-  }
-
   if (event != LV_EVENT_SHORT_CLICKED) {
     return;
   }
 
-  // Show settings modal
-  screen->ShowSettingsModal();
+  // Reset current session (cancel and return to ready state)
+  auto currentState = screen->controllers.pomodoroController.GetCurrentState();
+  if (currentState == Controllers::PomodoroController::SessionState::Active ||
+      currentState == Controllers::PomodoroController::SessionState::Paused) {
+    screen->controllers.pomodoroController.CancelSession();
+    screen->UpdateControlButtons();
+    screen->UpdateTimeDisplay();
+    screen->ApplySessionTheme();
+  }
 }
 
 int PomodoroTimer::GetSessionDurationSeconds(Controllers::PomodoroController::SessionType type) {
@@ -625,214 +606,4 @@ void PomodoroTimer::HideNotificationCallback(lv_task_t* task) {
 void PomodoroTimer::RefreshTaskCallback(lv_task_t* task) {
   auto* screen = static_cast<PomodoroTimer*>(task->user_data);
   screen->Refresh();
-}
-void
- PomodoroTimer::ShowSettingsModal() {
-  if (settingsModalVisible) {
-    return;
-  }
-  
-  // Create modal background
-  settingsModal = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(settingsModal, LV_HOR_RES, LV_VER_RES);
-  lv_obj_set_style_local_bg_color(settingsModal, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0, 0, 0));
-  lv_obj_set_style_local_bg_opa(settingsModal, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_70);
-  
-  // Create settings container
-  settingsContainer = lv_cont_create(settingsModal, nullptr);
-  lv_obj_set_size(settingsContainer, 200, 180);
-  lv_obj_align(settingsContainer, settingsModal, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_style_local_bg_color(settingsContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_obj_set_style_local_border_color(settingsContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
-  lv_obj_set_style_local_border_width(settingsContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 2);
-  lv_obj_set_style_local_radius(settingsContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
-  
-  // Title
-  lv_obj_t* title = lv_label_create(settingsContainer, nullptr);
-  lv_label_set_text_static(title, "Pomodoro Settings");
-  lv_obj_align(title, settingsContainer, LV_ALIGN_IN_TOP_MID, 0, 10);
-  
-  // Work duration buttons
-  btnWorkDuration25 = lv_btn_create(settingsContainer, nullptr);
-  btnWorkDuration25->user_data = this;
-  lv_obj_set_size(btnWorkDuration25, 60, 25);
-  lv_obj_align(btnWorkDuration25, title, LV_ALIGN_OUT_BOTTOM_LEFT, 20, 10);
-  lv_obj_set_event_cb(btnWorkDuration25, SettingsModalEventHandler);
-  
-  lv_obj_t* lbl25 = lv_label_create(btnWorkDuration25, nullptr);
-  lv_label_set_text_static(lbl25, "25m");
-  lv_obj_align(lbl25, btnWorkDuration25, LV_ALIGN_CENTER, 0, 0);
-  
-  btnWorkDuration50 = lv_btn_create(settingsContainer, nullptr);
-  btnWorkDuration50->user_data = this;
-  lv_obj_set_size(btnWorkDuration50, 60, 25);
-  lv_obj_align(btnWorkDuration50, btnWorkDuration25, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
-  lv_obj_set_event_cb(btnWorkDuration50, SettingsModalEventHandler);
-  
-  lv_obj_t* lbl50 = lv_label_create(btnWorkDuration50, nullptr);
-  lv_label_set_text_static(lbl50, "50m");
-  lv_obj_align(lbl50, btnWorkDuration50, LV_ALIGN_CENTER, 0, 0);
-  
-  // Short break controls
-  lv_obj_t* lblShortBreak = lv_label_create(settingsContainer, nullptr);
-  lv_label_set_text_static(lblShortBreak, "Short Break:");
-  lv_obj_align(lblShortBreak, btnWorkDuration25, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 15);
-  
-  btnShortBreakMinus = lv_btn_create(settingsContainer, nullptr);
-  btnShortBreakMinus->user_data = this;
-  lv_obj_set_size(btnShortBreakMinus, 30, 25);
-  lv_obj_align(btnShortBreakMinus, lblShortBreak, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 5);
-  lv_obj_set_event_cb(btnShortBreakMinus, SettingsModalEventHandler);
-  
-  lv_obj_t* lblMinus1 = lv_label_create(btnShortBreakMinus, nullptr);
-  lv_label_set_text_static(lblMinus1, "-");
-  lv_obj_align(lblMinus1, btnShortBreakMinus, LV_ALIGN_CENTER, 0, 0);
-  
-  lblShortBreakValue = lv_label_create(settingsContainer, nullptr);
-  lv_obj_align(lblShortBreakValue, btnShortBreakMinus, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
-  
-  btnShortBreakPlus = lv_btn_create(settingsContainer, nullptr);
-  btnShortBreakPlus->user_data = this;
-  lv_obj_set_size(btnShortBreakPlus, 30, 25);
-  lv_obj_align(btnShortBreakPlus, lblShortBreakValue, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
-  lv_obj_set_event_cb(btnShortBreakPlus, SettingsModalEventHandler);
-  
-  lv_obj_t* lblPlus1 = lv_label_create(btnShortBreakPlus, nullptr);
-  lv_label_set_text_static(lblPlus1, "+");
-  lv_obj_align(lblPlus1, btnShortBreakPlus, LV_ALIGN_CENTER, 0, 0);
-  
-  // Long break controls
-  lv_obj_t* lblLongBreak = lv_label_create(settingsContainer, nullptr);
-  lv_label_set_text_static(lblLongBreak, "Long Break:");
-  lv_obj_align(lblLongBreak, btnShortBreakMinus, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 15);
-  
-  btnLongBreakMinus = lv_btn_create(settingsContainer, nullptr);
-  btnLongBreakMinus->user_data = this;
-  lv_obj_set_size(btnLongBreakMinus, 30, 25);
-  lv_obj_align(btnLongBreakMinus, lblLongBreak, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 5);
-  lv_obj_set_event_cb(btnLongBreakMinus, SettingsModalEventHandler);
-  
-  lv_obj_t* lblMinus2 = lv_label_create(btnLongBreakMinus, nullptr);
-  lv_label_set_text_static(lblMinus2, "-");
-  lv_obj_align(lblMinus2, btnLongBreakMinus, LV_ALIGN_CENTER, 0, 0);
-  
-  lblLongBreakValue = lv_label_create(settingsContainer, nullptr);
-  lv_obj_align(lblLongBreakValue, btnLongBreakMinus, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
-  
-  btnLongBreakPlus = lv_btn_create(settingsContainer, nullptr);
-  btnLongBreakPlus->user_data = this;
-  lv_obj_set_size(btnLongBreakPlus, 30, 25);
-  lv_obj_align(btnLongBreakPlus, lblLongBreakValue, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
-  lv_obj_set_event_cb(btnLongBreakPlus, SettingsModalEventHandler);
-  
-  lv_obj_t* lblPlus2 = lv_label_create(btnLongBreakPlus, nullptr);
-  lv_label_set_text_static(lblPlus2, "+");
-  lv_obj_align(lblPlus2, btnLongBreakPlus, LV_ALIGN_CENTER, 0, 0);
-  
-  // Close button
-  btnCloseSettings = lv_btn_create(settingsContainer, nullptr);
-  btnCloseSettings->user_data = this;
-  lv_obj_set_size(btnCloseSettings, 80, 30);
-  lv_obj_align(btnCloseSettings, settingsContainer, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
-  lv_obj_set_style_local_bg_color(btnCloseSettings, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
-  lv_obj_set_event_cb(btnCloseSettings, SettingsModalEventHandler);
-  
-  lv_obj_t* lblClose = lv_label_create(btnCloseSettings, nullptr);
-  lv_label_set_text_static(lblClose, "Close");
-  lv_obj_align(lblClose, btnCloseSettings, LV_ALIGN_CENTER, 0, 0);
-  
-  // Update display with current values
-  UpdateSettingsDisplay();
-  settingsModalVisible = true;
-}
-
-void PomodoroTimer::HideSettingsModal() {
-  if (!settingsModalVisible || settingsModal == nullptr) {
-    return;
-  }
-  
-  lv_obj_del(settingsModal);
-  settingsModal = nullptr;
-  settingsContainer = nullptr;
-  settingsModalVisible = false;
-  
-  // Save settings
-  controllers.settingsController.SaveSettings();
-}
-
-void PomodoroTimer::UpdateSettingsDisplay() {
-  if (!settingsModalVisible) {
-    return;
-  }
-  
-  // Update work duration buttons
-  auto currentDuration = controllers.settingsController.GetPomodoroWorkDuration();
-  if (currentDuration == Controllers::Settings::PomodoroWorkDuration::Minutes25) {
-    lv_obj_set_style_local_bg_color(btnWorkDuration25, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
-    lv_obj_set_style_local_bg_color(btnWorkDuration50, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  } else {
-    lv_obj_set_style_local_bg_color(btnWorkDuration25, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-    lv_obj_set_style_local_bg_color(btnWorkDuration50, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
-  }
-  
-  // Update break duration displays
-  uint8_t shortBreak = controllers.settingsController.GetPomodoroShortBreakMinutes();
-  lv_label_set_text_fmt(lblShortBreakValue, "%d", shortBreak);
-  lv_obj_realign(lblShortBreakValue);
-  
-  uint8_t longBreak = controllers.settingsController.GetPomodoroLongBreakMinutes();
-  lv_label_set_text_fmt(lblLongBreakValue, "%d", longBreak);
-  lv_obj_realign(lblLongBreakValue);
-}
-
-void PomodoroTimer::SettingsModalEventHandler(lv_obj_t* obj, lv_event_t event) {
-  auto* screen = static_cast<PomodoroTimer*>(obj->user_data);
-  
-  if (event != LV_EVENT_SHORT_CLICKED) {
-    return;
-  }
-  
-  // Work duration buttons
-  if (obj == screen->btnWorkDuration25) {
-    screen->controllers.settingsController.SetPomodoroWorkDuration(Controllers::Settings::PomodoroWorkDuration::Minutes25);
-    screen->UpdateSettingsDisplay();
-  } else if (obj == screen->btnWorkDuration50) {
-    screen->controllers.settingsController.SetPomodoroWorkDuration(Controllers::Settings::PomodoroWorkDuration::Minutes50);
-    screen->UpdateSettingsDisplay();
-  }
-  
-  // Short break adjustment
-  else if (obj == screen->btnShortBreakPlus) {
-    uint8_t currentValue = screen->controllers.settingsController.GetPomodoroShortBreakMinutes();
-    if (currentValue < 15) {
-      screen->controllers.settingsController.SetPomodoroShortBreakMinutes(currentValue + 1);
-      screen->UpdateSettingsDisplay();
-    }
-  } else if (obj == screen->btnShortBreakMinus) {
-    uint8_t currentValue = screen->controllers.settingsController.GetPomodoroShortBreakMinutes();
-    if (currentValue > 3) {
-      screen->controllers.settingsController.SetPomodoroShortBreakMinutes(currentValue - 1);
-      screen->UpdateSettingsDisplay();
-    }
-  }
-  
-  // Long break adjustment
-  else if (obj == screen->btnLongBreakPlus) {
-    uint8_t currentValue = screen->controllers.settingsController.GetPomodoroLongBreakMinutes();
-    if (currentValue < 45) {
-      screen->controllers.settingsController.SetPomodoroLongBreakMinutes(currentValue + 5);
-      screen->UpdateSettingsDisplay();
-    }
-  } else if (obj == screen->btnLongBreakMinus) {
-    uint8_t currentValue = screen->controllers.settingsController.GetPomodoroLongBreakMinutes();
-    if (currentValue > 10) {
-      screen->controllers.settingsController.SetPomodoroLongBreakMinutes(currentValue - 5);
-      screen->UpdateSettingsDisplay();
-    }
-  }
-  
-  // Close button
-  else if (obj == screen->btnCloseSettings) {
-    screen->HideSettingsModal();
-  }
 }

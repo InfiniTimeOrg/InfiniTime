@@ -421,6 +421,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingShakeThreshold.cpp
         displayapp/screens/settings/SettingBluetooth.cpp
         displayapp/screens/settings/SettingOTA.cpp
+        displayapp/screens/settings/SettingPomodoro.cpp
 
         ## Watch faces
         displayapp/screens/WatchFaceAnalog.cpp

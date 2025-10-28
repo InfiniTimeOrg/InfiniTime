@@ -1,11 +1,13 @@
 #include "components/pomodoro/PomodoroController.h"
 #include "components/timer/Timer.h"
+#include "components/datetime/DateTimeController.h"
 
 using namespace Pinetime::Controllers;
 
-PomodoroController::PomodoroController(Settings& settingsController) 
+PomodoroController::PomodoroController(Settings& settingsController, DateTime& dateTimeController) 
   : timer(this, TimerCallbackStatic),
     settingsController(settingsController),
+    sessionStatistics(dateTimeController),
     currentState(SessionState::Ready),
     currentSessionType(SessionType::Work),
     pausedTimeRemaining(std::chrono::milliseconds::zero()),
@@ -107,9 +109,15 @@ void PomodoroController::OnTimerCallback() {
     return;
   }
   
-  // Increment work session counter if completing a work session
+  // Increment work session counter and update statistics if completing a work session
   if (currentSessionType == SessionType::Work) {
     completedWorkSessions++;
+    sessionStatistics.IncrementCompletedSessions();
+    
+    // Add work time to daily statistics
+    auto workDuration = GetSessionDuration(SessionType::Work);
+    auto workMinutes = std::chrono::duration_cast<std::chrono::minutes>(workDuration);
+    sessionStatistics.AddWorkTime(workMinutes);
   }
   
   TransitionToCompleted();
@@ -166,6 +174,18 @@ void PomodoroController::SetSessionsBeforeLongBreak(uint8_t sessions) {
   // This method is now deprecated since settings are managed by Settings controller
   // Keep for backward compatibility but don't use internal variable
   settingsController.SetPomodoroSessionsBeforeLongBreak(sessions);
+}
+
+uint8_t PomodoroController::GetDailyCompletedSessions() const {
+  return sessionStatistics.GetDailyCompletedSessions();
+}
+
+std::chrono::minutes PomodoroController::GetDailyWorkTime() const {
+  return sessionStatistics.GetDailyWorkTime();
+}
+
+void PomodoroController::CheckAndResetDailyStatistics() {
+  sessionStatistics.CheckAndResetIfNewDay();
 }
 
 void PomodoroController::TimerCallbackStatic(TimerHandle_t xTimer) {

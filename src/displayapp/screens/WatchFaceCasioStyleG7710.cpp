@@ -158,6 +158,8 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_label_set_text_static(heartbeatValue, "");
   lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
+  // TODO: Add here Current Pomodoro Time + session x/y
+
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(stepValue, "0");

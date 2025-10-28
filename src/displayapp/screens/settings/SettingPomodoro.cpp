@@ -14,7 +14,7 @@ namespace {
   }
 }
 
-SettingPomodoro::SettingPomodoro(Pinetime::Controllers::Settings& settingsController) 
+SettingPomodoro::SettingPomodoro(Pinetime::Controllers::Settings& settingsController)
   : settingsController {settingsController}, currentSetting(0) {
 
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
@@ -29,8 +29,8 @@ SettingPomodoro::SettingPomodoro(Pinetime::Controllers::Settings& settingsContro
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
   title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
+  lv_label_set_align(title, LV_LABEL_ALIGN_LEFT);
+  lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 1, 15);
 
   lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
@@ -91,13 +91,12 @@ void SettingPomodoro::UpdateSelected(lv_obj_t* object, lv_event_t event) {
         }
         break;
       case 1: // Sessions
-        {
-          uint8_t currentValue = settingsController.GetPomodoroSessionsBeforeLongBreak();
-          if (currentValue < 8) {
-            settingsController.SetPomodoroSessionsBeforeLongBreak(currentValue + 1);
-          }
+      {
+        uint8_t currentValue = settingsController.GetPomodoroSessionsBeforeLongBreak();
+        if (currentValue < 8) {
+          settingsController.SetPomodoroSessionsBeforeLongBreak(currentValue + 1);
         }
-        break;
+      } break;
     }
   } else if (object == btnMinus) {
     switch (currentSetting) {
@@ -110,13 +109,12 @@ void SettingPomodoro::UpdateSelected(lv_obj_t* object, lv_event_t event) {
         }
         break;
       case 1: // Sessions
-        {
-          uint8_t currentValue = settingsController.GetPomodoroSessionsBeforeLongBreak();
-          if (currentValue > 2) {
-            settingsController.SetPomodoroSessionsBeforeLongBreak(currentValue - 1);
-          }
+      {
+        uint8_t currentValue = settingsController.GetPomodoroSessionsBeforeLongBreak();
+        if (currentValue > 2) {
+          settingsController.SetPomodoroSessionsBeforeLongBreak(currentValue - 1);
         }
-        break;
+      } break;
     }
   }
 
@@ -153,6 +151,6 @@ void SettingPomodoro::UpdateDisplay() {
       lv_label_set_text_fmt(settingValue, "%d", settingsController.GetPomodoroSessionsBeforeLongBreak());
       break;
   }
-  
+
   lv_obj_realign(settingValue);
 }

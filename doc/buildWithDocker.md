@@ -20,7 +20,7 @@ git clone https://github.com/InfiniTimeOrg/InfiniTime.git
 cd InfiniTime
 git submodule update --init
 ```
-
+    Note: If you are using a local copy of the repository, you can skip this step.          
 ## Provision the image
 
 Before continuing, the build image needs to be either build locally or pulled
