@@ -12,9 +12,14 @@ RUN apt-get update -qq \
 # x86_64 / generic packages
       bash \
       build-essential \
+      clang-format \
+      clang-format-14 \
       cmake \
       git \
+      libsdl2-dev \
+      libpng-dev \
       make \
+      ninja-build \
       nodejs \
       python3 \
       python3-pip \
@@ -53,6 +58,9 @@ RUN npm i lv_font_conv@1.5.2 -g
 
 # build.sh knows how to compile
 COPY build.sh /opt/
+
+# test.sh to easily run some tests
+COPY test.sh /opt/
 
 # Lets get each in a separate docker layer for better downloads
 # GCC
