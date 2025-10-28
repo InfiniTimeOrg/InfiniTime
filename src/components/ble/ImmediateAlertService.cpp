@@ -62,8 +62,7 @@ int ImmediateAlertService::OnAlertLevelChanged(uint16_t attributeHandle, ble_gat
       auto alertLevel = static_cast<Levels>(context->om->om_data[0]);
       auto* alertString = ToString(alertLevel);
 
-      NotificationManager::Notification notif;
-      std::memcpy(notif.message.data(), alertString, strlen(alertString));
+      NotificationManager::Notification notif(alertString, strlen(alertString) + 1);
       notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
       notificationManager.Push(std::move(notif));
 
