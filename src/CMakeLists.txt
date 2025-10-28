@@ -181,28 +181,35 @@ set(LITTLEFS_SRC
   libs/littlefs/lfs.c
 )
 
-# ====== LVGL (z repo) ======
-# LVGL źródła – tylko pliki .c
 # ===============================
-# LVGL — auto-detect all .c files
+# LVGL — automatyczne źródła
 # ===============================
-# Usuń wcześniejsze set(LVGL_SRC ...) i add_library(lvgl ...) jeśli są
 
-# Zbierz wszystkie źródła C z LVGL (bez nagłówków)
+# Usuń poprzedni blok LVGL (z lv_img_buf.h!)
+# Ten blok sam zbierze wszystkie pliki .c
+
 file(GLOB_RECURSE LVGL_SRC
     "${CMAKE_CURRENT_SOURCE_DIR}/libs/lvgl/src/*.c"
 )
 
 if(NOT LVGL_SRC)
-  message(FATAL_ERROR "Nie znaleziono plików źródłowych LVGL w: ${CMAKE_CURRENT_SOURCE_DIR}/libs/lvgl/src")
+  message(FATAL_ERROR "Nie znaleziono plików LVGL w katalogu: ${CMAKE_CURRENT_SOURCE_DIR}/libs/lvgl/src")
 endif()
 
 add_library(lvgl STATIC ${LVGL_SRC})
 
 target_include_directories(lvgl SYSTEM PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/libs"           # lv_conf.h
+    "${CMAKE_CURRENT_SOURCE_DIR}/libs"
     "${CMAKE_CURRENT_SOURCE_DIR}/libs/lvgl"
     "${CMAKE_CURRENT_SOURCE_DIR}/libs/lvgl/src"
+)
+
+target_compile_options(lvgl PRIVATE
+    ${COMMON_FLAGS}
+    $<$<CONFIG:DEBUG>:${DEBUG_FLAGS}>
+    $<$<CONFIG:RELEASE>:${RELEASE_FLAGS}>
+    $<$<COMPILE_LANGUAGE:CXX>:${CXX_FLAGS}>
+    $<$<COMPILE_LANGUAGE:ASM>:${ASM_FLAGS}>
 )
 
 # (opcjonalnie) te same flagi co wcześniej dla innych targetów
