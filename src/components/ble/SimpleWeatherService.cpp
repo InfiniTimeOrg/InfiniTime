@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <array>
 #include <cstring>
+#include <chrono>
 #include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
@@ -80,7 +81,7 @@ int WeatherCallback(uint16_t /*connHandle*/, uint16_t /*attrHandle*/, struct ble
   return static_cast<Pinetime::Controllers::SimpleWeatherService*>(arg)->OnCommand(ctxt);
 }
 
-SimpleWeatherService::SimpleWeatherService(DateTime& dateTimeController) : dateTimeController(dateTimeController) {
+SimpleWeatherService::SimpleWeatherService() {
 }
 
 void SimpleWeatherService::Init() {
@@ -127,7 +128,7 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
 
 std::optional<SimpleWeatherService::CurrentWeather> SimpleWeatherService::Current() const {
   if (currentWeather) {
-    auto currentTime = dateTimeController.CurrentDateTime().time_since_epoch();
+    auto currentTime = std::chrono::system_clock::now().time_since_epoch();
     auto weatherTpSecond = std::chrono::seconds {currentWeather->timestamp};
     auto weatherTp = std::chrono::duration_cast<std::chrono::seconds>(weatherTpSecond);
     auto delta = currentTime - weatherTp;
@@ -141,7 +142,7 @@ std::optional<SimpleWeatherService::CurrentWeather> SimpleWeatherService::Curren
 
 std::optional<SimpleWeatherService::Forecast> SimpleWeatherService::GetForecast() const {
   if (forecast) {
-    auto currentTime = dateTimeController.CurrentDateTime().time_since_epoch();
+    auto currentTime = std::chrono::system_clock::now().time_since_epoch();
     auto weatherTpSecond = std::chrono::seconds {forecast->timestamp};
     auto weatherTp = std::chrono::duration_cast<std::chrono::seconds>(weatherTpSecond);
     auto delta = currentTime - weatherTp;
