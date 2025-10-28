@@ -17,6 +17,7 @@
 #include "components/ble/NotificationManager.h"
 #include "components/alarm/AlarmController.h"
 #include "components/fs/FS.h"
+#include "components/firmwarevalidator/FirmwareValidator.h"
 #include "touchhandler/TouchHandler.h"
 #include "buttonhandler/ButtonHandler.h"
 #include "buttonhandler/ButtonActions.h"
@@ -67,6 +68,7 @@ namespace Pinetime {
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Drivers::Bma421& motionSensor,
                  Controllers::Settings& settingsController,
+                 Pinetime::Controllers::FirmwareValidator& validator,
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Pinetime::Applications::DisplayApp& displayApp,
                  Pinetime::Applications::HeartRateTask& heartRateApp,
@@ -115,6 +117,7 @@ namespace Pinetime {
       Pinetime::Drivers::Hrs3300& heartRateSensor;
       Pinetime::Drivers::Bma421& motionSensor;
       Pinetime::Controllers::Settings& settingsController;
+      Pinetime::Controllers::FirmwareValidator& validator;
       Pinetime::Controllers::HeartRateController& heartRateController;
       Pinetime::Controllers::MotionController& motionController;
 
