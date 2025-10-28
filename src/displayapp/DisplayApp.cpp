@@ -595,7 +595,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::SettingWatchFace>(this, std::move(items), settingsController, filesystem);
     } break;
     case Apps::SettingTimeFormat:
-      currentScreen = std::make_unique<Screens::SettingTimeFormat>(settingsController);
+      currentScreen = std::make_unique<Screens::SettingTimeFormat>(this, settingsController);
       break;
     case Apps::SettingWeatherFormat:
       currentScreen = std::make_unique<Screens::SettingWeatherFormat>(settingsController);
