@@ -19,6 +19,7 @@
 
 #include <FreeRTOS.h>
 #include <timers.h>
+#include <array>
 #include <cstdint>
 #include "components/datetime/DateTimeController.h"
 
@@ -30,44 +31,73 @@ namespace Pinetime {
   namespace Controllers {
     class AlarmController {
     public:
+      static constexpr uint8_t MaxAlarms = 4;
+
       AlarmController(Controllers::DateTime& dateTimeController, Controllers::FS& fs);
 
       void Init(System::SystemTask* systemTask);
       void SaveAlarm();
-      void SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin);
+      void SetAlarmTime(uint8_t index, uint8_t alarmHr, uint8_t alarmMin);
       void ScheduleAlarm();
-      void DisableAlarm();
+      void DisableAlarm(uint8_t index);
       void SetOffAlarmNow();
       uint32_t SecondsToAlarm() const;
       void StopAlerting();
       enum class RecurType { None, Daily, Weekdays };
 
-      uint8_t Hours() const {
-        return alarm.hours;
+      uint8_t Hours(uint8_t index) const {
+        if (index >= MaxAlarms) {
+          return 0;
+        }
+        return alarms[index].hours;
       }
 
-      uint8_t Minutes() const {
-        return alarm.minutes;
+      uint8_t Minutes(uint8_t index) const {
+        if (index >= MaxAlarms) {
+          return 0;
+        }
+        return alarms[index].minutes;
       }
 
       bool IsAlerting() const {
         return isAlerting;
       }
 
-      bool IsEnabled() const {
-        return alarm.isEnabled;
+      uint8_t AlertingAlarmIndex() const {
+        return alertingAlarmIndex;
       }
 
-      RecurType Recurrence() const {
-        return alarm.recurrence;
+      bool IsEnabled(uint8_t index) const {
+        if (index >= MaxAlarms) {
+          return false;
+        }
+        return alarms[index].isEnabled;
       }
 
-      void SetRecurrence(RecurType recurrence);
+      bool AnyAlarmEnabled() const {
+        for (uint8_t i = 0; i < MaxAlarms; i++) {
+          if (alarms[i].isEnabled) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      void SetEnabled(uint8_t index, bool enabled);
+
+      RecurType Recurrence(uint8_t index) const {
+        if (index >= MaxAlarms) {
+          return RecurType::None;
+        }
+        return alarms[index].recurrence;
+      }
+
+      void SetRecurrence(uint8_t index, RecurType recurrence);
 
     private:
       // Versions 255 is reserved for now, so the version field can be made
       // bigger, should it ever be needed.
-      static constexpr uint8_t alarmFormatVersion = 1;
+      static constexpr uint8_t alarmFormatVersion = 2;
 
       struct AlarmSettings {
         uint8_t version = alarmFormatVersion;
@@ -79,16 +109,19 @@ namespace Pinetime {
 
       bool isAlerting = false;
       bool alarmChanged = false;
+      uint8_t alertingAlarmIndex = 0;
+      uint8_t nextAlarmIndex = 0;
 
       Controllers::DateTime& dateTimeController;
       Controllers::FS& fs;
       System::SystemTask* systemTask = nullptr;
       TimerHandle_t alarmTimer;
-      AlarmSettings alarm;
+      std::array<AlarmSettings, MaxAlarms> alarms;
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> alarmTime;
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile() const;
+      uint8_t CalculateNextAlarm() const;
     };
   }
 }
