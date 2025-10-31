@@ -346,7 +346,7 @@ namespace Pinetime {
 
         bool alwaysOnDisplay = false;
 
-        ClockType clockType = ClockType::H24;
+        ClockType clockType = ClockType::H12;
         WeatherFormat weatherFormat = WeatherFormat::Metric;
         Notification notificationStatus = Notification::On;
 

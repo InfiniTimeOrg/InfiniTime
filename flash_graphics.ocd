@@ -1,0 +1,5 @@
+init
+
+program <build directory>/pinetime-graphics-0.8.2.bin verify 0x00000000
+
+reset

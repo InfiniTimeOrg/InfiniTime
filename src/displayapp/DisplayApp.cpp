@@ -4,6 +4,7 @@
 #include "displayapp/screens/Motion.h"
 #include "displayapp/screens/Timer.h"
 #include "displayapp/screens/Alarm.h"
+#include "displayapp/screens/ScheduledReminders.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
@@ -83,6 +84,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::AlarmController& alarmController,
+                       Pinetime::Controllers::ScheduledRemindersController& scheduledRemindersController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
                        Pinetime::Controllers::FS& filesystem,
@@ -99,6 +101,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     motorController {motorController},
     motionController {motionController},
     alarmController {alarmController},
+    scheduledRemindersController {scheduledRemindersController},
     brightnessController {brightnessController},
     touchHandler {touchHandler},
     filesystem {filesystem},
@@ -114,6 +117,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                  motorController,
                  motionController,
                  alarmController,
+                 scheduledRemindersController,
                  brightnessController,
                  nullptr,
                  filesystem,
@@ -384,6 +388,10 @@ void DisplayApp::Refresh() {
         } else {
           LoadNewScreen(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
         }
+        break;
+      case Messages::ScheduledReminderTriggered:
+        LoadNewScreen(Apps::ScheduledReminders, DisplayApp::FullRefreshDirections::None);
+        motorController.RunForDuration(35);
         break;
       case Messages::ShowPairingKey:
         LoadNewScreen(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);

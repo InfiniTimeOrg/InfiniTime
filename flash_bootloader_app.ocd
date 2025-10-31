@@ -1,0 +1,5 @@
+init
+
+program ./build/output/src/pinetime-app-1.15.0.bin verify 0x00000000
+
+reset

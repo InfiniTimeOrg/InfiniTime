@@ -8,6 +8,7 @@
 #include "drivers/Cst816s.h"
 #include <drivers/Watchdog.h>
 #include <components/motor/MotorController.h>
+#include <components/scheduledreminders/ScheduledRemindersController.h>
 #include "BootErrors.h"
 #include "displayapp/TouchEvents.h"
 #include "displayapp/apps/Apps.h"
@@ -58,6 +59,7 @@ namespace Pinetime {
                  Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::AlarmController& alarmController,
+                 Pinetime::Controllers::ScheduledRemindersController& scheduledRemindersController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
                  Pinetime::Controllers::FS& filesystem,
