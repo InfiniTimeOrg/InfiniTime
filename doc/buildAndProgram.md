@@ -19,6 +19,7 @@ To build this project, you'll need:
   - see [lv_font_conv](https://github.com/lvgl/lv_font_conv#install-the-script)
   - install npm (commonly done via the package manager, ensure node's version is at least 12)
   - install lv_font_conv: `npm install lv_font_conv`
+- To build resources, you will also need lv_img_conv: `npm install lv_img_conv typescript @swc/core`
 
 ## Build steps
 
@@ -67,6 +68,13 @@ DFU files are the files you'll need to install your build of InfiniTime using OT
 
 ```
 cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -S ..
+```
+
+If you've extracted the NRF SDK and cross compiler into the root of the InfiniTime repo, you can run the following to build just the firmware image which can be loaded over Bluetooth:
+
+```
+PATH="$PATH:$PWD/node_modules/.bin" cmake -DBUILD_DFU=1 -DBUILD_RESOURCES=0 -DARM_NONE_EABI_TOOLCHAIN_PATH=$(realpath ../gcc-arm-none-eabi-10.3-2021.10/) -DNRF5_SDK_PATH=$(realpath ../nRF5_SDK_15.3.0_59ac345/) ..
+make pinetime-mcuboot-app
 ```
 
 ### Build the project
