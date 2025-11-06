@@ -32,6 +32,7 @@
 #undef min
 
 #include "components/datetime/DateTimeController.h"
+#include "utility/Math.h"
 
 int WeatherCallback(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt, void* arg);
 
@@ -75,11 +76,11 @@ namespace Pinetime {
         }
 
         [[nodiscard]] int16_t Celsius() const {
-          return (PreciseCelsius() + 50) / 100;
+          return Utility::RoundedDiv(PreciseCelsius(), 100);
         }
 
         [[nodiscard]] int16_t Fahrenheit() const {
-          return (PreciseFahrenheit() + 50) / 100;
+          return Utility::RoundedDiv(PreciseFahrenheit(), 100);
         }
 
         bool operator==(const Temperature& other) const {
