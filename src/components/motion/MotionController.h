@@ -79,7 +79,11 @@ namespace Pinetime {
       Utility::CircularBuffer<uint32_t, stepHistorySize> nbSteps = {0};
       uint32_t currentTripSteps = 0;
 
-      uint32_t& NbStepsRef(Days day = Days::Today) {
+      void SetSteps(Days day, uint32_t steps) {
+        nbSteps[static_cast<std::underlying_type_t<Days>>(day)] = steps;
+      }
+
+      uint32_t GetSteps(Days day) const {
         return nbSteps[static_cast<std::underlying_type_t<Days>>(day)];
       }
 

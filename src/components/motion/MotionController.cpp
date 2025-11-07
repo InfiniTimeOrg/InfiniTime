@@ -37,14 +37,14 @@ namespace {
 
 void MotionController::AdvanceDay() {
   --nbSteps; // Higher index = further in the past
-  NbStepsRef(Days::Today) = 0;
+  SetSteps(Days::Today, 0);
   if (service != nullptr) {
     service->OnNewStepCountValue(NbSteps(Days::Today));
   }
 }
 
 void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
-  uint32_t& oldSteps = NbStepsRef(Days::Today);
+  uint32_t oldSteps = GetSteps(Days::Today);
   if (oldSteps != nbSteps && service != nullptr) {
     service->OnNewStepCountValue(nbSteps);
   }
@@ -69,7 +69,7 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   if (deltaSteps > 0) {
     currentTripSteps += deltaSteps;
   }
-  oldSteps = nbSteps;
+  SetSteps(Days::Today, nbSteps);
 }
 
 MotionController::AccelStats MotionController::GetAccelStats() const {
