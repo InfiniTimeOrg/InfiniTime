@@ -12,17 +12,17 @@ void HeartRateController::Update(HeartRateController::States newState, uint8_t h
   }
 }
 
-void HeartRateController::Start() {
+void HeartRateController::Enable() {
   if (task != nullptr) {
     state = States::NotEnoughData;
-    task->PushMessage(Pinetime::Applications::HeartRateTask::Messages::StartMeasurement);
+    task->PushMessage(Pinetime::Applications::HeartRateTask::Messages::Enable);
   }
 }
 
-void HeartRateController::Stop() {
+void HeartRateController::Disable() {
   if (task != nullptr) {
     state = States::Stopped;
-    task->PushMessage(Pinetime::Applications::HeartRateTask::Messages::StopMeasurement);
+    task->PushMessage(Pinetime::Applications::HeartRateTask::Messages::Disable);
   }
 }
 

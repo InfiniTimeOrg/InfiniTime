@@ -115,7 +115,7 @@ void Timer::UpdateMask() {
 void Timer::Refresh() {
   if (timer.IsRunning()) {
     DisplayTime();
-  } else if (buttonPressing && xTaskGetTickCount() > pressTime + pdMS_TO_TICKS(150)) {
+  } else if (buttonPressing && xTaskGetTickCount() - pressTime > pdMS_TO_TICKS(150)) {
     lv_label_set_text_static(txtPlayPause, "Reset");
     maskPosition += 15;
     if (maskPosition > 240) {

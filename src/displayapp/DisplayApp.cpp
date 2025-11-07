@@ -48,6 +48,7 @@
 #include "displayapp/screens/settings/SettingSteps.h"
 #include "displayapp/screens/settings/SettingSetDateTime.h"
 #include "displayapp/screens/settings/SettingChimes.h"
+#include "displayapp/screens/settings/SettingHeartRate.h"
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingBluetooth.h"
 #include "displayapp/screens/settings/SettingOTA.h"
@@ -82,6 +83,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Controllers::MotionController& motionController,
+                       Pinetime::Controllers::StopWatchController& stopWatchController,
                        Pinetime::Controllers::AlarmController& alarmController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
@@ -98,6 +100,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     settingsController {settingsController},
     motorController {motorController},
     motionController {motionController},
+    stopWatchController {stopWatchController},
     alarmController {alarmController},
     brightnessController {brightnessController},
     touchHandler {touchHandler},
@@ -113,6 +116,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                  settingsController,
                  motorController,
                  motionController,
+                 stopWatchController,
                  alarmController,
                  brightnessController,
                  nullptr,
@@ -602,6 +606,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       break;
     case Apps::SettingWakeUp:
       currentScreen = std::make_unique<Screens::SettingWakeUp>(settingsController);
+      break;
+    case Apps::SettingHeartRate:
+      currentScreen = std::make_unique<Screens::SettingHeartRate>(settingsController);
       break;
     case Apps::SettingDisplay:
       currentScreen = std::make_unique<Screens::SettingDisplay>(settingsController);
