@@ -19,16 +19,26 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
 
 Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
 
-  lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_label_set_text_static(colonLabel, ":");
-  lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
+  hourCounter.Create();
+  lv_obj_align(hourCounter.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
+
+  lv_obj_t* colonLabel1 = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(colonLabel1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_color(colonLabel1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_label_set_text_static(colonLabel1, ":");
+  lv_obj_align(colonLabel1, hourCounter.GetObject(), LV_ALIGN_OUT_RIGHT_MID, 0, 0);
 
   minuteCounter.Create();
+  lv_obj_align(minuteCounter.GetObject(), colonLabel1, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+
+  lv_obj_t* colonLabel2 = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(colonLabel2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_color(colonLabel2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_label_set_text_static(colonLabel2, ":");
+  lv_obj_align(colonLabel2, minuteCounter.GetObject(), LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+
   secondCounter.Create();
-  lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
-  lv_obj_align(secondCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  lv_obj_align(secondCounter.GetObject(), colonLabel2, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
 
   highlightObjectMask = lv_objmask_create(lv_scr_act(), nullptr);
   lv_obj_set_size(highlightObjectMask, 240, 50);
@@ -120,18 +130,22 @@ void Timer::Refresh() {
 void Timer::DisplayTime() {
   displaySeconds = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
   if (displaySeconds.IsUpdated()) {
-    minuteCounter.SetValue(displaySeconds.Get().count() / 60);
-    secondCounter.SetValue(displaySeconds.Get().count() % 60);
+    auto totalSeconds = displaySeconds.Get().count();
+    hourCounter.SetValue(totalSeconds / 3600);
+    minuteCounter.SetValue((totalSeconds % 3600) / 60);
+    secondCounter.SetValue(totalSeconds % 60);
   }
 }
 
 void Timer::SetTimerRunning() {
+  hourCounter.HideControls();
   minuteCounter.HideControls();
   secondCounter.HideControls();
   lv_label_set_text_static(txtPlayPause, "Pause");
 }
 
 void Timer::SetTimerStopped() {
+  hourCounter.ShowControls();
   minuteCounter.ShowControls();
   secondCounter.ShowControls();
   lv_label_set_text_static(txtPlayPause, "Start");
@@ -142,8 +156,11 @@ void Timer::ToggleRunning() {
     DisplayTime();
     timer.StopTimer();
     SetTimerStopped();
-  } else if (secondCounter.GetValue() + minuteCounter.GetValue() > 0) {
-    auto timerDuration = std::chrono::minutes(minuteCounter.GetValue()) + std::chrono::seconds(secondCounter.GetValue());
+  } else if (hourCounter.GetValue() + minuteCounter.GetValue() + secondCounter.GetValue() > 0) {
+    
+    auto timerDuration = std::chrono::hours(hourCounter.GetValue()) + 
+                         std::chrono::minutes(minuteCounter.GetValue()) + 
+                         std::chrono::seconds(secondCounter.GetValue());
     timer.StartTimer(timerDuration);
     Refresh();
     SetTimerRunning();
