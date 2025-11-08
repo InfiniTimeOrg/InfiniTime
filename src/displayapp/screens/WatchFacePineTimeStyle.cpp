@@ -62,8 +62,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
     notificationManager {notificationManager},
     settingsController {settingsController},
     motionController {motionController},
-    alarmController {alarmController},
-    weatherService {weatherService} {
+    weatherService {weatherService},
+    alarmController {alarmController} {
 
   // Create a 200px wide background rectangle
   timebar = lv_obj_create(lv_scr_act(), nullptr);
