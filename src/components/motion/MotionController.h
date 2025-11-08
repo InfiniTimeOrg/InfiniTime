@@ -82,10 +82,6 @@ namespace Pinetime {
         nbSteps[static_cast<std::underlying_type_t<Days>>(day)] = steps;
       }
 
-      uint32_t GetSteps(Days day) const {
-        return nbSteps[static_cast<std::underlying_type_t<Days>>(day)];
-      }
-
       TickType_t lastTime = 0;
       TickType_t time = 0;
 
