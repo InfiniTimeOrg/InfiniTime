@@ -56,5 +56,9 @@ namespace Pinetime::Applications {
     static Screens::Screen* Create(AppControllers& controllers) {
       return new Screens::Timer(controllers.timer);
     };
+
+    static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+      return true;
+    };
   };
 }

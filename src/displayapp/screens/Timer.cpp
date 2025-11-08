@@ -59,8 +59,8 @@ Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
   lv_obj_set_event_cb(btnPlayPause, btnEventHandler);
   lv_obj_set_size(btnPlayPause, LV_HOR_RES, 50);
 
-  txtPlayPause = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(txtPlayPause, btnPlayPause, LV_ALIGN_CENTER, 0, 0);
+  // Create the label as a child of the button so it stays centered by default
+  txtPlayPause = lv_label_create(btnPlayPause, nullptr);
 
   if (timer.IsRunning()) {
     SetTimerRunning();
@@ -105,7 +105,7 @@ void Timer::UpdateMask() {
 void Timer::Refresh() {
   if (timer.IsRunning()) {
     DisplayTime();
-  } else if (buttonPressing && xTaskGetTickCount() > pressTime + pdMS_TO_TICKS(150)) {
+  } else if (buttonPressing && xTaskGetTickCount() - pressTime > pdMS_TO_TICKS(150)) {
     lv_label_set_text_static(txtPlayPause, "Reset");
     maskPosition += 15;
     if (maskPosition > 240) {

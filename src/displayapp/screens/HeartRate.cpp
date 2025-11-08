@@ -98,12 +98,12 @@ void HeartRate::Refresh() {
 void HeartRate::OnStartStopEvent(lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     if (heartRateController.State() == Controllers::HeartRateController::States::Stopped) {
-      heartRateController.Start();
+      heartRateController.Enable();
       UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
       wakeLock.Lock();
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
     } else {
-      heartRateController.Stop();
+      heartRateController.Disable();
       UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
       wakeLock.Release();
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);

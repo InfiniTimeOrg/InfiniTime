@@ -3,72 +3,70 @@
 #include "displayapp/screens/Screen.h"
 #include <lvgl/lvgl.h>
 
-#include <FreeRTOS.h>
-#include "portmacro_cmsis.h"
-
+#include "components/stopwatch/StopWatchController.h"
 #include "systemtask/SystemTask.h"
 #include "systemtask/WakeLock.h"
-#include "displayapp/apps/Apps.h"
-#include "displayapp/Controllers.h"
 #include "Symbols.h"
+#include "utility/DirtyValue.h"
 
-namespace Pinetime {
-  namespace Applications {
-    namespace Screens {
+namespace Pinetime::Applications {
+  namespace Screens {
 
-      enum class States { Init, Running, Halted };
+    struct TimeSeparated {
+      uint16_t hours;
+      uint8_t mins;
+      uint8_t secs;
+      uint8_t hundredths;
+      uint32_t epochSecs;
+    };
 
-      struct TimeSeparated_t {
-        int hours;
-        int mins;
-        int secs;
-        int hundredths;
-      };
+    class StopWatch : public Screen {
+    public:
+      explicit StopWatch(System::SystemTask& systemTask, Controllers::StopWatchController& stopWatchController);
+      ~StopWatch() override;
+      void Refresh() override;
 
-      class StopWatch : public Screen {
-      public:
-        explicit StopWatch(System::SystemTask& systemTask);
-        ~StopWatch() override;
-        void Refresh() override;
+      void PlayPauseBtnEventHandler();
+      void StopLapBtnEventHandler();
+      bool OnButtonPushed() override;
 
-        void playPauseBtnEventHandler();
-        void stopLapBtnEventHandler();
-        bool OnButtonPushed() override;
+    private:
+      void OnPause();
 
-      private:
-        void SetInterfacePaused();
-        void SetInterfaceRunning();
-        void SetInterfaceStopped();
+      void DisplayPaused();
+      void DisplayStarted();
+      void DisplayCleared();
 
-        void Reset();
-        void Start();
-        void Pause();
+      void RenderTime();
+      void RenderPause();
+      void RenderLaps();
 
-        Pinetime::System::WakeLock wakeLock;
-        States currentState = States::Init;
-        TickType_t startTime;
-        TickType_t oldTimeElapsed = 0;
-        TickType_t blinkTime = 0;
-        static constexpr int maxLapCount = 20;
-        TickType_t laps[maxLapCount + 1];
-        static constexpr int displayedLaps = 2;
-        int lapsDone = 0;
-        lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
-        lv_obj_t* lapText;
-        bool isHoursLabelUpdated = false;
+      void SetHoursVisible(bool visible);
 
-        lv_task_t* taskRefresh;
-      };
-    }
+      Pinetime::System::WakeLock wakeLock;
+      Controllers::StopWatchController& stopWatchController;
+      TickType_t lastBlinkTime = 0;
+      uint8_t displayedLaps = 3;
+      lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
+      lv_obj_t* lapText;
+      Utility::DirtyValue<uint32_t> renderedSeconds;
+      bool hoursVisible = false;
 
-    template <>
-    struct AppTraits<Apps::StopWatch> {
-      static constexpr Apps app = Apps::StopWatch;
-      static constexpr const char* icon = Screens::Symbols::stopWatch;
-
-      static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::StopWatch(*controllers.systemTask);
-      };
+      lv_task_t* taskRefresh;
     };
   }
+
+  template <>
+  struct AppTraits<Apps::StopWatch> {
+    static constexpr Apps app = Apps::StopWatch;
+    static constexpr const char* icon = Screens::Symbols::stopWatch;
+
+    static Screens::Screen* Create(AppControllers& controllers) {
+      return new Screens::StopWatch(*controllers.systemTask, controllers.stopWatchController);
+    }
+
+    static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+      return true;
+    }
+  };
 }

@@ -1,5 +1,6 @@
 #include "drivers/Cst816s.h"
 #include <FreeRTOS.h>
+#include <array>
 #include <legacy/nrf_drv_gpiote.h>
 #include <nrfx_log.h>
 #include <task.h>
@@ -56,28 +57,34 @@ bool Cst816S::Init() {
   static constexpr uint8_t irqCtl = 0b01110000;
   twiMaster.Write(twiAddress, 0xFA, &irqCtl, 1);
 
+  // Disable auto-reset after 5s of no gesture
+  // The reset kills the current touch point, so paint/pong etc breaks
+  twiMaster.Write(twiAddress, 0xFB, 0, 1);
+
   return true;
 }
 
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
-  uint8_t touchData[7];
+  std::array<uint8_t, 6> touchData {};
 
-  auto ret = twiMaster.Read(twiAddress, 0, touchData, sizeof(touchData));
+  // Skip reading register 0 as we don't need it
+  constexpr uint8_t addressOffset = 1;
+  auto ret = twiMaster.Read(twiAddress, addressOffset, touchData.data(), sizeof(touchData));
   if (ret != TwiMaster::ErrorCodes::NoError) {
     info.isValid = false;
     return info;
   }
 
   // This can only be 0 or 1
-  uint8_t nbTouchPoints = touchData[touchPointNumIndex] & 0x0f;
-  uint8_t xHigh = touchData[touchXHighIndex] & 0x0f;
-  uint8_t xLow = touchData[touchXLowIndex];
+  uint8_t nbTouchPoints = touchData[touchPointNumIndex - addressOffset] & 0x0f;
+  uint8_t xHigh = touchData[touchXHighIndex - addressOffset] & 0x0f;
+  uint8_t xLow = touchData[touchXLowIndex - addressOffset];
   uint16_t x = (xHigh << 8) | xLow;
-  uint8_t yHigh = touchData[touchYHighIndex] & 0x0f;
-  uint8_t yLow = touchData[touchYLowIndex];
+  uint8_t yHigh = touchData[touchYHighIndex - addressOffset] & 0x0f;
+  uint8_t yLow = touchData[touchYLowIndex - addressOffset];
   uint16_t y = (yHigh << 8) | yLow;
-  Gestures gesture = static_cast<Gestures>(touchData[gestureIndex]);
+  Gestures gesture = static_cast<Gestures>(touchData[gestureIndex - addressOffset]);
 
   // Validity check
   if (x >= maxX || y >= maxY ||

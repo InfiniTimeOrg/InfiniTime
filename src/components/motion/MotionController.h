@@ -53,7 +53,6 @@ namespace Pinetime {
         return currentTripSteps;
       }
 
-      bool ShouldShakeWake(uint16_t thresh);
       bool ShouldRaiseWake() const;
       bool ShouldLowerSleep() const;
 

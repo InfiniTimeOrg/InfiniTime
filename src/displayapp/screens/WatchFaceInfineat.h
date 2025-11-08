@@ -45,8 +45,8 @@ namespace Pinetime {
         static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
       private:
-        uint32_t savedTick = 0;
         uint8_t chargingBatteryPercent = 101; // not a mistake ;)
+        TickType_t savedTick = 0;
         TickType_t chargingAnimationTick = 0;
 
         Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
@@ -104,7 +104,7 @@ namespace Pinetime {
     template <>
     struct WatchFaceTraits<WatchFace::Infineat> {
       static constexpr WatchFace watchFace = WatchFace::Infineat;
-      static constexpr const char* name = "Infineat face";
+      static constexpr const char* name = "Infineat";
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::WatchFaceInfineat(controllers.dateTimeController,

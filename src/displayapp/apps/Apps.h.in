@@ -26,6 +26,7 @@ namespace Pinetime {
       StopWatch,
       Metronome,
       Motion,
+      Calculator,
       Steps,
       Dice,
       Weather,
@@ -35,6 +36,7 @@ namespace Pinetime {
       SettingWatchFace,
       SettingTimeFormat,
       SettingWeatherFormat,
+      SettingHeartRate,
       SettingDisplay,
       SettingWakeUp,
       SettingSteps,
@@ -42,6 +44,7 @@ namespace Pinetime {
       SettingChimes,
       SettingShakeThreshold,
       SettingBluetooth,
+      SettingOTA,
       Error
     };
 
@@ -52,6 +55,7 @@ namespace Pinetime {
       Terminal,
       Infineat,
       CasioStyleG7710,
+      PrideFlag,
     };
 
     template <Apps>
