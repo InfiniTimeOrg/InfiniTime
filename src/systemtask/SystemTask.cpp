@@ -334,6 +334,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewDay:
           motionSensor.ResetStepCounter();
+          motionController.AdvanceDay();
           break;
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
