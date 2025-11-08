@@ -7,6 +7,10 @@ using namespace Pinetime::Applications::Screens;
 
 using Days = Pinetime::Controllers::MotionController::Days;
 
+namespace {
+  constexpr const char* yesterdayStr = "Yest: %5lu";
+}
+
 static void lap_event_handler(lv_obj_t* obj, lv_event_t event) {
   auto* steps = static_cast<Steps*>(obj->user_data);
   steps->lapBtnEventHandler(event);

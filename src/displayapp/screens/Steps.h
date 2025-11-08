@@ -38,8 +38,6 @@ namespace Pinetime {
         lv_obj_t* resetButtonLabel;
         lv_obj_t* tripLabel;
 
-        static constexpr const char* yesterdayStr = "Yest: %5lu";
-
         uint32_t stepsCount;
 
         lv_task_t* taskRefresh;
