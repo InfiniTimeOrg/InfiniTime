@@ -12,17 +12,6 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  lv_color_t TemperatureColor(Pinetime::Controllers::SimpleWeatherService::Temperature temp) {
-    if (temp.Celsius() <= 0) { // freezing
-      return Colors::blue;
-    } else if (temp.Celsius() <= 4) { // ice
-      return LV_COLOR_CYAN;
-    } else if (temp.Celsius() >= 27) { // hot
-      return Colors::deepOrange;
-    }
-    return Colors::orange; // normal
-  }
-
   uint8_t TemperatureStyle(Pinetime::Controllers::SimpleWeatherService::Temperature temp) {
     if (temp.Celsius() <= 0) { // freezing
       return LV_TABLE_PART_CELL3;
@@ -128,10 +117,7 @@ void Weather::Refresh() {
         maxTemp = optCurrentWeather->maxTemperature.Fahrenheit();
         tempUnit = 'F';
       }
-      lv_obj_set_style_local_text_color(temperature,
-                                        LV_LABEL_PART_MAIN,
-                                        LV_STATE_DEFAULT,
-                                        TemperatureColor(optCurrentWeather->temperature));
+      lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, optCurrentWeather->temperature.Color());
       lv_label_set_text(icon, Symbols::GetSymbol(optCurrentWeather->iconId));
       lv_label_set_text(condition, Symbols::GetCondition(optCurrentWeather->iconId));
       lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
