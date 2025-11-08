@@ -49,7 +49,7 @@ bool AppleNotificationCenterClient::OnDiscoveryEvent(uint16_t connectionHandle, 
       ble_gattc_disc_all_chrs(connectionHandle, ancsStartHandle, ancsEndHandle, OnANCSCharacteristicDiscoveredCallback, this);
     } else {
       NRF_LOG_INFO("ANCS not found");
-      onServiceDiscovered(connectionHandle);
+      MaybeFinishDiscovery(connectionHandle);
     }
     return true;
   }
@@ -69,7 +69,7 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
                                                                    const ble_gatt_chr* characteristic) {
   if (error->status != 0 && error->status != BLE_HS_EDONE) {
     NRF_LOG_INFO("ANCS Characteristic discovery ERROR");
-    onServiceDiscovered(connectionHandle);
+    MaybeFinishDiscovery(connectionHandle);
     return 0;
   }
 
@@ -82,7 +82,7 @@ int AppleNotificationCenterClient::OnCharacteristicsDiscoveryEvent(uint16_t conn
       ble_gattc_disc_all_dscs(connectionHandle, dataSourceHandle, ancsEndHandle, OnANCSDescriptorDiscoveryEventCallback, this);
     }
     if (isCharacteristicDiscovered == isControlCharacteristicDiscovered && isCharacteristicDiscovered == isDataCharacteristicDiscovered) {
-      onServiceDiscovered(connectionHandle);
+      MaybeFinishDiscovery(connectionHandle);
     }
   } else if (characteristic != nullptr) {
     if (ble_uuid_cmp(&notificationSourceChar.u, &characteristic->uuid.u) == 0) {
@@ -138,7 +138,7 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
       NRF_LOG_INFO(errorStr);
     }
     if (isDescriptorFound == isDataDescriptorFound)
-      onServiceDiscovered(connectionHandle);
+      MaybeFinishDiscovery(connectionHandle);
   }
   return 0;
 }
@@ -148,11 +148,16 @@ int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle,
                                                       ble_gatt_attr* /*attribute*/) {
   if (error->status == 0) {
     NRF_LOG_INFO("ANCS New alert subscribe OK");
+
+    // Mark subscriptions complete only after both CCCDs are known
+    if (notificationSourceDescriptorHandle != 0 && dataSourceDescriptorHandle != 0) {
+      subscriptionsDone = true;
+    }
   } else {
     NRF_LOG_INFO("ANCS New alert subscribe ERROR");
   }
   if (isDescriptorFound == isControlDescriptorFound && isDescriptorFound == isDataDescriptorFound)
-    onServiceDiscovered(connectionHandle);
+    MaybeFinishDiscovery(connectionHandle);
 
   return 0;
 }
@@ -168,6 +173,13 @@ int AppleNotificationCenterClient::OnControlPointWrite(uint16_t /*connectionHand
     NRF_LOG_INFO(errorStr);
   }
   return 0;
+}
+
+void AppleNotificationCenterClient::MaybeFinishDiscovery(uint16_t connectionHandle) {
+  if (isCharacteristicDiscovered && isControlCharacteristicDiscovered && isDataCharacteristicDiscovered && isDescriptorFound &&
+      isControlDescriptorFound && isDataDescriptorFound && subscriptionsDone) {
+    onServiceDiscovered(connectionHandle);
+  }
 }
 
 void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
@@ -442,6 +454,7 @@ void AppleNotificationCenterClient::Reset() {
   isControlDescriptorFound = false;
   isDataCharacteristicDiscovered = false;
   isDataDescriptorFound = false;
+  subscriptionsDone = false;
 
   notifications.clear();
 }

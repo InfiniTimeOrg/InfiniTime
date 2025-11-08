@@ -33,6 +33,7 @@ namespace Pinetime {
                                              uint16_t characteristicValueHandle,
                                              const ble_gatt_dsc* descriptor);
       int OnControlPointWrite(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* attribute);
+      void MaybeFinishDiscovery(uint16_t connectionHandle);
       void OnNotification(ble_gap_event* event);
       void Reset();
       void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
@@ -107,6 +108,7 @@ namespace Pinetime {
 
       std::string DecodeUtf8String(os_mbuf* om, uint16_t size, uint16_t offset);
 
+      bool subscriptionsDone = false;
       uint16_t ancsStartHandle {0};
       uint16_t ancsEndHandle {0};
       uint16_t notificationSourceHandle {0};
