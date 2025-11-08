@@ -57,8 +57,8 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
     batteryController {batteryController},
     bleController {bleController},
     notificationManager {notificationManager},
-    alarmController {alarmController},
-    settingsController {settingsController} {
+    settingsController {settingsController},
+    alarmController {alarmController} {
 
   sHour = 99;
   sMinute = 99;
