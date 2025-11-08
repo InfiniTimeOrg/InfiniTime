@@ -36,6 +36,7 @@ namespace Pinetime {
       SettingWatchFace,
       SettingTimeFormat,
       SettingWeatherFormat,
+      SettingHeartRate,
       SettingDisplay,
       SettingWakeUp,
       SettingSteps,
@@ -43,6 +44,7 @@ namespace Pinetime {
       SettingChimes,
       SettingShakeThreshold,
       SettingBluetooth,
+      SettingOTA,
       Error
     };
 

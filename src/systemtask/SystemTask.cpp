@@ -39,6 +39,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Controllers::Battery& batteryController,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
+                       Controllers::StopWatchController& stopWatchController,
                        Controllers::AlarmController& alarmController,
                        Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::NotificationManager& notificationManager,
@@ -59,6 +60,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     batteryController {batteryController},
     bleController {bleController},
     dateTimeController {dateTimeController},
+    stopWatchController {stopWatchController},
     alarmController {alarmController},
     watchdog {watchdog},
     notificationManager {notificationManager},
@@ -183,8 +185,6 @@ void SystemTask::Work() {
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
   while (true) {
-    UpdateMotion();
-
     Messages msg;
     if (xQueueReceive(systemTasksMsgQueue, &msg, 100) == pdTRUE) {
       switch (msg) {
@@ -316,9 +316,7 @@ void SystemTask::Work() {
           }
           break;
         case Messages::OnNewDay:
-          // We might be sleeping (with TWI device disabled.
-          // Remember we'll have to reset the counter next time we're awake
-          stepCounterMustBeReset = true;
+          motionSensor.ResetStepCounter();
           break;
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
@@ -362,6 +360,7 @@ void SystemTask::Work() {
       }
     }
 
+    UpdateMotion();
     if (isBleDiscoveryTimerRunning) {
       if (bleDiscoveryTimer == 0) {
         isBleDiscoveryTimerRunning = false;
@@ -429,18 +428,8 @@ void SystemTask::GoToSleep() {
 };
 
 void SystemTask::UpdateMotion() {
-  // Only consider disabling motion updates specifically in the Sleeping state
-  // AOD needs motion on to show up to date step counts
-  if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) ||
-                                              motionController.GetService()->IsMotionNotificationSubscribed())) {
-    return;
-  }
-
-  if (stepCounterMustBeReset) {
-    motionSensor.ResetStepCounter();
-    stepCounterMustBeReset = false;
-  }
+  // Unconditionally update motion
+  // Reading steps/motion characteristics must return up to date information even when not subscribed to notifications
 
   auto motionValues = motionSensor.Process();
 
@@ -450,7 +439,7 @@ void SystemTask::UpdateMotion() {
     if ((settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&
          motionController.ShouldRaiseWake()) ||
         (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) &&
-         motionController.ShouldShakeWake(settingsController.GetShakeThreshold()))) {
+         motionController.CurrentShakeSpeed() > settingsController.GetShakeThreshold())) {
       GoToRunning();
     }
   }

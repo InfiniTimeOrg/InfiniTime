@@ -109,7 +109,6 @@ namespace Pinetime {
       std::string DecodeUtf8String(os_mbuf* om, uint16_t size, uint16_t offset);
 
       bool subscriptionsDone = false;
-
       uint16_t ancsStartHandle {0};
       uint16_t ancsEndHandle {0};
       uint16_t notificationSourceHandle {0};
