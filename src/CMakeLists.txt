@@ -901,6 +901,8 @@ target_compile_options(lvgl PRIVATE
         )
 
 # LITTLEFS_SRC
+add_definitions(-DLFS_THREADSAFE)
+add_definitions(-DLFS_NAME_MAX=50)
 add_library(littlefs STATIC ${LITTLEFS_SRC})
 target_include_directories(littlefs SYSTEM PUBLIC . ../)
 target_include_directories(littlefs SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})

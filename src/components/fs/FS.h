@@ -3,6 +3,8 @@
 #include <cstdint>
 #include "drivers/SpiNorFlash.h"
 #include <littlefs/lfs.h>
+#include <FreeRTOS.h>
+#include <semphr.h>
 
 namespace Pinetime {
   namespace Controllers {
@@ -71,12 +73,15 @@ namespace Pinetime {
       bool resourcesValid = false;
       const struct lfs_config lfsConfig;
 
+      SemaphoreHandle_t fsMutex = xSemaphoreCreateMutex();
       lfs_t lfs;
 
       static int SectorSync(const struct lfs_config* c);
       static int SectorErase(const struct lfs_config* c, lfs_block_t block);
       static int SectorProg(const struct lfs_config* c, lfs_block_t block, lfs_off_t off, const void* buffer, lfs_size_t size);
       static int SectorRead(const struct lfs_config* c, lfs_block_t block, lfs_off_t off, void* buffer, lfs_size_t size);
+      static int LockFilesystem(const struct lfs_config* c);
+      static int UnlockFilesystem(const struct lfs_config* c);
     };
   }
 }
