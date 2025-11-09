@@ -15,12 +15,13 @@ namespace Pinetime {
   namespace Controllers {
     class HeartRateController {
     public:
-      enum class States : uint8_t { Stopped, NotEnoughData, NoTouch, Running };
+      enum class States : uint8_t { Disabled, Stopped, NotEnoughData, Searching, Ready, NoTouch };
 
       HeartRateController() = default;
       void Enable();
       void Disable();
-      void Update(States newState, uint8_t heartRate);
+      void UpdateState(States newState);
+      void UpdateHeartRate(uint8_t heartRate);
 
       void SetHeartRateTask(Applications::HeartRateTask* task);
 
@@ -36,7 +37,7 @@ namespace Pinetime {
 
     private:
       Applications::HeartRateTask* task = nullptr;
-      States state = States::Stopped;
+      States state = States::Disabled;
       uint8_t heartRate = 0;
       Pinetime::Controllers::HeartRateService* service = nullptr;
     };
