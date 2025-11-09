@@ -207,23 +207,42 @@ void HeartRateTask::HandleSensorData() {
     return;
   }
 
+  // If there are large discontinuities in the heart rate signal, scale the heart rate signal filter
+  // These discontinuities will be due to sensor gain or drive changes
+  static constexpr float discontinuityThreshold = 0.2f;
+  if (lastHrs != 0 && std::abs(static_cast<int32_t>(sensorData.hrs) - static_cast<int32_t>(lastHrs)) >
+                        std::min(lastHrs, sensorData.hrs) * discontinuityThreshold) {
+    ppg.ScaleHrs(static_cast<float>(sensorData.hrs) / static_cast<float>(lastHrs));
+  }
+  lastHrs = sensorData.hrs;
   ppg.Ingest(sensorData.hrs, motionValues.x, motionValues.y, motionValues.z);
 
-  std::optional<uint8_t> bpm = ppg.HeartRate();
-  if (bpm.has_value()) {
-    SendHeartRate(ControllerStates::Ready, bpm.value());
-  } else if (ppg.SufficientData()) {
-    SendHeartRate(ControllerStates::Searching, 0);
-  } else {
-    // If there's currently a value shown, don't clear it
-    // But still update the algorithm state
-    if (valueCurrentlyShown) {
-      controller.UpdateState(ControllerStates::NotEnoughData);
+  auto ppgState = heartRateSensor.AutoGain(sensorData.hrs, sensorData.als);
+
+  std::optional<uint8_t> bpm = std::nullopt;
+  if (ppgState == Drivers::Hrs3300::PPGState::NoTouch) {
+    SendHeartRate(ControllerStates::NoTouch, 0);
+  } else if (ppgState == Drivers::Hrs3300::PPGState::Reset) {
+    ppg.Reset();
+    count = 0;
+    lastHrs = 0;
+    SendHeartRate(ControllerStates::NotEnoughData, 0);
+  } else if (ppgState == Drivers::Hrs3300::PPGState::Running) {
+    bpm = ppg.HeartRate();
+    if (bpm.has_value()) {
+      SendHeartRate(ControllerStates::Ready, bpm.value());
+    } else if (ppg.SufficientData()) {
+      SendHeartRate(ControllerStates::Searching, 0);
     } else {
-      SendHeartRate(ControllerStates::NotEnoughData, 0);
+      // If there's currently a value shown, don't clear it
+      // But still update the algorithm state
+      if (valueCurrentlyShown) {
+        controller.UpdateState(ControllerStates::NotEnoughData);
+      } else {
+        SendHeartRate(ControllerStates::NotEnoughData, 0);
+      }
     }
   }
-
   if (bpm.has_value()) {
     // Maintain constant frequency acquisition in background mode
     // If the last measurement time is set to the start time, then the next measurement
