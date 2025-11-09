@@ -28,6 +28,10 @@ bool Ppg::SufficientData() const {
   return ready;
 }
 
+void Ppg::ScaleHrs(float scaleFactor) {
+  ppgFilter.Scale(scaleFactor);
+}
+
 void Ppg::Ingest(uint16_t hrs, int16_t accX, int16_t accY, int16_t accZ) {
   // Acceleration is normalised to 1024=1G in the BMA driver
   float accXNorm = static_cast<float>(accX) / 1024.f;

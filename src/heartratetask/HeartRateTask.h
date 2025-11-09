@@ -43,6 +43,7 @@ namespace Pinetime {
       bool valueCurrentlyShown;
       States state = States::Disabled;
       uint16_t count;
+      uint16_t lastHrs = 0;
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
       Controllers::Settings& settings;
