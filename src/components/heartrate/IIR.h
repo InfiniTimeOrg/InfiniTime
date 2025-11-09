@@ -40,6 +40,13 @@ namespace Pinetime {
         }
       }
 
+      void Scale(float scaleFactor) {
+        for (std::size_t i = 0; i < NSections; i++) {
+          filterStates[i].s1 *= scaleFactor;
+          filterStates[i].s2 *= scaleFactor;
+        }
+      }
+
     private:
       std::array<FilterState, NSections> filterStates;
       const std::array<SOSCoeffs, NSections>& coeffs;
