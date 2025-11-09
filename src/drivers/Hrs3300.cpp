@@ -16,7 +16,7 @@
 using namespace Pinetime::Drivers;
 
 namespace {
-  static constexpr uint8_t ledDriveCurrentValue = 0x2f;
+  static constexpr uint8_t ledDriveCurrentValue = 0x2e;
 }
 
 /** Driver for the HRS3300 heart rate sensor.
@@ -33,21 +33,22 @@ void Hrs3300::Init() {
   Disable();
   vTaskDelay(100);
 
-  // HRS disabled, 50ms wait time between ADC conversion period, current 12.5mA
-  WriteRegister(static_cast<uint8_t>(Registers::Enable), 0x50);
+  // HRS disabled, 0ms wait time between ADC conversion period, current 12.5mA
+  WriteRegister(static_cast<uint8_t>(Registers::Enable), 0x70);
 
   // Current 12.5mA and low nibble 0xF.
   // Note: Setting low nibble to 0x8 per the datasheet results in
-  // modulated LED driver output. Setting to 0xF results in clean,
-  // steady output during the ADC conversion period.
+  // modulated LED driver output (50% PWM)
+  // Saves some power at the cost of some resolution
+  // 0xF sets 100% duty
   WriteRegister(static_cast<uint8_t>(Registers::PDriver), ledDriveCurrentValue);
 
-  // HRS and ALS both in 15-bit mode results in ~50ms LED drive period
-  // and presumably ~50ms ADC conversion period.
-  WriteRegister(static_cast<uint8_t>(Registers::Res), 0x77);
+  // HRS in 15-bit and ALS in 16-bit mode result in 48ms period
+  // See https://github.com/wasp-os/wasp-os/pull/363#issuecomment-1279733038
+  WriteRegister(static_cast<uint8_t>(Registers::Res), 0x78);
 
-  // Gain set to 1x
-  WriteRegister(static_cast<uint8_t>(Registers::Hgain), 0x00);
+  // Gain set to 8x
+  WriteRegister(static_cast<uint8_t>(Registers::Hgain), 0x0e);
 }
 
 void Hrs3300::Enable() {

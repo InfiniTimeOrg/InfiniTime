@@ -1,297 +1,354 @@
 #include "components/heartrate/Ppg.h"
 #include <nrf_log.h>
-#include <vector>
 
 using namespace Pinetime::Controllers;
 
 namespace {
-  float LinearInterpolation(const float* xValues, const float* yValues, int length, float pointX) {
-    if (pointX > xValues[length - 1]) {
-      return yValues[length - 1];
-    } else if (pointX <= xValues[0]) {
-      return yValues[0];
-    }
-    int index = 0;
-    while (pointX > xValues[index] && index < length - 1) {
-      index++;
-    }
-    float pointX0 = xValues[index - 1];
-    float pointX1 = xValues[index];
-    float pointY0 = yValues[index - 1];
-    float pointY1 = yValues[index];
-    float mu = (pointX - pointX0) / (pointX1 - pointX0);
-
-    return (pointY0 * (1 - mu) + pointY1 * mu);
+  // Computes a mod b
+  // fmod is a remainder rather than a true mathematical modulo
+  float MathematicalModulus(float a, float b) {
+    return std::fmod((std::fmod(a, b) + b), b);
   }
-
-  float PeakSearch(float* xVals, float* yVals, float threshold, float& width, float start, float end, int length) {
-    int peaks = 0;
-    bool enabled = false;
-    float minBin = 0.0f;
-    float maxBin = 0.0f;
-    float peakCenter = 0.0f;
-    float prevValue = LinearInterpolation(xVals, yVals, length, start - 0.01f);
-    float currValue = LinearInterpolation(xVals, yVals, length, start);
-    float idx = start;
-    while (idx < end) {
-      float nextValue = LinearInterpolation(xVals, yVals, length, idx + 0.01f);
-      if (currValue < threshold) {
-        enabled = true;
-      }
-      if (currValue >= threshold and enabled) {
-        if (prevValue < threshold) {
-          minBin = idx;
-        } else if (nextValue <= threshold) {
-          maxBin = idx;
-          peaks++;
-          width = maxBin - minBin;
-          peakCenter = width / 2.0f + minBin;
-        }
-      }
-      prevValue = currValue;
-      currValue = nextValue;
-      idx += 0.01f;
-    }
-    if (peaks != 1) {
-      width = 0.0f;
-      peakCenter = 0.0f;
-    }
-    return peakCenter;
-  }
-
-  float SpectrumMean(const std::array<float, Ppg::spectrumLength>& signal, int start, int end) {
-    int total = 0;
-    float mean = 0.0f;
-    for (int idx = start; idx < end; idx++) {
-      mean += signal.at(idx);
-      total++;
-    }
-    if (total > 0) {
-      mean /= static_cast<float>(total);
-    }
-    return mean;
-  }
-
-  float SignalToNoise(const std::array<float, Ppg::spectrumLength>& signal, int start, int end, float max) {
-    float mean = SpectrumMean(signal, start, end);
-    return max / mean;
-  }
-
-  // Simple bandpass filter using exponential moving average
-  void Filter30to240(std::array<float, Ppg::dataLength>& signal) {
-    // From:
-    // https://www.norwegiancreations.com/2016/03/arduino-tutorial-simple-high-pass-band-pass-and-band-stop-filtering/
-
-    int length = signal.size();
-    // 0.268 is ~0.5Hz and 0.816 is ~4Hz cutoff at 10Hz sampling
-    float expAlpha = 0.816f;
-    float expAvg = 0.0f;
-    for (int loop = 0; loop < 4; loop++) {
-      expAvg = signal.front();
-      for (int idx = 0; idx < length; idx++) {
-        expAvg = (expAlpha * signal.at(idx)) + ((1 - expAlpha) * expAvg);
-        signal[idx] = expAvg;
-      }
-    }
-    expAlpha = 0.268f;
-    for (int loop = 0; loop < 4; loop++) {
-      expAvg = signal.front();
-      for (int idx = 0; idx < length; idx++) {
-        expAvg = (expAlpha * signal.at(idx)) + ((1 - expAlpha) * expAvg);
-        signal[idx] -= expAvg;
-      }
-    }
-  }
-
-  float SpectrumMax(const std::array<float, Ppg::spectrumLength>& data, int start, int end) {
-    float max = 0.0f;
-    for (int idx = start; idx < end; idx++) {
-      if (data.at(idx) > max) {
-        max = data.at(idx);
-      }
-    }
-    return max;
-  }
-
-  void Detrend(std::array<float, Ppg::dataLength>& signal) {
-    int size = signal.size();
-    float offset = signal.front();
-    float slope = (signal.at(size - 1) - offset) / static_cast<float>(size - 1);
-
-    for (int idx = 0; idx < size; idx++) {
-      signal[idx] -= (slope * static_cast<float>(idx) + offset);
-    }
-    for (int idx = 0; idx < size - 1; idx++) {
-      signal[idx] = signal[idx + 1] - signal[idx];
-    }
-  }
-
-  // Hanning Coefficients from numpy: python -c 'import numpy;print(numpy.hanning(64))'
-  // Note: Harcoded and must be updated if constexpr dataLength is changed. Prevents the need to
-  // use cosf() which results in an extra ~5KB in storage.
-  // This data is symetrical so just using the first half (saves 128B when dataLength is 64).
-  static constexpr float hanning[Ppg::dataLength >> 1] {
-    0.0f,        0.00248461f, 0.00991376f, 0.0222136f,  0.03926189f, 0.06088921f, 0.08688061f, 0.11697778f,
-    0.15088159f, 0.1882551f,  0.22872687f, 0.27189467f, 0.31732949f, 0.36457977f, 0.41317591f, 0.46263495f,
-    0.51246535f, 0.56217185f, 0.61126047f, 0.65924333f, 0.70564355f, 0.75f,       0.79187184f, 0.83084292f,
-    0.86652594f, 0.89856625f, 0.92664544f, 0.95048443f, 0.96984631f, 0.98453864f, 0.99441541f, 0.99937846f};
 }
 
 Ppg::Ppg() {
-  dataAverage.fill(0.0f);
-  spectrum.fill(0.0f);
+  Reset();
 }
 
-int8_t Ppg::Preprocess(uint16_t hrs, uint16_t als) {
-  if (dataIndex < dataLength) {
-    dataHRS[dataIndex++] = hrs;
-  }
-  alsValue = als;
-  if (alsValue > alsThreshold) {
-    return 1;
-  }
-  return 0;
+void Ppg::Reset() {
+  ready = false;
+  hrsCount = 0;
+  filteredHrsTailIndex = 0;
+  filteredHrsArray.fill(0.f);
+  accAdaptive.Reset();
+  lockedHrBin = std::nullopt;
 }
 
-int Ppg::HeartRate() {
-  if (dataIndex < dataLength) {
-    if (!enoughData) {
-      return -2;
-    }
-    return 0;
-  }
-  enoughData = true;
-  int hr = 0;
-  hr = ProcessHeartRate(resetSpectralAvg);
-  resetSpectralAvg = false;
-  // Make room for overlapWindow number of new samples
-  for (int idx = 0; idx < dataLength - overlapWindow; idx++) {
-    dataHRS[idx] = dataHRS[idx + overlapWindow];
-  }
-  dataIndex = dataLength - overlapWindow;
-  return hr;
+bool Ppg::SufficientData() const {
+  return ready;
 }
 
-void Ppg::Reset(bool resetDaqBuffer) {
-  if (resetDaqBuffer) {
-    dataIndex = 0;
-    enoughData = false;
+void Ppg::Ingest(uint16_t hrs, int16_t accX, int16_t accY, int16_t accZ) {
+  // Acceleration is normalised to 1024=1G in the BMA driver
+  float accXNorm = static_cast<float>(accX) / 1024.f;
+  float accYNorm = static_cast<float>(accY) / 1024.f;
+  float accZNorm = static_cast<float>(accZ) / 1024.f;
+  // Filter initial states assume the previous input was zero
+  // Instead prime the filters with a real input to avoid
+  // ringing caused by a large jump from zero
+  if (hrsCount == 0) {
+    ppgFilter.Prime(hrs);
+    accXFilter.Prime(accXNorm);
+    accYFilter.Prime(accYNorm);
+    accZFilter.Prime(accZNorm);
   }
-  avgIndex = 0;
-  dataAverage.fill(0.0f);
-  lastPeakLocation = 0.0f;
-  alsThreshold = UINT16_MAX;
-  alsValue = 0;
-  resetSpectralAvg = true;
-  spectrum.fill(0.0f);
+  // Highpass the hrs to remove dc baseline
+  float hrsFilt = ppgFilter.FilterStep(hrs);
+  // Invert phase: normalise to positive pulse
+  hrsFilt *= -1.f;
+
+  filteredHrsArray[filteredHrsTailIndex] = std::abs(hrsFilt);
+  filteredHrsTailIndex = (filteredHrsTailIndex + 1) % adaptiveResetWindow;
+
+  // Highpass all the acceleration channels to remove dc baseline
+  float accXFilt = accXFilter.FilterStep(accXNorm);
+  float accYFilt = accYFilter.FilterStep(accYNorm);
+  float accZFilt = accZFilter.FilterStep(accZNorm);
+  std::optional<float> resetThresh = std::nullopt;
+  if (hrsCount > adaptiveResetWindow) {
+    resetThresh = 0.f;
+    for (size_t i = 0; i < adaptiveResetWindow; i++) {
+      resetThresh = std::max(resetThresh.value(), filteredHrsArray[i]);
+    }
+    resetThresh.value() *= adaptiveResetThresh;
+  }
+  std::array<float, noiseChannels> filteredAcc {accXFilt, accYFilt, accZFilt};
+  // Motion adaptive filtering to remove components in the hrs signal caused by motion
+  float hrsAdaptive = accAdaptive.FilterStep(hrsFilt, filteredAcc, resetThresh);
+  StoreHrs(hrsAdaptive);
 }
 
-// Pass init == true to reset spectral averaging.
-// Returns -1 (Reset Acquisition), 0 (Unable to obtain HR) or HR (BPM).
-int Ppg::ProcessHeartRate(bool init) {
-  std::copy(dataHRS.begin(), dataHRS.end(), vReal.begin());
-  Detrend(vReal);
-  Filter30to240(vReal);
-  vImag.fill(0.0f);
-  // Apply Hanning Window
-  int hannIdx = 0;
-  for (int idx = 0; idx < dataLength; idx++) {
-    if (idx >= dataLength >> 1) {
-      hannIdx--;
+std::optional<uint8_t> Ppg::HeartRate() {
+  if (hrsCount == inputLength) {
+    ready = true;
+    RunAlg();
+    // Roll back by overlapWindow
+    for (size_t index = 0; index < inputLength - overlapWindow; index++) {
+      adaptiveHrsArray[index] = adaptiveHrsArray[index + overlapWindow];
     }
-    vReal[idx] *= hanning[hannIdx];
-    if (idx < dataLength >> 1) {
-      hannIdx++;
-    }
+    hrsCount -= overlapWindow;
   }
-  // Compute in place power spectrum
-  ArduinoFFT<float> FFT = ArduinoFFT<float>(vReal.data(), vImag.data(), dataLength, sampleFreq);
-  FFT.compute(FFTDirection::Forward);
-  FFT.complexToMagnitude();
-  FFT.~ArduinoFFT();
-  SpectrumAverage(vReal.data(), spectrum.data(), spectrum.size(), init);
-  peakLocation = 0.0f;
-  float threshold = peakDetectionThreshold;
-  float peakWidth = 0.0f;
-  int specLen = spectrum.size();
-  float max = SpectrumMax(spectrum, hrROIbegin, hrROIend);
-  float signalToNoiseRatio = SignalToNoise(spectrum, hrROIbegin, hrROIend, max);
-  if (signalToNoiseRatio > signalToNoiseThreshold && spectrum.at(0) < dcThreshold) {
-    threshold *= max;
-    // Reuse VImag for interpolation x values passed to PeakSearch
-    for (int idx = 0; idx < dataLength; idx++) {
-      vImag[idx] = idx;
-    }
-    peakLocation = PeakSearch(vImag.data(),
-                              spectrum.data(),
-                              threshold,
-                              peakWidth,
-                              static_cast<float>(hrROIbegin),
-                              static_cast<float>(hrROIend),
-                              specLen);
-    peakLocation *= freqResolution;
+  if (lockedHrBin.has_value() && rollingEnergy > rollingEnergyDisplayMinimum) {
+    return std::round((lockedHrBin.value() + minFrequencyBin) * binWidth * 60.f);
   }
-  // Peak too wide? (broad spectrum noise or large, rapid HR change)
-  if (peakWidth > maxPeakWidth) {
-    peakLocation = 0.0f;
-  }
-  // Check HR limits
-  if (peakLocation < minHR || peakLocation > maxHR) {
-    peakLocation = 0.0f;
-  }
-  // Reset spectral averaging if bad reading
-  if (peakLocation == 0.0f) {
-    resetSpectralAvg = true;
-  }
-  // Set the ambient light threshold and return HR in BPM
-  alsThreshold = static_cast<uint16_t>(alsValue * alsFactor);
-  // Get current average HR. If HR reduced to zero, return -1 (reset) else HR
-  peakLocation = HeartRateAverage(peakLocation);
-  int rtn = -1;
-  if (peakLocation == 0.0f && lastPeakLocation > 0.0f) {
-    lastPeakLocation = 0.0f;
+  return {};
+}
+
+void Ppg::StoreHrs(float filteredHrs) {
+  if (hrsCount < inputLength) {
+    adaptiveHrsArray[hrsCount] = filteredHrs;
+    hrsCount++;
   } else {
-    lastPeakLocation = peakLocation;
-    rtn = static_cast<int>((peakLocation * 60.0f) + 0.5f);
-  }
-  return rtn;
-}
-
-void Ppg::SpectrumAverage(const float* data, float* spectrum, int length, bool reset) {
-  if (reset) {
-    spectralAvgCount = 0;
-  }
-  float count = static_cast<float>(spectralAvgCount);
-  for (int idx = 0; idx < length; idx++) {
-    spectrum[idx] = (spectrum[idx] * count + data[idx]) / (count + 1);
-  }
-  if (spectralAvgCount < spectralAvgMax) {
-    spectralAvgCount++;
+    for (size_t index = 0; index < inputLength - 1; index++) {
+      adaptiveHrsArray[index] = adaptiveHrsArray[index + 1];
+    }
+    adaptiveHrsArray[inputLength - 1] = filteredHrs;
   }
 }
 
-float Ppg::HeartRateAverage(float hr) {
-  avgIndex++;
-  avgIndex %= dataAverage.size();
-  dataAverage[avgIndex] = hr;
-  float avg = 0.0f;
-  float total = 0.0f;
-  float min = 300.0f;
-  float max = 0.0f;
-  for (const float& value : dataAverage) {
-    if (value > 0.0f) {
-      avg += value;
-      if (value < min)
-        min = value;
-      if (value > max)
-        max = value;
-      total++;
+void Ppg::RunAlg() {
+  complexFftArray.fill(0.f);
+  float mean = 0.f;
+  for (size_t index = 0; index < inputLength; index++) {
+    mean += adaptiveHrsArray[index];
+  }
+  mean /= static_cast<float>(inputLength);
+  for (size_t index = 0; index < inputLength; index++) {
+    fftArray[index] = adaptiveHrsArray[index] - mean;
+  }
+  // Normalise energy of each segment so algorithm is input amplitude invariant
+  SegmentRMSNorm();
+  // Transform to frequency domain so we can do spectral processing
+  Utility::FFT::RealFFT(complexFftArray, realTwiddle, complexTwiddle);
+  // Find peaks in the spectral magnitudes so we can identify possible heart rate peaks
+  ProminenceFilter();
+  // Filter peaks by how likely they are to be heart rates using harmonic information
+  HarmonicFilter();
+
+  // Then identify and track peaks over time
+  // Readers note: I suggest collapsing the lambdas immediately below and reading the tracking logic first
+  // then come back to these after
+
+  // Largest element in array
+  auto FindPeakIndex = [](std::span<const float> array) {
+    float largest = array[0];
+    size_t largestIndex = 0;
+    for (size_t index = 1; index < array.size(); index++) {
+      if (array[index] > largest) {
+        largest = array[index];
+        largestIndex = index;
+      }
+    }
+    return largestIndex;
+  };
+  // Total energy of a peak taking into account energy spread into neighbour bins
+  auto CalculateLogPeakEnergy = [](size_t bin, std::span<const float> roi) {
+    size_t lowerBound = std::max(0, static_cast<ssize_t>(bin) - 1);
+    size_t upperBound = std::min(bin + 2, roiLength);
+    float acc = 0.f;
+    for (size_t index = lowerBound; index < upperBound; index++) {
+      acc += roi[index];
+    }
+    return std::log(acc);
+  };
+  // Peak energy relative to total energy
+  auto PeakProminence = [](float peakEnergy, std::span<const float> roi) {
+    float acc = 0.f;
+    for (auto item : roi) {
+      acc += item;
+    }
+    return peakEnergy / acc;
+  };
+  // Exact peak location by interpolating with neighbour bins
+  auto PeakSearch = [](size_t bin, std::span<const float> roi) {
+    std::optional<float> upperEnergy = std::nullopt;
+    std::optional<float> lowerEnergy = std::nullopt;
+    float centralEnergy = roi[bin];
+    if (bin < roi.size() - 1) {
+      upperEnergy = roi[bin + 1];
+    }
+    if (bin > 0) {
+      lowerEnergy = roi[bin - 1];
+    }
+    float peakLocation = bin;
+    if (upperEnergy.has_value()) {
+      peakLocation += (upperEnergy.value() / centralEnergy) / 2.f;
+    }
+    if (lowerEnergy.has_value()) {
+      peakLocation -= (lowerEnergy.value() / centralEnergy) / 2.f;
+    }
+    return peakLocation;
+  };
+  // Exponential moving average
+  auto EmaStep = [](float state, float next, float alpha) {
+    return (state * (1.f - alpha)) + (next * alpha);
+  };
+  // Strongest peak near to the previous peak
+  auto TrackHr = [FindPeakIndex, PeakSearch](float lockedHrBin, std::span<const float> roi) {
+    ssize_t centre = std::round(lockedHrBin);
+    float deviation = ((lockedHrBin + minFrequencyBin) * 2.f * 0.1f) + 1.f;
+
+    // Need an odd number of bins so window is centred
+    // Avoid subsampling bins
+    auto RoundToOdd = [](float val) {
+      return (2 * static_cast<size_t>(std::floor(val / 2))) + 1;
+    };
+
+    ssize_t width = std::max(RoundToOdd(deviation), 3U);
+    ssize_t offset = (width - 1) / 2;
+    size_t minBin = std::max(0, -offset + centre);
+    size_t maxBin = std::min(static_cast<ssize_t>(roiLength), -offset + centre + width);
+    std::span<const float> searchRoi = roi.subspan(minBin, maxBin - minBin);
+    size_t peak = FindPeakIndex(searchRoi);
+    return PeakSearch(peak, searchRoi) + minBin;
+  };
+
+  std::span<const float> roi = fftArray.subspan(minFrequencyBin, roiLength);
+  size_t bestIndex = FindPeakIndex(roi);
+  float bestPeakEnergy = CalculateLogPeakEnergy(bestIndex, roi);
+  std::optional<size_t> strongBin = std::nullopt;
+
+  if (bestPeakEnergy > strongPeakEnergyMinimum) {
+    if (PeakProminence(std::exp(bestPeakEnergy), roi) > strongPeakProminenceMinimum) {
+      strongBin = bestIndex;
     }
   }
-  if (total > 0) {
-    avg /= total;
-  } else {
-    avg = 0.0f;
+
+  // If there's a strong peak and no heart rate locked, or if the current locked peak is weak
+  // accept the new peak and begin tracking
+  // Otherwise continue tracking the existing peak
+  if ((!lockedHrBin.has_value() || rollingEnergy < rollingEnergyWeak) && strongBin.has_value()) {
+    lockedHrBin = PeakSearch(strongBin.value(), roi);
+    rollingEnergy = bestPeakEnergy;
+  } else if (lockedHrBin.has_value()) {
+    float newLockBin = TrackHr(lockedHrBin.value(), roi);
+    float lockEnergy = CalculateLogPeakEnergy(std::round(newLockBin), roi);
+    // Only update the estimated heart rate if the new peak location has substantial energy
+    // This helps avoid tracking noise when the signal quality transiently degrades
+    if (lockEnergy > hrUpdateEnergyMinimum) {
+      lockedHrBin = EmaStep(lockedHrBin.value(), newLockBin, hrMovementAlpha);
+    }
   }
-  return avg;
+
+  // Update rolling energy (if currently tracking a heart rate)
+  // The rolling energy provides information on the energy of the peak over time
+  // If the peak becomes consistently too weak we stop tracking it
+  if (lockedHrBin.has_value()) {
+    float lockEnergy = CalculateLogPeakEnergy(std::round(lockedHrBin.value()), roi);
+    rollingEnergy = EmaStep(rollingEnergy, lockEnergy, rollingEnergyAlpha);
+
+    if (rollingEnergy < trackingEnergyMinimum) {
+      lockedHrBin = std::nullopt;
+    }
+  }
+}
+
+[[gnu::noinline]] void Ppg::ProminenceFilter() {
+  std::array<float, fftLength / 2> prominence;
+  for (size_t index = minFrequencyBin - 1; index < fftLength / 2; index++) {
+    prominence[index] = std::log(std::max(std::abs(complexFftArray[index]), logFloor));
+  }
+  prominenceFilter.Prime(prominence[minFrequencyBin - 1] * primingFactor);
+
+  // Zero phase filter: forwards + backwards
+  // IIR filters delay the signal, and we want to avoid shifting peaks up or down in frequency
+  // So we run the filter both forwards and backwards so the delay in each direction cancels out
+  // The result is zero delay (phase shift) and twice the attenuation
+
+  // forwards pass
+  for (size_t index = minFrequencyBin; index < fftLength / 2; index++) {
+    prominence[index] = prominenceFilter.FilterStep(prominence[index]);
+  }
+  // backwards pass
+  for (size_t index = (fftLength / 2) - 1; index > minFrequencyBin - 1; index--) {
+    prominence[index] = prominenceFilter.FilterStep(prominence[index]);
+  }
+  for (size_t index = minFrequencyBin; index < fftLength / 2; index++) {
+    float val = (prominence[index] - minProminence) / (maxProminence - minProminence);
+    val = std::max(std::min(1.f, val), logFloor);
+    complexFftArray[index] *= val;
+  }
+}
+
+[[gnu::noinline]] void Ppg::SegmentRMSNorm() {
+  float rollSum = 0.0;
+  for (size_t index = 0; index < segmentNormWindow; index++) {
+    rollSum += std::pow(fftArray[index], 2);
+  }
+  std::array<float, inputLength - segmentNormWindow + 1> outputs;
+  outputs[0] = std::sqrt(rollSum / segmentNormWindow) * 2;
+  for (size_t index = segmentNormWindow; index < inputLength; index++) {
+    rollSum -= std::pow(fftArray[index - segmentNormWindow], 2);
+    rollSum += std::pow(fftArray[index], 2);
+    outputs[index - segmentNormWindow + 1] = std::sqrt(rollSum / segmentNormWindow) * 2;
+  }
+  size_t halfNorm = segmentNormWindow / 2;
+  for (size_t index = 0; index < inputLength; index++) {
+    if (index <= halfNorm) {
+      fftArray[index] /= outputs[0];
+    } else if (index >= inputLength - halfNorm) {
+      fftArray[index] /= outputs[outputs.size() - 1];
+    } else {
+      fftArray[index] /= outputs[index - halfNorm];
+    }
+  }
+}
+
+void Ppg::HarmonicFilter() {
+  // These arrays are precomputed from clean PPG signals sampled from the sensor
+  // These constants encode the shape of a heart beat on a PPG trace (beat morphology)
+  // We use these constants to penalise components in the signal that don't correspond to a wave
+  // of the right shape, allowing us to eliminate noise
+  static constexpr std::array<std::array<float, 2>, Ppg::roiLength> magArray {
+    {{0.3486803888990022, 0.255141508669598},    {0.36864722158239355, 0.25164382316780665}, {0.36771410549818545, 0.246948695573225},
+     {0.35975580379324007, 0.24714886736121827}, {0.3658843568236732, 0.24650278235091835},  {0.3648928604195185, 0.24415607374450915},
+     {0.3751222377393388, 0.23988295745228638},  {0.3921596966191289, 0.23210350117630843},  {0.40638499674260403, 0.22516855732998384},
+     {0.4232127690875433, 0.21887312064931116},  {0.41564130033821856, 0.20673749156382631}, {0.38906619325409764, 0.1936140541005159},
+     {0.3672394339754485, 0.18042745108982736},  {0.35275401585397503, 0.17151514618926156}, {0.3354326028852867, 0.15978169786664942},
+     {0.32178572197981903, 0.1488045144540834},  {0.31281592316734735, 0.13991117977784315}, {0.299797871716369, 0.12788875993747936},
+     {0.2966269594265519, 0.11875935055909558},  {0.2925247464787818, 0.11318066458803003},  {0.2964994671856146, 0.10580432119722558},
+     {0.29770787961626416, 0.09839859522862732}, {0.3007591380586962, 0.09394035889667726},  {0.31104783374357775, 0.08933500974545709},
+     {0.31486127213961, 0.08685088306152053},    {0.3313907046528911, 0.0924341145096451},   {0.30897754578100955, 0.08563613561250377},
+     {0.3205154251103728, 0.08487605022457582},  {0.32285950835530364, 0.08122541502849505}, {0.31912839897477796, 0.08362307999351845},
+     {0.30726200775051915, 0.08424021081449604}, {0.32024159984649864, 0.08405258601108509}, {0.33036938914308, 0.08392491126815374},
+     {0.30531854817881166, 0.08146558813586019}, {0.3308979795151278, 0.08381011591996054},  {0.30632137960394173, 0.08313313923993279}}};
+
+  static constexpr std::array<float, Ppg::roiLength> phaseArray {
+    {0.2705229340875336, 0.36779124535955804, 0.45434779541743203, 0.5138242784968899, 0.5537065717483055,  0.5891055187012357,
+     0.6221592074197645, 0.6558273339604292,  0.6849101620718369,  0.7083511816762154, 0.7167869997820329,  0.7112028603271641,
+     0.7005327637607478, 0.6910573759719243,  0.6803636809415491,  0.6647598810363644, 0.6514913727959067,  0.6366402208133636,
+     0.6210659369643988, 0.6057153725313422,  0.5894965013729228,  0.5757024639742967, 0.57176394709517514, 0.5881247512605522,
+     0.6067800339551624, 0.621127310629737,   0.6243531002213607,  0.6276813318132224, 0.6314029448574778,  0.634138691540482,
+     0.6372739733495546, 0.6398513675481557,  0.642109540006218,   0.6449694089531159, 0.6465457224589797,  0.649148754973601}};
+
+  for (size_t frequencyBin = minFrequencyBin; frequencyBin < maxFrequencyBin; frequencyBin++) {
+    float f0Mag = std::abs(complexFftArray[frequencyBin]);
+    float f1Mag = (0.5f * std::abs(complexFftArray[(frequencyBin * 2) - 1])) + std::abs(complexFftArray[frequencyBin * 2]) +
+                  (0.5f * std::abs(complexFftArray[(frequencyBin * 2) + 1]));
+    float f2Mag = std::abs(complexFftArray[(frequencyBin * 3) - 1]) + std::abs(complexFftArray[frequencyBin * 3]) +
+                  std::abs(complexFftArray[(frequencyBin * 3) + 1]);
+
+    float f1MagRel = f1Mag / f0Mag;
+    float f2MagRel = f2Mag / f0Mag;
+    float f1MagPriorRel = f1MagRel / magArray[frequencyBin - minFrequencyBin][0];
+
+    // Returns a phase between 0 and 1
+    auto ComplexToPhaseNorm = [](std::complex<float> value) {
+      return (std::arg(value) / (2.f * static_cast<float>(std::numbers::pi))) + 0.5f;
+    };
+    // Calculates the distance between two phases, 0 being in-phase and 1 being antiphase
+    auto PhaseDistance = [](float p1, float p2) {
+      return 1.f - (std::abs(0.5f - std::abs(p1 - p2)) * 2.f);
+    };
+
+    float f0Phase = ComplexToPhaseNorm(complexFftArray[frequencyBin]);
+    float f1Phase = ComplexToPhaseNorm(complexFftArray[frequencyBin * 2]);
+    float f1PhaseOffset = MathematicalModulus(f1Phase - (2 * f0Phase), 1.f);
+
+    float filteredEnergy = f0Mag;
+    if (f1MagPriorRel > f1MagMinimum) {
+      float f1PhaseDist = PhaseDistance(f1PhaseOffset, phaseArray[frequencyBin - minFrequencyBin]);
+      filteredEnergy *= std::exp(-f1ExpAttenuationFactor * f1PhaseDist);
+      if (f1MagRel > f1MagHigh) {
+        filteredEnergy = std::min(filteredEnergy, fnMagHighEnergyCeiling);
+      }
+    } else {
+      filteredEnergy *= noF1Penalty;
+      filteredEnergy = std::min(filteredEnergy, noF1EnergyCeiling);
+    }
+    if (f2MagRel > f2MagHigh) {
+      filteredEnergy = std::min(filteredEnergy, fnMagHighEnergyCeiling);
+    }
+    fftArray[frequencyBin] = filteredEnergy;
+  }
 }
