@@ -21,6 +21,7 @@ namespace Pinetime {
       std::optional<uint8_t> HeartRate();
       void Reset();
       [[nodiscard]] bool SufficientData() const;
+      void ScaleHrs(float scaleFactor);
       static constexpr float sampleDuration = 0.048f;
 
     private:
