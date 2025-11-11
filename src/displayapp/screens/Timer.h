@@ -38,7 +38,7 @@ namespace Pinetime::Applications {
       lv_objmask_mask_t* highlightMask;
 
       lv_task_t* taskRefresh;
-      
+
       Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_42);
       Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_42);
       Widgets::Counter secondCounter = Widgets::Counter(0, 59, jetbrains_mono_42);

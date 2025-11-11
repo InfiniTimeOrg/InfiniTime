@@ -157,9 +157,8 @@ void Timer::ToggleRunning() {
     timer.StopTimer();
     SetTimerStopped();
   } else if (hourCounter.GetValue() + minuteCounter.GetValue() + secondCounter.GetValue() > 0) {
-    
-    auto timerDuration = std::chrono::hours(hourCounter.GetValue()) + 
-                         std::chrono::minutes(minuteCounter.GetValue()) + 
+
+    auto timerDuration = std::chrono::hours(hourCounter.GetValue()) + std::chrono::minutes(minuteCounter.GetValue()) +
                          std::chrono::seconds(secondCounter.GetValue());
     timer.StartTimer(timerDuration);
     Refresh();
