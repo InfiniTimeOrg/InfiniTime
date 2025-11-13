@@ -47,15 +47,16 @@ namespace Pinetime {
         Utility::DirtyValue<bool> notificationState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
+        lv_obj_t* container;
+        lv_obj_t* notificationIcon;
+        lv_obj_t* label_prompt_1;
         lv_obj_t* label_time;
         lv_obj_t* label_date;
-        lv_obj_t* label_prompt_1;
-        lv_obj_t* label_prompt_2;
         lv_obj_t* batteryValue;
-        lv_obj_t* heartbeatValue;
         lv_obj_t* stepValue;
-        lv_obj_t* notificationIcon;
+        lv_obj_t* heartbeatValue;
         lv_obj_t* connectState;
+        lv_obj_t* label_prompt_2;
 
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
