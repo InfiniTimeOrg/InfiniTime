@@ -31,28 +31,38 @@ void StatusIcons::Create() {
   lv_obj_align(container, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 }
 
-void StatusIcons::Update() {
+bool StatusIcons::Update() {
+  bool updated = false;
+
   powerPresent = batteryController.IsPowerPresent();
   if (powerPresent.IsUpdated()) {
     lv_obj_set_hidden(batteryPlug, !powerPresent.Get());
+    updated = true;
   }
 
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
     batteryIcon.SetBatteryPercentage(batteryPercent);
+    updated = true;
   }
 
   alarmEnabled = alarmController.IsEnabled();
   if (alarmEnabled.IsUpdated()) {
     lv_obj_set_hidden(alarmIcon, !alarmEnabled.Get());
+    updated = true;
   }
 
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     lv_obj_set_hidden(bleIcon, !bleState.Get());
+    updated = true;
   }
 
-  lv_obj_realign(container);
+  if (updated) {
+    lv_obj_realign(container);
+  }
+
+  return updated;
 }
