@@ -7,6 +7,7 @@
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/NotificationIcon.h"
 #include "components/settings/Settings.h"
+#include "components/alarm/AlarmController.h"
 #include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -48,14 +49,16 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
                                  const Controllers::Battery& batteryController,
                                  const Controllers::Ble& bleController,
                                  Controllers::NotificationManager& notificationManager,
-                                 Controllers::Settings& settingsController)
+                                 Controllers::Settings& settingsController,
+                                 Controllers::AlarmController& alarmController)
   : currentDateTime {{}},
     batteryIcon(true),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
     notificationManager {notificationManager},
-    settingsController {settingsController} {
+    settingsController {settingsController},
+    alarmController {alarmController} {
 
   sHour = 99;
   sMinute = 99;
@@ -156,6 +159,11 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_style_set_line_color(&hour_line_style_trace, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_style_set_line_rounded(&hour_line_style_trace, LV_STATE_DEFAULT, false);
   lv_obj_add_style(hour_body_trace, LV_LINE_PART_MAIN, &hour_line_style_trace);
+
+  alarmIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
+  lv_label_set_text_static(alarmIcon, Symbols::bell);
+  lv_obj_align(alarmIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 
@@ -263,5 +271,14 @@ void WatchFaceAnalog::Refresh() {
     if (currentDate.IsUpdated()) {
       lv_label_set_text_fmt(label_date_day, "%s\n%02i", dateTimeController.DayOfWeekShortToString(), dateTimeController.Day());
     }
+  }
+
+  alarmSet = alarmController.IsEnabled();
+  if (alarmSet.Get()) {
+    lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x6AA84F));
+    lv_obj_realign(alarmIcon);
+  } else {
+    lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1B1B1B));
+    lv_obj_realign(alarmIcon);
   }
 }

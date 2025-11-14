@@ -18,6 +18,7 @@ namespace Pinetime {
     class Battery;
     class Ble;
     class NotificationManager;
+    class AlarmController;
   }
 
   namespace Applications {
@@ -29,7 +30,8 @@ namespace Pinetime {
                         const Controllers::Battery& batteryController,
                         const Controllers::Ble& bleController,
                         Controllers::NotificationManager& notificationManager,
-                        Controllers::Settings& settingsController);
+                        Controllers::Settings& settingsController,
+                        Controllers::AlarmController& alarmController);
 
         ~WatchFaceAnalog() override;
 
@@ -44,6 +46,7 @@ namespace Pinetime {
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
         Utility::DirtyValue<bool> notificationState {false};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
+        Utility::DirtyValue<bool> alarmSet {};
 
         lv_obj_t* minor_scales;
         lv_obj_t* major_scales;
@@ -72,6 +75,7 @@ namespace Pinetime {
         lv_obj_t* plugIcon;
         lv_obj_t* notificationIcon;
         lv_obj_t* bleIcon;
+        lv_obj_t* alarmIcon;
 
         BatteryIcon batteryIcon;
 
@@ -80,6 +84,7 @@ namespace Pinetime {
         const Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
+        Controllers::AlarmController& alarmController;
 
         void UpdateClock();
         void SetBatteryIcon();
@@ -98,7 +103,8 @@ namespace Pinetime {
                                             controllers.batteryController,
                                             controllers.bleController,
                                             controllers.notificationManager,
-                                            controllers.settingsController);
+                                            controllers.settingsController,
+                                            controllers.alarmController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
