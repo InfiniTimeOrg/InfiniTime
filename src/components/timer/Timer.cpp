@@ -41,3 +41,7 @@ void Timer::StopTimer() {
 bool Timer::IsRunning() {
   return (xTimerIsTimerActive(timer) == pdTRUE);
 }
+
+void Timer::ResetExpiredTime() {
+  triggered = false;
+}
