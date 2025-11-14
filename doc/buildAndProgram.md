@@ -4,7 +4,7 @@
 
 To build this project, you'll need:
 
-- A cross-compiler : [ARM-GCC (10.3-2021.10)](https://developer.arm.com/downloads/-/gnu-rm)
+- A cross-compiler : [ARM-GCC 14.3-Rel1 from July 03, 2025 (AArch32 bare-metal target (arm-none-eabi))](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
 - The NRF52 SDK 15.3.0 : [nRF-SDK v15.3.0](https://nsscprodmedia.blob.core.windows.net/prod/software-and-other-downloads/sdks/nrf5/binaries/nrf5sdk153059ac345.zip)
 - The Python 3 modules `cbor`, `intelhex`, `click` and `cryptography` modules for the `mcuboot` tool (see [requirements.txt](../tools/mcuboot/requirements.txt))
   - To keep the system clean, you can install python modules into a python virtual environment (`venv`)
@@ -38,7 +38,7 @@ CMake configures the project according to variables you specify the command line
 
  Variable | Description | Example|
 ----------|-------------|--------|
-**ARM_NONE_EABI_TOOLCHAIN_PATH**|path to the toolchain directory|`-DARM_NONE_EABI_TOOLCHAIN_PATH=/home/jf/nrf52/gcc-arm-none-eabi-10.3-2021.10/`|
+**ARM_NONE_EABI_TOOLCHAIN_PATH**|path to the toolchain directory|`-DARM_NONE_EABI_TOOLCHAIN_PATH=/home/jf/nrf52/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/`|
 **NRF5_SDK_PATH**|path to the NRF52 SDK|`-DNRF5_SDK_PATH=/home/jf/nrf52/Pinetime/sdk`|
 **CMAKE_BUILD_TYPE (\*)**| Build type (Release or Debug). Release is applied by default if this variable is not specified.|`-DCMAKE_BUILD_TYPE=Debug`
 **BUILD_DFU (\*\*)**|Build DFU files while building (needs [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil)).|`-DBUILD_DFU=1`
