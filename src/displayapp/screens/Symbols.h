@@ -45,8 +45,11 @@ namespace Pinetime {
 
         // fontawesome_weathericons.c
         // static constexpr const char* sun = "\xEF\x86\x85";
+        static constexpr const char* moon = "\xEF\x86\x86"; // 0xf186
         static constexpr const char* cloudSun = "\xEF\x9B\x84";
+        static constexpr const char* cloudMoon = "\xEF\x9B\x83"; // 0xf6c3
         static constexpr const char* cloudSunRain = "\xEF\x9D\x83";
+        static constexpr const char* cloudMoonRain = "\xEF\x9C\xBC"; // 0xf73c
         static constexpr const char* cloudShowersHeavy = "\xEF\x9D\x80";
         static constexpr const char* smog = "\xEF\x9D\x9F";
         static constexpr const char* cloud = "\xEF\x83\x82";

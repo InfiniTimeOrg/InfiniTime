@@ -183,7 +183,7 @@ void WatchFaceDigital::Refresh() {
         tempUnit = 'F';
       }
       lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
-      lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
+      lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId, weatherService.IsNight()));
     } else {
       lv_label_set_text_static(temperature, "");
       lv_label_set_text(weatherIcon, "");
