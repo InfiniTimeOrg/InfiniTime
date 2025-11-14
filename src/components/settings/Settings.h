@@ -17,6 +17,7 @@ namespace Pinetime {
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t { SingleTap = 0, DoubleTap = 1, RaiseWrist = 2, Shake = 3, LowerWrist = 4 };
+      enum class Widget : uint8_t { HeartRate = 0, Steps = 1, Weather = 2 };
       enum class Colors : uint8_t {
         White,
         Silver,
@@ -38,7 +39,6 @@ namespace Pinetime {
         Pink
       };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
-      enum class PTSWeather : uint8_t { On, Off };
       enum class PrideFlag : uint8_t { Gay, Trans, Bi, Lesbian };
       enum class DfuAndFsMode : uint8_t { Disabled, Enabled, EnabledTillReboot };
 
@@ -47,7 +47,6 @@ namespace Pinetime {
         Colors ColorBar = Colors::Teal;
         Colors ColorBG = Colors::Black;
         PTSGaugeStyle gaugeStyle = PTSGaugeStyle::Full;
-        PTSWeather weatherEnable = PTSWeather::Off;
       };
 
       struct WatchFaceInfineat {
@@ -149,16 +148,6 @@ namespace Pinetime {
         return settings.PTS.gaugeStyle;
       };
 
-      void SetPTSWeather(PTSWeather weatherEnable) {
-        if (weatherEnable != settings.PTS.weatherEnable)
-          settingsChanged = true;
-        settings.PTS.weatherEnable = weatherEnable;
-      };
-
-      PTSWeather GetPTSWeather() const {
-        return settings.PTS.weatherEnable;
-      };
-
       void SetPrideFlag(PrideFlag prideFlag) {
         if (prideFlag != settings.prideFlag)
           settingsChanged = true;
@@ -206,6 +195,21 @@ namespace Pinetime {
       WeatherFormat GetWeatherFormat() const {
         return settings.weatherFormat;
       };
+
+      void SetWidget(Widget widget, bool enabled) {
+        if (enabled != IsWidgetOn(widget)) {
+          settingsChanged = true;
+        }
+        settings.widgets.set(static_cast<size_t>(widget), enabled);
+      }
+
+      std::bitset<3> GetWidgets() const {
+        return settings.widgets;
+      }
+
+      bool IsWidgetOn(const Widget widget) const {
+        return GetWidgets()[static_cast<size_t>(widget)];
+      }
 
       void SetNotificationStatus(Notification status) {
         if (status != settings.notificationStatus) {
@@ -376,6 +380,7 @@ namespace Pinetime {
 
         WatchFaceInfineat watchFaceInfineat;
 
+        std::bitset<3> widgets {0b111}; // Set all 3 widgets to enabled by default
         std::bitset<5> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
 
