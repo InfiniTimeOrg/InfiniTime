@@ -128,7 +128,8 @@ void Timer::Refresh() {
 }
 
 void Timer::DisplayTime() {
-  displaySeconds = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
+  displaySeconds =
+    std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimerState().value_or(Controllers::Timer::TimerStatus {}).distanceToExpiry);
   if (displaySeconds.IsUpdated()) {
     auto totalSeconds = displaySeconds.Get().count();
     hourCounter.SetValue(totalSeconds / 3600);
