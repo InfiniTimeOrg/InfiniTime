@@ -8,6 +8,7 @@
 #include "components/ble/NotificationManager.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
+#include "components/alarm/AlarmController.h"
 #include "components/settings/Settings.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -18,7 +19,8 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
                                      Controllers::NotificationManager& notificationManager,
                                      Controllers::Settings& settingsController,
                                      Controllers::HeartRateController& heartRateController,
-                                     Controllers::MotionController& motionController)
+                                     Controllers::MotionController& motionController,
+                                     Controllers::AlarmController& alarmController)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     batteryController {batteryController},
@@ -26,7 +28,8 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
     notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
-    motionController {motionController} {
+    motionController {motionController},
+    alarmController {alarmController} {
   batteryValue = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(batteryValue, true);
   lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
@@ -47,7 +50,7 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
   lv_label_set_text_static(label_prompt_1, "user@watch:~ $ now");
 
   label_prompt_2 = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
+  lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 80);
   lv_label_set_text_static(label_prompt_2, "user@watch:~ $");
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
@@ -61,6 +64,10 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(stepValue, true);
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
+
+  alarmTime = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(alarmTime, true);
+  lv_obj_align(alarmTime, nullptr, LV_ALIGN_IN_LEFT_MID, 0, 60);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -147,5 +154,27 @@ void WatchFaceTerminal::Refresh() {
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated()) {
     lv_label_set_text_fmt(stepValue, "[STEP]#ee3377 %lu steps#", stepCount.Get());
+  }
+
+  alarmSet = alarmController.IsEnabled();
+  if (alarmSet.Get()) {
+    uint8_t hour = alarmController.Hours();
+    uint8_t minute = alarmController.Minutes();
+    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+      char ampmChar[3] = "AM";
+      if (hour == 0) {
+        hour = 12;
+      } else if (hour == 12) {
+        ampmChar[0] = 'P';
+      } else if (hour > 12) {
+        hour = hour - 12;
+        ampmChar[0] = 'P';
+      }
+      lv_label_set_text_fmt(alarmTime, "[RING]#11cc55 At %02d:%02d %s#", hour, minute, ampmChar);
+    } else {
+      lv_label_set_text_fmt(alarmTime, "[RING]#11cc55 At %02d:%02d#", hour, minute);
+    }
+  } else {
+    lv_label_set_text_fmt(alarmTime, "[RING]#11cc55 Not Set#");
   }
 }
