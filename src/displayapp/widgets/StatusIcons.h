@@ -6,6 +6,7 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/alarm/AlarmController.h"
+#include "components/settings/Settings.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "utility/DirtyValue.h"
 
@@ -16,7 +17,9 @@ namespace Pinetime {
       public:
         StatusIcons(const Controllers::Battery& batteryController,
                     const Controllers::Ble& bleController,
-                    const Controllers::AlarmController& alarmController);
+                    const Controllers::AlarmController& alarmController,
+                    const Controllers::Timer& timer,
+                    const Controllers::Settings& settingsController);
         void Align();
         void Create();
 
@@ -31,6 +34,8 @@ namespace Pinetime {
         const Pinetime::Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;
         const Controllers::AlarmController& alarmController;
+        const Controllers::Timer& timer;
+        const Controllers::Settings& settingsController;
 
         Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
         Utility::DirtyValue<bool> powerPresent {};
@@ -38,10 +43,14 @@ namespace Pinetime {
         Utility::DirtyValue<bool> bleRadioEnabled {};
         Utility::DirtyValue<bool> alarmEnabled {};
 
-        lv_obj_t* bleIcon;
-        lv_obj_t* alarmIcon;
-        lv_obj_t* batteryPlug;
         lv_obj_t* container;
+        lv_obj_t* timerContainer;
+        lv_obj_t* timerIcon;
+        lv_obj_t* timeRemaining;
+        lv_obj_t* bleIcon;
+        lv_obj_t* batteryPlug;
+        lv_obj_t* soloTimerIcon;
+        lv_obj_t* alarmIcon;
       };
     }
   }

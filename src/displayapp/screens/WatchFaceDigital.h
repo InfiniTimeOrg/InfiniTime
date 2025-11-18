@@ -21,6 +21,7 @@ namespace Pinetime {
     class NotificationManager;
     class HeartRateController;
     class MotionController;
+    class Timer;
   }
 
   namespace Applications {
@@ -32,6 +33,7 @@ namespace Pinetime {
                          const Controllers::Battery& batteryController,
                          const Controllers::Ble& bleController,
                          const Controllers::AlarmController& alarmController,
+                         const Controllers::Timer& timer,
                          Controllers::NotificationManager& notificationManager,
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
@@ -87,6 +89,7 @@ namespace Pinetime {
                                              controllers.batteryController,
                                              controllers.bleController,
                                              controllers.alarmController,
+                                             controllers.timer,
                                              controllers.notificationManager,
                                              controllers.settingsController,
                                              controllers.heartRateController,
