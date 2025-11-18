@@ -48,7 +48,6 @@ namespace Pinetime::Applications {
       Widgets::Counter secondCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
 
       bool buttonPressing = false;
-      bool isRinging = false;
       lv_coord_t maskPosition = 0;
       TickType_t pressTime = 0;
       Utility::DirtyValue<std::chrono::seconds> displaySeconds;

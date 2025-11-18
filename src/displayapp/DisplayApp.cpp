@@ -380,7 +380,6 @@ void DisplayApp::Refresh() {
         lv_disp_trig_activity(nullptr);
         auto* timerScreen = static_cast<Screens::Timer*>(currentScreen.get());
         timerScreen->SetTimerRinging();
-        motorController.StartRinging();
         break;
       }
       case Messages::AlarmTriggered:

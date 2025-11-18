@@ -63,7 +63,9 @@ Timer::Timer(Controllers::Timer& timerController, Controllers::MotorController& 
   // Create the label as a child of the button so it stays centered by default
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
 
-  if (motorController.IsRinging()) {
+  auto timerStatus = timer.GetTimerState();
+
+  if (timerStatus && timerStatus->expired) {
     SetTimerRinging();
   } else if (timer.IsRunning()) {
     SetTimerRunning();
@@ -106,20 +108,20 @@ void Timer::UpdateMask() {
 }
 
 void Timer::Refresh() {
-  if (isRinging) {
+  auto timerStatus = timer.GetTimerState();
+
+  if (timerStatus && timerStatus->expired) {
+    // Timer exists and has expired, so we're in ringing mode
     DisplayTime();
-    if (motorController.IsRinging()) {
-      if (displaySeconds.Get().count() > 10) {
-        // Stop buzzing after 10 seconds, but continue the counter
-        motorController.StopRinging();
-        wakeLock.Release();
-      } else {
-        // Keep the screen awake during the first 10 seconds
-        wakeLock.Lock();
-      }
+
+    if (timerStatus->distanceToExpiry.count() > 10000 && motorController.IsRinging()) {
+      // Stop buzzing after 10 seconds, but continue the counter
+      motorController.StopRinging();
+      wakeLock.Release();
     }
+
     // Reset timer after 1 minute
-    if (displaySeconds.Get().count() > 60) {
+    if (timerStatus->distanceToExpiry.count() > 60000) {
       Reset();
     }
   } else if (timer.IsRunning()) {
@@ -153,7 +155,6 @@ void Timer::SetTimerRunning() {
 }
 
 void Timer::SetTimerStopped() {
-  isRinging = false;
   minuteCounter.ShowControls();
   secondCounter.ShowControls();
   lv_label_set_text_static(txtPlayPause, "Start");
@@ -161,7 +162,8 @@ void Timer::SetTimerStopped() {
 }
 
 void Timer::SetTimerRinging() {
-  isRinging = true;
+  motorController.StartRinging();
+  wakeLock.Lock();
   minuteCounter.HideControls();
   secondCounter.HideControls();
   lv_label_set_text_static(txtPlayPause, "Reset");
@@ -169,7 +171,8 @@ void Timer::SetTimerRinging() {
 }
 
 void Timer::ToggleRunning() {
-  if (isRinging) {
+  auto timerStatus = timer.GetTimerState();
+  if (timerStatus && timerStatus->expired) {
     motorController.StopRinging();
     Reset();
   } else if (timer.IsRunning()) {
