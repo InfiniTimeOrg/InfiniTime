@@ -339,17 +339,35 @@ void SystemTask::Work() {
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
           if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
-              settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours && !alarmController.IsAlerting()) {
+              settingsController.GetChimeOption() != Controllers::Settings::ChimesOption::None && !alarmController.IsAlerting()) {
             GoToRunning();
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::FullHourChime);
+          }
+          break;
+        case Messages::OnNewQuarterHour:
+          using Pinetime::Controllers::AlarmController;
+          if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
+              settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::QuarterHours && !alarmController.IsAlerting()) {
+            GoToRunning();
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::QuarterHourChime);
           }
           break;
         case Messages::OnNewHalfHour:
           using Pinetime::Controllers::AlarmController;
           if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
-              settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours && !alarmController.IsAlerting()) {
+              (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours ||
+               settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::QuarterHours) &&
+              !alarmController.IsAlerting()) {
             GoToRunning();
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::HalfHourChime);
+          }
+          break;
+        case Messages::OnNewThreeQuarterHour:
+          using Pinetime::Controllers::AlarmController;
+          if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
+              settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::QuarterHours && !alarmController.IsAlerting()) {
+            GoToRunning();
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ThreeQuarterHourChime);
           }
           break;
         case Messages::OnChargingEvent:
