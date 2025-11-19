@@ -44,11 +44,101 @@ static void StopAlarmTaskCallback(lv_task_t* task) {
   screen->StopAlerting();
 }
 
+static void launcherBtnEventHandler(lv_obj_t* obj, lv_event_t event) {
+  if (event == LV_EVENT_CLICKED) {
+    auto* screen = static_cast<Alarm*>(obj->user_data);
+    screen->OnLauncherButtonClicked(obj);
+  }
+}
+
+static void switchEventHandler(lv_obj_t* obj, lv_event_t event) {
+  if (event == LV_EVENT_VALUE_CHANGED) {
+    auto* screen = static_cast<Alarm*>(obj->user_data);
+    screen->OnButtonEvent(obj, event);
+  }
+}
+
 Alarm::Alarm(Controllers::AlarmController& alarmController,
              Controllers::Settings::ClockType clockType,
              System::SystemTask& systemTask,
              Controllers::MotorController& motorController)
-  : alarmController {alarmController}, wakeLock(systemTask), motorController {motorController} {
+  : alarmController {alarmController}, wakeLock(systemTask), motorController {motorController}, clockType {clockType} {
+
+  // Decide which UI to show
+  if (alarmController.IsAlerting()) {
+    // If alarming, go directly to config mode for the alerting alarm
+    launcherMode = false;
+    selectedAlarmIndex = alarmController.AlertingAlarmIndex();
+    CreateAlarmConfigUI(selectedAlarmIndex);
+    SetAlerting();
+  } else {
+    // Show launcher by default
+    launcherMode = true;
+    CreateLauncherUI();
+  }
+}
+
+void Alarm::CreateLauncherUI() {
+  static constexpr lv_color_t bgColor = Colors::bgAlt;
+  static constexpr uint8_t btnHeight = 55;
+  static constexpr uint8_t btnSpacing = 5;
+
+  lv_style_init(&launcherButtonStyle);
+  lv_style_set_radius(&launcherButtonStyle, LV_STATE_DEFAULT, 10);
+  lv_style_set_bg_color(&launcherButtonStyle, LV_STATE_DEFAULT, bgColor);
+
+  for (uint8_t i = 0; i < Controllers::AlarmController::MaxAlarms; i++) {
+    // Create button container
+    alarmButtons[i] = lv_btn_create(lv_scr_act(), nullptr);
+    alarmButtons[i]->user_data = this;
+    lv_obj_set_event_cb(alarmButtons[i], launcherBtnEventHandler);
+    lv_obj_set_size(alarmButtons[i], 150, btnHeight);
+    lv_obj_add_style(alarmButtons[i], LV_BTN_PART_MAIN, &launcherButtonStyle);
+    lv_obj_align(alarmButtons[i], lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 5, -90 + (i * (btnHeight + btnSpacing)));
+
+    // Create time label
+    alarmTimeLabels[i] = lv_label_create(alarmButtons[i], nullptr);
+    lv_obj_set_style_local_text_font(alarmTimeLabels[i], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+    lv_label_set_text_fmt(alarmTimeLabels[i], "%02hhu:%02hhu", alarmController.Hours(i), alarmController.Minutes(i));
+    lv_obj_align(alarmTimeLabels[i], alarmButtons[i], LV_ALIGN_CENTER, 0, -10);
+
+    // Create recurrence label
+    alarmRecurLabels[i] = lv_label_create(alarmButtons[i], nullptr);
+    lv_obj_set_style_local_text_font(alarmRecurLabels[i], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+    lv_obj_set_style_local_text_opa(alarmRecurLabels[i], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_60);
+
+    using Pinetime::Controllers::AlarmController;
+    switch (alarmController.Recurrence(i)) {
+      case AlarmController::RecurType::None:
+        lv_label_set_text_static(alarmRecurLabels[i], "Once");
+        break;
+      case AlarmController::RecurType::Daily:
+        lv_label_set_text_static(alarmRecurLabels[i], "Daily");
+        break;
+      case AlarmController::RecurType::Weekdays:
+        lv_label_set_text_static(alarmRecurLabels[i], "M-F");
+        break;
+    }
+    lv_obj_align(alarmRecurLabels[i], alarmButtons[i], LV_ALIGN_CENTER, 0, 12);
+
+    // Create enable/disable switch
+    alarmSwitches[i] = lv_switch_create(lv_scr_act(), nullptr);
+    alarmSwitches[i]->user_data = this;
+    lv_obj_set_event_cb(alarmSwitches[i], switchEventHandler);
+    lv_obj_set_size(alarmSwitches[i], 70, 40);
+    lv_obj_set_style_local_bg_color(alarmSwitches[i], LV_SWITCH_PART_BG, LV_STATE_DEFAULT, bgColor);
+    lv_obj_align(alarmSwitches[i], lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -5, -90 + (i * (btnHeight + btnSpacing)));
+
+    if (alarmController.IsEnabled(i)) {
+      lv_switch_on(alarmSwitches[i], LV_ANIM_OFF);
+    } else {
+      lv_switch_off(alarmSwitches[i], LV_ANIM_OFF);
+    }
+  }
+}
+
+void Alarm::CreateAlarmConfigUI(uint8_t alarmIndex) {
+  selectedAlarmIndex = alarmIndex;
 
   hourCounter.Create();
   lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
@@ -61,12 +151,12 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
     lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
     lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
   }
-  hourCounter.SetValue(alarmController.Hours());
+  hourCounter.SetValue(alarmController.Hours(alarmIndex));
   hourCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   minuteCounter.Create();
   lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-  minuteCounter.SetValue(alarmController.Minutes());
+  minuteCounter.SetValue(alarmController.Minutes(alarmIndex));
   minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
@@ -107,21 +197,36 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
   lv_obj_t* txtInfo = lv_label_create(btnInfo, nullptr);
   lv_label_set_text_static(txtInfo, "i");
 
-  enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
-  enableSwitch->user_data = this;
-  lv_obj_set_event_cb(enableSwitch, btnEventHandler);
-  lv_obj_set_size(enableSwitch, 100, 50);
-  // Align to the center of 115px from edge
-  lv_obj_align(enableSwitch, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 7, 0);
-  lv_obj_set_style_local_bg_color(enableSwitch, LV_SWITCH_PART_BG, LV_STATE_DEFAULT, bgColor);
+  btnBack = lv_btn_create(lv_scr_act(), nullptr);
+  btnBack->user_data = this;
+  lv_obj_set_event_cb(btnBack, btnEventHandler);
+  lv_obj_set_size(btnBack, 115, 50);
+  lv_obj_align(btnBack, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_set_style_local_bg_color(btnBack, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  lv_obj_t* txtBack = lv_label_create(btnBack, nullptr);
+  lv_label_set_text_static(txtBack, "Back");
 
   UpdateAlarmTime();
+}
 
-  if (alarmController.IsAlerting()) {
-    SetAlerting();
-  } else {
-    SetSwitchState(LV_ANIM_OFF);
+void Alarm::OnLauncherButtonClicked(lv_obj_t* obj) {
+  // Find which alarm button was clicked
+  for (uint8_t i = 0; i < Controllers::AlarmController::MaxAlarms; i++) {
+    if (obj == alarmButtons[i]) {
+      // Switch to config mode for this alarm
+      lv_style_reset(&launcherButtonStyle);
+      lv_obj_clean(lv_scr_act());
+      launcherMode = false;
+      CreateAlarmConfigUI(i);
+      return;
+    }
   }
+}
+
+void Alarm::ReturnToLauncher() {
+  lv_obj_clean(lv_scr_act());
+  launcherMode = true;
+  CreateLauncherUI();
 }
 
 Alarm::~Alarm() {
@@ -133,13 +238,26 @@ Alarm::~Alarm() {
 }
 
 void Alarm::DisableAlarm() {
-  if (alarmController.IsEnabled()) {
-    alarmController.DisableAlarm();
-    lv_switch_off(enableSwitch, LV_ANIM_ON);
+  if (alarmController.IsEnabled(selectedAlarmIndex)) {
+    alarmController.DisableAlarm(selectedAlarmIndex);
   }
 }
 
 void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
+  // Handle launcher mode switch events
+  if (launcherMode) {
+    if (event == LV_EVENT_VALUE_CHANGED) {
+      for (uint8_t i = 0; i < Controllers::AlarmController::MaxAlarms; i++) {
+        if (obj == alarmSwitches[i]) {
+          alarmController.SetEnabled(i, lv_switch_get_state(alarmSwitches[i]));
+          return;
+        }
+      }
+    }
+    return;
+  }
+
+  // Handle config mode events
   if (event == LV_EVENT_CLICKED) {
     if (obj == btnStop) {
       StopAlerting();
@@ -153,12 +271,8 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       HideInfo();
       return;
     }
-    if (obj == enableSwitch) {
-      if (lv_switch_get_state(enableSwitch)) {
-        alarmController.ScheduleAlarm();
-      } else {
-        alarmController.DisableAlarm();
-      }
+    if (obj == btnBack) {
+      ReturnToLauncher();
       return;
     }
     if (obj == btnRecur) {
@@ -175,6 +289,7 @@ bool Alarm::OnButtonPushed() {
   }
   if (alarmController.IsAlerting()) {
     StopAlerting();
+    ReturnToLauncher();
     return true;
   }
   return false;
@@ -198,11 +313,11 @@ void Alarm::UpdateAlarmTime() {
       lv_label_set_text_static(lblampm, "AM");
     }
   }
-  alarmController.SetAlarmTime(hourCounter.GetValue(), minuteCounter.GetValue());
+  alarmController.SetAlarmTime(selectedAlarmIndex, hourCounter.GetValue(), minuteCounter.GetValue());
 }
 
 void Alarm::SetAlerting() {
-  lv_obj_set_hidden(enableSwitch, true);
+  lv_obj_set_hidden(btnBack, true);
   lv_obj_set_hidden(btnRecur, true);
   lv_obj_set_hidden(btnInfo, true);
   hourCounter.HideControls();
@@ -216,26 +331,12 @@ void Alarm::SetAlerting() {
 void Alarm::StopAlerting() {
   alarmController.StopAlerting();
   motorController.StopRinging();
-  SetSwitchState(LV_ANIM_OFF);
   if (taskStopAlarm != nullptr) {
     lv_task_del(taskStopAlarm);
     taskStopAlarm = nullptr;
   }
   wakeLock.Release();
-  lv_obj_set_hidden(btnStop, true);
-  hourCounter.ShowControls();
-  minuteCounter.ShowControls();
-  lv_obj_set_hidden(btnInfo, false);
-  lv_obj_set_hidden(btnRecur, false);
-  lv_obj_set_hidden(enableSwitch, false);
-}
-
-void Alarm::SetSwitchState(lv_anim_enable_t anim) {
-  if (alarmController.IsEnabled()) {
-    lv_switch_on(enableSwitch, anim);
-  } else {
-    lv_switch_off(enableSwitch, anim);
-  }
+  lv_indev_wait_release(lv_indev_get_act());
 }
 
 void Alarm::ShowInfo() {
@@ -251,7 +352,7 @@ void Alarm::ShowInfo() {
   txtMessage = lv_label_create(btnMessage, nullptr);
   lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
 
-  if (alarmController.IsEnabled()) {
+  if (alarmController.IsEnabled(selectedAlarmIndex)) {
     auto timeToAlarm = alarmController.SecondsToAlarm();
 
     auto daysToAlarm = timeToAlarm / 86400;
@@ -278,7 +379,7 @@ void Alarm::HideInfo() {
 
 void Alarm::SetRecurButtonState() {
   using Pinetime::Controllers::AlarmController;
-  switch (alarmController.Recurrence()) {
+  switch (alarmController.Recurrence(selectedAlarmIndex)) {
     case AlarmController::RecurType::None:
       lv_label_set_text_static(txtRecur, "ONCE");
       break;
@@ -292,15 +393,15 @@ void Alarm::SetRecurButtonState() {
 
 void Alarm::ToggleRecurrence() {
   using Pinetime::Controllers::AlarmController;
-  switch (alarmController.Recurrence()) {
+  switch (alarmController.Recurrence(selectedAlarmIndex)) {
     case AlarmController::RecurType::None:
-      alarmController.SetRecurrence(AlarmController::RecurType::Daily);
+      alarmController.SetRecurrence(selectedAlarmIndex, AlarmController::RecurType::Daily);
       break;
     case AlarmController::RecurType::Daily:
-      alarmController.SetRecurrence(AlarmController::RecurType::Weekdays);
+      alarmController.SetRecurrence(selectedAlarmIndex, AlarmController::RecurType::Weekdays);
       break;
     case AlarmController::RecurType::Weekdays:
-      alarmController.SetRecurrence(AlarmController::RecurType::None);
+      alarmController.SetRecurrence(selectedAlarmIndex, AlarmController::RecurType::None);
   }
   SetRecurButtonState();
 }
