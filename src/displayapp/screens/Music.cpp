@@ -159,7 +159,7 @@ Music::~Music() {
 
 void Music::Refresh() {
   bleState = bleController.IsConnected();
-  if (bleState.Get() == false) {
+  if (!bleState.Get()) {
     SetDisconnectedUI();
     lastConnected = false;
   } else {
