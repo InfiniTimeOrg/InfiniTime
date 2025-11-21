@@ -149,7 +149,6 @@ void HeartRateTask::Work() {
           break;
         case Messages::Disable:
           newState = States::Disabled;
-          SendHeartRate(ControllerStates::Disabled, 0);
           break;
       }
     }
@@ -166,6 +165,10 @@ void HeartRateTask::Work() {
     } else if ((newState == States::Waiting || newState == States::Disabled) &&
                (state == States::ForegroundMeasuring || state == States::BackgroundMeasuring)) {
       StopMeasurement();
+      controller.UpdateState(ControllerStates::Stopped);
+    }
+    if (newState == States::Disabled) {
+      SendHeartRate(ControllerStates::Disabled, 0);
     }
     state = newState;
 
@@ -192,7 +195,6 @@ void HeartRateTask::StartMeasurement() {
 void HeartRateTask::StopMeasurement() {
   heartRateSensor.Disable();
   ppg.Reset();
-  controller.UpdateState(ControllerStates::Stopped);
 }
 
 void HeartRateTask::HandleSensorData() {
