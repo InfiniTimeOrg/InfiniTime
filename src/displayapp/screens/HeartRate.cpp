@@ -1,6 +1,6 @@
 #include "displayapp/screens/HeartRate.h"
-#include <lvgl/lvgl.h>
 #include <components/heartrate/HeartRateController.h>
+#include <lvgl/lvgl.h>
 
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
@@ -12,12 +12,16 @@ namespace {
     switch (s) {
       case Pinetime::Controllers::HeartRateController::States::NotEnoughData:
         return "Not enough data,\nplease wait...";
+      case Pinetime::Controllers::HeartRateController::States::Searching:
+        return "Searching...";
       case Pinetime::Controllers::HeartRateController::States::NoTouch:
         return "No touch detected";
-      case Pinetime::Controllers::HeartRateController::States::Running:
+      case Pinetime::Controllers::HeartRateController::States::Ready:
         return "Measuring...";
       case Pinetime::Controllers::HeartRateController::States::Stopped:
         return "Stopped";
+      case Pinetime::Controllers::HeartRateController::States::Disabled:
+        return "Disabled";
     }
     return "";
   }
@@ -30,7 +34,7 @@ namespace {
 
 HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, System::SystemTask& systemTask)
   : heartRateController {heartRateController}, wakeLock(systemTask) {
-  bool isHrRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
+  bool isHrRunning = heartRateController.State() != Controllers::HeartRateController::States::Disabled;
   label_hr = lv_label_create(lv_scr_act(), nullptr);
 
   lv_obj_set_style_local_text_font(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -50,7 +54,7 @@ HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, Syst
 
   label_status = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_status, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-  lv_label_set_text_static(label_status, ToString(Pinetime::Controllers::HeartRateController::States::NotEnoughData));
+  lv_label_set_text_static(label_status, ToString(Pinetime::Controllers::HeartRateController::States::Disabled));
 
   lv_obj_align(label_status, label_hr, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
@@ -77,18 +81,10 @@ HeartRate::~HeartRate() {
 void HeartRate::Refresh() {
 
   auto state = heartRateController.State();
-  switch (state) {
-    case Controllers::HeartRateController::States::NoTouch:
-    case Controllers::HeartRateController::States::NotEnoughData:
-      // case Controllers::HeartRateController::States::Stopped:
-      lv_label_set_text_static(label_hr, "---");
-      break;
-    default:
-      if (heartRateController.HeartRate() == 0) {
-        lv_label_set_text_static(label_hr, "---");
-      } else {
-        lv_label_set_text_fmt(label_hr, "%03d", heartRateController.HeartRate());
-      }
+  if (heartRateController.HeartRate() == 0) {
+    lv_label_set_text_static(label_hr, "---");
+  } else {
+    lv_label_set_text_fmt(label_hr, "%03d", heartRateController.HeartRate());
   }
 
   lv_label_set_text_static(label_status, ToString(state));
@@ -97,14 +93,14 @@ void HeartRate::Refresh() {
 
 void HeartRate::OnStartStopEvent(lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    if (heartRateController.State() == Controllers::HeartRateController::States::Stopped) {
+    if (heartRateController.State() == Controllers::HeartRateController::States::Disabled) {
       heartRateController.Enable();
-      UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
+      UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Disabled);
       wakeLock.Lock();
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
     } else {
       heartRateController.Disable();
-      UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
+      UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Disabled);
       wakeLock.Release();
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
     }

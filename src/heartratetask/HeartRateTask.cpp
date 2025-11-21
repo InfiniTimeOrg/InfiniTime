@@ -1,9 +1,12 @@
 #include "heartratetask/HeartRateTask.h"
-#include <drivers/Hrs3300.h>
 #include <components/heartrate/HeartRateController.h>
+#include <drivers/Hrs3300.h>
+#include <drivers/Bma421.h>
 #include <limits>
+#include <optional>
 
 using namespace Pinetime::Applications;
+using ControllerStates = Pinetime::Controllers::HeartRateController::States;
 
 namespace {
   constexpr TickType_t backgroundMeasurementTimeLimit = 30 * configTICK_RATE_HZ;
@@ -43,14 +46,14 @@ TickType_t HeartRateTask::CurrentTaskDelay() {
     // To avoid the number of milliseconds overflowing a u32, we take a factor of 2 out of the divisor and dividend
     // (1024 / 2) * 65536 * 100 = 3355443200 which is less than 2^32
 
+    constexpr uint16_t deltaTms = Controllers::Ppg::sampleDuration * 1000;
     // Guard against future tick rate changes
-    static_assert((configTICK_RATE_HZ / 2ULL) * (std::numeric_limits<decltype(count)>::max() + 1ULL) *
-                      static_cast<uint64_t>((Pinetime::Controllers::Ppg::deltaTms)) <
+    static_assert((configTICK_RATE_HZ / 2ULL) * (std::numeric_limits<decltype(count)>::max() + 1ULL) * static_cast<uint64_t>((deltaTms)) <
                     std::numeric_limits<uint32_t>::max(),
                   "Overflow");
-    TickType_t elapsedTarget = RoundedDiv(static_cast<uint32_t>(configTICK_RATE_HZ / 2) * (static_cast<uint32_t>(count) + 1U) *
-                                            static_cast<uint32_t>((Pinetime::Controllers::Ppg::deltaTms)),
-                                          static_cast<uint32_t>(1000 / 2));
+    TickType_t elapsedTarget =
+      RoundedDiv(static_cast<uint32_t>(configTICK_RATE_HZ / 2) * (static_cast<uint32_t>(count) + 1U) * static_cast<uint32_t>((deltaTms)),
+                 static_cast<uint32_t>(1000 / 2));
 
     // On count overflow, reset both count and start time
     // Count is 16bit to avoid overflow in elapsedTarget
@@ -90,15 +93,16 @@ TickType_t HeartRateTask::CurrentTaskDelay() {
 
 HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor,
                              Controllers::HeartRateController& controller,
-                             Controllers::Settings& settings)
-  : heartRateSensor {heartRateSensor}, controller {controller}, settings {settings} {
+                             Controllers::Settings& settings,
+                             Drivers::Bma421& motionSensor)
+  : heartRateSensor {heartRateSensor}, controller {controller}, settings {settings}, motionSensor {motionSensor} {
 }
 
 void HeartRateTask::Start() {
   messageQueue = xQueueCreate(10, 1);
   controller.SetHeartRateTask(this);
 
-  if (pdPASS != xTaskCreate(HeartRateTask::Process, "Heartrate", 500, this, 1, &taskHandle)) {
+  if (xTaskCreate(HeartRateTask::Process, "HRM", 400, this, 1, &taskHandle) != pdPASS) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
 }
@@ -146,7 +150,6 @@ void HeartRateTask::Work() {
           // If this constraint is somehow violated, the unexpected state
           // will self-resolve at the next screen on event
           newState = States::ForegroundMeasuring;
-          valueCurrentlyShown = false;
           break;
         case Messages::Disable:
           newState = States::Disabled;
@@ -166,6 +169,10 @@ void HeartRateTask::Work() {
     } else if ((newState == States::Waiting || newState == States::Disabled) &&
                (state == States::ForegroundMeasuring || state == States::BackgroundMeasuring)) {
       StopMeasurement();
+      controller.UpdateState(ControllerStates::Stopped);
+    }
+    if (newState == States::Disabled) {
+      SendHeartRate(ControllerStates::Disabled, 0);
     }
     state = newState;
 
@@ -184,50 +191,61 @@ void HeartRateTask::PushMessage(HeartRateTask::Messages msg) {
 
 void HeartRateTask::StartMeasurement() {
   heartRateSensor.Enable();
-  ppg.Reset(true);
-  vTaskDelay(100);
-  measurementSucceeded = false;
+  ppg.Reset();
   count = 0;
   measurementStartTime = xTaskGetTickCount();
 }
 
 void HeartRateTask::StopMeasurement() {
   heartRateSensor.Disable();
-  ppg.Reset(true);
-  vTaskDelay(100);
+  ppg.Reset();
 }
 
 void HeartRateTask::HandleSensorData() {
   auto sensorData = heartRateSensor.ReadHrsAls();
-  int8_t ambient = ppg.Preprocess(sensorData.hrs, sensorData.als);
-  int bpm = ppg.HeartRate();
-
-  // Ambient light detected
-  if (ambient > 0) {
-    // Reset all DAQ buffers
-    ppg.Reset(true);
-    controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
-    bpm = 0;
-    valueCurrentlyShown = false;
+  auto motionValues = motionSensor.Process();
+  // Sensor starting up
+  if (sensorData.hrs == 0) {
+    return;
   }
 
-  // Reset requested, or not enough data
-  if (bpm == -1) {
-    // Reset all DAQ buffers except HRS buffer
-    ppg.Reset(false);
-    // Set HR to zero and update
-    bpm = 0;
-    controller.Update(Controllers::HeartRateController::States::Running, bpm);
-    valueCurrentlyShown = false;
-  } else if (bpm == -2) {
-    // Not enough data
-    bpm = 0;
-    if (!valueCurrentlyShown) {
-      controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
+  // If there are large discontinuities in the heart rate signal, scale the heart rate signal filter
+  // These discontinuities will be due to sensor gain or drive changes
+  static constexpr float discontinuityThreshold = 0.2f;
+  if (lastHrs != 0 && std::abs(static_cast<int32_t>(sensorData.hrs) - static_cast<int32_t>(lastHrs)) >
+                        std::min(lastHrs, sensorData.hrs) * discontinuityThreshold) {
+    ppg.ScaleHrs(static_cast<float>(sensorData.hrs) / static_cast<float>(lastHrs));
+  }
+  lastHrs = sensorData.hrs;
+  ppg.Ingest(sensorData.hrs, motionValues.x, motionValues.y, motionValues.z);
+
+  auto ppgState = heartRateSensor.AutoGain(sensorData.hrs, sensorData.als);
+
+  std::optional<uint8_t> bpm = std::nullopt;
+  if (ppgState == Drivers::Hrs3300::PPGState::NoTouch) {
+    SendHeartRate(ControllerStates::NoTouch, 0);
+  } else if (ppgState == Drivers::Hrs3300::PPGState::Reset) {
+    ppg.Reset();
+    count = 0;
+    lastHrs = 0;
+    SendHeartRate(ControllerStates::NotEnoughData, 0);
+  } else if (ppgState == Drivers::Hrs3300::PPGState::Running) {
+    bpm = ppg.HeartRate();
+    if (bpm.has_value()) {
+      SendHeartRate(ControllerStates::Ready, bpm.value());
+    } else if (ppg.SufficientData()) {
+      SendHeartRate(ControllerStates::Searching, 0);
+    } else {
+      // If there's currently a value shown, don't clear it
+      // But still update the algorithm state
+      if (valueCurrentlyShown) {
+        controller.UpdateState(ControllerStates::NotEnoughData);
+      } else {
+        SendHeartRate(ControllerStates::NotEnoughData, 0);
+      }
     }
   }
-
-  if (bpm != 0) {
+  if (bpm.has_value()) {
     // Maintain constant frequency acquisition in background mode
     // If the last measurement time is set to the start time, then the next measurement
     // will start exactly one background period after this one
@@ -237,9 +255,6 @@ void HeartRateTask::HandleSensorData() {
     } else {
       lastMeasurementTime = xTaskGetTickCount();
     }
-    measurementSucceeded = true;
-    valueCurrentlyShown = true;
-    controller.Update(Controllers::HeartRateController::States::Running, bpm);
     return;
   }
   // If been measuring for longer than the time limit, set the last measurement time
@@ -247,19 +262,16 @@ void HeartRateTask::HandleSensorData() {
   // and also means that background measurement won't begin immediately after
   // an unsuccessful long foreground measurement
   if (xTaskGetTickCount() - measurementStartTime > backgroundMeasurementTimeLimit) {
-    // When measuring, propagate failure if no value within the time limit
-    // Prevents stale heart rates from being displayed for >1 background period
-    // Or more than the time limit after switching to screen on (where the last background measurement was successful)
-    // Note: Once a successful measurement is recorded in screen on it will never be cleared
-    // without some other state change e.g. ambient light reset
-    if (!measurementSucceeded) {
-      controller.Update(Controllers::HeartRateController::States::Running, 0);
-      valueCurrentlyShown = false;
-    }
     if (state == States::BackgroundMeasuring) {
       lastMeasurementTime = xTaskGetTickCount() - backgroundMeasurementTimeLimit;
     } else {
       lastMeasurementTime = xTaskGetTickCount();
     }
   }
+}
+
+void HeartRateTask::SendHeartRate(ControllerStates state, int bpm) {
+  valueCurrentlyShown = bpm != 0;
+  controller.UpdateState(state);
+  controller.UpdateHeartRate(bpm);
 }

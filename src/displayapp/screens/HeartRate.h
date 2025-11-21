@@ -1,13 +1,11 @@
 #pragma once
 
-#include <cstdint>
-#include <chrono>
 #include "displayapp/screens/Screen.h"
 #include "systemtask/SystemTask.h"
 #include "systemtask/WakeLock.h"
 #include "Symbols.h"
-#include <lvgl/src/lv_core/lv_style.h>
 #include <lvgl/src/lv_core/lv_obj.h>
+#include <lvgl/src/lv_core/lv_style.h>
 
 namespace Pinetime {
   namespace Controllers {
