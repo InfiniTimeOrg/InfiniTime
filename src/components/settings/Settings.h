@@ -336,6 +336,15 @@ namespace Pinetime {
         return (settings.dfuAndFsEnabledOnBoot ? DfuAndFsMode::Enabled : DfuAndFsMode::Disabled);
       };
 
+      void SetHeartRateRebootMode(bool enabled) {
+        settingsChanged = settingsChanged || (enabled != settings.heartRateEnabledOnBoot);
+        settings.heartRateEnabledOnBoot = enabled;
+      }
+
+      bool GetHeartRateRebootMode() {
+        return settings.heartRateEnabledOnBoot;
+      }
+
       std::optional<uint16_t> GetHeartRateBackgroundMeasurementInterval() const {
         if (settings.heartRateBackgroundPeriod == std::numeric_limits<uint16_t>::max()) {
           return std::nullopt;
@@ -351,10 +360,11 @@ namespace Pinetime {
         settings.heartRateBackgroundPeriod = newIntervalInSeconds.value();
       }
 
+
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x000a;
+      static constexpr uint32_t settingsVersion = 0x000b;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -383,6 +393,7 @@ namespace Pinetime {
 
         bool dfuAndFsEnabledOnBoot = false;
         uint16_t heartRateBackgroundPeriod = std::numeric_limits<uint16_t>::max(); // Disabled by default
+        bool heartRateEnabledOnBoot = false;
       };
 
       SettingsData settings;
