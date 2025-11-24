@@ -21,6 +21,9 @@ namespace Pinetime {
         void Toggle();
 
       private:
+        enum class Mode : uint8_t { Off = 0, Red = 1, White = 2, Strobe = 3 };
+
+        void Refresh() override;
         void SetIndicators();
         void SetColors();
 
@@ -33,7 +36,9 @@ namespace Pinetime {
         lv_obj_t* flashLight;
         lv_obj_t* backgroundAction;
         lv_obj_t* indicators[3];
-        bool isOn = false;
+        Mode currentMode = Mode::Off;
+
+        lv_task_t* taskRefresh = nullptr;
       };
     }
   }
