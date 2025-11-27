@@ -152,6 +152,7 @@ void Timer::ToggleRunning() {
 }
 
 void Timer::Reset() {
-  DisplayTime();
+  minuteCounter.SetValue(0);
+  secondCounter.SetValue(0);
   SetTimerStopped();
 }
