@@ -53,10 +53,13 @@
 #include "displayapp/screens/settings/SettingBluetooth.h"
 #include "displayapp/screens/settings/SettingOTA.h"
 
+#include "utility/Math.h"
+
 #include "libs/lv_conf.h"
 #include "UserApps.h"
 
 #include <algorithm>
+#include <limits>
 
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
@@ -167,18 +170,15 @@ TickType_t DisplayApp::CalculateSleepTime() {
   // Calculates how many system ticks DisplayApp should sleep before rendering the next AOD frame
   // Next frame time is frame count * refresh period (ms) * tick rate
 
-  auto RoundedDiv = [](uint32_t a, uint32_t b) {
-    return ((a + (b / 2)) / b);
-  };
-  // RoundedDiv overflows when numerator + (denominator floordiv 2) > uint32 max
-  // in this case around 9 hours (=overflow frame count / always on refresh period)
-  constexpr TickType_t overflowFrameCount = (UINT32_MAX - (1000 / 16)) / ((configTICK_RATE_HZ / 8) * alwaysOnRefreshPeriod);
+  // Avoid overflow when numerator would be > uint32 max
+  // in this case around 18 hours (=overflow frame count / always on refresh period)
+  constexpr TickType_t overflowFrameCount = std::numeric_limits<TickType_t>::max() / ((configTICK_RATE_HZ / 8) * alwaysOnRefreshPeriod);
 
   TickType_t ticksElapsed = xTaskGetTickCount() - alwaysOnStartTime;
   // Divide both the numerator and denominator by 8 (=GCD(1000,1024))
   // to increase the number of ticks (frames) before the overflow tick is reached
-  TickType_t targetRenderTick = RoundedDiv((configTICK_RATE_HZ / 8) * alwaysOnFrameCount * alwaysOnRefreshPeriod, 1000 / 8);
-
+  TickType_t targetRenderTick =
+    Utility::RoundedDiv((configTICK_RATE_HZ / 8) * alwaysOnFrameCount * alwaysOnRefreshPeriod, static_cast<uint32_t>(1000 / 8));
   // Assumptions
 
   // Tick rate is multiple of 8
@@ -188,7 +188,8 @@ TickType_t DisplayApp::CalculateSleepTime() {
   // Frame count must always wraparound more often than the system tick count does
   // Always on overflow time (ms) < system tick overflow time (ms)
   // Using 64bit ints here to avoid overflow
-  static_assert((uint64_t) overflowFrameCount * (uint64_t) alwaysOnRefreshPeriod < (uint64_t) UINT32_MAX * 1000ULL / configTICK_RATE_HZ);
+  static_assert((uint64_t) overflowFrameCount * (uint64_t) alwaysOnRefreshPeriod <
+                (uint64_t) std::numeric_limits<TickType_t>::max() * 1000ULL / configTICK_RATE_HZ);
 
   if (alwaysOnFrameCount == overflowFrameCount) {
     alwaysOnFrameCount = 0;
