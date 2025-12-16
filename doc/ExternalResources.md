@@ -57,13 +57,12 @@ Load a font from the external resources.
 
 You don't need to check if it exists in the constructor as LVGL can handle the font not existing gracefully (nothing will render).
 However, do check that it exists in the `IsAvailable()` method so users can see when resources are missing (the watchface will not be selectable in the list if `IsAvailable()` returns `false`).
-Remember to free any loaded fonts (with `free()`) in the screen destructor.
+The fonts will free themselves when the owning object is destructed.
 
 ```
-lv_font_t* font_teko = nullptr;
-font_teko = Pinetime::Components::FastFont::LoadFont(filesystem, "/fastfonts/teko.bin");
+Components::FastFont::Font fontTeko = Components::FastFont::LoadFont(filesystem, "/fastfonts/teko.bin");
 
-lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, fontTeko.get());
 
 ```
 
