@@ -2,6 +2,8 @@
 
 #include "components/fs/FS.h"
 
+#include <cstdint>
+#include <memory>
 #include <type_traits>
 
 using namespace Pinetime::Components;
@@ -19,7 +21,7 @@ namespace {
   }
 }
 
-lv_font_t* FastFont::LoadFont(Pinetime::Controllers::FS& filesystem, const char* fontPath) {
+FastFont::Font FastFont::LoadFont(Pinetime::Controllers::FS& filesystem, const char* fontPath) {
   int ret;
   lfs_file_t file;
   ret = filesystem.FileOpen(&file, fontPath, LFS_O_RDONLY);
@@ -28,19 +30,18 @@ lv_font_t* FastFont::LoadFont(Pinetime::Controllers::FS& filesystem, const char*
   }
   // Can use stat to get the size, but since the file is open we can grab it from there
   lfs_size_t size = file.ctz.size;
-  void* fontData = malloc(size);
-  if (fontData == nullptr) {
+  auto fontData = std::make_unique_for_overwrite<uint8_t[]>(size);
+  if (fontData.get() == nullptr) {
     filesystem.FileClose(&file);
     return nullptr;
   }
-  ret = filesystem.FileRead(&file, static_cast<uint8_t*>(fontData), size);
+  ret = filesystem.FileRead(&file, fontData.get(), size);
   filesystem.FileClose(&file);
   if (ret != static_cast<int>(size)) {
-    free(fontData);
     return nullptr;
   }
-  auto* font = static_cast<lv_font_t*>(fontData);
-  auto base = reinterpret_cast<uintptr_t>(fontData);
+  auto* font = reinterpret_cast<lv_font_t*>(fontData.get());
+  auto base = reinterpret_cast<uintptr_t>(fontData.get());
 
   // Fix LVGL fetch pointers
   font->get_glyph_dsc = lv_font_get_glyph_dsc_fmt_txt;
@@ -75,5 +76,5 @@ lv_font_t* FastFont::LoadFont(Pinetime::Controllers::FS& filesystem, const char*
     }
   }
 
-  return font;
+  return FastFont::Font(reinterpret_cast<lv_font_t*>(fontData.release()));
 }
