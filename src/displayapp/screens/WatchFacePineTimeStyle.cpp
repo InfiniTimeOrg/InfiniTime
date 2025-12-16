@@ -35,6 +35,7 @@
 #include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
 #include "components/ble/SimpleWeatherService.h"
+#include "components/alarm/AlarmController.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -51,7 +52,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
                                                Controllers::NotificationManager& notificationManager,
                                                Controllers::Settings& settingsController,
                                                Controllers::MotionController& motionController,
-                                               Controllers::SimpleWeatherService& weatherService)
+                                               Controllers::SimpleWeatherService& weatherService,
+                                               Controllers::AlarmController& alarmController)
   : currentDateTime {{}},
     batteryIcon(false),
     dateTimeController {dateTimeController},
@@ -60,7 +62,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
     notificationManager {notificationManager},
     settingsController {settingsController},
     motionController {motionController},
-    weatherService {weatherService} {
+    weatherService {weatherService},
+    alarmController {alarmController} {
 
   // Create a 200px wide background rectangle
   timebar = lv_obj_create(lv_scr_act(), nullptr);
@@ -134,6 +137,11 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   } else {
     lv_obj_set_hidden(temperature, true);
   }
+
+  alarmIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_label_set_text_static(alarmIcon, Symbols::bell);
+  lv_obj_align(alarmIcon, nullptr, LV_ALIGN_IN_TOP_MID, 92, 1);
 
   // Calendar icon
   calendarOuter = lv_obj_create(lv_scr_act(), nullptr);
@@ -563,6 +571,16 @@ void WatchFacePineTimeStyle::Refresh() {
       lv_obj_set_hidden(btnSetOpts, true);
       savedTick = 0;
     }
+  }
+
+  alarmSet = alarmController.IsEnabled();
+  if (alarmSet.Get()) {
+    lv_obj_set_hidden(alarmIcon, false);
+    lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+    lv_obj_realign(alarmIcon);
+  } else {
+    lv_obj_set_hidden(alarmIcon, true);
+    lv_obj_realign(alarmIcon);
   }
 }
 
