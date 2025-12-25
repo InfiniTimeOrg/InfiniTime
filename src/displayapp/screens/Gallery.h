@@ -4,6 +4,7 @@
 #include "displayapp/screens/FileView.h"
 #include "displayapp/DisplayApp.h"
 #include <lvgl/lvgl.h>
+#include "Symbols.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -28,5 +29,19 @@ namespace Pinetime {
         int index;
       };
     }
+
+    template <>
+    struct AppTraits<Apps::Gallery> {
+      static constexpr Apps app = Apps::Gallery;
+      static constexpr const char* icon = Screens::Symbols::gallery;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Gallery(controllers.filesystem);
+      };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {
+        return true;
+      };
+    };
   }
 }
