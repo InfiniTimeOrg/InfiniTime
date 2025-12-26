@@ -123,12 +123,10 @@ void WatchFaceTerminal::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated() || powerPresent.IsUpdated()) {
-    // HSV color model has red at 0° and green at 120°.
-    // We lock satuation and brightness at 100% and traverse the cilinder
-    // between red and green, thus avoiding the darker RGB on medium battery
-    // charges and giving us a much nicer color range.
-    uint8_t hue = batteryPercentRemaining.Get() * 120 / 100;
-    lv_obj_set_style_local_text_color(batteryValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 100, 100));
+    lv_obj_set_style_local_text_color(batteryValue,
+                                      LV_LABEL_PART_MAIN,
+                                      LV_STATE_DEFAULT,
+                                      BatteryIcon::ColorFromPercentage(batteryPercentRemaining.Get()));
     lv_label_set_text_fmt(batteryValue, "#ffffff [BATT]# %d%%", batteryPercentRemaining.Get());
     if (batteryController.IsCharging()) {
       lv_label_ins_text(batteryValue, LV_LABEL_POS_LAST, " Charging");
