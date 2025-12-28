@@ -44,7 +44,7 @@ Dice::Dice(Controllers::MotionController& motionController,
            Controllers::Settings& settingsController,
            Controllers::RNG& prngController)
   : motorController {motorController}, motionController {motionController}, settingsController {settingsController} {
-  rng = prngController.Seed();
+  rng.seed(prngController);
 
   lv_obj_t* nCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
                                       LV_COLOR_WHITE,
@@ -76,7 +76,7 @@ Dice::Dice(Controllers::MotionController& motionController,
   lv_obj_align(dCounter.GetObject(), dCounterLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
   dCounter.SetValue(6);
 
-  currentColorIndex = rng.GenerateBounded(resultColors.size());
+  currentColorIndex = rng(resultColors.size());
 
   resultTotalLabel = MakeLabel(&jetbrains_mono_42,
                                resultColors[currentColorIndex],
@@ -156,7 +156,7 @@ void Dice::Roll() {
   lv_label_set_text(resultIndividualLabel, "");
 
   if (nCounter.GetValue() == 1) {
-    resultTotal = rng.GenerateBounded(dCounter.GetValue()) + 1;
+    resultTotal = rng(dCounter.GetValue()) + 1;
     if (dCounter.GetValue() == 2) {
       switch (resultTotal) {
         case 1:
@@ -169,7 +169,7 @@ void Dice::Roll() {
     }
   } else {
     for (uint8_t i = 0; i < nCounter.GetValue(); i++) {
-      resultIndividual = rng.GenerateBounded(dCounter.GetValue()) + 1;
+      resultIndividual = rng(dCounter.GetValue()) + 1;
       resultTotal += resultIndividual;
       lv_label_ins_text(resultIndividualLabel, LV_LABEL_POS_LAST, std::to_string(resultIndividual).c_str());
       if (i < (nCounter.GetValue() - 1)) {

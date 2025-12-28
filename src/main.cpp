@@ -364,12 +364,11 @@ int main() {
   systemTask.Start();
   nimble_port_init();
   // ble_ll functions should probably be called after ble_ll_init which is called from nimble_port_init
-  Pinetime::Controllers::RNG::State prngBleInit;
+  Pinetime::Controllers::RNG prngBleInit;
   ble_ll_rand_data_get((uint8_t*) &prngBleInit, sizeof(prngBleInit));
   // TODO: Seed with lifetime stats
   *((uint32_t*) &prngBleInit) ^= xTaskGetTickCount();
-  prngBleInit();
-  systemTask.prngController.rng = prngBleInit;
+  systemTask.prngController = prngBleInit;
 
   vTaskStartScheduler();
 

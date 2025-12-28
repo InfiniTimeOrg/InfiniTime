@@ -684,7 +684,6 @@ set(INCLUDE_FILES
         buttonhandler/ButtonHandler.h
         touchhandler/TouchHandler.h
         utility/Math.h
-        pcg-cpp/include/pcg_random.hpp
         )
 
 include_directories(

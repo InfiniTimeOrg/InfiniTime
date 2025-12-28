@@ -26,7 +26,7 @@ namespace Pinetime {
     class Timer;
     class MusicService;
     class NavigationService;
-    class RNG;
+    struct RNG;
   }
 
   namespace System {

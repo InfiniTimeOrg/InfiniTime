@@ -6,7 +6,7 @@
 using namespace Pinetime::Applications::Screens;
 
 Twos::Twos(Pinetime::Controllers::RNG& prngController) {
-  rng = prngController.Seed();
+  rng.seed(prngController); // Pinetime::Controllers::RNG {prngController(), prngController()}; // = prngController.Seed();
 
   struct colorPair {
     lv_color_t bg;
@@ -87,9 +87,9 @@ bool Twos::placeNewTile() {
     return false; // game lost
   }
 
-  int random = rng.GenerateBounded(nEmpty);
+  int random = rng(nEmpty);
 
-  if (rng.GenerateBounded(100) < 90) {
+  if (rng(100) < 90) {
     grid[emptyCells[random] / nCols][emptyCells[random] % nCols].value = 2;
   } else {
     grid[emptyCells[random] / nCols][emptyCells[random] % nCols].value = 4;
