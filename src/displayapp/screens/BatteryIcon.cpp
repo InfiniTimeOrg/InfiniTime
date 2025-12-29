@@ -1,5 +1,6 @@
-#include "displayapp/screens/BatteryIcon.h"
 #include <cstdint>
+#include <cmath>
+#include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/icons/battery/batteryicon.c"
 #include "displayapp/InfiniTimeTheme.h"
@@ -58,6 +59,8 @@ lv_color_t BatteryIcon::ColorFromPercentage(int batteryPercent) {
   // We lock saturation and brightness at 100% and traverse the cylinder
   // between red and green, thus avoiding the darker RGB on medium battery
   // charges and giving us a much nicer color range.
-  const uint8_t hue = batteryPercent * 120 / 100;
+  const float normalizedPercent = batteryPercent / 100.0f;
+  // Follow -e^{-4x} + 1 curve: begins going yellow around 25%, yellow around 15%, red around 5%
+  const uint8_t hue = (-std::exp(-4.0f * normalizedPercent) + 1.0f) * 120.0f;
   return lv_color_hsv_to_rgb(hue, 100, 100);
 }
