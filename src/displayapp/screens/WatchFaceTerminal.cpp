@@ -39,15 +39,15 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
 
   notificationIcon = lv_label_create(container, nullptr);
 
-  label_prompt_1 = lv_label_create(container, nullptr);
-  lv_obj_set_style_local_text_color(label_prompt_1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_label_set_text_static(label_prompt_1, "user@watch:~ $ now");
+  labelPrompt1 = lv_label_create(container, nullptr);
+  lv_obj_set_style_local_text_color(labelPrompt1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_label_set_text_static(labelPrompt1, "user@watch:~ $ now");
 
-  label_time = lv_label_create(container, nullptr);
-  lv_label_set_recolor(label_time, true);
+  labelTime = lv_label_create(container, nullptr);
+  lv_label_set_recolor(labelTime, true);
 
-  label_date = lv_label_create(container, nullptr);
-  lv_label_set_recolor(label_date, true);
+  labelDate = lv_label_create(container, nullptr);
+  lv_label_set_recolor(labelDate, true);
 
   batteryValue = lv_label_create(container, nullptr);
   lv_label_set_recolor(batteryValue, true);
@@ -65,9 +65,9 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
   connectState = lv_label_create(container, nullptr);
   lv_label_set_recolor(connectState, true);
 
-  label_prompt_2 = lv_label_create(container, nullptr);
-  lv_obj_set_style_local_text_color(label_prompt_2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_label_set_text_static(label_prompt_2, "user@watch:~ $");
+  labelPrompt2 = lv_label_create(container, nullptr);
+  lv_obj_set_style_local_text_color(labelPrompt2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_label_set_text_static(labelPrompt2, "user@watch:~ $");
 
   lv_obj_align(container, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 7);
 
@@ -106,9 +106,9 @@ void WatchFaceTerminal::Refresh() {
         hour = hour - 12;
         ampmChar[0] = 'P';
       }
-      lv_label_set_text_fmt(label_time, "#ffffff [TIME]# #11cc55 %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
+      lv_label_set_text_fmt(labelTime, "#ffffff [TIME]# #11cc55 %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
     } else {
-      lv_label_set_text_fmt(label_time, "#ffffff [TIME]# #11cc55 %02d:%02d:%02d#", hour, minute, second);
+      lv_label_set_text_fmt(labelTime, "#ffffff [TIME]# #11cc55 %02d:%02d:%02d#", hour, minute, second);
     }
 
     currentDate = std::chrono::time_point_cast<std::chrono::days>(currentDateTime.Get());
@@ -116,7 +116,7 @@ void WatchFaceTerminal::Refresh() {
       uint16_t year = dateTimeController.Year();
       Controllers::DateTime::Months month = dateTimeController.Month();
       uint8_t day = dateTimeController.Day();
-      lv_label_set_text_fmt(label_date, "#ffffff [DATE]# #007fff %04d-%02d-%02d#", short(year), char(month), char(day));
+      lv_label_set_text_fmt(labelDate, "#ffffff [DATE]# #007fff %04d-%02d-%02d#", short(year), char(month), char(day));
     }
   }
 
