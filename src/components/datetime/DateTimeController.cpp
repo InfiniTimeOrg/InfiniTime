@@ -31,7 +31,7 @@ DateTime::DateTime(Controllers::Settings& settingsController) : settingsControll
   xSemaphoreGive(mutex);
 
   // __DATE__ is a string of the format "MMM DD YYYY", so an offset of 7 gives the start of the year
-  SetTime(compileTimeAtoi(&__DATE__[7]), 1, 1, 0, 0, 0);
+  SetTime(compileTimeAtoi(&__DATE__[7]), 1, 1, 0, 0, 0, false);
 }
 
 void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> t) {
@@ -41,7 +41,7 @@ void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock,
   xSemaphoreGive(mutex);
 }
 
-void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second) {
+void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second, bool log) {
   std::tm tm = {
     /* .tm_sec  = */ second,
     /* .tm_min  = */ minute,
@@ -51,8 +51,10 @@ void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, 
     /* .tm_year = */ year - 1900,
   };
 
-  NRF_LOG_INFO("%d %d %d ", day, month, year);
-  NRF_LOG_INFO("%d %d %d ", hour, minute, second);
+  if (log) {
+    NRF_LOG_INFO("%d %d %d ", day, month, year);
+    NRF_LOG_INFO("%d %d %d ", hour, minute, second);
+  }
 
   tm.tm_isdst = -1; // Use DST value from local time zone
 
