@@ -11,7 +11,6 @@
 #include "components/settings/Settings.h"
 #include "components/ble/SimpleWeatherService.h"
 #include "displayapp/screens/WeatherSymbols.h"
-#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
