@@ -47,6 +47,7 @@
 #include "systemtask/SystemTask.h"
 #include "touchhandler/TouchHandler.h"
 #include "buttonhandler/ButtonHandler.h"
+#include "utility/Math.h"
 
 #if NRF_LOG_ENABLED
   #include "logging/NrfLogger.h"
@@ -355,6 +356,9 @@ int main() {
   if (NoInit_MagicWord == NoInit_MagicValue) {
     dateTimeController.SetCurrentTime(NoInit_BackUpTime);
   } else {
+    // __DATE__ is a string of the format "MMM DD YYYY", so an offset of 7 gives the start of the year
+    dateTimeController.SetTime(Pinetime::Utility::compileTimeAtoi(&__DATE__[7]), 1, 1, 0, 0, 0);
+
     // Clear Memory to known state
     memset(&__start_noinit_data, 0, (uintptr_t) &__stop_noinit_data - (uintptr_t) &__start_noinit_data);
     NoInit_MagicWord = NoInit_MagicValue;
