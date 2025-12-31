@@ -357,7 +357,7 @@ int main() {
     dateTimeController.SetCurrentTime(NoInit_BackUpTime);
   } else {
     // __DATE__ is a string of the format "MMM DD YYYY", so an offset of 7 gives the start of the year
-    dateTimeController.SetTime(Pinetime::Utility::compileTimeAtoi(&__DATE__[7]), 1, 1, 0, 0, 0);
+    dateTimeController.SetTime(Pinetime::Utility::CompileTimeAtoi(&__DATE__[7]), 1, 1, 0, 0, 0);
 
     // Clear Memory to known state
     memset(&__start_noinit_data, 0, (uintptr_t) &__stop_noinit_data - (uintptr_t) &__start_noinit_data);
