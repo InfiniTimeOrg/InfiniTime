@@ -167,12 +167,7 @@ void WatchFaceTerminal::Refresh() {
         temp = optCurrentWeather->temperature.Fahrenheit();
         tempUnit = 'F';
       }
-      lv_label_set_text_fmt(weather,
-                            "[WTHR]#ffdd00 %d°%c %s#",
-                            temp,
-                            tempUnit,
-                            // Change to GetSimpleCondition with pull request #2134 (Add shorter/simpler weather condition options)
-                            Symbols::GetCondition(optCurrentWeather->iconId));
+      lv_label_set_text_fmt(weather, "[WTHR]#ffdd00 %d°%c %s#", temp, tempUnit, Symbols::GetSimpleCondition(optCurrentWeather->iconId));
     } else {
       lv_label_set_text(weather, "[WTHR]#ffdd00 ---");
     }
