@@ -6,14 +6,11 @@
 #include <queue.h>
 #include <components/heartrate/Ppg.h>
 #include "components/settings/Settings.h"
+#include <components/heartrate/HeartRateController.h>
 
 namespace Pinetime {
   namespace Drivers {
     class Hrs3300;
-  }
-
-  namespace Controllers {
-    class HeartRateController;
   }
 
   namespace Applications {

@@ -98,7 +98,7 @@ Pinetime::Controllers::FS fs {spiNorFlash};
 Pinetime::Controllers::Settings settingsController {fs};
 Pinetime::Controllers::MotorController motorController {};
 
-Pinetime::Controllers::HeartRateController heartRateController;
+Pinetime::Controllers::HeartRateController heartRateController {fs};
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController, settingsController);
 
 Pinetime::Controllers::DateTime dateTimeController {settingsController};

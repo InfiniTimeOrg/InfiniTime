@@ -1,6 +1,6 @@
 #include "heartratetask/HeartRateTask.h"
 #include <drivers/Hrs3300.h>
-#include <components/heartrate/HeartRateController.h>
+
 #include <limits>
 
 #include "utility/Math.h"
