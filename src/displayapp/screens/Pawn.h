@@ -10,6 +10,7 @@
 
 #include "pawn/amx.h"
 #include "pawn/amxpool.h"
+#include "pawn/heatshrink_decoder.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -24,12 +25,18 @@ namespace Pinetime {
             return nullptr;
           }
 
-          virtual size_t Read(uint8_t* buffer, size_t size, size_t offset) = 0;
+          virtual void Seek(size_t position) = 0;
+          virtual size_t Read(uint8_t* buffer, size_t size) = 0;
+
+          size_t Read(uint8_t* buffer, size_t size, size_t position) {
+            Seek(position);
+            return Read(buffer, size);
+          }
         };
 
         class ConstFile : public File {
           const uint8_t* backing;
-          size_t size;
+          size_t size, position;
 
         public:
           ConstFile(const uint8_t* backing, size_t size) : backing(backing), size(size) {
@@ -39,10 +46,17 @@ namespace Pinetime {
             return backing;
           }
 
-          size_t Read(uint8_t* buffer, size_t size, size_t offset) override {
-            if (size + offset > this->size)
+          void Seek(size_t position) override {
+            this->position = position;
+          }
+
+          size_t Read(uint8_t* buffer, size_t size) override {
+            if (position >= this->size)
               return 0;
-            memcpy(buffer, backing + offset, size);
+            if (position + size > this->size)
+              size = this->size - position;
+            memcpy(buffer, backing + position, size);
+            position += size;
             return size;
           }
         };
@@ -62,12 +76,73 @@ namespace Pinetime {
               fs.FileClose(&file);
           }
 
-          size_t Read(uint8_t* buffer, size_t size, size_t offset) override {
+          void Seek(size_t position) override {
+            fs.FileSeek(&file, position);
+          }
+
+          size_t Read(uint8_t* buffer, size_t size) override {
             if (!ok)
               return 0;
-
-            fs.FileSeek(&file, offset);
             return fs.FileRead(&file, buffer, size);
+          }
+        };
+
+        class HeatshrinkFile : public File {
+          std::unique_ptr<File> inner;
+          heatshrink_decoder decoder;
+          
+          size_t real_pos;
+          uint8_t pending_inner_read[100];
+          size_t pending_pos = 0, pending_size = 0;
+
+          void Reset() {
+            heatshrink_decoder_reset(&decoder);
+            pending_size = 0;
+            pending_pos = 0;
+            real_pos = 0;
+            inner->Seek(0);
+          }
+
+        public:
+          HeatshrinkFile(std::unique_ptr<File> inner) : inner(std::move(inner)) {
+            Reset();
+          }
+
+          /**
+           * Seek to a specified position in the *uncompressed* file.
+           */
+          void Seek(size_t position) override {
+            if (position < this->real_pos) // We have to rewind
+              Reset();
+
+            uint8_t discard[50];
+            while (this->real_pos < position) {
+              size_t remaining = position - this->real_pos;
+              Read(discard, remaining > sizeof(discard) ? sizeof(discard) : remaining);
+            }
+          }
+
+          size_t Read(uint8_t* buffer, size_t size) override {
+            size_t actual_read, total_read = 0;
+
+            while (total_read < size) {
+              HSD_poll_res res = heatshrink_decoder_poll(&decoder, buffer + total_read, size - total_read, &actual_read);
+              total_read += actual_read;
+              real_pos += actual_read;
+
+              if (res == HSDR_POLL_EMPTY) {
+                if (pending_size == 0) {
+                  pending_size = inner->Read(pending_inner_read, sizeof(pending_inner_read));
+                  pending_pos = 0;
+                }
+
+                heatshrink_decoder_sink(&decoder, pending_inner_read + pending_pos, pending_size, &actual_read);
+                pending_size -= actual_read;
+                pending_pos += actual_read;
+              }
+            }
+
+            return total_read;
           }
         };
 

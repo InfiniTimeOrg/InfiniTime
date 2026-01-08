@@ -358,6 +358,7 @@ set(LVGL_SRC
 list(APPEND PAWN_SRC
         pawn/amx.c
         pawn/amxpool.c
+        pawn/heatshrink_decoder.c
 )
 
 list(APPEND IMAGE_FILES
