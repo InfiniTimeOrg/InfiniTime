@@ -251,7 +251,7 @@ static cell AMX_NATIVE_CALL F_sprintf(AMX* amx, const cell* params) {
   return bufc - buf;
 }
 
-cell AMX_NATIVE_CALL F_read_datetime(AMX* amx, const cell* params) {
+static cell AMX_NATIVE_CALL F_read_datetime(AMX* amx, const cell* params) {
   ASSERT_PARAMS(1);
 
   Pawn* pawn = PAWN_INST;
@@ -359,7 +359,13 @@ static cell AMX_NATIVE_CALL F_raise_error(AMX* amx, const cell* params) {
   ASSERT_PARAMS(1);
 
   amx_RaiseError(amx, params[1]);
+  return 0;
+}
 
+static cell AMX_NATIVE_CALL F_lv_set_full_refresh(AMX* amx, const cell* params) {
+  ASSERT_PARAMS(1);
+
+  PAWN_INST->controllers.lvgl.SetFullRefresh((Pinetime::Components::LittleVgl::FullRefreshDirections) params[1]);
   return 0;
 }
 
@@ -382,6 +388,7 @@ static const AMX_NATIVE lvgl_proxys[] = {
   F_lv_obj_set_style_local_color,
   F_lv_obj_set_style_local_opa,
   F_lv_obj_set_style_local_ptr,
+  F_lv_set_full_refresh,
 };
 
 static const AMX_NATIVE pawn_proxys[] = {
@@ -547,7 +554,7 @@ int Pawn::LoadProgram() {
     // Happy path: the file is backed by a const array and we can reference it directly
     const uint8_t* code = file->GetConst();
 
-    if (code == nullptr || true) {
+    if (code == nullptr) {
       // Slow path: we must read the whole file into memory
       NRF_LOG_INFO(LOG_PREFIX "Loading program into RAM");
 
