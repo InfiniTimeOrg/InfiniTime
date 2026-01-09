@@ -113,13 +113,17 @@ namespace Pinetime {
                        Temperature minTemperature,
                        Temperature maxTemperature,
                        Icons iconId,
-                       Location&& location)
+                       Location&& location,
+                       int16_t sunrise,
+                       int16_t sunset)
           : timestamp {timestamp},
             temperature {temperature},
             minTemperature {minTemperature},
             maxTemperature {maxTemperature},
             iconId {iconId},
-            location {std::move(location)} {
+            location {std::move(location)},
+            sunrise {sunrise},
+            sunset {sunset} {
         }
 
         uint64_t timestamp;
@@ -128,6 +132,8 @@ namespace Pinetime {
         Temperature maxTemperature;
         Icons iconId;
         Location location;
+        int16_t sunrise;
+        int16_t sunset;
 
         bool operator==(const CurrentWeather& other) const;
       };
@@ -151,6 +157,8 @@ namespace Pinetime {
 
       std::optional<CurrentWeather> Current() const;
       std::optional<Forecast> GetForecast() const;
+
+      [[nodiscard]] bool IsNight() const;
 
     private:
       // 00050000-78fc-48fe-8e23-433b3a1942d0
