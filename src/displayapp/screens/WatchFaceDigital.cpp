@@ -5,5 +5,5 @@
 
 using namespace Pinetime::Applications::Screens;
 
-WatchFaceDigital::WatchFaceDigital(AppControllers& controllers) : Pawn(controllers, std::make_unique<Pawn::HeatshrinkFile>(std::make_unique<Pawn::ConstFile>(watchface_digital, watchface_digital_len))) {
+WatchFaceDigital::WatchFaceDigital(AppControllers& controllers) : Pawn(controllers, std::make_unique<Pawn::LfsFile>(controllers.filesystem, "/apps/watchface_digital.amx")) {
 }

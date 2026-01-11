@@ -26,17 +26,17 @@ def main():
         if not os.path.exists(source):
             source = os.path.join(os.path.dirname(sys.argv[0]), source)
 
-        args = [args.pawncc, "-p" + os.path.join(args.include, "infinitime.inc"), "-i" + args.include]
+        ccargs = [args.pawncc, "-p" + os.path.join(args.include, "infinitime.inc"), "-i" + args.include]
         if not app.get("debug", False):
-            args.append("-O3")
-            args.append("-d0")
+            ccargs.append("-O3")
+            ccargs.append("-d0")
         if app.get("overlays", False):
-            args.append("-V" + str(OVERLAY_SIZE))
-        args.append("-S" + str(app.get("stack_size", DEFAULT_STACK_SIZE)))
+            ccargs.append("-V" + str(OVERLAY_SIZE))
+        ccargs.append("-S" + str(app.get("stack_size", DEFAULT_STACK_SIZE)))
 
-        args.append(source)
+        ccargs.append(source)
 
-        subprocess.check_call(args) # The output will be written to the current directory with the ".amx" extension
+        subprocess.check_call(ccargs) # The output will be written to the current directory with the ".amx" extension
 
         sourcePath = pathlib.Path(source)
         shutil.move(sourcePath.stem + ".amx", sourcePath.stem + ".bin")

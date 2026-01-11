@@ -1,4 +1,3 @@
-#include "infinitime"
 #include "symbols"
 
 var lv_obj: label_time

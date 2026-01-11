@@ -4,5 +4,11 @@
     "overlays": false,
     "target_path": "/apps/",
     "extension": ".amx"
+  },
+  "watchface_digital": {
+    "source": "apps/watchface_digital.p",
+    "overlays": true,
+    "target_path": "/apps/",
+    "extension": ".amx"
   }
 }
