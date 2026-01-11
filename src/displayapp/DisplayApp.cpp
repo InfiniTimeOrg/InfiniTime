@@ -503,6 +503,15 @@ void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction)
   nextDirection = direction;
 }
 
+void DisplayApp::StartPawnApp(const char* path, DisplayApp::FullRefreshDirections direction) {
+  nextApp = Apps::Pawn;
+  nextDirection = direction;
+
+  int path_len = strlen(path);
+  nextPawnFile = new char[path_len + 1];
+  strcpy(nextPawnFile, path);
+}
+
 void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction) {
   // Don't add the same screen to the stack back to back.
   // This is mainly to fix an issue with receiving two notifications at the same time
@@ -650,6 +659,17 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       break;
     case Apps::FlashLight:
       currentScreen = std::make_unique<Screens::FlashLight>(*systemTask, brightnessController);
+      break;
+    case Apps::Pawn:
+      if (nextPawnFile) {
+        currentScreen =
+          std::make_unique<Screens::Pawn>(controllers, std::make_unique<Screens::Pawn::LfsFile>(controllers.filesystem, nextPawnFile));
+
+        delete nextPawnFile;
+        nextPawnFile = nullptr;
+      } else {
+        currentScreen = std::make_unique<Screens::Pawn>(controllers);
+      }
       break;
     default: {
       const auto* d = std::ranges::find_if(userApps, [app](const AppDescription& appDescription) {

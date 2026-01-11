@@ -573,11 +573,6 @@ int Pawn::LoadProgram() {
   return result;
 }
 
-#include "program.h"
-
-Pawn::Pawn(AppControllers& controllers) : Pawn(controllers, std::make_unique<LfsFile>(controllers.filesystem, "/flash.amx")) {
-}
-
 Pawn::Pawn(AppControllers& controllers, std::unique_ptr<File> file) : controllers(controllers), file(std::move(file)) {
   int result = LoadProgram();
   if (result != AMX_ERR_NONE) {

@@ -405,6 +405,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Styles.cpp
         displayapp/screens/WeatherSymbols.cpp
         displayapp/screens/Pawn.cpp
+        displayapp/screens/PawnList.cpp
         displayapp/Colors.cpp
         displayapp/widgets/Counter.cpp
         displayapp/widgets/PageIndicator.cpp

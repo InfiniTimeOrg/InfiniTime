@@ -146,7 +146,9 @@ namespace Pinetime {
           }
         };
 
-        Pawn(AppControllers& controllers);
+        Pawn(AppControllers& controllers) : controllers(controllers) {
+          // Should never be called, this constructor is only present for conformity to the apps interface
+        }
         Pawn(AppControllers& controllers, std::unique_ptr<File> file);
         ~Pawn() override;
 
@@ -188,12 +190,12 @@ namespace Pinetime {
       static constexpr Apps app = Apps::Pawn;
       static constexpr const char* icon = "P";
 
-      static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Pawn(controllers);
+      static Screens::Screen* Create(AppControllers& /*controllers*/) {
+        return nullptr;
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
-        return true;
+        return false;
       };
     };
   }
