@@ -77,7 +77,8 @@ namespace Pinetime {
           }
 
           void Seek(size_t position) override {
-            fs.FileSeek(&file, position);
+            if (ok)
+              fs.FileSeek(&file, position);
           }
 
           size_t Read(uint8_t* buffer, size_t size) override {
@@ -134,6 +135,9 @@ namespace Pinetime {
                 if (pending_size == 0) {
                   pending_size = inner->Read(pending_inner_read, sizeof(pending_inner_read));
                   pending_pos = 0;
+
+                  if (pending_size == 0) // No more data in inner file
+                    break;
                 }
 
                 heatshrink_decoder_sink(&decoder, pending_inner_read + pending_pos, pending_size, &actual_read);
