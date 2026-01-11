@@ -17,6 +17,10 @@
  *  Version: $Id: amx.c 7487 2025-08-21 18:37:33Z thiadmer $
  */
 
+#undef __LINUX__
+#undef __linux
+#undef __linux__
+
 #define WIN32_LEAN_AND_MEAN
 #if defined _UNICODE || defined __UNICODE__ || defined UNICODE
 # if !defined UNICODE   /* for Windows API */

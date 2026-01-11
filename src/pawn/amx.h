@@ -23,6 +23,10 @@
 #include <stdlib.h>   /* for size_t */
 #include <limits.h>
 
+#undef __LINUX__
+#undef __linux
+#undef __linux__
+
 #if (defined __linux || defined __linux__) && !defined __LINUX__
   #define __LINUX__
 #endif
