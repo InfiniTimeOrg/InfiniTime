@@ -369,15 +369,37 @@ static cell AMX_NATIVE_CALL F_lv_set_full_refresh(AMX* amx, const cell* params) 
   return 0;
 }
 
-static const uintptr_t natives[] = {
+#define PROXY(function, nparams, ...)                                                                                                      \
+  [](AMX* amx, const cell* params) -> cell {                                                                                               \
+    ASSERT_PARAMS(nparams);                                                                                                                \
+    return (cell) function(__VA_ARGS__);                                                                                                   \
+  }
+
+#define PROXYV(function, nparams, ...)                                                                                                     \
+  [](AMX* amx, const cell* params) -> cell {                                                                                               \
+    ASSERT_PARAMS(nparams);                                                                                                                \
+    function(__VA_ARGS__);                                                                                                                 \
+    return 0;                                                                                                                              \
+  }
+
+static const AMX_NATIVE natives[] = {
   // Indices start at -1000
-  (uintptr_t) lv_label_create,
-  (uintptr_t) lv_btn_create,
-  (uintptr_t) lv_obj_set_pos,
-  (uintptr_t) lv_obj_set_size,
-  (uintptr_t) lv_obj_align,
-  (uintptr_t) lv_obj_realign,
+  PROXY(lv_label_create, 2, (lv_obj_t*) params[1], (lv_obj_t*) params[2]),
+  PROXY(lv_btn_create, 2, (lv_obj_t*) params[1], (lv_obj_t*) params[2]),
+  PROXYV(lv_obj_set_pos, 3, (lv_obj_t*) params[1], (lv_coord_t) params[2], (lv_coord_t) params[3]),
+  PROXYV(lv_obj_set_size, 3, (lv_obj_t*) params[1], (lv_coord_t) params[2], (lv_coord_t) params[3]),
+  PROXYV(lv_obj_align,
+         5,
+         (lv_obj_t*) params[1],
+         (lv_obj_t*) params[2],
+         (lv_align_t) params[3],
+         (lv_coord_t) params[4],
+         (lv_coord_t) params[5]),
+  PROXYV(lv_obj_realign, 1, (lv_obj_t*) params[1]),
 };
+
+#undef PROXY
+#undef PROXYV
 
 static const AMX_NATIVE lvgl_proxys[] = {
   // Indices start at -3000
@@ -405,66 +427,6 @@ static const AMX_NATIVE pawn_proxys[] = {
   F_get_step_number,
   F_raise_error,
 };
-
-static cell trampoline(unsigned int index, const cell* params) {
-  int param_count = params[0] / sizeof(cell);
-
-  if (index >= sizeof(natives) / sizeof(natives[0]))
-    return PAWN_ERR_INVALIDTRAMPOLINE;
-
-  uintptr_t addr = natives[index] | 1; // Set lowest bit to enable thumb mode (always must be enabled on ARMv7-M)
-
-  cell ret;
-
-  params++; // Skip parameter count
-
-  asm volatile(".syntax unified\n"
-               ".thumb\n"
-
-               // Save stack pointer in case we push excess arguments into stack
-               "mov r5, sp\n"
-
-               // Load first argument into R0 or jump out
-               "subs %[count], #1\n"
-               "bmi call\n"
-               "ldr r0, [%[params]]\n"
-               "add %[params], #4\n"
-
-               // Load second argument into R1 or jump out
-               "subs %[count], #1\n"
-               "bmi call\n"
-               "ldr r1, [%[params]]\n"
-               "add %[params], #4\n"
-
-               // Load third argument into R2 or jump out
-               "subs %[count], #1\n"
-               "bmi call\n"
-               "ldr r2, [%[params]]\n"
-               "add %[params], #4\n"
-
-               // Load fourth argument into R3 or jump out
-               "subs %[count], #1\n"
-               "bmi call\n"
-               "ldr r3, [%[params]]\n"
-               "add %[params], #4\n"
-
-               // Push remaining argument into stack in reverse order
-               "loop: subs %[count], #1\n"
-               "      bmi call\n"
-               "      ldr r12, [%[params], +%[count], LSL 2]\n"
-               "      push {r12}\n"
-               "      b loop\n"
-
-               "call: blx %[addr]\n"    // Call function
-               "      mov sp, r5\n"     // Restore stack
-               "      mov %[ret], r0\n" // Move returned value into ret
-
-               : [ret] "=r"(ret), [count] "+r"(param_count), [params] "+r"(params)
-               : [addr] "r"(addr)
-               : "r0", "r1", "r2", "r3", "r5", "r12", "lr", "memory");
-
-  return ret;
-}
 
 static int AMXAPI prun_Overlay(AMX* amx, int index) {
   AMX_HEADER* hdr;
@@ -497,7 +459,7 @@ static int AMXAPI prun_Callback(struct tagAMX* amx, cell index, cell* result, co
   } else if (index <= -2000) { // InfiniTime proxys
     *result = pawn_proxys[-(index + 2000)](amx, params);
   } else { // Direct trampolines
-    *result = trampoline(-(index + 1000), params);
+    *result = natives[-(index + 1000)](amx, params);
   }
 
   return amx->error;
@@ -644,7 +606,7 @@ void Pawn::ShowError(unsigned int amx_err) {
     "invalid string",           // PAWN_ERR_INVALIDSTRING
     "invalid setting",          // PAWN_ERR_INVALIDSETTING
     "invalid trampoline",       // PAWN_ERR_INVALIDTRAMPOLINE
-    "file read error",          // PAWN_ERR_FILE
+    "missing/invalid file",     // PAWN_ERR_FILE
   };
 
   if (amx_err == AMX_ERR_EXIT) {
