@@ -32,6 +32,7 @@ namespace Pinetime {
         uint32_t currentTripSteps = 0;
 
         lv_obj_t* lSteps;
+        lv_obj_t* lStepsYesterday;
         lv_obj_t* stepsArc;
         lv_obj_t* resetBtn;
         lv_obj_t* resetButtonLabel;
@@ -50,6 +51,10 @@ namespace Pinetime {
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Steps(controllers.motionController, controllers.settingsController);
+      };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
       };
     };
   }

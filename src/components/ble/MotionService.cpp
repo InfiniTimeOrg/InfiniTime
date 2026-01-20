@@ -64,9 +64,10 @@ int MotionService::OnStepCountRequested(uint16_t attributeHandle, ble_gatt_acces
     NRF_LOG_INFO("Motion-stepcount : handle = %d", stepCountHandle);
     uint32_t buffer = motionController.NbSteps();
 
-    int res = os_mbuf_append(context->om, &buffer, 4);
+    int res = os_mbuf_append(context->om, &buffer, sizeof(buffer));
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
-  } else if (attributeHandle == motionValuesHandle) {
+  }
+  if (attributeHandle == motionValuesHandle) {
     int16_t buffer[3] = {motionController.X(), motionController.Y(), motionController.Z()};
 
     int res = os_mbuf_append(context->om, buffer, 3 * sizeof(int16_t));
@@ -76,11 +77,12 @@ int MotionService::OnStepCountRequested(uint16_t attributeHandle, ble_gatt_acces
 }
 
 void MotionService::OnNewStepCountValue(uint32_t stepCount) {
-  if (!stepCountNoficationEnabled)
+  if (!stepCountNotificationEnabled) {
     return;
+  }
 
   uint32_t buffer = stepCount;
-  auto* om = ble_hs_mbuf_from_flat(&buffer, 4);
+  auto* om = ble_hs_mbuf_from_flat(&buffer, sizeof(buffer));
 
   uint16_t connectionHandle = nimble.connHandle();
 
@@ -92,8 +94,9 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
 }
 
 void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
-  if (!motionValuesNoficationEnabled)
+  if (!motionValuesNotificationEnabled) {
     return;
+  }
 
   int16_t buffer[3] = {x, y, z};
   auto* om = ble_hs_mbuf_from_flat(buffer, 3 * sizeof(int16_t));
@@ -108,19 +111,17 @@ void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
 }
 
 void MotionService::SubscribeNotification(uint16_t attributeHandle) {
-  if (attributeHandle == stepCountHandle)
-    stepCountNoficationEnabled = true;
-  else if (attributeHandle == motionValuesHandle)
-    motionValuesNoficationEnabled = true;
+  if (attributeHandle == stepCountHandle) {
+    stepCountNotificationEnabled = true;
+  } else if (attributeHandle == motionValuesHandle) {
+    motionValuesNotificationEnabled = true;
+  }
 }
 
 void MotionService::UnsubscribeNotification(uint16_t attributeHandle) {
-  if (attributeHandle == stepCountHandle)
-    stepCountNoficationEnabled = false;
-  else if (attributeHandle == motionValuesHandle)
-    motionValuesNoficationEnabled = false;
-}
-
-bool MotionService::IsMotionNotificationSubscribed() const {
-  return motionValuesNoficationEnabled;
+  if (attributeHandle == stepCountHandle) {
+    stepCountNotificationEnabled = false;
+  } else if (attributeHandle == motionValuesHandle) {
+    motionValuesNotificationEnabled = false;
+  }
 }

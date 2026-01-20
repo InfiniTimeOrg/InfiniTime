@@ -1,7 +1,9 @@
 #pragma once
 
 #include "displayapp/screens/Screen.h"
+#include "components/motor/MotorController.h"
 #include "systemtask/SystemTask.h"
+#include "systemtask/WakeLock.h"
 #include "displayapp/LittleVgl.h"
 #include "displayapp/widgets/Counter.h"
 #include "utility/DirtyValue.h"
@@ -14,13 +16,14 @@ namespace Pinetime::Applications {
   namespace Screens {
     class Timer : public Screen {
     public:
-      Timer(Controllers::Timer& timerController);
+      Timer(Controllers::Timer& timerController, Controllers::MotorController& motorController, System::SystemTask& systemTask);
       ~Timer() override;
       void Refresh() override;
       void Reset();
       void ToggleRunning();
       void ButtonPressed();
       void MaskReset();
+      void SetTimerRinging();
 
     private:
       void SetTimerRunning();
@@ -28,6 +31,9 @@ namespace Pinetime::Applications {
       void UpdateMask();
       void DisplayTime();
       Pinetime::Controllers::Timer& timer;
+      Pinetime::Controllers::MotorController& motorController;
+
+      Pinetime::System::WakeLock wakeLock;
 
       lv_obj_t* btnPlayPause;
       lv_obj_t* txtPlayPause;
@@ -54,7 +60,11 @@ namespace Pinetime::Applications {
     static constexpr const char* icon = Screens::Symbols::hourGlass;
 
     static Screens::Screen* Create(AppControllers& controllers) {
-      return new Screens::Timer(controllers.timer);
+      return new Screens::Timer(controllers.timer, controllers.motorController, *controllers.systemTask);
+    };
+
+    static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+      return true;
     };
   };
 }

@@ -1,6 +1,8 @@
 #include <nrf_log.h>
 #include "FSService.h"
 #include "components/ble/BleController.h"
+#include "components/ble/NotificationManager.h"
+#include "components/settings/Settings.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
@@ -49,6 +51,18 @@ void FSService::Init() {
 }
 
 int FSService::OnFSServiceRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
+#ifndef PINETIME_IS_RECOVERY
+  if (systemTask.GetSettings().GetDfuAndFsMode() == Pinetime::Controllers::Settings::DfuAndFsMode::Disabled) {
+    Pinetime::Controllers::NotificationManager::Notification notif;
+    memcpy(notif.message.data(), denyAlert, denyAlertLength);
+    notif.size = denyAlertLength;
+    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    systemTask.GetNotificationManager().Push(std::move(notif));
+    systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
+    return BLE_ATT_ERR_INSUFFICIENT_AUTHOR;
+  }
+#endif
+
   if (attributeHandle == versionCharacteristicHandle) {
     NRF_LOG_INFO("FS_S : handle = %d", versionCharacteristicHandle);
     int res = os_mbuf_append(context->om, &fsVersion, sizeof(fsVersion));

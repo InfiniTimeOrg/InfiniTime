@@ -14,3 +14,6 @@
 *.bin binary
 *.jpg binary
 *.jpeg binary
+
+# Declare (Unix-style) files that will always have LF line endings on checkout.
+*.sh text eol=lf

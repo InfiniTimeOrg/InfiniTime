@@ -407,7 +407,7 @@ bool WatchFacePineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents ev
   if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnClose)) {
     lv_obj_set_hidden(btnSetColor, false);
     lv_obj_set_hidden(btnSetOpts, false);
-    savedTick = lv_tick_get();
+    savedTick = xTaskGetTickCount();
     return true;
   }
   if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnClose) == false)) {
@@ -548,7 +548,7 @@ void WatchFacePineTimeStyle::Refresh() {
         temp = optCurrentWeather->temperature.Fahrenheit();
       }
       lv_label_set_text_fmt(temperature, "%d°", temp);
-      lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
+      lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId, weatherService.IsNight()));
     } else {
       lv_label_set_text(temperature, "--");
       lv_label_set_text(weatherIcon, Symbols::ban);
@@ -558,7 +558,7 @@ void WatchFacePineTimeStyle::Refresh() {
   }
 
   if (!lv_obj_get_hidden(btnSetColor)) {
-    if ((savedTick > 0) && (lv_tick_get() - savedTick > 3000)) {
+    if ((savedTick > 0) && (xTaskGetTickCount() - savedTick > pdMS_TO_TICKS(3000))) {
       lv_obj_set_hidden(btnSetColor, true);
       lv_obj_set_hidden(btnSetOpts, true);
       savedTick = 0;

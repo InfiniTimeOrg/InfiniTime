@@ -15,6 +15,7 @@
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
 #include "displayapp/screens/WatchFaceTerminal.h"
 #include "displayapp/screens/WatchFaceNumerals.h"
+#include "displayapp/screens/WatchFacePrideFlag.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -26,6 +27,7 @@ namespace Pinetime {
       Apps app;
       const char* icon;
       Screens::Screen* (*create)(AppControllers& controllers);
+      bool (*isAvailable)(Controllers::FS& fileSystem);
     };
 
     struct WatchFaceDescription {
@@ -37,7 +39,7 @@ namespace Pinetime {
 
     template <Apps t>
     consteval AppDescription CreateAppDescription() {
-      return {AppTraits<t>::app, AppTraits<t>::icon, &AppTraits<t>::Create};
+      return {AppTraits<t>::app, AppTraits<t>::icon, &AppTraits<t>::Create, &AppTraits<t>::IsAvailable};
     }
 
     template <WatchFace t>

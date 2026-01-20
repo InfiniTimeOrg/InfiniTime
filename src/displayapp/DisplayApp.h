@@ -13,6 +13,7 @@
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
 #include "components/timer/Timer.h"
+#include "components/stopwatch/StopWatchController.h"
 #include "components/alarm/AlarmController.h"
 #include "touchhandler/TouchHandler.h"
 
@@ -63,6 +64,7 @@ namespace Pinetime {
                  Controllers::Settings& settingsController,
                  Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController,
+                 Pinetime::Controllers::StopWatchController& stopWatchController,
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
@@ -93,6 +95,7 @@ namespace Pinetime {
       Pinetime::Controllers::Settings& settingsController;
       Pinetime::Controllers::MotorController& motorController;
       Pinetime::Controllers::MotionController& motionController;
+      Pinetime::Controllers::StopWatchController& stopWatchController;
       Pinetime::Controllers::AlarmController& alarmController;
       Pinetime::Controllers::BrightnessController& brightnessController;
       Pinetime::Controllers::TouchHandler& touchHandler;
@@ -121,7 +124,7 @@ namespace Pinetime {
 
       TouchEvents GetGesture();
       static void Process(void* instance);
-      void InitHw();
+      void Init();
       void Refresh();
       void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);

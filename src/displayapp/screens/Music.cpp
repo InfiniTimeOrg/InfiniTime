@@ -23,6 +23,7 @@
 #include "displayapp/icons/music/disc.c"
 #include "displayapp/icons/music/disc_f_1.c"
 #include "displayapp/icons/music/disc_f_2.c"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -52,14 +53,13 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
 
   lv_style_init(&btn_style);
   lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, 20);
-  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, LV_COLOR_AQUA);
-  lv_style_set_bg_opa(&btn_style, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, Colors::bgAlt);
 
   btnVolDown = lv_btn_create(lv_scr_act(), nullptr);
   btnVolDown->user_data = this;
   lv_obj_set_event_cb(btnVolDown, event_handler);
   lv_obj_set_size(btnVolDown, 76, 76);
-  lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 3, 0);
   lv_obj_add_style(btnVolDown, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolDown, nullptr);
   lv_label_set_text_static(label, Symbols::volumDown);
@@ -69,7 +69,7 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
   btnVolUp->user_data = this;
   lv_obj_set_event_cb(btnVolUp, event_handler);
   lv_obj_set_size(btnVolUp, 76, 76);
-  lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
   lv_obj_add_style(btnVolUp, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolUp, nullptr);
   lv_label_set_text_static(label, Symbols::volumUp);
@@ -79,7 +79,7 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
   btnPrev->user_data = this;
   lv_obj_set_event_cb(btnPrev, event_handler);
   lv_obj_set_size(btnPrev, 76, 76);
-  lv_obj_align(btnPrev, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_align(btnPrev, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 3, 0);
   lv_obj_add_style(btnPrev, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnPrev, nullptr);
   lv_label_set_text_static(label, Symbols::stepBackward);
@@ -88,7 +88,7 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
   btnNext->user_data = this;
   lv_obj_set_event_cb(btnNext, event_handler);
   lv_obj_set_size(btnNext, 76, 76);
-  lv_obj_align(btnNext, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lv_obj_align(btnNext, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
   lv_obj_add_style(btnNext, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnNext, nullptr);
   lv_label_set_text_static(label, Symbols::stepForward);
@@ -114,18 +114,20 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
   constexpr int8_t MIDDLE_OFFSET = -25;
   txtArtist = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_align(txtArtist, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
+  lv_obj_align(txtArtist, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 2 * FONT_HEIGHT + LINE_PAD);
   lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtArtist, LV_HOR_RES - 12);
-  lv_label_set_text_static(txtArtist, "Artist Name");
+  lv_label_set_text_static(txtArtist, "");
+  lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 2 * FONT_HEIGHT + LINE_PAD);
-
+  lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrack, LV_HOR_RES - 12);
-  lv_label_set_text_static(txtTrack, "This is a very long getTrack name");
+  lv_label_set_text_static(txtTrack, "");
+
+  pageIndicator.Create();
 
   /** Init animation */
   imgDisc = lv_img_create(lv_scr_act(), nullptr);
@@ -253,9 +255,9 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
     case TouchEvents::SwipeUp: {
       lv_obj_set_hidden(btnVolDown, false);
       lv_obj_set_hidden(btnVolUp, false);
-
       lv_obj_set_hidden(btnNext, true);
       lv_obj_set_hidden(btnPrev, true);
+      pageIndicator.SetPageIndicatorPosition(1);
       return true;
     }
     case TouchEvents::SwipeDown: {
@@ -264,6 +266,7 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
         lv_obj_set_hidden(btnPrev, false);
         lv_obj_set_hidden(btnVolDown, true);
         lv_obj_set_hidden(btnVolUp, true);
+        pageIndicator.SetPageIndicatorPosition(0);
         return true;
       }
       return false;
