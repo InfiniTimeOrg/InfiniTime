@@ -6,7 +6,7 @@ import math
 import pathlib
 import sys
 from PIL import Image, ImageFont, ImageDraw, ImageOps
-from fontTools import ttLib
+# from fontTools import ttLib
 from typing import Tuple
 
 # pacman -S python-fonttools
