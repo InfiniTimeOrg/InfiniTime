@@ -64,6 +64,7 @@ def main():
         patches = font.pop('patches') if 'patches' in font else  []
         font['sources'] = [Source(thing) for thing in sources]
         line = gen_lvconv_line(args.lv_font_conv, f'{name}.c', **font)
+        print('generate.py: "' + '", "'.join(line) + '"')
         subprocess.check_call(line)
         if patches:
             for patch in patches:
