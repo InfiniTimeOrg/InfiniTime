@@ -12,7 +12,8 @@ Battery* Battery::instance = nullptr;
 
 Battery::Battery() {
   instance = this;
-  nrf_gpio_cfg_input(PinMap::Charging, static_cast<nrf_gpio_pin_pull_t> GPIO_PIN_CNF_PULL_Disabled);
+  nrf_gpio_cfg_input(PinMap::Charging, NRF_GPIO_PIN_NOPULL);
+  SaadcInit();
 }
 
 void Battery::ReadPowerState() {
@@ -34,7 +35,6 @@ void Battery::MeasureVoltage() {
   }
   // Non blocking read
   isReading = true;
-  SaadcInit();
 
   nrfx_saadc_sample();
 }
@@ -44,7 +44,11 @@ void Battery::AdcCallbackStatic(nrfx_saadc_evt_t const* event) {
 }
 
 void Battery::SaadcInit() {
-  nrfx_saadc_config_t adcConfig = NRFX_SAADC_DEFAULT_CONFIG;
+  nrfx_saadc_config_t adcConfig;
+  adcConfig.low_power_mode = true;
+  adcConfig.resolution = NRF_SAADC_RESOLUTION_14BIT;
+  adcConfig.oversample = NRF_SAADC_OVERSAMPLE_256X;
+  adcConfig.interrupt_priority = APP_IRQ_PRIORITY_LOW;
   APP_ERROR_CHECK(nrfx_saadc_init(&adcConfig, AdcCallbackStatic));
 
   nrf_saadc_channel_config_t adcChannelConfig = {.resistor_p = NRF_SAADC_RESISTOR_DISABLED,
@@ -72,8 +76,8 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     // ADC gain is 1/4
     // thus adc_voltage = battery_voltage / 2 * gain = battery_voltage / 8
     // reference_voltage is 600mV
-    // p_event->data.done.p_buffer[0] = (adc_voltage / reference_voltage) * 1024
-    voltage = p_event->data.done.p_buffer[0] * (8 * 600) / 1024;
+    // p_event->data.done.p_buffer[0] = (adc_voltage / reference_voltage) * (2^(sampling res) )
+    voltage = p_event->data.done.p_buffer[0] * (8 * 600) / 16384;
 
     uint8_t newPercent = 100;
     if (!isFull) {
@@ -81,13 +85,9 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
       newPercent = std::min(approx.GetValue(voltage), isCharging ? uint8_t {99} : uint8_t {100});
     }
 
-    if ((isPowerPresent && newPercent > percentRemaining) || (!isPowerPresent && newPercent < percentRemaining) || firstMeasurement) {
-      firstMeasurement = false;
-      percentRemaining = newPercent;
-      systemTask->PushMessage(System::Messages::BatteryPercentageUpdated);
-    }
+    percentRemaining = newPercent;
+    systemTask->PushMessage(System::Messages::BatteryPercentageUpdated);
 
-    nrfx_saadc_uninit();
     isReading = false;
   }
 }
