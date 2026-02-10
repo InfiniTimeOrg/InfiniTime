@@ -31,6 +31,8 @@ namespace Pinetime {
       Dice,
       Weather,
       PassKey,
+      Pawn,
+      PawnList,
       QuickSettings,
       Settings,
       SettingWatchFace,

@@ -74,6 +74,7 @@ namespace Pinetime {
       void PushMessage(Display::Messages msg);
 
       void StartApp(Apps app, DisplayApp::FullRefreshDirections direction);
+      void StartPawnApp(const char* path, DisplayApp::FullRefreshDirections direction);
 
       void SetFullRefresh(FullRefreshDirections direction);
 
@@ -131,6 +132,7 @@ namespace Pinetime {
       void PushMessageToSystemTask(Pinetime::System::Messages message);
 
       Apps nextApp = Apps::None;
+      char* nextPawnFile = nullptr;
       DisplayApp::FullRefreshDirections nextDirection;
       System::BootErrors bootError;
       void ApplyBrightness();
