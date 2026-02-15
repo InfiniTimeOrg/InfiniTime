@@ -351,10 +351,62 @@ namespace Pinetime {
         settings.heartRateBackgroundPeriod = newIntervalInSeconds.value();
       }
 
+      bool GetQuietHoursEnabled() const {
+        return settings.quietHoursEnabled;
+      }
+
+      void SetQuietHoursEnabled(bool enabled) {
+        if (enabled != settings.quietHoursEnabled) {
+          settingsChanged = true;
+        }
+        settings.quietHoursEnabled = enabled;
+      }
+
+      uint8_t GetQuietHoursStart() const {
+        return settings.quietHoursStart;
+      }
+
+      void SetQuietHoursStart(uint8_t hour) {
+        if (hour != settings.quietHoursStart) {
+          settingsChanged = true;
+        }
+        settings.quietHoursStart = hour;
+      }
+
+      uint8_t GetQuietHoursEnd() const {
+        return settings.quietHoursEnd;
+      }
+
+      void SetQuietHoursEnd(uint8_t hour) {
+        if (hour != settings.quietHoursEnd) {
+          settingsChanged = true;
+        }
+        settings.quietHoursEnd = hour;
+      }
+
+      void EnterQuietHours() {
+        if (!inQuietHours) {
+          notificationStatusBeforeQuietHours = settings.notificationStatus;
+          inQuietHours = true;
+          SetNotificationStatus(Notification::Sleep);
+        }
+      }
+
+      void ExitQuietHours() {
+        if (inQuietHours) {
+          inQuietHours = false;
+          SetNotificationStatus(notificationStatusBeforeQuietHours);
+        }
+      }
+
+      bool IsInQuietHours() const {
+        return inQuietHours;
+      }
+
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x000a;
+      static constexpr uint32_t settingsVersion = 0x000b;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -383,6 +435,10 @@ namespace Pinetime {
 
         bool dfuAndFsEnabledOnBoot = false;
         uint16_t heartRateBackgroundPeriod = std::numeric_limits<uint16_t>::max(); // Disabled by default
+
+        bool quietHoursEnabled = false;
+        uint8_t quietHoursStart = 21; // 9 PM
+        uint8_t quietHoursEnd = 9;    // 9 AM
       };
 
       SettingsData settings;
@@ -396,6 +452,9 @@ namespace Pinetime {
        */
       bool bleRadioEnabled = true;
       bool dfuAndFsEnabledTillReboot = false;
+
+      Notification notificationStatusBeforeQuietHours = Notification::On;
+      bool inQuietHours = false;
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile();
