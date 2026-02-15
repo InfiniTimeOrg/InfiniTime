@@ -24,6 +24,7 @@
 #include "displayapp/Controllers.h"
 #include "systemtask/WakeLock.h"
 #include "Symbols.h"
+#include <optional>
 
 namespace Pinetime {
   namespace Applications {
@@ -35,12 +36,15 @@ namespace Pinetime {
                        System::SystemTask& systemTask,
                        Controllers::MotorController& motorController);
         ~Alarm() override;
+        void Refresh() override;
         void SetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
         bool OnButtonPushed() override;
         bool OnTouchEvent(TouchEvents event) override;
         void OnValueChanged();
         void StopAlerting();
+        void StopButtonPressed();
+        void ResetStopProgress();
 
       private:
         Controllers::AlarmController& alarmController;
@@ -51,6 +55,7 @@ namespace Pinetime {
         lv_obj_t* lblampm = nullptr;
         lv_obj_t* txtMessage = nullptr;
         lv_obj_t* btnMessage = nullptr;
+        lv_task_t* taskRefresh = nullptr;
         lv_task_t* taskStopAlarm = nullptr;
 
         enum class EnableButtonState { On, Off, Alerting };
@@ -62,8 +67,14 @@ namespace Pinetime {
         void HideInfo();
         void ToggleRecurrence();
         void UpdateAlarmTime();
+        void UpdateStopProgress(lv_coord_t stopPosition);
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
+
+        lv_obj_t* progressStop;
+        std::optional<TickType_t> stopBtnPressTime;
+        static constexpr TickType_t longPressTimeout = pdMS_TO_TICKS(1000);
+        static constexpr lv_coord_t progressBarSize = 240;
       };
     }
 
