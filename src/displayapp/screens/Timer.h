@@ -24,16 +24,32 @@ namespace Pinetime::Applications {
       void ButtonPressed();
       void MaskReset();
       void SetTimerRinging();
+      void OnLauncherButtonClicked(lv_obj_t* obj);
+
+      bool launcherMode = true;
 
     private:
       void SetTimerRunning();
       void SetTimerStopped();
       void UpdateMask();
       void DisplayTime();
+      void CreateLauncherUI();
+      void CreateTimerUI(uint32_t startDurationMs, bool autoStart);
+      void AddTimerDuration(uint32_t duration);
+      uint32_t GetTimerDuration(uint8_t index) const;
+
       Pinetime::Controllers::Timer& timer;
       Pinetime::Controllers::MotorController& motorController;
 
       Pinetime::System::WakeLock wakeLock;
+      // Launcher UI elements
+      static constexpr int numRecentTimers = 3;
+      static uint32_t timerDurations[numRecentTimers];
+      lv_obj_t* btnRecent[numRecentTimers] = {nullptr};
+      lv_obj_t* btnCustom = nullptr;
+      lv_obj_t* labelRecent[numRecentTimers] = {nullptr};
+      lv_obj_t* labelCustom = nullptr;
+      lv_style_t btnStyle;
 
       lv_obj_t* btnPlayPause;
       lv_obj_t* txtPlayPause;
