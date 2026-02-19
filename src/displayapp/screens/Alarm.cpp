@@ -47,8 +47,9 @@ static void StopAlarmTaskCallback(lv_task_t* task) {
 Alarm::Alarm(Controllers::AlarmController& alarmController,
              Controllers::Settings::ClockType clockType,
              System::SystemTask& systemTask,
-             Controllers::MotorController& motorController)
-  : alarmController {alarmController}, wakeLock(systemTask), motorController {motorController} {
+             Controllers::MotorController& motorController,
+             Controllers::DateTime& dateTimeController)
+  : dateTimeController {dateTimeController}, alarmController {alarmController}, wakeLock(systemTask), motorController {motorController} {
 
   hourCounter.Create();
   lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
@@ -107,6 +108,18 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
   lv_obj_t* txtInfo = lv_label_create(btnInfo, nullptr);
   lv_label_set_text_static(txtInfo, "i");
 
+  btnCurrentTime = lv_btn_create(lv_scr_act(), nullptr);
+  btnCurrentTime->user_data = this;
+  lv_obj_set_event_cb(btnCurrentTime, btnEventHandler);
+  lv_obj_set_size(btnCurrentTime, 50, 50);
+  lv_obj_align(btnCurrentTime, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 135);
+  lv_obj_set_style_local_bg_color(btnCurrentTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  lv_obj_set_style_local_border_width(btnCurrentTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 4);
+  lv_obj_set_style_local_border_color(btnCurrentTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+
+  lv_obj_t* btnClock = lv_label_create(btnCurrentTime, nullptr);
+  lv_label_set_text_static(btnClock, Symbols::clock);
+
   enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
   enableSwitch->user_data = this;
   lv_obj_set_event_cb(enableSwitch, btnEventHandler);
@@ -147,6 +160,10 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     }
     if (obj == btnInfo) {
       ShowInfo();
+      return;
+    }
+    if (obj == btnCurrentTime) {
+      SetCurrentTime();
       return;
     }
     if (obj == btnMessage) {
@@ -205,6 +222,7 @@ void Alarm::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
   lv_obj_set_hidden(btnRecur, true);
   lv_obj_set_hidden(btnInfo, true);
+  lv_obj_set_hidden(btnCurrentTime, true);
   hourCounter.HideControls();
   minuteCounter.HideControls();
   lv_obj_set_hidden(btnStop, false);
@@ -226,6 +244,7 @@ void Alarm::StopAlerting() {
   hourCounter.ShowControls();
   minuteCounter.ShowControls();
   lv_obj_set_hidden(btnInfo, false);
+  lv_obj_set_hidden(btnCurrentTime, false);
   lv_obj_set_hidden(btnRecur, false);
   lv_obj_set_hidden(enableSwitch, false);
 }
@@ -303,4 +322,17 @@ void Alarm::ToggleRecurrence() {
       alarmController.SetRecurrence(AlarmController::RecurType::None);
   }
   SetRecurButtonState();
+}
+
+void Alarm::SetCurrentTime() {
+  uint8_t hour = dateTimeController.Hours();
+  uint8_t minute = dateTimeController.Minutes();
+
+  hourCounter.SetValue(hour);
+  minuteCounter.SetValue(minute);
+  alarmController.SetAlarmTime(hour, minute);
+
+  if (lblampm != nullptr) {
+    lv_label_set_text_static(lblampm, hour >= 12 ? "PM" : "AM");
+  }
 }
