@@ -222,6 +222,22 @@ void SystemTask::Work() {
           if (alarmController.IsEnabled()) {
             alarmController.ScheduleAlarm();
           }
+          if (settingsController.GetQuietHoursEnabled()) {
+            uint8_t currentHour = dateTimeController.Hours();
+            uint8_t start = settingsController.GetQuietHoursStart();
+            uint8_t end = settingsController.GetQuietHoursEnd();
+            bool shouldBeInQuietHours;
+            if (start <= end) {
+              shouldBeInQuietHours = (currentHour >= start && currentHour < end);
+            } else {
+              shouldBeInQuietHours = (currentHour >= start || currentHour < end);
+            }
+            if (shouldBeInQuietHours) {
+              settingsController.EnterQuietHours();
+            } else {
+              settingsController.ExitQuietHours();
+            }
+          }
           break;
         case Messages::OnNewNotification:
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::On) {
@@ -232,6 +248,7 @@ void SystemTask::Work() {
           }
           break;
         case Messages::SetOffAlarm:
+          settingsController.ExitQuietHours();
           GoToRunning();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
           break;
@@ -338,6 +355,14 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
+          if (settingsController.GetQuietHoursEnabled()) {
+            uint8_t currentHour = dateTimeController.Hours();
+            if (currentHour == settingsController.GetQuietHoursStart()) {
+              settingsController.EnterQuietHours();
+            } else if (currentHour == settingsController.GetQuietHoursEnd()) {
+              settingsController.ExitQuietHours();
+            }
+          }
           if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
               settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours && !alarmController.IsAlerting()) {
             GoToRunning();
@@ -462,10 +487,10 @@ void SystemTask::UpdateMotion() {
          motionController.CurrentShakeSpeed() > settingsController.GetShakeThreshold())) {
       GoToRunning();
     }
-  }
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::LowerWrist) && state == SystemTaskState::Running &&
-      motionController.ShouldLowerSleep()) {
-    GoToSleep();
+    if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::LowerWrist) && state == SystemTaskState::Running &&
+        motionController.ShouldLowerSleep()) {
+      GoToSleep();
+    }
   }
 }
 
