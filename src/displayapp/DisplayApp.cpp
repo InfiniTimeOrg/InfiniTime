@@ -368,7 +368,6 @@ void DisplayApp::Refresh() {
         // Only used for recovery firmware
         break;
       case Messages::NewNotification:
-        printf("NewNotification message received\n");
         LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
         break;
       case Messages::TimerDone: {
@@ -473,7 +472,6 @@ void DisplayApp::Refresh() {
         break;
       case Messages::ButtonDoubleClicked:
         if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
-          printf("Loading NotificationsPreview\n");
           LoadNewScreen(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
         }
         break;

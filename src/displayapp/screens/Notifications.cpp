@@ -24,7 +24,6 @@ Notifications::Notifications(DisplayApp* app,
     settingsController {settingsController},
     wakeLock(systemTask),
     mode {mode} {
-  printf("Notifications: mode=%d, timeoutLength=%lu\n", (int)mode, timeoutLength);
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
   if (notification.valid) {
