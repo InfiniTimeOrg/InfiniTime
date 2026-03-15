@@ -38,7 +38,7 @@ Steps::Steps(Controllers::MotionController& motionController, Controllers::Setti
 
   lSteps = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
-  lv_obj_set_style_local_text_font(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_font(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::large);
   lv_label_set_text_fmt(lSteps, "%lu", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
@@ -49,12 +49,14 @@ Steps::Steps(Controllers::MotionController& motionController, Controllers::Setti
 
   lStepsYesterday = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lStepsYesterday, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_text_font(lStepsYesterday, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
   lv_label_set_text_fmt(lStepsYesterday, yesterdayStr, motionController.NbSteps(Days::Yesterday));
   lv_label_set_align(lStepsYesterday, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lStepsYesterday, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
 
   lv_obj_t* lstepsGoal = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lstepsGoal, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
+  lv_obj_set_style_local_text_font(lstepsGoal, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
   lv_label_set_text_fmt(lstepsGoal, "Goal: %5lu", settingsController.GetStepsGoal());
   lv_label_set_align(lstepsGoal, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lstepsGoal, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 40);
@@ -73,6 +75,7 @@ Steps::Steps(Controllers::MotionController& motionController, Controllers::Setti
 
   tripLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(tripLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+  lv_obj_set_style_local_text_font(tripLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
   lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps);
   lv_obj_align(tripLabel, lstepsGoal, LV_ALIGN_IN_LEFT_MID, 0, 20);
 

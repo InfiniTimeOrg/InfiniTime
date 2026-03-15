@@ -8,6 +8,7 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/DotIndicator.h"
 #include "displayapp/screens/settings/SettingSetDateTime.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -30,8 +31,8 @@ namespace Pinetime {
         lv_obj_t* lblampm;
         lv_obj_t* btnSetTime;
         lv_obj_t* lblSetTime;
-        Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_42);
-        Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_42);
+        Widgets::Counter hourCounter = Widgets::Counter(0, 23, *Fonts::large);
+        Widgets::Counter minuteCounter = Widgets::Counter(0, 59, *Fonts::large);
       };
     }
   }
