@@ -24,6 +24,7 @@ Notifications::Notifications(DisplayApp* app,
     settingsController {settingsController},
     wakeLock(systemTask),
     mode {mode} {
+
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
   if (notification.valid) {
