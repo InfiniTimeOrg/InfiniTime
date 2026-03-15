@@ -196,6 +196,17 @@ namespace Pinetime {
         return settings.clockType;
       };
 
+      void SetNotificationTimeout(uint32_t notificationTimeout) {
+        if (notificationTimeout != settings.notificationTimeout) {
+          settingsChanged = true;
+        }
+        settings.notificationTimeout = notificationTimeout;
+      };
+
+      uint32_t GetNotificationTimeout() const {
+        return settings.notificationTimeout;
+      };
+
       void SetWeatherFormat(WeatherFormat weatherFormat) {
         if (weatherFormat != settings.weatherFormat) {
           settingsChanged = true;
@@ -360,6 +371,7 @@ namespace Pinetime {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
         uint32_t screenTimeOut = 15000;
+        uint32_t notificationTimeout = 7000;
 
         bool alwaysOnDisplay = false;
 

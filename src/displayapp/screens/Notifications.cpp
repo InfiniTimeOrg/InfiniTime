@@ -14,15 +14,17 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::MotorController& motorController,
+                             Pinetime::Controllers::Settings& settingsController,
                              System::SystemTask& systemTask,
                              Modes mode)
   : app {app},
     notificationManager {notificationManager},
     alertNotificationService {alertNotificationService},
     motorController {motorController},
+    settingsController {settingsController},
     wakeLock(systemTask),
     mode {mode} {
-
+  printf("Notifications: mode=%d, timeoutLength=%lu\n", (int)mode, timeoutLength);
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
   if (notification.valid) {
@@ -33,10 +35,11 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.category,
                                                      notificationManager.NbNotifications(),
                                                      alertNotificationService,
-                                                     motorController);
+                                                     motorController,
+                                                     settingsController);
     validDisplay = true;
   } else {
-    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController, settingsController);
     validDisplay = false;
   }
   if (mode == Modes::Preview) {
@@ -109,7 +112,8 @@ void Notifications::Refresh() {
                                                        notification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       settingsController);
     } else {
       running = false;
     }
@@ -202,7 +206,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        previousNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       settingsController);
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeUp: {
@@ -229,7 +234,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        nextNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       settingsController);
     }
       return true;
     default:
@@ -245,14 +251,16 @@ namespace {
 }
 
 Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController)
+                                                  Pinetime::Controllers::MotorController& motorController,
+                                                  Pinetime::Controllers::Settings& settingsController)
   : NotificationItem("Notifications",
                      "No notifications to display",
                      0,
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
                      alertNotificationService,
-                     motorController) {
+                     motorController,
+                     settingsController) {
 }
 
 Notifications::NotificationItem::NotificationItem(const char* title,
@@ -261,8 +269,9 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Controllers::NotificationManager::Categories category,
                                                   uint8_t notifNb,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController)
-  : alertNotificationService {alertNotificationService}, motorController {motorController} {
+                                                  Pinetime::Controllers::MotorController& motorController,
+                                                  Pinetime::Controllers::Settings& settingsController)
+  : alertNotificationService {alertNotificationService}, motorController {motorController}, settingsController {settingsController} {
   container = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
