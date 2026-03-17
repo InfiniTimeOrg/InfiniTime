@@ -77,6 +77,18 @@ GetNrfSdk() {
 }
 
 CmakeGenerate() {
+  CMAKE_ARGS=''
+
+  if [ -n "$ENABLE_USERAPPS" ]
+  then
+    CMAKE_ARGS=-DENABLE_USERAPPS=$ENABLE_USERAPPS
+  fi
+
+  if [ -n "$ENABLE_WATCHFACES" ]
+  then
+    CMAKE_ARGS=${CMAKE_ARGS} -DENABLE_WATCHFACES=$ENABLE_WATCHFACES
+  fi
+
   cmake -G "Unix Makefiles" \
     -S "$SOURCES_DIR" \
     -B "$BUILD_DIR" \
@@ -84,7 +96,8 @@ CmakeGenerate() {
     -DARM_NONE_EABI_TOOLCHAIN_PATH="$TOOLS_DIR/$GCC_ARM_PATH" \
     -DNRF5_SDK_PATH="$TOOLS_DIR/$NRF_SDK_VER" \
     -DBUILD_DFU=1 \
-    -DBUILD_RESOURCES=1
+    -DBUILD_RESOURCES=1 \
+    $CMAKE_ARGS
 }
 
 CmakeBuild() {
