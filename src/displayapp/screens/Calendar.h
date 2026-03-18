@@ -51,6 +51,10 @@ namespace Pinetime {
       static constexpr Apps app = Apps::Calendar;
       static constexpr const char* icon = Screens::Symbols::calendar;
 
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      };
+
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Calendar(controllers.dateTimeController);
       };
