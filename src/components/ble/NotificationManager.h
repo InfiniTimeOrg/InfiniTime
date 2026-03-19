@@ -19,7 +19,7 @@ namespace Pinetime {
         Sms,
         VoiceMail,
         Schedule,
-        HighProriotyAlert,
+        PhoneAlarm, // ANS HighPriorityAlert (0x08) is only used for phone alarms in Gadgetbridge
         InstantMessage
       };
       static constexpr uint8_t MessageSize {100};

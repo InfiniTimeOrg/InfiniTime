@@ -33,6 +33,11 @@ namespace Pinetime {
 
       enum class IncomingCallResponses : uint8_t { Reject = 0x00, Answer = 0x01, Mute = 0x02 };
 
+      void DismissPhoneAlarm();
+      void SnoozePhoneAlarm();
+
+      enum class PhoneAlarmResponses : uint8_t { Dismiss = 0x00, Snooze = 0x01 };
+
     private:
       enum class Categories : uint8_t {
         SimpleAlert = 0x00,
