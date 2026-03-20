@@ -87,3 +87,9 @@ Here's an example for `pinetime-app`:
 ```sh
 docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime-build /opt/build.sh pinetime-app
 ```
+
+If you want to change the apps and/or watchfaces built in the project, you can pass `ENABLE_USERAPPS` and `ENABLE_WATCHFACES` as environment variables like so:
+
+```sh
+docker run --rm -it -v ${PWD}:/sources -e ENABLE_USERAPPS="Apps::Alarm,Apps::Timer,Apps::Steps,Apps::HeartRate,Apps::Music,Apps::Navigation" infinitime-build
+```
