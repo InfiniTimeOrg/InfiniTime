@@ -7,6 +7,7 @@
 #include "displayapp/widgets/Counter.h"
 #include "displayapp/widgets/DotIndicator.h"
 #include "displayapp/screens/settings/SettingSetDateTime.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -27,9 +28,9 @@ namespace Pinetime {
         lv_obj_t* btnSetTime;
         lv_obj_t* lblSetTime;
 
-        Widgets::Counter dayCounter = Widgets::Counter(1, 31, jetbrains_mono_bold_20);
-        Widgets::Counter monthCounter = Widgets::Counter(1, 12, jetbrains_mono_bold_20);
-        Widgets::Counter yearCounter = Widgets::Counter(1970, 9999, jetbrains_mono_bold_20);
+        Widgets::Counter dayCounter = Widgets::Counter(1, 31, *Fonts::normal);
+        Widgets::Counter monthCounter = Widgets::Counter(1, 12, *Fonts::normal);
+        Widgets::Counter yearCounter = Widgets::Counter(1970, 9999, *Fonts::normal);
       };
     }
   }
