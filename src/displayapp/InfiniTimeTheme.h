@@ -7,6 +7,7 @@ namespace Colors {
   static constexpr lv_color_t orange = LV_COLOR_MAKE(0xff, 0xb0, 0x0);
   static constexpr lv_color_t green = LV_COLOR_MAKE(0x0, 0xb0, 0x0);
   static constexpr lv_color_t blue = LV_COLOR_MAKE(0x0, 0x50, 0xff);
+  static constexpr lv_color_t violet = LV_COLOR_MAKE(0x60, 0x00, 0xff);
   static constexpr lv_color_t lightGray = LV_COLOR_MAKE(0xb0, 0xb0, 0xb0);
   static constexpr lv_color_t gray = LV_COLOR_MAKE(0x50, 0x50, 0x50);
 
