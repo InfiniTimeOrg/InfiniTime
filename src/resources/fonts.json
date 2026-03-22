@@ -8,8 +8,7 @@
       ],
       "bpp": 1,
       "size": 28,
-      "format": "bin",
-      "target_path": "/fonts/"
+      "target_path": "/fastfonts/"
    },
    "bebas" : {
       "sources": [
@@ -20,8 +19,7 @@
       ],
       "bpp": 1,
       "size": 120,
-      "format": "bin",
-      "target_path": "/fonts/"
+      "target_path": "/fastfonts/"
    },
    "lv_font_dots_40": {
       "sources": [
@@ -32,10 +30,9 @@
       ],
       "bpp": 1,
       "size": 40,
-      "format": "bin",
-      "target_path": "/fonts/"
+      "target_path": "/fastfonts/"
    },
-   "7segments_40" : {
+   "seven_segments_40" : {
       "sources": [
          {
             "file": "fonts/7segment.woff",
@@ -44,10 +41,9 @@
       ],
       "bpp": 1,
       "size": 40,
-      "format": "bin",
-      "target_path": "/fonts/"
+      "target_path": "/fastfonts/"
    },
-   "7segments_115" : {
+   "seven_segments_115" : {
       "sources": [
          {
             "file": "fonts/7segment.woff",
@@ -56,7 +52,6 @@
       ],
       "bpp": 1,
       "size": 115,
-      "format": "bin",
-      "target_path": "/fonts/"
+      "target_path": "/fastfonts/"
    }
 }
