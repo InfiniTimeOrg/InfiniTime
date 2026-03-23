@@ -24,24 +24,23 @@ BatteryInfo::BatteryInfo(const Pinetime::Controllers::Battery& batteryController
   lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_LIME);
 
   status = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(status, "Reading Battery status");
   lv_label_set_align(status, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(status, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -17);
+  lv_obj_align(status, voltage, LV_ALIGN_IN_BOTTOM_MID, 0, -27);
+  lv_obj_set_auto_realign(status, true);
 
   percent = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(percent, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text_fmt(percent, "%i%%", batteryPercent);
   lv_label_set_align(percent, LV_LABEL_ALIGN_LEFT);
   lv_obj_align(percent, chargingArc, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_auto_realign(percent, true);
 
   voltage = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(voltage, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
-  lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltage / 1000, batteryVoltage % 1000 / 10);
   lv_label_set_align(voltage, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(voltage, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -7);
 
-  taskRefresh = lv_task_create(RefreshTaskCallback, 5000, LV_TASK_PRIO_MID, this);
   Refresh();
+  taskRefresh = lv_task_create(RefreshTaskCallback, 5000, LV_TASK_PRIO_MID, this);
 }
 
 BatteryInfo::~BatteryInfo() {
@@ -72,9 +71,6 @@ void BatteryInfo::Refresh() {
   }
 
   lv_label_set_text_fmt(percent, "%i%%", batteryPercent);
-  lv_obj_align(percent, chargingArc, LV_ALIGN_CENTER, 0, 0);
-
-  lv_obj_align(status, voltage, LV_ALIGN_IN_BOTTOM_MID, 0, -27);
   lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltage / 1000, batteryVoltage % 1000 / 10);
   lv_arc_set_value(chargingArc, batteryPercent);
 }

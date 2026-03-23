@@ -27,7 +27,6 @@ namespace Pinetime {
         lv_obj_t* resultTotalLabel;
         lv_obj_t* resultIndividualLabel;
         lv_task_t* refreshTask;
-        bool enableShakeForDice = false;
 
         std::mt19937 gen;
 

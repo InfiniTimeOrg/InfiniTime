@@ -116,7 +116,6 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   weatherIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
-  lv_label_set_text(weatherIcon, Symbols::ban);
   lv_obj_align(weatherIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 35);
   lv_obj_set_auto_realign(weatherIcon, true);
   if (settingsController.GetPTSWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {
@@ -127,7 +126,6 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
 
   temperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_label_set_text(temperature, "--");
   lv_obj_align(temperature, sidebar, LV_ALIGN_IN_TOP_MID, 0, 65);
   if (settingsController.GetPTSWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {
     lv_obj_set_hidden(temperature, false);
@@ -179,18 +177,18 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   // Display date
   dateDayOfWeek = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateDayOfWeek, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_label_set_text_static(dateDayOfWeek, "THU");
   lv_obj_align(dateDayOfWeek, calendarOuter, LV_ALIGN_CENTER, 0, -32);
+  lv_obj_set_auto_realign(dateDayOfWeek, true);
 
   dateDay = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_label_set_text_static(dateDay, "25");
   lv_obj_align(dateDay, calendarOuter, LV_ALIGN_CENTER, 0, 3);
+  lv_obj_set_auto_realign(dateDay, true);
 
   dateMonth = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateMonth, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_label_set_text_static(dateMonth, "MAR");
   lv_obj_align(dateMonth, calendarOuter, LV_ALIGN_CENTER, 0, 32);
+  lv_obj_set_auto_realign(dateMonth, true);
 
   // Step count gauge
   if (settingsController.GetPTSColorBar() == Pinetime::Controllers::Settings::Colors::White) {
@@ -231,7 +229,6 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_label_set_text_static(stepValue, "0");
   lv_obj_align(stepValue, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   if (settingsController.GetPTSGaugeStyle() == Pinetime::Controllers::Settings::PTSGaugeStyle::Numeric) {
     lv_obj_set_hidden(stepValue, false);
@@ -394,8 +391,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   lv_label_set_text_static(lblSetOpts, Symbols::settings);
   lv_obj_set_hidden(btnSetOpts, true);
 
-  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 WatchFacePineTimeStyle::~WatchFacePineTimeStyle() {
@@ -550,8 +547,8 @@ void WatchFacePineTimeStyle::Refresh() {
       lv_label_set_text_fmt(temperature, "%d°", temp);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId, weatherService.IsNight()));
     } else {
-      lv_label_set_text(temperature, "--");
-      lv_label_set_text(weatherIcon, Symbols::ban);
+      lv_label_set_text_static(temperature, "--");
+      lv_label_set_text_static(weatherIcon, Symbols::ban);
     }
     lv_obj_realign(temperature);
     lv_obj_realign(weatherIcon);
