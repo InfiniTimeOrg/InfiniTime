@@ -431,6 +431,11 @@ void DisplayApp::Refresh() {
               case TouchEvents::SwipeRight:
                 LoadNewScreen(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
                 break;
+              case TouchEvents::SwipeLeft:
+                if (settingsController.GetQuickAccessApp() != Apps::None) {
+                  LoadNewScreen(settingsController.GetQuickAccessApp(), DisplayApp::FullRefreshDirections::LeftAnim);
+                }
+                break;
               case TouchEvents::DoubleTap:
                 PushMessageToSystemTask(System::Messages::GoToSleep);
                 break;
