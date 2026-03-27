@@ -48,6 +48,7 @@
 #include "displayapp/screens/settings/SettingSteps.h"
 #include "displayapp/screens/settings/SettingSetDateTime.h"
 #include "displayapp/screens/settings/SettingChimes.h"
+#include "displayapp/screens/settings/SettingQuickAccess.h"
 #include "displayapp/screens/settings/SettingHeartRate.h"
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingBluetooth.h"
@@ -624,6 +625,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       break;
     case Apps::SettingChimes:
       currentScreen = std::make_unique<Screens::SettingChimes>(settingsController);
+      break;
+    case Apps::SettingQuickAccess:
+      currentScreen = std::make_unique<Screens::SettingQuickAccess>(settingsController);
       break;
     case Apps::SettingShakeThreshold:
       currentScreen = std::make_unique<Screens::SettingShakeThreshold>(settingsController, motionController, *systemTask);
