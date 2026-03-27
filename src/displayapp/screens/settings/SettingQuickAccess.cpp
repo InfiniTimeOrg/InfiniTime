@@ -14,7 +14,8 @@ namespace {
     const char* name;
   };
 
-  constexpr std::array<Option, 3> options = {{
+  constexpr std::array<Option, 4> options = {{
+    {Pinetime::Applications::Apps::None, "None"},
     {Pinetime::Applications::Apps::Music, "Music"},
     {Pinetime::Applications::Apps::HeartRate, "Heart Rate"},
     {Pinetime::Applications::Apps::StopWatch, "Stopwatch"},
