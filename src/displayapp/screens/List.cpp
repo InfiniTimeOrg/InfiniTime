@@ -19,12 +19,12 @@ List::List(uint8_t screenID,
            std::array<Applications, MAXLISTITEMS>& applications)
   : app {app}, settingsController {settingsController}, pageIndicator(screenID, numScreens) {
 
-  // Set the background to Black
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0, 0, 0));
-
   settingsController.SetSettingsMenu(screenID);
 
   pageIndicator.Create();
+
+  // Set the background to use theme color
+  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, Colors::page_bg);
 
   lv_obj_t* container = lv_cont_create(lv_scr_act(), nullptr);
 
@@ -45,7 +45,7 @@ List::List(uint8_t screenID,
       static constexpr int btnHeight = (LV_HOR_RES_MAX - ((MAXLISTITEMS - 1) * innerPad)) / MAXLISTITEMS;
       itemApps[i] = lv_btn_create(container, nullptr);
       lv_obj_set_style_local_radius(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, btnHeight / 3);
-      lv_obj_set_style_local_bg_color(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+      lv_obj_set_style_local_bg_color(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::accent);
       lv_obj_set_width(itemApps[i], LV_HOR_RES - 8);
       lv_obj_set_height(itemApps[i], btnHeight);
       lv_obj_set_event_cb(itemApps[i], ButtonEventHandler);
@@ -54,7 +54,7 @@ List::List(uint8_t screenID,
       lv_obj_set_style_local_clip_corner(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, true);
 
       lv_obj_t* icon = lv_label_create(itemApps[i], nullptr);
-      lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+      lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::icon);
       lv_label_set_text_static(icon, applications[i].icon);
       lv_label_set_long_mode(icon, LV_LABEL_LONG_CROP);
       lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);

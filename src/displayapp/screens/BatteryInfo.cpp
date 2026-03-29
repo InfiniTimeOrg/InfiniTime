@@ -18,7 +18,7 @@ BatteryInfo::BatteryInfo(const Pinetime::Controllers::Battery& batteryController
   lv_obj_align(chargingArc, nullptr, LV_ALIGN_CENTER, 0, -30);
   lv_arc_set_value(chargingArc, batteryPercent);
   lv_obj_set_style_local_bg_opa(chargingArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, LV_OPA_0);
-  lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, Colors::accent_dark);
   lv_obj_set_style_local_border_width(chargingArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 2);
   lv_obj_set_style_local_radius(chargingArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_LIME);
