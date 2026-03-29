@@ -282,7 +282,11 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_cont_set_fit(subject_container, LV_FIT_NONE);
 
   lv_obj_t* alert_count = lv_label_create(container, nullptr);
-  lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
+  if (notifNr == 0) {
+    lv_label_set_text_fmt(alert_count, "", notifNr, notifNb);
+  } else {
+    lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
+  }
   lv_obj_align(alert_count, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
 
   lv_obj_t* alert_type = lv_label_create(container, nullptr);
