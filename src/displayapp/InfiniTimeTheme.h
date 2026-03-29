@@ -15,6 +15,7 @@ namespace Colors {
   static constexpr lv_color_t green = LV_COLOR_MAKE(0x0, 0xb0, 0x0);
   static constexpr lv_color_t blue = LV_COLOR_MAKE(0x0, 0x50, 0xff);
   static constexpr lv_color_t lightGray = LV_COLOR_MAKE(0xb0, 0xb0, 0xb0);
+  static constexpr lv_color_t gray = LV_COLOR_MAKE(0x50, 0x50, 0x50);
 
   // Configurable colors that can be loaded from storage
   inline lv_color_t accent_light = LV_COLOR_MAKE(0x5d, 0x69, 0x7e);

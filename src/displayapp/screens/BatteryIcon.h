@@ -16,6 +16,7 @@ namespace Pinetime {
 
         static const char* GetUnknownIcon();
         static const char* GetPlugIcon(bool isCharging);
+        static lv_color_t ColorFromPercentage(int batteryPercent);
 
       private:
         lv_obj_t* batteryImg;

@@ -17,23 +17,25 @@ The host uses this characteristic to update the current weather information and 
 
 This characteristics accepts a byte array with the following 2-Bytes header:
 
- - [0] Message Type : 
+ - [0] Message Type :
    - `0` : Current weather
    - `1` : Forecast
- - [1] Message Version : Version `0` is currently supported. Other versions might be added in future releases
+ - [1] Message Version :
+   - `0` : Currently supported
+   - `1` : Adds support for sunrise and sunset
 
-### Current Weather 
+### Current Weather
 
 The byte array must contain the following data:
 
  - [0] : Message type = `0`
- - [1] : Message version = `0`
+ - [1] : Message version = `1`
  - [2][3][4][5][6][7][8][9] : Timestamp (64 bits UNIX timestamp, number of seconds elapsed since 1 JAN 1970)  in local time (the same timezone as the one used to set the time)
  - [10, 11] : Current temperature (°C * 100)
  - [12, 13] : Minimum temperature (°C * 100)
  - [14, 15] : Maximum temperature (°C * 100)
  - [16]..[47] : location (string, unused characters should be set to `0`)
- - [48] : icon ID 
+ - [48] : icon ID
    - 0 = Sun, clear sky
    - 1 = Few clouds
    - 2 = Clouds
@@ -43,6 +45,13 @@ The byte array must contain the following data:
    - 6 = Thunderstorm
    - 7 = Snow
    - 8 = Mist, smog
+  - [49, 50] : Sunrise (number of minutes elapsed since midnight)
+    - `0` sun already up when day starts
+    - `-1` unknown
+    - `-2` no sunrise (e.g. polar night)
+  - [51, 52] : Sunset (number of minutes elapsed since midnight)
+    - `-1` unknown
+    - `-2` no sunset (e.g. polar day)
 
 ### Forecast
 

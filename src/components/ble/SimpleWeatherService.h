@@ -34,6 +34,7 @@
 #include "components/datetime/DateTimeController.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/InfiniTimeTheme.h"
+#include "utility/Math.h"
 
 int WeatherCallback(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt, void* arg);
 
@@ -77,11 +78,11 @@ namespace Pinetime {
         }
 
         [[nodiscard]] int16_t Celsius() const {
-          return (PreciseCelsius() + 50) / 100;
+          return Utility::RoundedDiv(PreciseCelsius(), static_cast<int16_t>(100));
         }
 
         [[nodiscard]] int16_t Fahrenheit() const {
-          return (PreciseFahrenheit() + 50) / 100;
+          return Utility::RoundedDiv(PreciseFahrenheit(), static_cast<int16_t>(100));
         }
 
         [[nodiscard]] lv_color_t Color() const {
@@ -112,13 +113,17 @@ namespace Pinetime {
                        Temperature minTemperature,
                        Temperature maxTemperature,
                        Icons iconId,
-                       Location&& location)
+                       Location&& location,
+                       int16_t sunrise,
+                       int16_t sunset)
           : timestamp {timestamp},
             temperature {temperature},
             minTemperature {minTemperature},
             maxTemperature {maxTemperature},
             iconId {iconId},
-            location {std::move(location)} {
+            location {std::move(location)},
+            sunrise {sunrise},
+            sunset {sunset} {
         }
 
         uint64_t timestamp;
@@ -127,6 +132,8 @@ namespace Pinetime {
         Temperature maxTemperature;
         Icons iconId;
         Location location;
+        int16_t sunrise;
+        int16_t sunset;
 
         bool operator==(const CurrentWeather& other) const;
       };
@@ -150,6 +157,8 @@ namespace Pinetime {
 
       std::optional<CurrentWeather> Current() const;
       std::optional<Forecast> GetForecast() const;
+
+      [[nodiscard]] bool IsNight() const;
 
     private:
       // 00050000-78fc-48fe-8e23-433b3a1942d0

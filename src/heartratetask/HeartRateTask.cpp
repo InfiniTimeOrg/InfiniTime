@@ -3,16 +3,12 @@
 #include <components/heartrate/HeartRateController.h>
 #include <limits>
 
+#include "utility/Math.h"
+
 using namespace Pinetime::Applications;
 
 namespace {
   constexpr TickType_t backgroundMeasurementTimeLimit = 30 * configTICK_RATE_HZ;
-
-  // dividend + (divisor / 2) must be less than the max T value
-  template <std::unsigned_integral T>
-  constexpr T RoundedDiv(T dividend, T divisor) {
-    return (dividend + (divisor / static_cast<T>(2))) / divisor;
-  }
 }
 
 std::optional<TickType_t> HeartRateTask::BackgroundMeasurementInterval() const {
@@ -48,9 +44,9 @@ TickType_t HeartRateTask::CurrentTaskDelay() {
                       static_cast<uint64_t>((Pinetime::Controllers::Ppg::deltaTms)) <
                     std::numeric_limits<uint32_t>::max(),
                   "Overflow");
-    TickType_t elapsedTarget = RoundedDiv(static_cast<uint32_t>(configTICK_RATE_HZ / 2) * (static_cast<uint32_t>(count) + 1U) *
-                                            static_cast<uint32_t>((Pinetime::Controllers::Ppg::deltaTms)),
-                                          static_cast<uint32_t>(1000 / 2));
+    TickType_t elapsedTarget = Utility::RoundedDiv(static_cast<uint32_t>(configTICK_RATE_HZ / 2) * (static_cast<uint32_t>(count) + 1U) *
+                                                     static_cast<uint32_t>((Pinetime::Controllers::Ppg::deltaTms)),
+                                                   static_cast<uint32_t>(1000 / 2));
 
     // On count overflow, reset both count and start time
     // Count is 16bit to avoid overflow in elapsedTarget
