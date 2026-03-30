@@ -17,7 +17,8 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
+Timer::Timer(Controllers::Timer& timerController, Controllers::MotorController& motorController, System::SystemTask& systemTask)
+  : timer {timerController}, motorController {motorController}, wakeLock(systemTask) {
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -62,7 +63,11 @@ Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
   // Create the label as a child of the button so it stays centered by default
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
 
-  if (timer.IsRunning()) {
+  auto timerStatus = timer.GetTimerState();
+
+  if (timerStatus && timerStatus->expired) {
+    SetTimerRinging();
+  } else if (timer.IsRunning()) {
     SetTimerRunning();
   } else {
     SetTimerStopped();
@@ -73,6 +78,14 @@ Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
 
 Timer::~Timer() {
   lv_task_del(taskRefresh);
+
+  // If timer has expired, reset it when leaving the screen
+  auto timerStatus = timer.GetTimerState();
+  if (timerStatus && timerStatus->expired) {
+    motorController.StopRinging();
+    timer.ResetExpiredTime();
+  }
+
   lv_obj_clean(lv_scr_act());
 }
 
@@ -103,7 +116,23 @@ void Timer::UpdateMask() {
 }
 
 void Timer::Refresh() {
-  if (timer.IsRunning()) {
+  auto timerStatus = timer.GetTimerState();
+
+  if (timerStatus && timerStatus->expired) {
+    // Timer exists and has expired, so we're in ringing mode
+    DisplayTime();
+
+    if (timerStatus->distanceToExpiry.count() > 10000 && motorController.IsRinging()) {
+      // Stop buzzing after 10 seconds, but continue the counter
+      motorController.StopRinging();
+      wakeLock.Release();
+    }
+
+    // Reset timer after 1 minute
+    if (timerStatus->distanceToExpiry.count() > 60000) {
+      Reset();
+    }
+  } else if (timer.IsRunning()) {
     DisplayTime();
   } else if (buttonPressing && xTaskGetTickCount() - pressTime > pdMS_TO_TICKS(150)) {
     lv_label_set_text_static(txtPlayPause, "Reset");
@@ -130,16 +159,31 @@ void Timer::SetTimerRunning() {
   minuteCounter.HideControls();
   secondCounter.HideControls();
   lv_label_set_text_static(txtPlayPause, "Pause");
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
 }
 
 void Timer::SetTimerStopped() {
   minuteCounter.ShowControls();
   secondCounter.ShowControls();
   lv_label_set_text_static(txtPlayPause, "Start");
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+}
+
+void Timer::SetTimerRinging() {
+  motorController.StartRinging();
+  wakeLock.Lock();
+  minuteCounter.HideControls();
+  secondCounter.HideControls();
+  lv_label_set_text_static(txtPlayPause, "Reset");
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
 }
 
 void Timer::ToggleRunning() {
-  if (timer.IsRunning()) {
+  auto timerStatus = timer.GetTimerState();
+  if (timerStatus && timerStatus->expired) {
+    motorController.StopRinging();
+    Reset();
+  } else if (timer.IsRunning()) {
     DisplayTime();
     timer.StopTimer();
     SetTimerStopped();
@@ -152,6 +196,7 @@ void Timer::ToggleRunning() {
 }
 
 void Timer::Reset() {
+  timer.ResetExpiredTime();
   DisplayTime();
   SetTimerStopped();
 }

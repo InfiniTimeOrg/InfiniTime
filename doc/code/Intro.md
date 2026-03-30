@@ -7,7 +7,7 @@ This page is meant to guide you through the source code, so you can find the rel
 Infinitime is based on FreeRTOS, a real-time operating system.
 FreeRTOS provides several quality of life abstractions (for example easy software timers)
 and most importantly supports multiple tasks.
-If you want to read up on real-time operating systems, you can look [here](https://www.freertos.org/implementation/a00002.html) and [here](https://www.freertos.org/features.html).
+If you want to read up on real-time operating systems, you can look [here](https://www.freertos.org/Documentation/01-FreeRTOS-quick-start/01-Beginners-guide/01-RTOS-fundamentals) and [here](https://www.freertos.org/features.html).
 The main "process" creates at least one task and then starts the FreeRTOS task scheduler.
 This main "process" is the standard main() function inside [main.cpp](/src/main.cpp).
 The task scheduler is responsible for giving every task enough cpu time.
