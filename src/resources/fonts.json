@@ -35,15 +35,39 @@
       "format": "bin",
       "target_path": "/fonts/"
    },
-   "7segments_20" : {
+   "TechnologyBR_20" : {
       "sources": [
          {
-            "file": "fonts/7segment.woff",
-            "symbols": "0123456789: -MONTUEWEDTHUFRISATSUNW°P"
+            "file": "fonts/Technology-Bold-Realign.ttf",
+             "symbols": "0123456789- °MONTUEWDHFRISAK"
          }
       ],
       "bpp": 1,
-      "size": 20,
+      "size": 24,
+      "format": "bin",
+      "target_path": "/fonts/"
+   },
+   "TechnologyBR_40" : {
+      "sources": [
+         {
+            "file": "fonts/Technology-Bold-Realign.ttf",
+             "symbols": "0123456789: -"
+         }
+      ],
+      "bpp": 1,
+      "size": 44,
+      "format": "bin",
+      "target_path": "/fonts/"
+   },
+   "TechnologyBR_75" : {
+      "sources": [
+         {
+            "file": "fonts/Technology-Bold-Realign.ttf",
+            "symbols": "0123456789: -"
+         }
+      ],
+      "bpp": 1,
+      "size": 80,
       "format": "bin",
       "target_path": "/fonts/"
    },
@@ -59,19 +83,6 @@
       "format": "bin",
       "target_path": "/fonts/"
    },
-   "7segments_75" : {
-      "sources": [
-         {
-            "file": "fonts/7segment.woff",
-            "symbols": "0123456789: -"
-         }
-      ],
-      "bpp": 1,
-      "size": 75,
-      "format": "bin",
-      "target_path": "/fonts/"
-   },
-
    "7segments_115" : {
       "sources": [
          {

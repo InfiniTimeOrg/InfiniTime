@@ -138,9 +138,9 @@ namespace Pinetime {
                 void SetBatteryIcon();
 
                 lv_task_t* taskRefresh;
-                lv_font_t* font_7segments_20 = nullptr;
-                lv_font_t* font_7segments_40 = nullptr;
-                lv_font_t* font_7segments_75 = nullptr;
+                lv_font_t* font_TechnologyBR_20 = nullptr;
+                lv_font_t* font_TechnologyBR_40 = nullptr;
+                lv_font_t* font_TechnologyBR_75 = nullptr;
             };
         }
 
