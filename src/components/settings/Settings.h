@@ -87,6 +87,17 @@ namespace Pinetime {
         return settings.chimesOption;
       };
 
+      void SetQuickAccessApp(Pinetime::Applications::Apps app) {
+        if (app != settings.quickAccessApp) {
+          settingsChanged = true;
+        }
+        settings.quickAccessApp = app;
+      }
+
+      Pinetime::Applications::Apps GetQuickAccessApp() const {
+        return settings.quickAccessApp;
+      };
+
       void SetPTSColorTime(Colors colorTime) {
         if (colorTime != settings.PTS.ColorTime)
           settingsChanged = true;
@@ -369,6 +380,7 @@ namespace Pinetime {
 
         Pinetime::Applications::WatchFace watchFace = Pinetime::Applications::WatchFace::Digital;
         ChimesOption chimesOption = ChimesOption::None;
+        Pinetime::Applications::Apps quickAccessApp = Pinetime::Applications::Apps::None;
 
         PineTimeStyle PTS;
 
