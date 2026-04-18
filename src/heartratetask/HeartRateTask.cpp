@@ -222,7 +222,6 @@ void HeartRateTask::HandleSensorData() {
     SendHeartRate(ControllerStates::NoTouch, 0);
   } else if (ppgState == Drivers::Hrs3300::PPGState::Reset) {
     ppg.Reset();
-    count = 0;
     lastHrs = 0;
     SendHeartRate(ControllerStates::NotEnoughData, 0);
   } else if (ppgState == Drivers::Hrs3300::PPGState::Running) {
