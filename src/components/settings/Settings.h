@@ -1,9 +1,12 @@
 #pragma once
 #include <cstdint>
 #include <bitset>
+#include <limits>
+#include <optional>
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 #include "displayapp/apps/Apps.h"
+#include <nrf_log.h>
 
 namespace Pinetime {
   namespace Controllers {
@@ -37,6 +40,7 @@ namespace Pinetime {
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
       enum class PrideFlag : uint8_t { Gay, Trans, Bi, Lesbian };
+      enum class DfuAndFsMode : uint8_t { Disabled, Enabled, EnabledTillReboot };
 
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
@@ -309,10 +313,48 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
+      void SetDfuAndFsMode(DfuAndFsMode mode) {
+        if (mode == GetDfuAndFsMode()) {
+          return;
+        }
+        if (mode == DfuAndFsMode::Enabled || GetDfuAndFsMode() == DfuAndFsMode::Enabled) {
+          settingsChanged = true;
+        }
+        settings.dfuAndFsEnabledOnBoot = (mode == DfuAndFsMode::Enabled);
+        dfuAndFsEnabledTillReboot = (mode == DfuAndFsMode::EnabledTillReboot);
+      };
+
+      DfuAndFsMode GetDfuAndFsMode() {
+        if (dfuAndFsEnabledTillReboot) {
+          if (settings.dfuAndFsEnabledOnBoot) { // ensure both variables are in consistent state
+            settingsChanged = true;
+            settings.dfuAndFsEnabledOnBoot = false;
+            NRF_LOG_ERROR("Settings: DfuAndFsMode data corrupted");
+          }
+          return DfuAndFsMode::EnabledTillReboot;
+        }
+        return (settings.dfuAndFsEnabledOnBoot ? DfuAndFsMode::Enabled : DfuAndFsMode::Disabled);
+      };
+
+      std::optional<uint16_t> GetHeartRateBackgroundMeasurementInterval() const {
+        if (settings.heartRateBackgroundPeriod == std::numeric_limits<uint16_t>::max()) {
+          return std::nullopt;
+        }
+        return settings.heartRateBackgroundPeriod;
+      }
+
+      void SetHeartRateBackgroundMeasurementInterval(std::optional<uint16_t> newIntervalInSeconds) {
+        newIntervalInSeconds = newIntervalInSeconds.value_or(std::numeric_limits<uint16_t>::max());
+        if (newIntervalInSeconds != settings.heartRateBackgroundPeriod) {
+          settingsChanged = true;
+        }
+        settings.heartRateBackgroundPeriod = newIntervalInSeconds.value();
+      }
+
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0009;
+      static constexpr uint32_t settingsVersion = 0x000a;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -338,6 +380,9 @@ namespace Pinetime {
         uint16_t shakeWakeThreshold = 150;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        bool dfuAndFsEnabledOnBoot = false;
+        uint16_t heartRateBackgroundPeriod = std::numeric_limits<uint16_t>::max(); // Disabled by default
       };
 
       SettingsData settings;
@@ -350,6 +395,7 @@ namespace Pinetime {
        * to off (false) on every boot because we always want ble to be enabled on startup
        */
       bool bleRadioEnabled = true;
+      bool dfuAndFsEnabledTillReboot = false;
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile();

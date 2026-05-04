@@ -1,8 +1,11 @@
 #pragma once
 #include <FreeRTOS.h>
+#include <cstdint>
+#include <optional>
 #include <task.h>
 #include <queue.h>
 #include <components/heartrate/Ppg.h>
+#include "components/settings/Settings.h"
 
 namespace Pinetime {
   namespace Drivers {
@@ -16,26 +19,38 @@ namespace Pinetime {
   namespace Applications {
     class HeartRateTask {
     public:
-      enum class Messages : uint8_t { GoToSleep, WakeUp, StartMeasurement, StopMeasurement };
-      enum class States { Idle, Running };
+      enum class Messages : uint8_t { GoToSleep, WakeUp, Enable, Disable };
 
-      explicit HeartRateTask(Drivers::Hrs3300& heartRateSensor, Controllers::HeartRateController& controller);
+      explicit HeartRateTask(Drivers::Hrs3300& heartRateSensor,
+                             Controllers::HeartRateController& controller,
+                             Controllers::Settings& settings);
       void Start();
       void Work();
       void PushMessage(Messages msg);
 
     private:
+      enum class States : uint8_t { Disabled, Waiting, BackgroundMeasuring, ForegroundMeasuring };
       static void Process(void* instance);
+      void HandleSensorData();
       void StartMeasurement();
       void StopMeasurement();
 
+      [[nodiscard]] bool BackgroundMeasurementNeeded() const;
+      [[nodiscard]] std::optional<TickType_t> BackgroundMeasurementInterval() const;
+      TickType_t CurrentTaskDelay();
+
       TaskHandle_t taskHandle;
       QueueHandle_t messageQueue;
-      States state = States::Running;
+      bool valueCurrentlyShown;
+      bool measurementSucceeded;
+      States state = States::Disabled;
+      uint16_t count;
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
+      Controllers::Settings& settings;
       Controllers::Ppg ppg;
-      bool measurementStarted = false;
+      TickType_t lastMeasurementTime;
+      TickType_t measurementStartTime;
     };
 
   }
