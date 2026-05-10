@@ -14,7 +14,7 @@ namespace Pinetime {
     namespace Screens {
       class Twos : public Screen {
       public:
-        Twos();
+        explicit Twos(Controllers::Settings& settingsController);
         ~Twos() override;
 
         bool OnTouchEvent(TouchEvents event) override;
@@ -29,6 +29,7 @@ namespace Pinetime {
         static constexpr int nRows = 4;
         static constexpr int nCells = nCols * nRows;
         TwosTile grid[nRows][nCols];
+        Controllers::Settings& settingsController;
         unsigned int score = 0;
         void updateGridDisplay();
         bool tryMerge(int newRow, int newCol, int oldRow, int oldCol);
@@ -42,8 +43,8 @@ namespace Pinetime {
       static constexpr Apps app = Apps::Twos;
       static constexpr const char* icon = "2";
 
-      static Screens::Screen* Create(AppControllers& /*controllers*/) {
-        return new Screens::Twos();
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Twos(controllers.settingsController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

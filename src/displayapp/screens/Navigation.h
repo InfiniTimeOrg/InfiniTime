@@ -36,7 +36,7 @@ namespace Pinetime {
     namespace Screens {
       class Navigation : public Screen {
       public:
-        explicit Navigation(Pinetime::Controllers::NavigationService& nav);
+        explicit Navigation(Pinetime::Controllers::NavigationService& nav, Pinetime::Controllers::Settings& settingsController);
         ~Navigation() override;
 
         void Refresh() override;
@@ -49,6 +49,7 @@ namespace Pinetime {
         lv_obj_t* barProgress;
 
         Pinetime::Controllers::NavigationService& navService;
+        Pinetime::Controllers::Settings& settingsController;
 
         std::string flag;
         std::string narrative;
@@ -65,7 +66,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::map;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Navigation(*controllers.navigationService);
+        return new Screens::Navigation(*controllers.navigationService, controllers.settingsController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {

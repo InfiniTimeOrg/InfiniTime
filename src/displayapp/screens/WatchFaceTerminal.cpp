@@ -8,10 +8,12 @@
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
 #include "components/ble/SimpleWeatherService.h"
+#include "displayapp/localization/Localization.h"
 #include "displayapp/screens/WeatherSymbols.h"
 #include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
                                      const Controllers::Battery& batteryController,
@@ -127,15 +129,19 @@ void WatchFaceTerminal::Refresh() {
                                       LV_LABEL_PART_MAIN,
                                       LV_STATE_DEFAULT,
                                       BatteryIcon::ColorFromPercentage(batteryPercentRemaining.Get()));
-    lv_label_set_text_fmt(batteryValue, "#ffffff [BATT]# %d%%", batteryPercentRemaining.Get());
     if (batteryController.IsCharging()) {
-      lv_label_ins_text(batteryValue, LV_LABEL_POS_LAST, " Charging");
+      lv_label_set_text_fmt(batteryValue,
+                            "#ffffff [BATT]# %d%% %s",
+                            batteryPercentRemaining.Get(),
+                            Translate(settingsController.GetLanguage(), StringId::Charging));
+    } else {
+      lv_label_set_text_fmt(batteryValue, "#ffffff [BATT]# %d%%", batteryPercentRemaining.Get());
     }
   }
 
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated()) {
-    lv_label_set_text_fmt(stepValue, "#ffffff [STEP]# %lu steps", stepCount.Get());
+    lv_label_set_text_fmt(stepValue, "#ffffff [STEP]# %lu %s", stepCount.Get(), Translate(settingsController.GetLanguage(), StringId::Steps));
   }
 
   heartbeat = heartRateController.HeartRate();
@@ -164,7 +170,7 @@ void WatchFaceTerminal::Refresh() {
                             "#ffffff [WTHR]# #ffdd00 %d°%c %s#",
                             temp,
                             tempUnit,
-                            Symbols::GetSimpleCondition(optCurrentWeather->iconId));
+                            Symbols::GetSimpleCondition(optCurrentWeather->iconId, settingsController.GetLanguage()));
     } else {
       lv_label_set_text(weather, "#ffffff [WTHR]# #ffdd00 ---");
     }
@@ -174,14 +180,14 @@ void WatchFaceTerminal::Refresh() {
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     if (!bleRadioEnabled.Get()) {
-      lv_label_set_text_static(connectState, "#ffffff [STAT]# Disabled");
+      lv_label_set_text_fmt(connectState, "#ffffff [STAT]# %s", Translate(settingsController.GetLanguage(), StringId::Disabled));
       lv_obj_set_style_local_text_color(connectState, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::gray);
     } else {
       if (bleState.Get()) {
-        lv_label_set_text_static(connectState, "#ffffff [STAT]# Connected");
+        lv_label_set_text_fmt(connectState, "#ffffff [STAT]# %s", Translate(settingsController.GetLanguage(), StringId::Connected));
         lv_obj_set_style_local_text_color(connectState, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
       } else {
-        lv_label_set_text_static(connectState, "#ffffff [STAT]# Disconnected");
+        lv_label_set_text_fmt(connectState, "#ffffff [STAT]# %s", Translate(settingsController.GetLanguage(), StringId::Disconnected));
         lv_obj_set_style_local_text_color(connectState, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::gray);
       }
     }

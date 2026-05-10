@@ -5,8 +5,10 @@
 #include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   void TimeoutEventHandler(lv_obj_t* obj, lv_event_t event) {
@@ -39,7 +41,7 @@ SettingDisplay::SettingDisplay(Pinetime::Controllers::Settings& settingsControll
   lv_cont_set_layout(container1, LV_LAYOUT_PRETTY_TOP);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Display timeout");
+  lv_label_set_text_static(title, Translate(settingsController.GetLanguage(), StringId::DisplayTimeout));
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 10, 15);
 
@@ -64,7 +66,7 @@ SettingDisplay::SettingDisplay(Pinetime::Controllers::Settings& settingsControll
   }
 
   alwaysOnCheckbox = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text(alwaysOnCheckbox, "Always On");
+  lv_checkbox_set_text(alwaysOnCheckbox, Translate(settingsController.GetLanguage(), StringId::AlwaysOn));
   lv_checkbox_set_checked(alwaysOnCheckbox, settingsController.GetAlwaysOnDisplaySetting());
   lv_obj_add_state(alwaysOnCheckbox, LV_STATE_DEFAULT);
   alwaysOnCheckbox->user_data = this;

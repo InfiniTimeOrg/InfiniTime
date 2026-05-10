@@ -22,6 +22,8 @@ CheckboxList::CheckboxList(const uint8_t screenID,
     OnValueChanged {std::move(OnValueChanged)},
     options {options},
     value {originalValue},
+    title {nullptr},
+    icon {nullptr},
     pageIndicator(screenID, numScreens) {
   // Set the background to Black
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
@@ -42,12 +44,12 @@ CheckboxList::CheckboxList(const uint8_t screenID,
   lv_obj_set_height(container1, LV_VER_RES - 50);
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
-  lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
+  title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, optionsTitle);
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 10, 15);
 
-  lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
+  icon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
   lv_label_set_text_static(icon, optionsSymbol);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
@@ -73,11 +75,35 @@ CheckboxList::CheckboxList(const uint8_t screenID,
 
 CheckboxList::~CheckboxList() {
   lv_obj_clean(lv_scr_act());
-  OnValueChanged(value);
+}
+
+void CheckboxList::SetTitle(const char* optionsTitle) {
+  lv_label_set_text_static(title, optionsTitle);
+  lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 10, 15);
+  lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
+}
+
+void CheckboxList::SetSymbol(const char* optionsSymbol) {
+  lv_label_set_text_static(icon, optionsSymbol);
+  lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
+}
+
+void CheckboxList::SetOptions(std::array<Item, MaxItems> updatedOptions) {
+  options = updatedOptions;
+
+  for (size_t i = 0; i < options.size(); i++) {
+    if (strcmp(options[i].name, "")) {
+      lv_checkbox_set_text(cbOption[i], options[i].name);
+      if (!options[i].enabled) {
+        lv_checkbox_set_disabled(cbOption[i]);
+      }
+    }
+  }
 }
 
 void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
+    const auto previousValue = value;
     for (unsigned int i = 0; i < options.size(); i++) {
       if (strcmp(options[i].name, "")) {
         if (object == cbOption[i]) {
@@ -90,6 +116,10 @@ void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
           lv_checkbox_set_disabled(cbOption[i]);
         }
       }
+    }
+
+    if (value != previousValue) {
+      OnValueChanged(value);
     }
   }
 }

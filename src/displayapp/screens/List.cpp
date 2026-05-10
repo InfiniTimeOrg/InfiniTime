@@ -1,9 +1,11 @@
 #include "displayapp/screens/List.h"
 #include "displayapp/DisplayApp.h"
+#include "displayapp/localization/Localization.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   void ButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
@@ -62,7 +64,7 @@ List::List(uint8_t screenID,
       lv_obj_align(icon, nullptr, LV_ALIGN_IN_LEFT_MID, 0, 0);
 
       lv_obj_t* text = lv_label_create(itemApps[i], nullptr);
-      lv_label_set_text_fmt(text, "%s", applications[i].name);
+      lv_label_set_text_fmt(text, "%s", Translate(settingsController.GetLanguage(), applications[i].name));
       lv_obj_align(text, icon, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
     }
   }

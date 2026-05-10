@@ -3,10 +3,10 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Screen.h"
 #include "components/settings/Settings.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
-
-constexpr const char* SettingWatchFace::title;
+using namespace Pinetime::Applications::Localization;
 constexpr const char* SettingWatchFace::symbol;
 
 namespace {
@@ -82,7 +82,7 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen(unsigned int screenNum) c
   return std::make_unique<Screens::CheckboxList>(
     screenNum,
     nScreens,
-    title,
+    Translate(settingsController.GetLanguage(), StringId::WatchFace),
     symbol,
     static_cast<uint32_t>(IndexOf(watchfaceItems, settingsController.GetWatchFace())),
     [this, &settings = settingsController](uint32_t index) {

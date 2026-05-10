@@ -1,4 +1,7 @@
 #include "displayapp/screens/WeatherSymbols.h"
+#include "displayapp/localization/Localization.h"
+
+using namespace Pinetime::Applications::Localization;
 
 const char* Pinetime::Applications::Screens::Symbols::GetSymbol(const Pinetime::Controllers::SimpleWeatherService::Icons icon,
                                                                 const bool isNight) {
@@ -45,49 +48,51 @@ const char* Pinetime::Applications::Screens::Symbols::GetSymbol(const Pinetime::
   }
 }
 
-const char* Pinetime::Applications::Screens::Symbols::GetCondition(const Pinetime::Controllers::SimpleWeatherService::Icons icon) {
+const char* Pinetime::Applications::Screens::Symbols::GetCondition(const Pinetime::Controllers::SimpleWeatherService::Icons icon,
+                                                                   Language language) {
   switch (icon) {
     case Pinetime::Controllers::SimpleWeatherService::Icons::Sun:
-      return "Clear sky";
+      return Translate(language, StringId::ClearSky);
     case Pinetime::Controllers::SimpleWeatherService::Icons::CloudsSun:
-      return "Few clouds";
+      return Translate(language, StringId::FewClouds);
     case Pinetime::Controllers::SimpleWeatherService::Icons::Clouds:
-      return "Scattered clouds";
+      return Translate(language, StringId::ScatteredClouds);
     case Pinetime::Controllers::SimpleWeatherService::Icons::BrokenClouds:
-      return "Broken clouds";
+      return Translate(language, StringId::BrokenClouds);
     case Pinetime::Controllers::SimpleWeatherService::Icons::CloudShowerHeavy:
-      return "Shower rain";
+      return Translate(language, StringId::ShowerRain);
     case Pinetime::Controllers::SimpleWeatherService::Icons::CloudSunRain:
-      return "Rain";
+      return Translate(language, StringId::Rain);
     case Pinetime::Controllers::SimpleWeatherService::Icons::Thunderstorm:
-      return "Thunderstorm";
+      return Translate(language, StringId::Thunderstorm);
     case Pinetime::Controllers::SimpleWeatherService::Icons::Snow:
-      return "Snow";
+      return Translate(language, StringId::Snow);
     case Pinetime::Controllers::SimpleWeatherService::Icons::Smog:
-      return "Mist";
+      return Translate(language, StringId::Mist);
     default:
       return "";
   }
 }
 
-const char* Pinetime::Applications::Screens::Symbols::GetSimpleCondition(const Pinetime::Controllers::SimpleWeatherService::Icons icon) {
+const char* Pinetime::Applications::Screens::Symbols::GetSimpleCondition(const Pinetime::Controllers::SimpleWeatherService::Icons icon,
+                                                                         Language language) {
   switch (icon) {
     case Pinetime::Controllers::SimpleWeatherService::Icons::Sun:
     case Pinetime::Controllers::SimpleWeatherService::Icons::CloudsSun:
-      return "Clear";
+      return Translate(language, StringId::Clear);
     case Pinetime::Controllers::SimpleWeatherService::Icons::Clouds:
     case Pinetime::Controllers::SimpleWeatherService::Icons::BrokenClouds:
-      return "Cloudy";
+      return Translate(language, StringId::Cloudy);
     case Pinetime::Controllers::SimpleWeatherService::Icons::CloudShowerHeavy:
-      return "Showers";
+      return Translate(language, StringId::Showers);
     case Pinetime::Controllers::SimpleWeatherService::Icons::CloudSunRain:
-      return "Rain";
+      return Translate(language, StringId::Rain);
     case Pinetime::Controllers::SimpleWeatherService::Icons::Thunderstorm:
-      return "Thunder";
+      return Translate(language, StringId::Thunder);
     case Pinetime::Controllers::SimpleWeatherService::Icons::Snow:
-      return "Snow";
+      return Translate(language, StringId::Snow);
     case Pinetime::Controllers::SimpleWeatherService::Icons::Smog:
-      return "Mist";
+      return Translate(language, StringId::Mist);
     default:
       return "";
   }
