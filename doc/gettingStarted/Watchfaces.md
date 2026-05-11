@@ -32,4 +32,4 @@ InfiniTime has 6 apps on the `main` branch at the time of writing.
 
 ### Pride Flag
 ![Pride flag face](/doc/gettingStarted/Watchfaces/Pride.png)
-    - You can long-press on the display to change flags. (Gay, Lesbian, Bi, Trans, Non-binary)
+    - You can long-press on the display to change flags. (Gay, Lesbian, Bi, Trans, Non-binary, Aromantic, Asexual, AroAce, Pansexual)
