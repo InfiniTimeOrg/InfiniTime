@@ -3,7 +3,6 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "displayapp/screens/Symbols.h"
-#include "drivers/Bma421_C/bma4_defs.h"
 #include "lvgl/src/lv_misc/lv_color.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -93,7 +92,7 @@ namespace {
   constexpr PrideFlagData transFlagData(transColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
   constexpr PrideFlagData biFlagData(biColours, LV_COLOR_BLACK, LV_COLOR_WHITE, LV_COLOR_BLACK);
   constexpr PrideFlagData lesbianFlagData(lesbianColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
-  constexpr PrideFlagData nonbinaryFlagData(nonbinaryColours, skyBlue, lightPink, skyBlue);
+  constexpr PrideFlagData nonbinaryFlagData(nonbinaryColours, skyBlue, LV_COLOR_MAKE(0x84, 0xAE, 0x09), skyBlue);
   constexpr PrideFlagData aceFlagData(aceColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_BLACK);
   constexpr PrideFlagData aroFlagData(aroColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
   constexpr PrideFlagData aroaceFlagData(aroaceColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
