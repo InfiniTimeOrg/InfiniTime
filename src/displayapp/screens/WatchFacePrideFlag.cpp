@@ -83,7 +83,11 @@ namespace {
   constexpr std::array<lv_color_t, 4> nonbinaryColours {LV_COLOR_YELLOW, LV_COLOR_WHITE, LV_COLOR_PURPLE, LV_COLOR_BLACK};
   constexpr std::array<lv_color_t, 4> aceColours {LV_COLOR_BLACK, LV_COLOR_GRAY, LV_COLOR_WHITE, LV_COLOR_PURPLE};
   constexpr std::array<lv_color_t, 5> aroColours {LV_COLOR_GREEN, lightGreen, LV_COLOR_WHITE, LV_COLOR_GRAY, LV_COLOR_BLACK};
-  constexpr std::array<lv_color_t, 5> aroaceColours {sunOrange, brightYellow, LV_COLOR_WHITE, LV_COLOR_MAKE(0x62, 0xae, 0xdc), LV_COLOR_MAKE(0x20, 0x38, 0x56)};
+  constexpr std::array<lv_color_t, 5> aroaceColours {sunOrange,
+                                                     brightYellow,
+                                                     LV_COLOR_WHITE,
+                                                     LV_COLOR_MAKE(0x62, 0xae, 0xdc),
+                                                     LV_COLOR_MAKE(0x20, 0x38, 0x56)};
   constexpr std::array<lv_color_t, 3> panColours {hotPink, LV_COLOR_YELLOW, skyBlue};
   constexpr PrideFlagData gayFlagData(gayColours, LV_COLOR_BLACK, LV_COLOR_BLACK, LV_COLOR_WHITE);
   constexpr PrideFlagData transFlagData(transColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
