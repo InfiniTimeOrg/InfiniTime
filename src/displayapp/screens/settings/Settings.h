@@ -49,6 +49,7 @@ namespace Pinetime {
 
           {Symbols::shieldAlt, "Over-the-air", Apps::SettingOTA},
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
+          {Symbols::moon, "Quiet hours", Apps::SettingQuietHours},
           {Symbols::list, "About", Apps::SysInfo},
         }};
         ScreenList<nScreens> screens;
