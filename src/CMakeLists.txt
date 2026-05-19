@@ -393,6 +393,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
         displayapp/screens/Dice.cpp
+        displayapp/screens/Hiit.cpp
         displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
