@@ -106,6 +106,6 @@ void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId) {
     return;
   }
 
-  app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);
+  app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up, true);
   running = false;
 }
