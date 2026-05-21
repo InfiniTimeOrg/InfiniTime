@@ -65,7 +65,7 @@ StopWatch::StopWatch(System::SystemTask& systemTask, StopWatchController& stopWa
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
-  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::huge);
   lv_label_set_text_static(time, "00:00");
   lv_label_set_long_mode(time, LV_LABEL_LONG_CROP);
   lv_label_set_align(time, LV_LABEL_ALIGN_CENTER);
@@ -201,7 +201,7 @@ void StopWatch::RenderLaps() {
 
 void StopWatch::SetHoursVisible(bool visible) {
   if (hoursVisible != visible) {
-    lv_font_t* font = visible ? &jetbrains_mono_42 : &jetbrains_mono_76;
+    const lv_font_t* font = visible ? Fonts::large : Fonts::huge;
     lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font);
     lv_obj_set_height(time, font->line_height);
     lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, visible ? 5 : 0);
