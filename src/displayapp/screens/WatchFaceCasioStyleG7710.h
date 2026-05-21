@@ -11,6 +11,7 @@
 #include "components/ble/BleController.h"
 #include "utility/DirtyValue.h"
 #include "displayapp/apps/Apps.h"
+#include "displayapp/fonts/FastFont.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -96,9 +97,9 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
 
         lv_task_t* taskRefresh;
-        lv_font_t* font_dot40 = nullptr;
-        lv_font_t* font_segment40 = nullptr;
-        lv_font_t* font_segment115 = nullptr;
+        Components::FastFont::Font font_dot40;
+        Components::FastFont::Font font_segment40;
+        Components::FastFont::Font font_segment115;
       };
     }
 
