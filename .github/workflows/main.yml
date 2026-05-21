@@ -41,7 +41,7 @@ jobs:
         shell: bash
         run: |
           git config --global --add safe.directory /__w/InfiniTime/InfiniTime
-          /opt/build.sh all
+          /__w/InfiniTime/InfiniTime/docker/build.sh all
       - name: Output build size
         id: output-sizes
         shell: bash

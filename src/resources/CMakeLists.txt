@@ -7,6 +7,13 @@ find_program(LV_IMG_CONV "lv_img_conv.py" NO_CACHE REQUIRED
     HINTS "${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "Using ${LV_IMG_CONV} to generate font files")
 
+find_program(PAWNCC "pawncc" NO_CACHE REQUIRED
+    HINTS "$ENV{TOOLS_DIR}/pawn/build"
+          "$ENV{TOOLS_DIR}/pawn/bin"
+          "/usr/local/bin"
+          "/usr/bin")
+message(STATUS "Using ${PAWNCC} to compile Pawn source files")
+
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.12)
    # FindPython3 module introduces with CMake 3.12
    # https://cmake.org/cmake/help/latest/module/FindPython3.html
@@ -20,7 +27,8 @@ endif()
 add_custom_target(GenerateResources
     COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-fonts.py  --lv-font-conv "${LV_FONT_CONV}" ${CMAKE_CURRENT_SOURCE_DIR}/fonts.json
     COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-img.py  --lv-img-conv "${LV_IMG_CONV}" ${CMAKE_CURRENT_SOURCE_DIR}/images.json
-    COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-package.py --config  ${CMAKE_CURRENT_SOURCE_DIR}/fonts.json --config  ${CMAKE_CURRENT_SOURCE_DIR}/images.json --obsolete obsolete_files.json --output infinitime-resources-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip
+    COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-apps.py --pawncc ${PAWNCC} --include ${CMAKE_CURRENT_SOURCE_DIR}/../pawn/programs/include ${CMAKE_CURRENT_SOURCE_DIR}/apps.json
+    COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-package.py --config  ${CMAKE_CURRENT_SOURCE_DIR}/fonts.json --config  ${CMAKE_CURRENT_SOURCE_DIR}/images.json --config ${CMAKE_CURRENT_SOURCE_DIR}/apps.json --obsolete obsolete_files.json --output infinitime-resources-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/fonts.json
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/images.json
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

@@ -42,7 +42,7 @@ def main():
             resource = data[name]
             resource_files.append({
                 "filename": name+'.bin',
-                "path": resource['target_path'] + name+'.bin'
+                "path": resource['target_path'] + name + resource.get('extension', '.bin')
             })
 
             path = name + '.bin'
