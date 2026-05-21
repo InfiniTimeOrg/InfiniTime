@@ -32,17 +32,14 @@ HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, Syst
   : heartRateController {heartRateController}, wakeLock(systemTask) {
   bool isHrRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
   label_hr = lv_label_create(lv_scr_act(), nullptr);
-
   lv_obj_set_style_local_text_font(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-
   if (isHrRunning) {
     lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
   } else {
     lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   }
-
-  lv_label_set_text_static(label_hr, "---");
   lv_obj_align(label_hr, nullptr, LV_ALIGN_CENTER, 0, -40);
+  lv_obj_set_auto_realign(label_hr, true);
 
   label_bpm = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(label_bpm, "Heart rate BPM");
@@ -50,9 +47,8 @@ HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, Syst
 
   label_status = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_status, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-  lv_label_set_text_static(label_status, ToString(Pinetime::Controllers::HeartRateController::States::NotEnoughData));
-
   lv_obj_align(label_status, label_hr, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+  lv_obj_set_auto_realign(label_status, true);
 
   btn_startStop = lv_btn_create(lv_scr_act(), nullptr);
   btn_startStop->user_data = this;
@@ -66,6 +62,7 @@ HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, Syst
     wakeLock.Lock();
   }
 
+  Refresh();
   taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
 }
 
@@ -92,7 +89,6 @@ void HeartRate::Refresh() {
   }
 
   lv_label_set_text_static(label_status, ToString(state));
-  lv_obj_align(label_status, label_hr, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 }
 
 void HeartRate::OnStartStopEvent(lv_event_t event) {
