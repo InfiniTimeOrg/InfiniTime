@@ -37,6 +37,7 @@
 #include "components/heartrate/HeartRateController.h"
 #include "components/stopwatch/StopWatchController.h"
 #include "components/fs/FS.h"
+#include "components/rng/PCG.h"
 #include "drivers/Spi.h"
 #include "drivers/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
@@ -361,8 +362,13 @@ int main() {
   }
 
   systemTask.Start();
-
   nimble_port_init();
+  // ble_ll functions should probably be called after ble_ll_init which is called from nimble_port_init
+  Pinetime::Controllers::RNG prngBleInit;
+  ble_ll_rand_data_get((uint8_t*) &prngBleInit, sizeof(prngBleInit));
+  // TODO: Seed with lifetime stats
+  *((uint32_t*) &prngBleInit) ^= xTaskGetTickCount();
+  systemTask.prngController = prngBleInit;
 
   vTaskStartScheduler();
 

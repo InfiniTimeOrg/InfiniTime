@@ -82,7 +82,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                      spiNorFlash,
                      heartRateController,
                      motionController,
-                     fs) {
+                     fs),
+    prngController {} {
 }
 
 void SystemTask::Start() {

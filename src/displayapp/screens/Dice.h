@@ -4,10 +4,11 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
 #include "displayapp/Controllers.h"
+#include "components/rng/PCG.h"
 #include "Symbols.h"
 
 #include <array>
-#include <random>
+#include <cstdint>
 
 namespace Pinetime {
   namespace Applications {
@@ -16,7 +17,8 @@ namespace Pinetime {
       public:
         Dice(Controllers::MotionController& motionController,
              Controllers::MotorController& motorController,
-             Controllers::Settings& settingsController);
+             Controllers::Settings& settingsController,
+             Controllers::RNG& prngController);
         ~Dice() override;
         void Roll();
         void Refresh() override;
@@ -29,7 +31,7 @@ namespace Pinetime {
         lv_task_t* refreshTask;
         bool enableShakeForDice = false;
 
-        std::mt19937 gen;
+        Controllers::RNG rng;
 
         std::array<lv_color_t, 3> resultColors = {LV_COLOR_YELLOW, LV_COLOR_MAGENTA, LV_COLOR_AQUA};
         uint8_t currentColorIndex;
@@ -54,7 +56,10 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::dice;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Dice(controllers.motionController, controllers.motorController, controllers.settingsController);
+        return new Screens::Dice(controllers.motionController,
+                                 controllers.motorController,
+                                 controllers.settingsController,
+                                 *controllers.prngController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

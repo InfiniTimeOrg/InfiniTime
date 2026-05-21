@@ -718,6 +718,7 @@ void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
   this->controllers.systemTask = systemTask;
+  this->controllers.prngController = &(systemTask->prngController);
 }
 
 void DisplayApp::Register(Pinetime::Controllers::SimpleWeatherService* weatherService) {
