@@ -52,11 +52,13 @@
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingBluetooth.h"
 #include "displayapp/screens/settings/SettingOTA.h"
+#include "displayapp/screens/settings/SettingTheme.h"
 
 #include "utility/Math.h"
 
 #include "libs/lv_conf.h"
 #include "UserApps.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 #include <algorithm>
 #include <limits>
@@ -522,6 +524,14 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
   currentScreen.reset(nullptr);
   SetFullRefresh(direction);
 
+  // Reset screen background color based on app type
+  // Watch faces keep black background, other apps use theme color
+  if (app == Apps::Clock) {
+    lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  } else {
+    lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, Colors::page_bg);
+  }
+
   switch (app) {
     case Apps::Launcher: {
       std::array<Screens::Tile::Applications, UserAppTypes::Count> apps;
@@ -633,6 +643,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       break;
     case Apps::SettingOTA:
       currentScreen = std::make_unique<Screens::SettingOTA>(this, settingsController);
+      break;
+    case Apps::SettingTheme:
+      currentScreen = std::make_unique<Screens::SettingTheme>(this);
       break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(batteryController);

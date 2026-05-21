@@ -22,7 +22,7 @@ Steps::Steps(Controllers::MotionController& motionController, Controllers::Setti
   stepsArc = lv_arc_create(lv_scr_act(), nullptr);
 
   lv_obj_set_style_local_bg_opa(stepsArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, LV_OPA_0);
-  lv_obj_set_style_local_line_color(stepsArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_line_color(stepsArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, Colors::accent);
   lv_obj_set_style_local_border_width(stepsArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 2);
   lv_obj_set_style_local_radius(stepsArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_line_color(stepsArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::blue);
@@ -64,7 +64,7 @@ Steps::Steps(Controllers::MotionController& motionController, Controllers::Setti
   lv_obj_set_event_cb(resetBtn, lap_event_handler);
   lv_obj_set_size(resetBtn, 120, 50);
   lv_obj_set_style_local_radius(resetBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_obj_set_style_local_bg_color(resetBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(resetBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::accent);
   lv_obj_align(resetBtn, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   resetButtonLabel = lv_label_create(resetBtn, nullptr);
   lv_label_set_text_static(resetButtonLabel, "Reset");

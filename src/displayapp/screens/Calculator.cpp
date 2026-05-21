@@ -39,7 +39,7 @@ Calculator::Calculator() {
   lv_btnmatrix_set_map(buttonMatrix, const_cast<const char**>(buttonMap));
   lv_btnmatrix_set_one_check(buttonMatrix, true);
   lv_obj_set_size(buttonMatrix, 238, 180);
-  lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, Colors::accent);
   lv_obj_set_style_local_pad_inner(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_pad_top(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_pad_bottom(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
@@ -208,24 +208,24 @@ void Calculator::UpdateOperation() const {
     case '+':
       lv_obj_set_style_local_bg_grad_dir(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_GRAD_DIR_HOR);
       lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::deepOrange);
-      lv_obj_set_style_local_bg_grad_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::bgAlt);
+      lv_obj_set_style_local_bg_grad_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::accent);
       lv_btnmatrix_set_btn_ctrl(buttonMatrix, 7, LV_BTNMATRIX_CTRL_CHECK_STATE);
       break;
     case '-':
       lv_obj_set_style_local_bg_grad_dir(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_GRAD_DIR_HOR);
-      lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::bgAlt);
+      lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::accent);
       lv_obj_set_style_local_bg_grad_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::deepOrange);
       lv_btnmatrix_set_btn_ctrl(buttonMatrix, 7, LV_BTNMATRIX_CTRL_CHECK_STATE);
       break;
     case '*':
       lv_obj_set_style_local_bg_grad_dir(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_GRAD_DIR_HOR);
       lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::deepOrange);
-      lv_obj_set_style_local_bg_grad_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::bgAlt);
+      lv_obj_set_style_local_bg_grad_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::accent);
       lv_btnmatrix_set_btn_ctrl(buttonMatrix, 11, LV_BTNMATRIX_CTRL_CHECK_STATE);
       break;
     case '/':
       lv_obj_set_style_local_bg_grad_dir(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_GRAD_DIR_HOR);
-      lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::bgAlt);
+      lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::accent);
       lv_obj_set_style_local_bg_grad_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::deepOrange);
       lv_btnmatrix_set_btn_ctrl(buttonMatrix, 11, LV_BTNMATRIX_CTRL_CHECK_STATE);
       break;

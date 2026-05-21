@@ -45,6 +45,7 @@ namespace Pinetime {
       SettingShakeThreshold,
       SettingBluetooth,
       SettingOTA,
+      SettingTheme,
       Error
     };
 
