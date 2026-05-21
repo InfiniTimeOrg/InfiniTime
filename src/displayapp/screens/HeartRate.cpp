@@ -72,6 +72,7 @@ HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, Syst
 HeartRate::~HeartRate() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
+  heartRateController.SaveSettings();
 }
 
 void HeartRate::Refresh() {
