@@ -34,7 +34,7 @@ namespace Pinetime {
         static constexpr std::array<List::Applications, entriesPerScreen * nScreens> entries {{
           {Symbols::sun, "Display", Apps::SettingDisplay},
           {Symbols::eye, "Wake Up", Apps::SettingWakeUp},
-          {Symbols::clock, "Time format", Apps::SettingTimeFormat},
+          {Symbols::list, "Quick Access", Apps::SettingQuickAccess},
           {Symbols::home, "Watch face", Apps::SettingWatchFace},
 
           {Symbols::shoe, "Steps", Apps::SettingSteps},
@@ -47,6 +47,7 @@ namespace Pinetime {
           {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
           {Symbols::check, "Firmware", Apps::FirmwareValidation},
 
+          {Symbols::clock, "Time format", Apps::SettingTimeFormat},
           {Symbols::shieldAlt, "Over-the-air", Apps::SettingOTA},
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
           {Symbols::list, "About", Apps::SysInfo},
