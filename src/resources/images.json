@@ -19,5 +19,12 @@
       "output_format": "bin",
       "binary_format": "ARGB8565_RBSWAP",
       "target_path": "/images/"
+   },
+   "LCARS" : {
+      "sources": "images/LCARS.png",
+      "color_format": "CF_TRUE_COLOR_ALPHA",
+      "output_format": "bin",
+      "binary_format": "ARGB8565_RBSWAP",
+      "target_path": "/images/"
    }
 }
