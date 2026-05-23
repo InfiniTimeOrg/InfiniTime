@@ -28,3 +28,16 @@ add_custom_target(GenerateResources
     COMMENT "Generate fonts and images for resource package"
 )
 
+# generate language pack fonts
+set(LANG_PACK_JSON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lang_pack)
+file(GLOB LANG_PACK_JSON_LIST "${LANG_PACK_JSON_DIR}/*")
+
+foreach(LANG_PACK_JSON IN LISTS LANG_PACK_JSON_LIST)
+    get_filename_component(LANG_PACK ${LANG_PACK_JSON} NAME_WE)
+    add_custom_command(TARGET GenerateResources
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/lang_pack
+      COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-fonts.py  --lv-font-conv "${LV_FONT_CONV}" ${CMAKE_CURRENT_SOURCE_DIR}/lang_pack/${LANG_PACK}.json
+      COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-package.py --config  ${CMAKE_CURRENT_SOURCE_DIR}/lang_pack/${LANG_PACK}.json --output ./lang_pack/${LANG_PACK}.zip
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+endforeach()
