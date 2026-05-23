@@ -53,6 +53,7 @@
 - [How to implement an application](doc/code/Apps.md)
 - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
 - [Tips on designing an app UI](doc/ui_guidelines.md)
+- [Tips on adding a new watchface](doc/code/WatchFaces.md)
 - [Bootloader, OTA and DFU](bootloader/README.md)
 - [External resources](doc/ExternalResources.md)
 
