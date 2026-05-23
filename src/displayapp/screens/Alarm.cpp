@@ -98,7 +98,7 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
   btnInfo = lv_btn_create(lv_scr_act(), nullptr);
   btnInfo->user_data = this;
   lv_obj_set_event_cb(btnInfo, btnEventHandler);
-  lv_obj_set_size(btnInfo, 50, 50);
+  lv_obj_set_size(btnInfo, 60, 60);
   lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, -4);
   lv_obj_set_style_local_bg_color(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
   lv_obj_set_style_local_border_width(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 4);
