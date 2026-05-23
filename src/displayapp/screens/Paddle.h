@@ -2,28 +2,47 @@
 
 #include <lvgl/lvgl.h>
 #include <cstdint>
+#include "components/fs/FS.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
+#include "utility/Persistent.h"
+
+using namespace Pinetime::Utility;
 
 namespace Pinetime {
+  namespace Controllers {
+    class FS;
+  }
   namespace Components {
     class LittleVgl;
   }
 
   namespace Applications {
     namespace Screens {
+      struct PaddleState {
+        uint16_t score;
+      };
 
-      class Paddle : public Screen {
+      class Paddle : public Screen, public Persistent<PaddleState> {
       public:
-        Paddle(Pinetime::Components::LittleVgl& lvgl);
+        Paddle(Pinetime::Components::LittleVgl& lvgl, Pinetime::Controllers::FS& fs);
         ~Paddle() override;
 
         void Refresh() override;
 
         bool OnTouchEvent(TouchEvents event) override;
         bool OnTouchEvent(uint16_t x, uint16_t y) override;
+
+      protected:
+        char* GetPersistencePath() override {
+          return "persistent/paddle";
+        }
+
+        uint32_t GetDataVersion() override {
+          return 0;
+        }
 
       private:
         Pinetime::Components::LittleVgl& lvgl;
@@ -37,8 +56,6 @@ namespace Pinetime {
 
         int8_t dx = 2; // Velocity of the ball in the x_coordinate
         int8_t dy = 3; // Velocity of the ball in the y_coordinate
-
-        uint16_t score = 0;
 
         lv_obj_t* points;
         lv_obj_t* paddle;
@@ -55,7 +72,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::paddle;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Paddle(controllers.lvgl);
+        return new Screens::Paddle(controllers.lvgl, controllers.filesystem);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
