@@ -245,6 +245,11 @@ void Navigation::Refresh() {
     lv_obj_set_style_local_image_recolor_opa(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
     lv_obj_set_style_local_image_recolor(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
     lv_img_set_offset_y(imgFlag, image.offset);
+
+    // Unset the narrative when the flag changes
+    // OSMand updates the flag way before the next narrative announcement
+    // so often, the old narrative accompanies a now mismatched new flag
+    lv_label_set_text(txtNarrative, "");
   }
 
   if (narrative != navService.getNarrative()) {
