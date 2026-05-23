@@ -37,6 +37,7 @@
 #include "components/heartrate/HeartRateController.h"
 #include "components/stopwatch/StopWatchController.h"
 #include "components/fs/FS.h"
+#include "components/firmwarevalidator/FirmwareValidator.h"
 #include "drivers/Spi.h"
 #include "drivers/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
@@ -96,6 +97,7 @@ Pinetime::Controllers::Ble bleController;
 
 Pinetime::Controllers::FS fs {spiNorFlash};
 Pinetime::Controllers::Settings settingsController {fs};
+Pinetime::Controllers::FirmwareValidator validator {fs};
 Pinetime::Controllers::MotorController motorController {};
 
 Pinetime::Controllers::HeartRateController heartRateController;
@@ -120,6 +122,7 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               notificationManager,
                                               heartRateController,
                                               settingsController,
+                                              validator,
                                               motorController,
                                               motionController,
                                               stopWatchController,
@@ -144,6 +147,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         motionController,
                                         motionSensor,
                                         settingsController,
+                                        validator,
                                         heartRateController,
                                         displayApp,
                                         heartRateApp,
