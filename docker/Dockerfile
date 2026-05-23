@@ -53,6 +53,8 @@ RUN npm i lv_font_conv@1.5.2 -g
 
 # build.sh knows how to compile
 COPY build.sh /opt/
+# if run from podman, there are permission issues without this
+RUN chmod +x /opt/build.sh
 
 # Lets get each in a separate docker layer for better downloads
 # GCC
