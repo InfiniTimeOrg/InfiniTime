@@ -65,9 +65,13 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
 
   // Update accumulated speed
   // Currently polling at 10Hz, if this ever goes faster scalar and EMA might need adjusting
-  int32_t speed = std::abs(zHistory[0] - zHistory[histSize - 1] + ((yHistory[0] - yHistory[histSize - 1]) / 2) +
-                           ((xHistory[0] - xHistory[histSize - 1]) / 4)) *
-                  100 / (time - lastTime);
+  int32_t timeDelta = time - lastTime;
+  int32_t speed = 0;
+  if (timeDelta > 0) {
+    speed = std::abs(zHistory[0] - zHistory[histSize - 1] + ((yHistory[0] - yHistory[histSize - 1]) / 2) +
+                     ((xHistory[0] - xHistory[histSize - 1]) / 4)) *
+            100 / timeDelta;
+  }
   // integer version of (.2 * speed) + ((1 - .2) * accumulatedSpeed);
   accumulatedSpeed = speed / 5 + accumulatedSpeed * 4 / 5;
 
