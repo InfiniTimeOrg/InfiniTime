@@ -144,7 +144,7 @@ int AlertNotificationClient::OnDescriptorDiscoveryEventCallback(uint16_t connect
 void AlertNotificationClient::OnNotification(ble_gap_event* event) {
   if (event->notify_rx.attr_handle == newAlertHandle) {
     constexpr size_t stringTerminatorSize = 1; // end of string '\0'
-    constexpr size_t headerSize = 3;
+    constexpr size_t headerSize = 2;
     const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
     const auto maxBufferSize {maxMessageSize + headerSize};
 
