@@ -12,9 +12,9 @@ To build this project, you'll need:
     python -m venv .venv
     source .venv/bin/activate
     python -m pip install wheel
-    python -m pip install -r tools/mcuboot/requirements.txt
+    python -m pip install -r tools/mcuboot/requirements.txt adafruit-nrfutil
     ```
-- A reasonably recent version of CMake (I use 3.16.5)
+- A reasonably recent version of CMake (minimum 3.10)
 - lv_font_conv, to generate the font .c files
   - see [lv_font_conv](https://github.com/lvgl/lv_font_conv#install-the-script)
   - install npm (commonly done via the package manager, ensure node's version is at least 12)
@@ -24,7 +24,7 @@ To build this project, you'll need:
 
 ### Clone the repo
 
-```
+```sh
 git clone https://github.com/InfiniTimeOrg/InfiniTime.git
 cd InfiniTime
 git submodule update --init
@@ -33,6 +33,40 @@ cd build
 ```
 
 ### Project generation using CMake
+
+#### CMakePresets
+
+Note that this requires CMake 3.19 or later to be installed.
+This project provides a `CMakePresets.json` file, enabling easy and fast development with modern editors such as VSCode, neovim or CLion.
+The `CMakePresets.json` file looks for the arm-gcc toolchain and NRF52 SDK in the `sdk-toolchain` directory.
+So to download and extract these in the correct directory, do the following:
+
+```sh
+mkdir -p sdk-toolchain
+
+# Get the nRF5 SDK
+wget https://nsscprodmedia.blob.core.windows.net/prod/software-and-other-downloads/sdks/nrf5/binaries/nrf5sdk153059ac345.zip
+mv nrf5sdk153059ac345.zip sdk-toolchain/
+cd sdk-toolchain
+unzip nrf5sdk153059ac345.zip
+cd -
+
+# Get the arm cross compiler (There's probably a more linux-y way of doing this though...)
+wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2
+mv gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2 sdk-toolchain/
+cd sdk-toolchain
+tar xjf gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2
+cd -
+```
+
+To use the presets, simply call `cmake` like so (make sure you have activated the python virtual environment as described [above](##dependencies)):
+
+```sh
+cmake --preset Release
+cmake --build build/Release
+```
+
+#### CMake Variables
 
 CMake configures the project according to variables you specify the command line. The variables are:
 
