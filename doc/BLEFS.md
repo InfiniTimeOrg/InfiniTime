@@ -14,7 +14,7 @@ There are two relevant UUIDs in this protocol: the version characteristic, and t
 
 UUID: `adaf0100-4669-6c65-5472-616e73666572`
 
-The version characteristic returns the version of the protocol to which the sender adheres. It returns a single unsigned 32-bit integer. The latest version at the time of writing this is 4.
+The version characteristic returns the version of the protocol to which the sender adheres. It returns a single unsigned 16-bit integer. The latest version at the time of writing this is 4.
 
 ### Transfer
 
