@@ -71,7 +71,7 @@ To begin writing to a file, a header must first be sent. The header packet shoul
 - Unsigned 32-bit integer encoding the size of the file that will be sent
 - File path: UTF-8 encoded string that is _not_ null terminated.
 
-To continue reading the file after this initial packet, the following packet should be sent until all the data has been sent and a response had been received with 0 free space. No close command is required after the data has been received.
+To continue writing the file after this initial packet, the following packet should be sent until all the data has been sent and a response had been received with 0 free space. No close command is required after the data has been received.
 
 - Command (single byte): `0x22`
 - Status: `0x01`
