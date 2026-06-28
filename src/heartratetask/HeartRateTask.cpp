@@ -187,22 +187,27 @@ void HeartRateTask::PushMessage(HeartRateTask::Messages msg) {
 
 void HeartRateTask::StartMeasurement() {
   heartRateSensor.Enable();
+  // Need to clear tracking state
   ppg.Reset();
+  lastHrs = 0;
   count = 0;
   measurementStartTime = xTaskGetTickCount();
 }
 
 void HeartRateTask::StopMeasurement() {
   heartRateSensor.Disable();
-  ppg.Reset();
 }
 
 void HeartRateTask::HandleSensorData() {
   auto sensorData = heartRateSensor.ReadHrsAls();
   auto motionValues = motionSensor.Process();
-  // Sensor starting up
-  if (sensorData.hrs == 0) {
-    return;
+
+  // Reset whenever signal becomes active
+  // Need to avoid feeding 0 values into the algorithm
+  // without resetting after, as this causes
+  // severe ringing in the IIR filter stages
+  if (sensorData.hrs != 0 && lastHrs == 0) {
+    ppg.Reset();
   }
 
   // If there are large discontinuities in the heart rate signal, scale the heart rate signal filter
@@ -222,12 +227,11 @@ void HeartRateTask::HandleSensorData() {
     SendHeartRate(ControllerStates::NoTouch, 0);
   } else if (ppgState == Drivers::Hrs3300::PPGState::Reset) {
     ppg.Reset();
-    lastHrs = 0;
     SendHeartRate(ControllerStates::NotEnoughData, 0);
   } else if (ppgState == Drivers::Hrs3300::PPGState::Running) {
     bpm = ppg.HeartRate();
     if (bpm.has_value()) {
-      SendHeartRate(ControllerStates::Ready, bpm.value());
+      SendHeartRate(ControllerStates::Measuring, bpm.value());
     } else if (ppg.SufficientData()) {
       SendHeartRate(ControllerStates::Searching, 0);
     } else {
@@ -250,13 +254,11 @@ void HeartRateTask::HandleSensorData() {
     } else {
       lastMeasurementTime = xTaskGetTickCount();
     }
-    return;
-  }
-  // If been measuring for longer than the time limit, set the last measurement time
-  // This allows giving up on background measurement after a while
-  // and also means that background measurement won't begin immediately after
-  // an unsuccessful long foreground measurement
-  if (xTaskGetTickCount() - measurementStartTime > backgroundMeasurementTimeLimit) {
+  } else if (xTaskGetTickCount() - measurementStartTime > backgroundMeasurementTimeLimit) {
+    // If been measuring for longer than the time limit, set the last measurement time
+    // This allows giving up on background measurement after a while
+    // and also means that background measurement won't begin immediately after
+    // an unsuccessful long foreground measurement
     if (state == States::BackgroundMeasuring) {
       lastMeasurementTime = xTaskGetTickCount() - backgroundMeasurementTimeLimit;
     } else {

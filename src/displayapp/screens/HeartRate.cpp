@@ -16,7 +16,7 @@ namespace {
         return "Searching...";
       case Pinetime::Controllers::HeartRateController::States::NoTouch:
         return "No touch detected";
-      case Pinetime::Controllers::HeartRateController::States::Ready:
+      case Pinetime::Controllers::HeartRateController::States::Measuring:
         return "Measuring...";
       case Pinetime::Controllers::HeartRateController::States::Stopped:
         return "Stopped";
