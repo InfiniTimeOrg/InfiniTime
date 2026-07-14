@@ -2,6 +2,7 @@
 #include <cstring>
 #include <littlefs/lfs.h>
 #include <lvgl/lvgl.h>
+#include "nrf_assert.h"
 
 using namespace Pinetime::Controllers;
 
@@ -26,9 +27,12 @@ FS::FS(Pinetime::Drivers::SpiNorFlash& driver)
       .name_max = 50,
       .attr_max = 50,
     } {
+  mutex = xSemaphoreCreateRecursiveMutex();
+  ASSERT(mutex != nullptr);
 }
 
 void FS::Init() {
+  Lock lock(*this);
 
   // try mount
   int err = lfs_mount(&lfs, &lfsConfig);
@@ -54,58 +58,72 @@ void FS::VerifyResource() {
 }
 
 int FS::FileOpen(lfs_file_t* file_p, const char* fileName, const int flags) {
+  Lock lock(*this);
   return lfs_file_open(&lfs, file_p, fileName, flags);
 }
 
 int FS::FileClose(lfs_file_t* file_p) {
+  Lock lock(*this);
   return lfs_file_close(&lfs, file_p);
 }
 
 int FS::FileRead(lfs_file_t* file_p, uint8_t* buff, uint32_t size) {
+  Lock lock(*this);
   return lfs_file_read(&lfs, file_p, buff, size);
 }
 
 int FS::FileWrite(lfs_file_t* file_p, const uint8_t* buff, uint32_t size) {
+  Lock lock(*this);
   return lfs_file_write(&lfs, file_p, buff, size);
 }
 
 int FS::FileSeek(lfs_file_t* file_p, uint32_t pos) {
+  Lock lock(*this);
   return lfs_file_seek(&lfs, file_p, pos, LFS_SEEK_SET);
 }
 
 int FS::FileDelete(const char* fileName) {
+  Lock lock(*this);
   return lfs_remove(&lfs, fileName);
 }
 
 int FS::DirOpen(const char* path, lfs_dir_t* lfs_dir) {
+  Lock lock(*this);
   return lfs_dir_open(&lfs, lfs_dir, path);
 }
 
 int FS::DirClose(lfs_dir_t* lfs_dir) {
+  Lock lock(*this);
   return lfs_dir_close(&lfs, lfs_dir);
 }
 
 int FS::DirRead(lfs_dir_t* dir, lfs_info* info) {
+  Lock lock(*this);
   return lfs_dir_read(&lfs, dir, info);
 }
 
 int FS::DirRewind(lfs_dir_t* dir) {
+  Lock lock(*this);
   return lfs_dir_rewind(&lfs, dir);
 }
 
 int FS::DirCreate(const char* path) {
+  Lock lock(*this);
   return lfs_mkdir(&lfs, path);
 }
 
 int FS::Rename(const char* oldPath, const char* newPath) {
+  Lock lock(*this);
   return lfs_rename(&lfs, oldPath, newPath);
 }
 
 int FS::Stat(const char* path, lfs_info* info) {
+  Lock lock(*this);
   return lfs_stat(&lfs, path, info);
 }
 
 lfs_ssize_t FS::GetFSSize() {
+  Lock lock(*this);
   return lfs_fs_size(&lfs);
 }
 
