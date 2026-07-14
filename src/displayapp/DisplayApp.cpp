@@ -1,4 +1,5 @@
 #include "displayapp/DisplayApp.h"
+#include "displayapp/LvglGuard.h"
 #include <libraries/log/nrf_log.h>
 #include "displayapp/screens/HeartRate.h"
 #include "displayapp/screens/Motion.h"
@@ -234,10 +235,12 @@ void DisplayApp::Refresh() {
   };
 
   TickType_t queueTimeout;
-  switch (state) {
-    case States::Idle:
-      queueTimeout = portMAX_DELAY;
-      break;
+  {
+    LVGL_GUARD();
+    switch (state) {
+      case States::Idle:
+        queueTimeout = portMAX_DELAY;
+        break;
     case States::AOD:
       if (!currentScreen->IsRunning()) {
         LoadPreviousScreen();
@@ -290,13 +293,18 @@ void DisplayApp::Refresh() {
         ApplyBrightness();
       }
       break;
-    default:
-      queueTimeout = portMAX_DELAY;
-      break;
+      default:
+        queueTimeout = portMAX_DELAY;
+        break;
+    }
   }
 
   Messages msg;
-  if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
+  const bool receivedMsg = xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE;
+  // Guard everything after the (unguarded) queue wait: message handling loads
+  // screens and the tail touches LVGL too.
+  LVGL_GUARD();
+  if (receivedMsg) {
     switch (msg) {
       case Messages::GoToSleep:
       case Messages::GoToAOD:
