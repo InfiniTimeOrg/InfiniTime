@@ -241,58 +241,58 @@ void DisplayApp::Refresh() {
       case States::Idle:
         queueTimeout = portMAX_DELAY;
         break;
-    case States::AOD:
-      if (!currentScreen->IsRunning()) {
-        LoadPreviousScreen();
-      }
-      // Check we've slept long enough
-      // Might not be true if the loop received an event
-      // If not true, then wait that amount of time
-      queueTimeout = CalculateSleepTime();
-      if (queueTimeout == 0) {
-        // Only advance the tick count when LVGL is done
-        // Otherwise keep running the task handler while it still has things to draw
-        // Note: under high graphics load, LVGL will always have more work to do
-        if (lv_task_handler() > 0) {
-          // Drop frames that we've missed if drawing/event handling took way longer than expected
-          while (queueTimeout == 0) {
-            alwaysOnFrameCount += 1;
-            queueTimeout = CalculateSleepTime();
+      case States::AOD:
+        if (!currentScreen->IsRunning()) {
+          LoadPreviousScreen();
+        }
+        // Check we've slept long enough
+        // Might not be true if the loop received an event
+        // If not true, then wait that amount of time
+        queueTimeout = CalculateSleepTime();
+        if (queueTimeout == 0) {
+          // Only advance the tick count when LVGL is done
+          // Otherwise keep running the task handler while it still has things to draw
+          // Note: under high graphics load, LVGL will always have more work to do
+          if (lv_task_handler() > 0) {
+            // Drop frames that we've missed if drawing/event handling took way longer than expected
+            while (queueTimeout == 0) {
+              alwaysOnFrameCount += 1;
+              queueTimeout = CalculateSleepTime();
+            }
           }
         }
-      }
-      break;
-    case States::Running:
-      if (!currentScreen->IsRunning()) {
-        LoadPreviousScreen();
-      }
-      queueTimeout = lv_task_handler();
+        break;
+      case States::Running:
+        if (!currentScreen->IsRunning()) {
+          LoadPreviousScreen();
+        }
+        queueTimeout = lv_task_handler();
 
-      if (!systemTask->IsSleepDisabled() && IsPastDimTime()) {
-        if (!isDimmed) {
-          isDimmed = true;
-          brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+        if (!systemTask->IsSleepDisabled() && IsPastDimTime()) {
+          if (!isDimmed) {
+            isDimmed = true;
+            brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+          }
+          if (IsPastSleepTime() && uxQueueMessagesWaiting(msgQueue) == 0) {
+            PushMessageToSystemTask(System::Messages::GoToSleep);
+            // Can't set state to Idle here, something may send
+            // DisableSleeping before this GoToSleep arrives
+            // Instead we check we have no messages queued before sending GoToSleep
+            // This works as the SystemTask is higher priority than DisplayApp
+            // As soon as we send GoToSleep, SystemTask pre-empts DisplayApp
+            // Whenever DisplayApp is running again, it is guaranteed that
+            // SystemTask has handled the message
+            // If it responded, we will have a GoToSleep waiting in the queue
+            // By checking that there are no messages in the queue, we avoid
+            // resending GoToSleep when we already have a response
+            // SystemTask is resilient to duplicate messages, this is an
+            // optimisation to reduce pressure on the message queues
+          }
+        } else if (isDimmed) {
+          isDimmed = false;
+          ApplyBrightness();
         }
-        if (IsPastSleepTime() && uxQueueMessagesWaiting(msgQueue) == 0) {
-          PushMessageToSystemTask(System::Messages::GoToSleep);
-          // Can't set state to Idle here, something may send
-          // DisableSleeping before this GoToSleep arrives
-          // Instead we check we have no messages queued before sending GoToSleep
-          // This works as the SystemTask is higher priority than DisplayApp
-          // As soon as we send GoToSleep, SystemTask pre-empts DisplayApp
-          // Whenever DisplayApp is running again, it is guaranteed that
-          // SystemTask has handled the message
-          // If it responded, we will have a GoToSleep waiting in the queue
-          // By checking that there are no messages in the queue, we avoid
-          // resending GoToSleep when we already have a response
-          // SystemTask is resilient to duplicate messages, this is an
-          // optimisation to reduce pressure on the message queues
-        }
-      } else if (isDimmed) {
-        isDimmed = false;
-        ApplyBrightness();
-      }
-      break;
+        break;
       default:
         queueTimeout = portMAX_DELAY;
         break;
