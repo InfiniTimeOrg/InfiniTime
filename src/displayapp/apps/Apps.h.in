@@ -57,6 +57,7 @@ namespace Pinetime {
       CasioStyleG7710,
       Numerals,
       PrideFlag,
+      Legend,
     };
 
     template <Apps>
