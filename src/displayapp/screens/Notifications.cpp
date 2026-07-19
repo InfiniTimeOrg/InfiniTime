@@ -42,9 +42,9 @@ Notifications::Notifications(DisplayApp* app,
   if (mode == Modes::Preview) {
     wakeLock.Lock();
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
-      motorController.StartRinging();
+      motorController.Ring(Controllers::MotorController::Intensity::Medium, pdMS_TO_TICKS(1000));
     } else {
-      motorController.RunForDuration(35);
+      motorController.Buzz(Controllers::MotorController::Intensity::Light);
     }
 
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
