@@ -5,6 +5,12 @@
 #include <cstddef>
 #include <cstdint>
 
+#define min // workaround: nimble's min/max macros conflict with libstdc++
+#define max
+#include <host/ble_gap.h>
+#undef max
+#undef min
+
 namespace Pinetime {
   namespace Controllers {
     class NotificationManager {
@@ -25,17 +31,23 @@ namespace Pinetime {
       static constexpr uint8_t MessageSize {100};
 
       struct Notification {
+      public:
         using Id = uint8_t;
         using Idx = uint8_t;
 
-        std::array<char, MessageSize + 1> message{};
-        uint8_t size;
         Categories category = Categories::Unknown;
         Id id = 0;
         bool valid = false;
 
+        Notification();
+        Notification(const char* message, uint8_t size);
+        Notification(const struct os_mbuf* om, int off, uint8_t size);
         const char* Message() const;
         const char* Title() const;
+
+      private:
+        std::array<char, MessageSize + 1> message {};
+        uint8_t size;
       };
 
       void Push(Notification&& notif);
