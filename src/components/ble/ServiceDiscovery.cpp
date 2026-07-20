@@ -4,7 +4,7 @@
 
 using namespace Pinetime::Controllers;
 
-ServiceDiscovery::ServiceDiscovery(std::array<BleClient*, 2>&& clients) : clients {clients} {
+ServiceDiscovery::ServiceDiscovery(std::array<BleClient*, 3>&& clients) : clients {clients} {
 }
 
 void ServiceDiscovery::StartDiscovery(uint16_t connectionHandle) {

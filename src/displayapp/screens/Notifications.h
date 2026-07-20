@@ -24,6 +24,7 @@ namespace Pinetime {
         explicit Notifications(DisplayApp* app,
                                Pinetime::Controllers::NotificationManager& notificationManager,
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                               Pinetime::Controllers::AppleNotificationCenterClient& ancsClient,
                                Pinetime::Controllers::MotorController& motorController,
                                System::SystemTask& systemTask,
                                Modes mode);
@@ -38,6 +39,7 @@ namespace Pinetime {
         class NotificationItem {
         public:
           NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                           Pinetime::Controllers::AppleNotificationCenterClient& ancsClient,
                            Pinetime::Controllers::MotorController& motorController);
           NotificationItem(const char* title,
                            const char* msg,
@@ -45,12 +47,16 @@ namespace Pinetime {
                            Controllers::NotificationManager::Categories,
                            uint8_t notifNb,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                           Pinetime::Controllers::MotorController& motorController);
+                           Pinetime::Controllers::AppleNotificationCenterClient& ancsClient,
+                           Pinetime::Controllers::MotorController& motorController,
+                           uint32_t ancsUid);
           ~NotificationItem();
 
           bool IsRunning() const {
             return running;
           }
+
+          uint32_t ancsUid = 0;
 
           void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
 
@@ -64,6 +70,7 @@ namespace Pinetime {
           lv_obj_t* label_mute;
           lv_obj_t* label_reject;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
+          Pinetime::Controllers::AppleNotificationCenterClient& ancsClient;
           Pinetime::Controllers::MotorController& motorController;
 
           bool running = true;
@@ -73,6 +80,7 @@ namespace Pinetime {
         DisplayApp* app;
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::AlertNotificationService& alertNotificationService;
+        Pinetime::Controllers::AppleNotificationCenterClient& ancsClient;
         Pinetime::Controllers::MotorController& motorController;
         System::WakeLock wakeLock;
         Modes mode = Modes::Normal;

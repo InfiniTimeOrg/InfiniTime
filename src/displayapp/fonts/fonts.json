@@ -3,7 +3,7 @@
       "sources": [
          {
             "file": "JetBrainsMono-Bold.ttf",
-            "range": "0x20-0x7e, 0x410-0x44f, 0xB0"
+            "range": "0x20-0x7e, 0x410-0x44f, 0xB0, 0xFFFD"
          },
          {
             "file": "FontAwesome5-Solid+Brands+Regular.woff",
