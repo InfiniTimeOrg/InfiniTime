@@ -24,7 +24,7 @@ namespace Pinetime {
           return container;
         }
 
-        void Update();
+        bool Update();
 
       private:
         Screens::BatteryIcon batteryIcon;

@@ -29,3 +29,8 @@ InfiniTime has 6 apps on the `main` branch at the time of writing.
 
 ### Casio G7710
 ![Casio G7710 face](/doc/gettingStarted/Watchfaces/CasioG7710.png)
+
+### Garden
+![Garden face](/doc/gettingStarted/Watchfaces/Garden.png)
+    - Flowers "grow" throughout the day
+    - Different flowers each day
