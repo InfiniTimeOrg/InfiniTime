@@ -1,6 +1,7 @@
 #pragma once
 
 #include "displayapp/screens/Screen.h"
+#include "components/settings/Settings.h"
 #include "BootErrors.h"
 #include <lvgl/lvgl.h>
 
@@ -9,13 +10,14 @@ namespace Pinetime {
     namespace Screens {
       class Error : public Screen {
       public:
-        Error(System::BootErrors error);
+        Error(System::BootErrors error, Pinetime::Controllers::Settings& settingsController);
         ~Error() override;
 
         void ButtonEventHandler();
 
       private:
         lv_obj_t* btnOk;
+        Pinetime::Controllers::Settings& settingsController;
       };
     }
   }

@@ -3,6 +3,7 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
+#include "components/settings/Settings.h"
 #include "Symbols.h"
 
 namespace {
@@ -23,7 +24,7 @@ namespace Pinetime {
       public:
         ~Calculator() override;
 
-        Calculator();
+        explicit Calculator(Pinetime::Controllers::Settings& settingsController);
 
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
 
@@ -31,6 +32,7 @@ namespace Pinetime {
         lv_obj_t* buttonMatrix {};
         lv_obj_t* valueLabel {};
         lv_obj_t* resultLabel {};
+        Pinetime::Controllers::Settings& settingsController;
 
         void Eval();
         void ResetInput();
@@ -75,8 +77,8 @@ namespace Pinetime {
       static constexpr Apps app = Apps::Calculator;
       static constexpr const char* icon = Screens::Symbols::calculator;
 
-      static Screens::Screen* Create(AppControllers& /* controllers */) {
-        return new Screens::Calculator();
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Calculator(controllers.settingsController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

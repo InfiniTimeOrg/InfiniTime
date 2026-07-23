@@ -2,9 +2,11 @@
 #include <cinttypes>
 #include "Calculator.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/localization/Localization.h"
 #include "Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 static void eventHandler(lv_obj_t* obj, lv_event_t event) {
   auto app = static_cast<Calculator*>(obj->user_data);
@@ -18,7 +20,7 @@ Calculator::~Calculator() {
 constexpr const char* const buttonMap[] = {
   "7", "8", "9", Symbols::backspace, "\n", "4", "5", "6", "+ -", "\n", "1", "2", "3", "* /", "\n", "0", ".", "(-)", "=", ""};
 
-Calculator::Calculator() {
+Calculator::Calculator(Pinetime::Controllers::Settings& settingsController) : settingsController {settingsController} {
   resultLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(resultLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(resultLabel, LV_LABEL_ALIGN_RIGHT);
@@ -275,10 +277,10 @@ void Calculator::UpdateResultLabel() const {
 void Calculator::UpdateValueLabel() {
   switch (error) {
     case Error::TooLarge:
-      lv_label_set_text_static(valueLabel, "too large");
+      lv_label_set_text_static(valueLabel, Translate(settingsController.GetLanguage(), StringId::TooLarge));
       break;
     case Error::ZeroDivision:
-      lv_label_set_text_static(valueLabel, "zero division");
+      lv_label_set_text_static(valueLabel, Translate(settingsController.GetLanguage(), StringId::ZeroDivision));
       break;
     case Error::None:
     default: {
