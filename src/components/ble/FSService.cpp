@@ -164,7 +164,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       memcpy(filepath, header->pathstr, plen);
       filepath[plen] = 0; // Copy and null terminate string
       fileSize = header->totalSize;
-      WriteResponse resp;
+      WriteResponse resp {};
       resp.command = commands::WRITE_PACING;
       resp.offset = header->offset;
       resp.modTime = 0;
@@ -172,7 +172,9 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       int res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT);
       if (res == 0) {
         fs.FileClose(&f);
-        resp.status = (res == 0) ? 0x01 : (int8_t) res;
+        resp.status = 0x01;
+      } else {
+        resp.status = (int8_t) res;
       }
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
@@ -182,9 +184,10 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
     case commands::WRITE_DATA: {
       NRF_LOG_INFO("[FS_S] -> WriteData");
       auto* header = (WritePacing*) om->om_data;
-      WriteResponse resp;
+      WriteResponse resp {};
       resp.command = commands::WRITE_PACING;
       resp.offset = header->offset;
+      resp.status = 0x01;
       int res = 0;
 
       if (!(res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT))) {
