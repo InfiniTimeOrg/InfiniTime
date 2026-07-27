@@ -60,7 +60,9 @@ int CurrentTimeService::OnCurrentTimeAccessed(struct ble_gatt_access_ctxt* ctxt)
     currentDateTime.hour = m_dateTimeController.Hours();
     currentDateTime.minute = m_dateTimeController.Minutes();
     currentDateTime.second = m_dateTimeController.Seconds();
+    currentDateTime.dayofweek = static_cast<uint8_t>(m_dateTimeController.DayOfWeek());
     currentDateTime.fractions256 = 0;
+    currentDateTime.reason = 0;
 
     int res = os_mbuf_append(ctxt->om, &currentDateTime, sizeof(CtsCurrentTimeData));
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
