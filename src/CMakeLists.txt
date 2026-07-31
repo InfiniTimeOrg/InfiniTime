@@ -418,6 +418,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingSetDate.cpp
         displayapp/screens/settings/SettingSetTime.cpp
         displayapp/screens/settings/SettingChimes.cpp
+        displayapp/screens/settings/SettingTheme.cpp
         displayapp/screens/settings/SettingShakeThreshold.cpp
         displayapp/screens/settings/SettingBluetooth.cpp
         displayapp/screens/settings/SettingOTA.cpp

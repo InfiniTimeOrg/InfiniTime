@@ -20,6 +20,7 @@ SettingShakeThreshold::SettingShakeThreshold(Controllers::Settings& settingsCont
   : settingsController {settingsController}, motionController {motionController}, systemTask {systemTask} {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(title, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::text_header);
   lv_label_set_text_static(title, "Wake Sensitivity");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);

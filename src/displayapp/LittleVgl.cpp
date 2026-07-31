@@ -10,8 +10,8 @@
 using namespace Pinetime::Components;
 
 namespace {
-  void InitTheme() {
-    lv_theme_t* theme = lv_pinetime_theme_init();
+  void InitTheme(Pinetime::Controllers::FS* filesystem) {
+    lv_theme_t* theme = lv_pinetime_theme_init(filesystem);
     lv_theme_set_act(theme);
   }
 
@@ -78,10 +78,10 @@ LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Controllers::FS& 
 
 void LittleVgl::Init() {
   lv_init();
-  InitTheme();
+  InitFileSystem();
+  InitTheme(&filesystem);
   InitDisplay();
   InitTouchpad();
-  InitFileSystem();
 }
 
 void LittleVgl::InitDisplay() {
