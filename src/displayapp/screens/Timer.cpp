@@ -83,6 +83,7 @@ Timer::~Timer() {
   auto timerStatus = timer.GetTimerState();
   if (timerStatus && timerStatus->expired) {
     motorController.StopRinging();
+    wakeLock.Release();
     timer.ResetExpiredTime();
   }
 
