@@ -18,8 +18,10 @@ class Source(object):
         self.symbols = d.get('symbols')
 
 
-def gen_lvconv_line(lv_font_conv: str, dest: str, size: int, bpp: int, sources: typing.List[Source], compress:bool=False):
+def gen_lvconv_line(lv_font_conv: str, dest: str, size: int, bpp: int, sources: typing.List[Source], compress:bool=False, subpixel:bool=False):
     args = [lv_font_conv, '--size', str(size), '--output', dest, '--bpp', str(bpp), '--format', 'lvgl']
+    if subpixel:
+        args.append('--lcd')
     if not compress:
         args.append('--no-compress')
     for source in sources:
