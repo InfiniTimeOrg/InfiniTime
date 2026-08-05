@@ -250,6 +250,8 @@ Before running this step, wait to receive `0x10`, `0x04`, `0x01` which indicates
 
 Once all of these steps are complete, the DFU is complete. Don't forget to validate the firmware in the settings.
 
+![BLE firmware upgrade sequence diagram](ble/dfu_sequence.png "BLE firmware upgrade sequence diagram")
+
 ---
 
 ### Music Control
