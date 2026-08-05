@@ -1,6 +1,7 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/Styles.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -17,7 +18,8 @@ CheckboxList::CheckboxList(const uint8_t screenID,
                            const char* optionsSymbol,
                            uint32_t originalValue,
                            std::function<void(uint32_t)> OnValueChanged,
-                           std::array<Item, MaxItems> options)
+                           std::array<Item, MaxItems> options,
+                           const char* optionsHelptext)
   : screenID {screenID},
     OnValueChanged {std::move(OnValueChanged)},
     options {options},
@@ -52,6 +54,17 @@ CheckboxList::CheckboxList(const uint8_t screenID,
   lv_label_set_text_static(icon, optionsSymbol);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
+
+  lv_obj_t* helptext;
+  if (optionsHelptext != nullptr) {
+    helptext = lv_label_create(lv_scr_act(), nullptr);
+    lv_label_set_align(helptext, LV_LABEL_ALIGN_CENTER);
+    lv_label_set_long_mode(helptext, LV_LABEL_LONG_SROLL_CIRC);
+    lv_obj_set_width(helptext, LV_HOR_RES);
+    lv_obj_set_style_local_text_color(helptext, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+    lv_label_set_text_static(helptext, optionsHelptext);
+    lv_obj_align(helptext, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  }
 
   for (unsigned int i = 0; i < options.size(); i++) {
     if (strcmp(options[i].name, "")) {
