@@ -46,27 +46,24 @@ AlertNotificationService::AlertNotificationService(System::SystemTask& systemTas
 
 int AlertNotificationService::OnAlert(struct ble_gatt_access_ctxt* ctxt) {
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
-    constexpr size_t stringTerminatorSize = 1; // end of string '\0'
-    constexpr size_t headerSize = 3;
-    const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
-    const auto maxBufferSize {maxMessageSize + headerSize};
+    constexpr uint32_t headerSize = 3;
+    constexpr uint32_t maxMessageSize = NotificationManager::MaximumMessageSize();
 
     // Ignore notifications with empty message
-    const auto packetLen = OS_MBUF_PKTLEN(ctxt->om);
+    const uint32_t packetLen = OS_MBUF_PKTLEN(ctxt->om);
     if (packetLen <= headerSize) {
       return 0;
     }
 
-    size_t bufferSize = std::min(packetLen + stringTerminatorSize, maxBufferSize);
-    auto messageSize = std::min(maxMessageSize, (bufferSize - headerSize));
-    Categories category;
+    const uint32_t messageSize = std::min(maxMessageSize, packetLen - headerSize);
 
     NotificationManager::Notification notif;
-    os_mbuf_copydata(ctxt->om, headerSize, messageSize - 1, notif.message.data());
-    os_mbuf_copydata(ctxt->om, 0, 1, &category);
-    notif.message[messageSize - 1] = '\0';
+    os_mbuf_copydata(ctxt->om, headerSize, messageSize, notif.message.data());
+    notif.message[messageSize] = '\0';
     notif.size = messageSize;
 
+    Categories category;
+    os_mbuf_copydata(ctxt->om, 0, 1, &category);
     // TODO convert all ANS categories to NotificationController categories
     switch (category) {
       case Categories::Call:
@@ -77,9 +74,8 @@ int AlertNotificationService::OnAlert(struct ble_gatt_access_ctxt* ctxt) {
         break;
     }
 
-    auto event = Pinetime::System::Messages::OnNewNotification;
     notificationManager.Push(std::move(notif));
-    systemTask.PushMessage(event);
+    systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
   }
   return 0;
 }
