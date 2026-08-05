@@ -43,6 +43,7 @@ HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, Syst
 
   lv_label_set_text_static(label_hr, "---");
   lv_obj_align(label_hr, nullptr, LV_ALIGN_CENTER, 0, -40);
+  lv_obj_set_auto_realign(label_hr, true);
 
   label_bpm = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(label_bpm, "Heart rate BPM");
@@ -87,7 +88,7 @@ void HeartRate::Refresh() {
       if (heartRateController.HeartRate() == 0) {
         lv_label_set_text_static(label_hr, "---");
       } else {
-        lv_label_set_text_fmt(label_hr, "%03d", heartRateController.HeartRate());
+        lv_label_set_text_fmt(label_hr, "%d", heartRateController.HeartRate());
       }
   }
 
