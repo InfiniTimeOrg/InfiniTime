@@ -20,6 +20,8 @@ namespace Pinetime::Applications {
       uint32_t epochSecs;
     };
 
+    TimeSeparated ConvertTicksToTimeSegments(const TickType_t timeElapsed);
+
     class StopWatch : public Screen {
     public:
       explicit StopWatch(System::SystemTask& systemTask, Controllers::StopWatchController& stopWatchController);
