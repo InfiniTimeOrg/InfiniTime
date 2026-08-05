@@ -22,7 +22,10 @@ namespace Pinetime {
         NotifyDeviceActivity,
         ShowPairingKey,
         AlarmTriggered,
-        Chime,
+        FullHourChime,
+        QuarterHourChime,
+        HalfHourChime,
+        ThreeQuarterHourChime,
         BleRadioEnableToggle,
       };
     }
