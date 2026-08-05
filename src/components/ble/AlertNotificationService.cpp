@@ -47,9 +47,7 @@ AlertNotificationService::AlertNotificationService(System::SystemTask& systemTas
 int AlertNotificationService::OnAlert(struct ble_gatt_access_ctxt* ctxt) {
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     constexpr size_t stringTerminatorSize = 1; // end of string '\0'
-    constexpr size_t headerSize = 3;
-    const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
-    const auto maxBufferSize {maxMessageSize + headerSize};
+    size_t headerSize = 3;
 
     // Ignore notifications with empty message
     const auto packetLen = OS_MBUF_PKTLEN(ctxt->om);
@@ -57,13 +55,21 @@ int AlertNotificationService::OnAlert(struct ble_gatt_access_ctxt* ctxt) {
       return 0;
     }
 
+    Categories category;
+    os_mbuf_copydata(ctxt->om, 0, 1, &category);
+
+    if (category != Categories::CustomHuami) {
+      headerSize = 2;
+    }
+
+    const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
+    const auto maxBufferSize {maxMessageSize + headerSize};
+
     size_t bufferSize = std::min(packetLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = std::min(maxMessageSize, (bufferSize - headerSize));
-    Categories category;
 
     NotificationManager::Notification notif;
     os_mbuf_copydata(ctxt->om, headerSize, messageSize - 1, notif.message.data());
-    os_mbuf_copydata(ctxt->om, 0, 1, &category);
     notif.message[messageSize - 1] = '\0';
     notif.size = messageSize;
 
