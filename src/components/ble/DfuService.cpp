@@ -211,10 +211,24 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
     }
       return 0;
     default:
-      // Invalid state
+      // Data arriving in a state that cannot consume it. Report it once - reporting every
+      // stray packet would flood the notification path - so the host learns it is talking
+      // to a watch parked mid-transfer instead of waiting for a reply that never comes.
+      if (!strayPacketReported) {
+        strayPacketReported = true;
+        SendInvalidState(connectionHandle, Opcodes::ReceiveFirmwareImage);
+      }
       return 0;
   }
   return 0;
+}
+
+void DfuService::SendInvalidState(uint16_t connectionHandle, Opcodes opcode) {
+  uint8_t data[4] {static_cast<uint8_t>(Opcodes::Response),
+                   static_cast<uint8_t>(opcode),
+                   static_cast<uint8_t>(ErrorCodes::InvalidState),
+                   static_cast<uint8_t>(state)};
+  notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 4);
 }
 
 int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
@@ -225,6 +239,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
     case Opcodes::StartDFU: {
       if (state != States::Idle && state != States::Start) {
         NRF_LOG_INFO("[DFU] -> Start DFU requested, but we are not in Idle state");
+        SendInvalidState(connectionHandle, Opcodes::StartDFU);
         return 0;
       }
       if (state == States::Start) {
@@ -249,6 +264,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
     case Opcodes::InitDFUParameters: {
       if (state != States::Init) {
         NRF_LOG_INFO("[DFU] -> Init DFU requested, but we are not in Init state");
+        SendInvalidState(connectionHandle, Opcodes::InitDFUParameters);
         return 0;
       }
       bool isInitComplete = (om->om_data[1] != 0);
@@ -270,6 +286,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
     case Opcodes::ReceiveFirmwareImage:
       if (state != States::Init) {
         NRF_LOG_INFO("[DFU] -> Receive firmware image requested, but we are not in Start Init");
+        SendInvalidState(connectionHandle, Opcodes::ReceiveFirmwareImage);
         return 0;
       }
       // TODO the chunk size is dependent of the implementation of the host application...
@@ -280,6 +297,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
     case Opcodes::ValidateFirmware: {
       if (state != States::Validate) {
         NRF_LOG_INFO("[DFU] -> Validate firmware image requested, but we are not in Data state %d", state);
+        SendInvalidState(connectionHandle, Opcodes::ValidateFirmware);
         return 0;
       }
 
@@ -310,6 +328,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
     case Opcodes::ActivateImageAndReset:
       if (state != States::Validated) {
         NRF_LOG_INFO("[DFU] -> Activate image and reset requested, but we are not in Validated state");
+        SendInvalidState(connectionHandle, Opcodes::ActivateImageAndReset);
         return 0;
       }
       NRF_LOG_INFO("[DFU] -> Activate image and reset!");
@@ -328,6 +347,7 @@ void DfuService::OnTimeout() {
 
 void DfuService::Reset() {
   state = States::Idle;
+  strayPacketReported = false;
   nbPacketsToNotify = 0;
   nbPacketReceived = 0;
   bytesReceived = 0;
