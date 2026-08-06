@@ -145,7 +145,13 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
         vTaskDelay(pdMS_TO_TICKS(5));
       }
 
+      // Erasing the image slot takes far longer than the 10s inactivity timeout, and that
+      // timer runs on the FreeRTOS timer task, so it fires while this call blocks. Its
+      // Reset() zeroes applicationSize, the erase then completes and the transfer carries
+      // on with a zero-length image. Hold the timeout off for the duration of the erase.
+      xTimerStop(timeoutTimer, 0);
       dfuImage.Erase();
+      xTimerStart(timeoutTimer, 0);
 
       uint8_t data[] {16, 1, 1};
       notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 3);
