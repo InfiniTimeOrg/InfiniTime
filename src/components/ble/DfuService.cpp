@@ -138,11 +138,21 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
                    bootloaderSize,
                    applicationSize);
 
-      // Wait until SystemTask has disabled sleeping
+      // Wait until SystemTask has disabled sleeping.
       // This isn't quite correct, as we don't actually know
-      // if BleFirmwareUpdateStarted has been received yet
-      while (!systemTask.IsSleepDisabled()) {
+      // if BleFirmwareUpdateStarted has been received yet.
+      // Bounded on purpose: this runs on the BLE host task, so waiting here forever stalls
+      // every GATT operation and leaves disconnect events unprocessed, and the watch cannot
+      // advertise again until it is rebooted. If the wake lock never arrives, continue
+      // without it - a DFU that races the sleep timer beats a radio wedged until reboot.
+      constexpr uint8_t sleepLockWaitTicks = 200; // 200 * 5ms = 1s
+      uint8_t waited = 0;
+      while (!systemTask.IsSleepDisabled() && waited < sleepLockWaitTicks) {
         vTaskDelay(pdMS_TO_TICKS(5));
+        waited++;
+      }
+      if (!systemTask.IsSleepDisabled()) {
+        NRF_LOG_INFO("[DFU] -> Wake lock never arrived, continuing anyway");
       }
 
       dfuImage.Erase();
