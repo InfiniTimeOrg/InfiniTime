@@ -44,11 +44,11 @@ Steps::Steps(Controllers::MotionController& motionController, Controllers::Setti
   lv_obj_align(lStepsYesterday, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
   lv_obj_set_auto_realign(lStepsYesterday, true);
 
-  lv_obj_t* lstepsGoal = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(lstepsGoal, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
-  lv_label_set_text_fmt(lstepsGoal, "Goal: %5lu", settingsController.GetStepsGoal());
-  lv_label_set_align(lstepsGoal, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(lstepsGoal, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 40);
+  lStepsGoal = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(lStepsGoal, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
+  lv_label_set_align(lStepsGoal, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(lStepsGoal, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 40);
+  lv_obj_set_auto_realign(lStepsGoal, true);
 
   resetBtn = lv_btn_create(lv_scr_act(), nullptr);
   resetBtn->user_data = this;
@@ -62,7 +62,8 @@ Steps::Steps(Controllers::MotionController& motionController, Controllers::Setti
 
   tripLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(tripLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-  lv_obj_align(tripLabel, lstepsGoal, LV_ALIGN_IN_LEFT_MID, 0, 20);
+  lv_obj_align(tripLabel, lStepsGoal, LV_ALIGN_IN_LEFT_MID, 0, 20);
+  lv_obj_set_auto_realign(tripLabel, true);
 
   Refresh();
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
@@ -76,14 +77,16 @@ Steps::~Steps() {
 void Steps::Refresh() {
   stepsCount = motionController.NbSteps();
   currentTripSteps = motionController.GetTripSteps();
+  stepsGoal = settingsController.GetStepsGoal();
 
-  if (stepsCount.IsUpdated()) {
+  if (stepsCount.IsUpdated() || stepsGoal.IsUpdated()) {
     lv_label_set_text_fmt(lSteps, "%lu", stepsCount.Get());
+    lv_label_set_text_fmt(lStepsGoal, "Goal: %5lu", stepsGoal.Get());
     lv_label_set_text_fmt(lStepsYesterday, "Yest: %5lu", motionController.NbSteps(Days::Yesterday));
-    lv_arc_set_value(stepsArc, int16_t(500 * stepsCount.Get() / settingsController.GetStepsGoal()));
+    lv_arc_set_value(stepsArc, int16_t(500 * stepsCount.Get() / stepsGoal.Get()));
   }
 
-  if (currentTripSteps.IsUpdated()) { // Can be because of Reset button pressed
+  if (currentTripSteps.IsUpdated()) {
     if (currentTripSteps.Get() < 100000) {
       lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps.Get());
     } else {

@@ -31,15 +31,16 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
 
         Utility::DirtyValue<uint32_t> currentTripSteps {};
+        Utility::DirtyValue<uint32_t> stepsCount {};
+        Utility::DirtyValue<uint32_t> stepsGoal {};
 
         lv_obj_t* lSteps;
         lv_obj_t* lStepsYesterday;
+        lv_obj_t* lStepsGoal;
         lv_obj_t* stepsArc;
         lv_obj_t* resetBtn;
         lv_obj_t* resetButtonLabel;
         lv_obj_t* tripLabel;
-
-        Utility::DirtyValue<uint32_t> stepsCount {};
 
         lv_task_t* taskRefresh;
       };
