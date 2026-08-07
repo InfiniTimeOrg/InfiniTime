@@ -173,7 +173,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
         } else {
           // don't update id, notification manager will try to fetch
           // but not find it. Refresh will try to load latest message
-          // or dismiss to watchface
+          // or dismiss to previous screen
         }
         DismissToBlack();
         return true;
