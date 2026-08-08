@@ -138,6 +138,15 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
                    bootloaderSize,
                    applicationSize);
 
+      // From here until the response below, this task blocks and cannot service BLE:
+      // first the unbounded wait for SystemTask to disable sleeping, then the image-slot
+      // erase, which can approach or exceed the 10s inactivity timeout (116 sectors at a
+      // datasheet-max 300ms each). The timer runs on the FreeRTOS timer task, so it fires
+      // while this task is blocked; its Reset() zeroes applicationSize, the erase then
+      // completes and the transfer carries on with a zero-length image. Hold the timeout
+      // off until this handler can react to packets again.
+      xTimerStop(timeoutTimer, 0);
+
       // Wait until SystemTask has disabled sleeping
       // This isn't quite correct, as we don't actually know
       // if BleFirmwareUpdateStarted has been received yet
@@ -145,11 +154,6 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
         vTaskDelay(pdMS_TO_TICKS(5));
       }
 
-      // Erasing the image slot takes far longer than the 10s inactivity timeout, and that
-      // timer runs on the FreeRTOS timer task, so it fires while this call blocks. Its
-      // Reset() zeroes applicationSize, the erase then completes and the transfer carries
-      // on with a zero-length image. Hold the timeout off for the duration of the erase.
-      xTimerStop(timeoutTimer, 0);
       dfuImage.Erase();
       xTimerStart(timeoutTimer, 0);
 
