@@ -1,0 +1,23 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "binaryDir": "build/${presetName}",
+            "name": "Release",
+            "displayName": "Release build",
+            "cacheVariables": {
+                "ARM_NONE_EABI_TOOLCHAIN_PATH": "${fileDir}/sdk-toolchain/gcc-arm-none-eabi-10.3-2021.10",
+                "NRF5_SDK_PATH": "${fileDir}/sdk-toolchain/nRF5_SDK_15.3.0_59ac345",
+                "CMAKE_BUILD_TYPE": "Release",
+                "BUILD_DFU": "1",
+                "BUILD_RESOURCES": "1"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Release",
+            "configurePreset": "Release"
+        }
+    ]
+}
