@@ -4,6 +4,7 @@
 #include <nrf_log.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -79,9 +80,9 @@ SettingSetDate::SettingSetDate(Pinetime::Controllers::DateTime& dateTimeControll
 
   btnSetTime = lv_btn_create(lv_scr_act(), nullptr);
   btnSetTime->user_data = this;
-  lv_obj_set_size(btnSetTime, 120, 48);
+  lv_obj_set_size(btnSetTime, LV_HOR_RES_MAX - 38, 50);
   lv_obj_align(btnSetTime, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_obj_set_style_local_bg_color(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
+  lv_obj_set_style_local_bg_color(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
   lblSetTime = lv_label_create(btnSetTime, nullptr);
   lv_label_set_text_static(lblSetTime, "Set");
   lv_obj_set_event_cb(btnSetTime, event_handler);
