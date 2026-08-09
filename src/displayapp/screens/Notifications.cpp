@@ -285,7 +285,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
   lv_obj_align(alert_count, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
 
-  lv_obj_t* alert_type = lv_label_create(container, nullptr);
+  alert_type = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
   if (title == nullptr) {
     lv_label_set_text_static(alert_type, "Notification");
@@ -299,7 +299,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
     }
     lv_label_refr_text(alert_type);
   }
-  lv_label_set_long_mode(alert_type, LV_LABEL_LONG_SROLL_CIRC);
+  lv_label_set_long_mode(alert_type, LV_LABEL_LONG_CROP);
   lv_obj_set_width(alert_type, 180);
   lv_obj_align(alert_type, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 16);
 
@@ -349,6 +349,15 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_set_style_local_bg_color(bt_mute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
     } break;
   }
+  refreshTask = lv_task_create(Notifications::NotificationItem::Refresh, 1000, LV_TASK_PRIO_MID, this);
+  //lv_task_once(refreshTask); // The documentation says it exists, but I was unable to compile
+}
+
+void Notifications::NotificationItem::Refresh(lv_task_t* tsk) {
+  static_cast<Notifications::NotificationItem*>(tsk->user_data)->StartTitleScroll();
+  lv_task_del(tsk); // This substitutes the call to lv_task_once
+  // This method can be updated in the future for implementing other features.
+  // For now it is executed one single time after 1 second and then deleted.
 }
 
 void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_t event) {
@@ -371,4 +380,9 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
 
 Notifications::NotificationItem::~NotificationItem() {
   lv_obj_clean(lv_scr_act());
+  lv_task_del(refreshTask);
+}
+
+void Notifications::NotificationItem::StartTitleScroll(){
+  lv_label_set_long_mode(this->alert_type, LV_LABEL_LONG_SROLL_CIRC);
 }
