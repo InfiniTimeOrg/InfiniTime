@@ -28,7 +28,7 @@ AI agents are AIs that are configured to perform interactions or make changes wi
 ## Agreement
 
 1. If content was made with the help of AI, you must convey that this is the case. This includes content that you authored but was motivated by a suggestion of AI.
-2. If at any point you used AI's work in your contribution you should make an effort to verify that you can submit this under the license of the repository.
+2. If at any point you used AI's work in your contribution you must make an effort to verify that you can submit this under the license of the repository.
 3. The accountability of using AI in a contribution lies with the person that makes that contribution.
 4. All communication, that includes: **commit messages**, **pull request messages**, **documentation**, **code comments** and **issues** (and comments on issues/pull requests), that is intended to be read by people to understand your thoughts and work must not have been generated with AI. We exclude machine translation and tooling that helps with grammar and spelling check.
 5. Using general AI for review is forbidden. Changes have to be approved by a human reviewer.
