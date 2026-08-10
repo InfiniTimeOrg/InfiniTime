@@ -26,7 +26,7 @@ namespace Pinetime {
     template <>
     struct AppTraits<Apps::ClimbLogger> {
       static constexpr Apps app = Apps::ClimbLogger;
-      static constexpr const char* icon = Screens::Symbols::shoe;
+      static constexpr const char* icon = Screens::Symbols::mountain;
 
       static Screens::Screen* Create(AppControllers& /*controllers*/) {
         // Step 3+ will pass filesystem/motor controllers through here once
