@@ -33,6 +33,7 @@ AI agents are AIs that are configured to perform interactions or make changes wi
 4. All communication, that includes: **commit messages**, **pull request messages**, **documentation**, **code comments** and **issues** (and comments on issues/pull requests), that is intended to be read by people to understand your thoughts and work must not have been generated with AI. We exclude machine translation and tooling that helps with grammar and spelling check.
 5. Using general AI for review is forbidden. Changes have to be approved by a human reviewer.
 6. It is not allowed to use AI in an autonomous-looking way to contribute in InfiniTime (i.e. solely using 'agent mode' or 'vibe coding'). To ensure the long-term maintainability and sustainability of the project, we require authors to have read **and** understand the code they submit themselves.
+7. Commit messages must not contain advertisements for AI services/agents. This includes Co-authored-by lines and similar statements within the message text.
 
 ## License
 
