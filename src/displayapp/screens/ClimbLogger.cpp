@@ -222,14 +222,18 @@ void ClimbLogger::ShowAttemptsStep() {
 }
 
 void ClimbLogger::OnButtonMatrixEvent(lv_obj_t* obj, lv_event_t event) {
-  // VALUE_CHANGED (not PRESSED) matters here: lv_btnmatrix fires it once,
-  // on release, once the press/release gesture has fully resolved against
-  // the *current* button matrix. This handler rebuilds the whole screen
-  // (destroying this exact button matrix) in response, so reacting to
-  // PRESSED instead re-triggers against the freshly-created matrix at the
-  // same coordinates while the input device is still mid-gesture, cascading
-  // through several steps on a single tap.
-  if (obj != buttonMatrix || event != LV_EVENT_VALUE_CHANGED) {
+  // CLICKED matters here, not PRESSED or (perhaps counter-intuitively)
+  // VALUE_CHANGED. lv_btnmatrix's ctrl_bits default LV_BTNMATRIX_CTRL_CLICK_TRIG
+  // to off (see allocate_btn_areas_and_controls's memset), and with that bit
+  // off, lv_btnmatrix fires its own VALUE_CHANGED signal on *press*, same
+  // timing problem as PRESSED. CLICKED, in contrast, is sent generically by
+  // lv_indev.c itself only once a press/release gesture has fully resolved
+  // against the *current* object. This handler rebuilds the whole screen
+  // (destroying this exact button matrix) in response to a selection, so
+  // anything that can fire on press-down re-triggers against the
+  // freshly-created matrix at the same coordinates while the input device
+  // is still mid-gesture, cascading through several steps on one tap.
+  if (obj != buttonMatrix || event != LV_EVENT_CLICKED) {
     return;
   }
   const char* text = lv_btnmatrix_get_active_btn_text(buttonMatrix);
