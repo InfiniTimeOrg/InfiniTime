@@ -6,7 +6,6 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/Controllers.h"
 #include "displayapp/screens/Symbols.h"
-#include "displayapp/widgets/Counter.h"
 #include <lvgl/lvgl.h>
 
 namespace Pinetime {
@@ -17,70 +16,61 @@ namespace Pinetime {
 
   namespace Applications {
     namespace Screens {
-      // Defined in ClimbLogger.cpp, alongside the hard-coded catalog
-      // fixture. Step 3 replaces the fixture with a real read of
-      // catalog.csv from LittleFS; this shape is expected to survive
-      // that move (it matches CLAUDE.md's catalog record data model).
-      struct CatalogEntry;
-
-      // Roadmap Step 2: filter (area -> colour -> grade [-> climb if the
-      // filter doesn't land on exactly one]) -> result -> attempts, against
-      // the hard-coded catalog fixture. A single Screen instance rebuilds
-      // its widgets per step rather than pushing separate Screen objects,
-      // matching the pattern FirmwareUpdate.h uses for its own multi-step
-      // flow with an internal `enum class States`.
+      // Gym -> Style -> Type -> Grade -> Attempt, then logged immediately
+      // (no separate confirm step). A single Screen instance rebuilds its
+      // button matrix per step rather than pushing separate Screen
+      // objects, matching the pattern FirmwareUpdate.h uses for its own
+      // multi-step flow with an internal `enum class States`.
+      //
+      // Every step remembers the previous log's choice: the matching
+      // option is pre-checked when a step's screen opens, so repeating the
+      // same climb type is a single confirming tap per step. Remembered
+      // values are in-memory only for the current run of the app — real
+      // on-device persistence is a later roadmap step.
       class ClimbLogger : public Screen {
       public:
         ClimbLogger(Controllers::MotorController& motorController, Controllers::DateTime& dateTimeController);
         ~ClimbLogger() override;
 
         void OnButtonMatrixEvent(lv_obj_t* obj, lv_event_t event);
-        void OnLogButtonEvent(lv_obj_t* obj, lv_event_t event);
 
-        // Max distinct options offered at any one filter step. Public so
-        // the free helper functions in ClimbLogger.cpp (which build those
-        // option lists ahead of a ClimbLogger method call) can size their
-        // buffers against it.
+        // Max distinct options offered at any one step. Public so the free
+        // helper functions in ClimbLogger.cpp (which build those option
+        // lists ahead of a ClimbLogger method call) can size their buffers
+        // against it.
         static constexpr size_t kMaxOptions = 8;
 
       private:
-        enum class Step { Area, Colour, Grade, Climb, Result, Attempts };
-        enum class Result { Flash, Send, Fell, Project };
+        enum class Step { Gym, Style, Type, Grade, Attempt };
 
         Controllers::MotorController& motorController;
         Controllers::DateTime& dateTimeController;
 
-        Step step = Step::Area;
-        const char* selectedArea = nullptr;
-        const char* selectedColour = nullptr;
+        Step step = Step::Gym;
+
+        // Current step's picks, and — since never cleared on log — also
+        // next time's remembered defaults.
+        const char* selectedGym = nullptr;
+        const char* selectedStyle = nullptr;
+        const char* selectedType = nullptr;
         const char* selectedGrade = nullptr;
-        const CatalogEntry* selectedClimb = nullptr;
-        Result selectedResult = Result::Send;
+        const char* selectedAttempt = nullptr;
 
         // Backing storage for the lv_btnmatrix map of the current step
         // ("\n"-separated rows, "" terminator) — sized for kMaxOptions
-        // one-per-row buttons plus separators and the terminator.
+        // buttons plus one separator per row plus the terminator.
         std::array<const char*, kMaxOptions * 2 + 1> optionsMap {};
 
         lv_obj_t* titleLabel = nullptr;
         lv_obj_t* buttonMatrix = nullptr;
-        lv_obj_t* logButton = nullptr;
-        Widgets::Counter attemptsCounter = Widgets::Counter(1, 20, jetbrains_mono_42);
 
         void ShowStep();
-        void ShowOptionsStep(const char* title, const char* const* options, size_t count);
-        void ShowResultStep();
-        void ShowAttemptsStep();
-
-        size_t CollectAreas(std::array<const char*, kMaxOptions>& out) const;
-        size_t CollectColours(std::array<const char*, kMaxOptions>& out) const;
-        size_t CollectGrades(std::array<const char*, kMaxOptions>& out) const;
-        size_t CollectMatchingClimbs(std::array<const CatalogEntry*, kMaxOptions>& out) const;
+        void ShowOptionsStep(const char* title, const char* const* options, size_t count, const char* rememberedValue);
 
         void OnOptionSelected(const char* text);
         void LogAndReset();
 
-        static const char* ToResultString(Result result);
+        bool IsBoulderStyle() const;
       };
     }
 
