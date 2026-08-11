@@ -222,7 +222,14 @@ void ClimbLogger::ShowAttemptsStep() {
 }
 
 void ClimbLogger::OnButtonMatrixEvent(lv_obj_t* obj, lv_event_t event) {
-  if (obj != buttonMatrix || event != LV_EVENT_PRESSED) {
+  // VALUE_CHANGED (not PRESSED) matters here: lv_btnmatrix fires it once,
+  // on release, once the press/release gesture has fully resolved against
+  // the *current* button matrix. This handler rebuilds the whole screen
+  // (destroying this exact button matrix) in response, so reacting to
+  // PRESSED instead re-triggers against the freshly-created matrix at the
+  // same coordinates while the input device is still mid-gesture, cascading
+  // through several steps on a single tap.
+  if (obj != buttonMatrix || event != LV_EVENT_VALUE_CHANGED) {
     return;
   }
   const char* text = lv_btnmatrix_get_active_btn_text(buttonMatrix);
