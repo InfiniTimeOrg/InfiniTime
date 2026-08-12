@@ -30,9 +30,9 @@ namespace Pinetime {
 
         lv_task_t* taskRefresh;
 
-        Utility::DirtyValue<uint8_t> batteryPercent{};
-        Utility::DirtyValue<uint16_t> batteryVoltage{};
-        Utility::DirtyValue<bool> batteryCharging{};
+        Utility::DirtyValue<uint8_t> batteryPercent {};
+        Utility::DirtyValue<uint16_t> batteryVoltage {};
+        Utility::DirtyValue<bool> batteryCharging {};
       };
     }
   }

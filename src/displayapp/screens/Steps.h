@@ -30,7 +30,7 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
         Controllers::Settings& settingsController;
 
-        Utility::DirtyValue<uint32_t> currentTripSteps{};
+        Utility::DirtyValue<uint32_t> currentTripSteps {};
 
         lv_obj_t* lSteps;
         lv_obj_t* lStepsYesterday;
@@ -39,7 +39,7 @@ namespace Pinetime {
         lv_obj_t* resetButtonLabel;
         lv_obj_t* tripLabel;
 
-        Utility::DirtyValue<uint32_t> stepsCount{};
+        Utility::DirtyValue<uint32_t> stepsCount {};
 
         lv_task_t* taskRefresh;
       };
