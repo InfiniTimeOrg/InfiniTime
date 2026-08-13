@@ -180,7 +180,7 @@ void ClimbLogger::WriteLogEntry() {
   char line[128];
   int len = std::snprintf(line,
                            sizeof(line),
-                           "%04d-%02d-%02d %02d:%02d:%02d,%s,%s,%s,%s,%s\n",
+                           "%04d-%02d-%02d %02d:%02d:%02d,%s,%s,%s,%s,%s",
                            dateTimeController.Year(),
                            static_cast<int>(dateTimeController.Month()),
                            dateTimeController.Day(),
@@ -212,5 +212,11 @@ void ClimbLogger::WriteLogEntry() {
     return;
   }
   filesystem.FileWrite(&logFile, reinterpret_cast<const uint8_t*>(line), writeLen);
+  filesystem.FileWrite(&logFile, reinterpret_cast<const uint8_t*>("\n"), 1);
   filesystem.FileClose(&logFile);
+
+  // Host-visible confirmation that the write actually happened, on top of
+  // (not instead of) the real file write above -- helpful during sim
+  // development without needing a make pull-log round-trip every time.
+  NRF_LOG_INFO("ClimbLogger: logged %s", line);
 }
