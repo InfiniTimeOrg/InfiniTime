@@ -1,7 +1,9 @@
 #include "displayapp/screens/ClimbLogger.h"
 
+#include <chrono>
 #include <cstdio>
 #include <cstring>
+#include <ctime>
 #include <iterator>
 #include <nrf_log.h>
 #include "components/motor/MotorController.h"
@@ -174,19 +176,30 @@ void ClimbLogger::LogAndReset() {
 }
 
 void ClimbLogger::WriteLogEntry() {
+  // UTC, ISO 8601 ("Z" = zero offset) -- deliberately not local time.
+  // dateTimeController.Year()/Hours()/etc. read `localTime`, adjusted by
+  // whatever timezone/DST offset the companion app last sent over BLE
+  // (0 if it never has, e.g. in the simulator); UTCDateTime() undoes that
+  // adjustment. Storing UTC keeps the log unambiguous regardless of
+  // where/whether that offset was ever set correctly -- local-time
+  // display, if wanted, is a host-side concern for whatever ingests
+  // log.csv later (Step 6), not something to bake into the file.
+  const std::time_t utcTimeT = std::chrono::system_clock::to_time_t(dateTimeController.UTCDateTime());
+  const std::tm* utcTm = std::gmtime(&utcTimeT);
+
   // Same field order as CLAUDE.md's denormalised log record (timestamp,
   // then a copy of each catalog-ish field so the row still means
   // something after Gym/Style/Type/Grade option lists change later).
   char line[128];
   int len = std::snprintf(line,
                            sizeof(line),
-                           "%04d-%02d-%02d %02d:%02d:%02d,%s,%s,%s,%s,%s",
-                           dateTimeController.Year(),
-                           static_cast<int>(dateTimeController.Month()),
-                           dateTimeController.Day(),
-                           dateTimeController.Hours(),
-                           dateTimeController.Minutes(),
-                           dateTimeController.Seconds(),
+                           "%04d-%02d-%02dT%02d:%02d:%02dZ,%s,%s,%s,%s,%s",
+                           utcTm->tm_year + 1900,
+                           utcTm->tm_mon + 1,
+                           utcTm->tm_mday,
+                           utcTm->tm_hour,
+                           utcTm->tm_min,
+                           utcTm->tm_sec,
                            selectedGym,
                            selectedStyle,
                            selectedType,
