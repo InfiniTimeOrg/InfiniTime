@@ -29,7 +29,9 @@ namespace Pinetime {
       // on-device persistence is a later roadmap step.
       class ClimbLogger : public Screen {
       public:
-        ClimbLogger(Controllers::MotorController& motorController, Controllers::DateTime& dateTimeController);
+        ClimbLogger(Controllers::MotorController& motorController,
+                    Controllers::DateTime& dateTimeController,
+                    Controllers::FS& filesystem);
         ~ClimbLogger() override;
 
         void OnButtonMatrixEvent(lv_obj_t* obj, lv_event_t event);
@@ -45,6 +47,7 @@ namespace Pinetime {
 
         Controllers::MotorController& motorController;
         Controllers::DateTime& dateTimeController;
+        Controllers::FS& filesystem;
 
         Step step = Step::Gym;
 
@@ -69,6 +72,7 @@ namespace Pinetime {
 
         void OnOptionSelected(const char* text);
         void LogAndReset();
+        void WriteLogEntry();
 
         bool IsBoulderStyle() const;
       };
@@ -80,7 +84,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::mountain;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::ClimbLogger(controllers.motorController, controllers.dateTimeController);
+        return new Screens::ClimbLogger(controllers.motorController, controllers.dateTimeController, controllers.filesystem);
       }
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

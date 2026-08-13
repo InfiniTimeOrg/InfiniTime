@@ -1,10 +1,12 @@
 #include "displayapp/screens/ClimbLogger.h"
 
+#include <cstdio>
 #include <cstring>
 #include <iterator>
 #include <nrf_log.h>
 #include "components/motor/MotorController.h"
 #include "components/datetime/DateTimeController.h"
+#include "components/fs/FS.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -25,8 +27,10 @@ namespace {
   }
 }
 
-ClimbLogger::ClimbLogger(Controllers::MotorController& motorController, Controllers::DateTime& dateTimeController)
-  : motorController {motorController}, dateTimeController {dateTimeController} {
+ClimbLogger::ClimbLogger(Controllers::MotorController& motorController,
+                          Controllers::DateTime& dateTimeController,
+                          Controllers::FS& filesystem)
+  : motorController {motorController}, dateTimeController {dateTimeController}, filesystem {filesystem} {
   ShowStep();
 }
 
@@ -159,21 +163,7 @@ void ClimbLogger::OnOptionSelected(const char* text) {
 }
 
 void ClimbLogger::LogAndReset() {
-  // Step 4 replaces this stdout line with an appended row in log.csv, in
-  // the same field order as CLAUDE.md's denormalised log record.
-  NRF_LOG_INFO("ClimbLogger: %04d-%02d-%02d %02d:%02d:%02d,%s,%s,%s,%s,%s",
-               dateTimeController.Year(),
-               static_cast<int>(dateTimeController.Month()),
-               dateTimeController.Day(),
-               dateTimeController.Hours(),
-               dateTimeController.Minutes(),
-               dateTimeController.Seconds(),
-               selectedGym,
-               selectedStyle,
-               selectedType,
-               selectedGrade,
-               selectedAttempt);
-
+  WriteLogEntry();
   motorController.RunForDuration(30);
 
   // Deliberately not clearing selectedGym/selectedStyle/selectedType/
@@ -181,4 +171,46 @@ void ClimbLogger::LogAndReset() {
   // defaults, pre-checked in ShowOptionsStep.
   step = Step::Gym;
   ShowStep();
+}
+
+void ClimbLogger::WriteLogEntry() {
+  // Same field order as CLAUDE.md's denormalised log record (timestamp,
+  // then a copy of each catalog-ish field so the row still means
+  // something after Gym/Style/Type/Grade option lists change later).
+  char line[128];
+  int len = std::snprintf(line,
+                           sizeof(line),
+                           "%04d-%02d-%02d %02d:%02d:%02d,%s,%s,%s,%s,%s\n",
+                           dateTimeController.Year(),
+                           static_cast<int>(dateTimeController.Month()),
+                           dateTimeController.Day(),
+                           dateTimeController.Hours(),
+                           dateTimeController.Minutes(),
+                           dateTimeController.Seconds(),
+                           selectedGym,
+                           selectedStyle,
+                           selectedType,
+                           selectedGrade,
+                           selectedAttempt);
+  if (len <= 0) {
+    return;
+  }
+  const size_t writeLen = static_cast<size_t>(len) < sizeof(line) ? static_cast<size_t>(len) : sizeof(line) - 1;
+
+  // Directory may not exist yet on a fresh filesystem — same
+  // open-then-create-on-failure idiom AlarmController uses for
+  // /.system before writing into it.
+  lfs_dir_t climbsDir;
+  if (filesystem.DirOpen("/climbs", &climbsDir) != LFS_ERR_OK) {
+    filesystem.DirCreate("/climbs");
+  }
+  filesystem.DirClose(&climbsDir);
+
+  lfs_file_t logFile;
+  if (filesystem.FileOpen(&logFile, "/climbs/log.csv", LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND) != LFS_ERR_OK) {
+    NRF_LOG_WARNING("[ClimbLogger] Failed to open log.csv for appending");
+    return;
+  }
+  filesystem.FileWrite(&logFile, reinterpret_cast<const uint8_t*>(line), writeLen);
+  filesystem.FileClose(&logFile);
 }
