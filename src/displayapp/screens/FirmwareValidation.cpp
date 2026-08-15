@@ -1,4 +1,5 @@
 #include "displayapp/screens/FirmwareValidation.h"
+#include <cstdio>
 #include <lvgl/lvgl.h>
 #include "Version.h"
 #include "components/firmwarevalidator/FirmwareValidator.h"
@@ -29,12 +30,18 @@ FirmwareValidation::FirmwareValidation(Pinetime::Controllers::FirmwareValidator&
 
   labelVersion = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(labelVersion, true);
+
+  char versionStr[24];
+  if (Version::BuildTag()[0] != '\0') {
+    snprintf(versionStr, sizeof(versionStr), "%lu.%lu.%lu.%s", Version::Major(), Version::Minor(), Version::Patch(), Version::BuildTag());
+  } else {
+    snprintf(versionStr, sizeof(versionStr), "%lu.%lu.%lu", Version::Major(), Version::Minor(), Version::Patch());
+  }
+
   lv_label_set_text_fmt(labelVersion,
-                        "#808080 Version# %lu.%lu.%lu\n"
+                        "#808080 Version# %s\n"
                         "#808080 Short Ref# %s\n",
-                        Version::Major(),
-                        Version::Minor(),
-                        Version::Patch(),
+                        versionStr,
                         Version::GitCommitHash());
   lv_obj_align(labelVersion, nullptr, LV_ALIGN_CENTER, 0, -40);
   lv_label_set_align(labelVersion, LV_LABEL_ALIGN_CENTER);

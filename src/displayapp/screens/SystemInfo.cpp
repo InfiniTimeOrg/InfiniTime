@@ -1,5 +1,6 @@
 #include <FreeRTOS.h>
 #include <algorithm>
+#include <cstdio>
 #include <task.h>
 #include "displayapp/screens/SystemInfo.h"
 #include <lvgl/lvgl.h>
@@ -79,17 +80,23 @@ bool SystemInfo::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
+
+  char versionStr[24];
+  if (Version::BuildTag()[0] != '\0') {
+    snprintf(versionStr, sizeof(versionStr), "%ld.%ld.%ld.%s", Version::Major(), Version::Minor(), Version::Patch(), Version::BuildTag());
+  } else {
+    snprintf(versionStr, sizeof(versionStr), "%ld.%ld.%ld", Version::Major(), Version::Minor(), Version::Patch());
+  }
+
   lv_label_set_text_fmt(label,
                         "#FFFF00 InfiniTime#\n\n"
-                        "#808080 Version# %ld.%ld.%ld\n"
+                        "#808080 Version# %s\n"
                         "#808080 Short Ref# %s\n"
                         "#808080 Build date#\n"
                         "%s\n"
                         "%s\n\n"
                         "#808080 Bootloader# %s",
-                        Version::Major(),
-                        Version::Minor(),
-                        Version::Patch(),
+                        versionStr,
                         Version::GitCommitHash(),
                         __DATE__,
                         __TIME__,

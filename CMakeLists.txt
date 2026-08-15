@@ -37,6 +37,15 @@ set_property(CACHE TARGET_DEVICE PROPERTY STRINGS PINETIME MOY_TFK5 MOY_TIN5 MOY
 
 set(PROJECT_GIT_COMMIT_HASH "")
 
+# Optional custom build tag (e.g. "om001"), appended to the on-watch version
+# display (Settings > System info, and the post-flash validation screen) so
+# a ClimbLogger dev build is unmistakable from an official InfiniTime
+# release at a glance. Left empty for a plain "1.16.0"-style display when
+# not set (e.g. simulator builds, or a manual cmake invocation) -- the
+# top-level project's `make firmware` target sets this to an incrementing
+# om<NNN> value on every real hardware build.
+set(CLIMBLOGGER_BUILD_TAG "" CACHE STRING "Custom build tag suffix shown on-watch (e.g. om001); empty for a plain official-style version")
+
 execute_process(COMMAND git rev-parse --short HEAD
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                 OUTPUT_VARIABLE PROJECT_GIT_COMMIT_HASH
@@ -53,6 +62,9 @@ message("    * Mode : " ${CMAKE_BUILD_TYPE})
 message("    * Version : " ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
 message("    * Toolchain : " ${ARM_NONE_EABI_TOOLCHAIN_PATH})
 message("    * GitRef(S) : " ${PROJECT_GIT_COMMIT_HASH})
+if(CLIMBLOGGER_BUILD_TAG)
+  message("    * ClimbLogger build tag : " ${CLIMBLOGGER_BUILD_TAG})
+endif()
 message("    * NRF52 SDK : " ${NRF5_SDK_PATH})
 message("    * Target device : " ${TARGET_DEVICE})
 if(BUILD_DFU)

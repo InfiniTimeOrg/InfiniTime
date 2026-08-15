@@ -12,11 +12,16 @@ namespace Pinetime {
       static constexpr uint32_t Patch() {return patch;}
       static constexpr const char* GitCommitHash() {return commitHash;}
       static constexpr const char* VersionString() {return versionString;}
+      // Empty ("") for an official-style build; a non-empty tag (e.g.
+      // "om001") marks a custom ClimbLogger dev build -- see CMakeLists.txt's
+      // CLIMBLOGGER_BUILD_TAG.
+      static constexpr const char* BuildTag() {return buildTag;}
     private:
       static constexpr uint32_t major = @PROJECT_VERSION_MAJOR@;
       static constexpr uint32_t minor = @PROJECT_VERSION_MINOR@;
       static constexpr uint32_t patch = @PROJECT_VERSION_PATCH@;
       static constexpr const char* commitHash = "@PROJECT_GIT_COMMIT_HASH@";
       static constexpr const char* versionString = "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@";
+      static constexpr const char* buildTag = "@CLIMBLOGGER_BUILD_TAG@";
   };
 }
