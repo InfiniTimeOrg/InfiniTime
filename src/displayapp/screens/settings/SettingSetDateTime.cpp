@@ -4,7 +4,6 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/ScreenList.h"
 #include "components/settings/Settings.h"
-#include "displayapp/widgets/DotIndicator.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -29,14 +28,10 @@ SettingSetDateTime::SettingSetDateTime(Pinetime::Applications::DisplayApp* app,
 }
 
 std::unique_ptr<Screen> SettingSetDateTime::screenSetDate() {
-  Widgets::DotIndicator dotIndicator(0, 2);
-  dotIndicator.Create();
   return std::make_unique<Screens::SettingSetDate>(dateTimeController, *this);
 }
 
 std::unique_ptr<Screen> SettingSetDateTime::screenSetTime() {
-  Widgets::DotIndicator dotIndicator(1, 2);
-  dotIndicator.Create();
   return std::make_unique<Screens::SettingSetTime>(dateTimeController, settingsController, *this);
 }
 
