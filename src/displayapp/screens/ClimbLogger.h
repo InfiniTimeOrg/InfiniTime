@@ -25,8 +25,12 @@ namespace Pinetime {
       // Every step remembers the previous log's choice: the matching
       // option is pre-checked when a step's screen opens, so repeating the
       // same climb type is a single confirming tap per step. Remembered
-      // values are in-memory only for the current run of the app — real
-      // on-device persistence is a later roadmap step.
+      // values are written to a small /climbs/last_selection.csv after
+      // each successful log and read back in the constructor, so they
+      // survive this Screen object being destroyed and recreated --
+      // whether from exiting the app, screen timeout, or anything else --
+      // rather than relying on in-memory state alone. See
+      // LoadRememberedSelections / SaveRememberedSelections.
       class ClimbLogger : public Screen {
       public:
         ClimbLogger(Controllers::MotorController& motorController,
@@ -73,6 +77,8 @@ namespace Pinetime {
         void OnOptionSelected(const char* text);
         void LogAndReset();
         void WriteLogEntry();
+        void LoadRememberedSelections();
+        void SaveRememberedSelections();
 
         bool IsBoulderStyle() const;
       };

@@ -23,9 +23,28 @@ namespace {
   constexpr const char* fontScaleGrades[] = {"5+", "6a", "6a+", "6b", "6b+", "6c", "6c+", "7a"};
   constexpr const char* attemptOptions[] = {"Send", "Did Not Finish"};
 
+  constexpr const char* kSelectionFile = "/climbs/last_selection.csv";
+
   void ButtonMatrixEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<ClimbLogger*>(obj->user_data);
     screen->OnButtonMatrixEvent(obj, event);
+  }
+
+  // Finds the literal pointer within `options` matching `text`, so callers
+  // can point straight at static storage (the same option-list literals
+  // ShowOptionsStep already compares against) instead of pointing into a
+  // buffer that won't outlive the read. Returns nullptr on no match (e.g.
+  // an option list changed since the remembered selection was saved).
+  const char* FindOption(const char* const* options, size_t count, const char* text) {
+    if (text == nullptr) {
+      return nullptr;
+    }
+    for (size_t i = 0; i < count; i++) {
+      if (std::strcmp(options[i], text) == 0) {
+        return options[i];
+      }
+    }
+    return nullptr;
   }
 }
 
@@ -33,6 +52,7 @@ ClimbLogger::ClimbLogger(Controllers::MotorController& motorController,
                           Controllers::DateTime& dateTimeController,
                           Controllers::FS& filesystem)
   : motorController {motorController}, dateTimeController {dateTimeController}, filesystem {filesystem} {
+  LoadRememberedSelections();
   ShowStep();
 }
 
@@ -166,6 +186,7 @@ void ClimbLogger::OnOptionSelected(const char* text) {
 
 void ClimbLogger::LogAndReset() {
   WriteLogEntry();
+  SaveRememberedSelections();
   motorController.RunForDuration(30);
 
   // Deliberately not clearing selectedGym/selectedStyle/selectedType/
@@ -232,4 +253,66 @@ void ClimbLogger::WriteLogEntry() {
   // (not instead of) the real file write above -- helpful during sim
   // development without needing a make pull-log round-trip every time.
   NRF_LOG_INFO("ClimbLogger: logged %s", line);
+}
+
+void ClimbLogger::SaveRememberedSelections() {
+  // LogAndReset() is the only caller, after all five steps are picked, so
+  // these should never be null here -- but guard anyway rather than write
+  // a line with a literal "(null)" in it if that assumption ever breaks.
+  if (selectedGym == nullptr || selectedStyle == nullptr || selectedType == nullptr || selectedGrade == nullptr ||
+      selectedAttempt == nullptr) {
+    return;
+  }
+
+  char line[96];
+  int len =
+    std::snprintf(line, sizeof(line), "%s,%s,%s,%s,%s", selectedGym, selectedStyle, selectedType, selectedGrade, selectedAttempt);
+  if (len <= 0) {
+    return;
+  }
+  const size_t writeLen = static_cast<size_t>(len) < sizeof(line) ? static_cast<size_t>(len) : sizeof(line) - 1;
+
+  // /climbs is guaranteed to already exist by the time this runs -- it's
+  // only ever called right after WriteLogEntry(), which creates it first.
+  lfs_file_t file;
+  if (filesystem.FileOpen(&file, kSelectionFile, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC) != LFS_ERR_OK) {
+    NRF_LOG_WARNING("[ClimbLogger] Failed to open last_selection.csv for writing");
+    return;
+  }
+  filesystem.FileWrite(&file, reinterpret_cast<const uint8_t*>(line), writeLen);
+  filesystem.FileClose(&file);
+}
+
+void ClimbLogger::LoadRememberedSelections() {
+  lfs_file_t file;
+  if (filesystem.FileOpen(&file, kSelectionFile, LFS_O_RDONLY) != LFS_ERR_OK) {
+    return; // nothing remembered yet (fresh filesystem, or never logged) -- fine, steps just start blank
+  }
+  char buf[96];
+  int readLen = filesystem.FileRead(&file, reinterpret_cast<uint8_t*>(buf), sizeof(buf) - 1);
+  filesystem.FileClose(&file);
+  if (readLen <= 0) {
+    return;
+  }
+  buf[readLen] = '\0';
+
+  // strtok, not strtok_r: this runs single-threaded on the display task, so
+  // the non-reentrant version's shared internal state isn't a concern here.
+  const char* gymText = std::strtok(buf, ",\n");
+  const char* styleText = gymText != nullptr ? std::strtok(nullptr, ",\n") : nullptr;
+  const char* typeText = styleText != nullptr ? std::strtok(nullptr, ",\n") : nullptr;
+  const char* gradeText = typeText != nullptr ? std::strtok(nullptr, ",\n") : nullptr;
+  const char* attemptText = gradeText != nullptr ? std::strtok(nullptr, ",\n") : nullptr;
+
+  // Look up each parsed token against the current option lists rather than
+  // pointing straight at `buf` (a local that won't outlive this call) --
+  // also means a stale value from a since-changed option list quietly
+  // resolves to nullptr (no pre-check) instead of a dangling/bogus pointer.
+  selectedGym = FindOption(gymOptions, std::size(gymOptions), gymText);
+  selectedStyle = FindOption(styleOptions, std::size(styleOptions), styleText);
+  selectedType = FindOption(typeOptions, std::size(typeOptions), typeText);
+  // Grade ladder depends on style, already resolved above.
+  selectedGrade = IsBoulderStyle() ? FindOption(vScaleGrades, std::size(vScaleGrades), gradeText)
+                                    : FindOption(fontScaleGrades, std::size(fontScaleGrades), gradeText);
+  selectedAttempt = FindOption(attemptOptions, std::size(attemptOptions), attemptText);
 }
