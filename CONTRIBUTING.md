@@ -1,5 +1,8 @@
 # How to contribute?
 
+> [!WARNING]
+>All contributions must adhere to the [AI policy](AI_USAGE.md)
+
 Here are things you can do to help.
 
 - [Report bugs or issues](https://github.com/InfiniTimeOrg/InfiniTime/issues/new/choose)
