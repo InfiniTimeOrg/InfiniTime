@@ -1,5 +1,6 @@
 #include <FreeRTOS.h>
 #include <algorithm>
+#include <cinttypes>
 #include <cstdio>
 #include <task.h>
 #include "displayapp/screens/SystemInfo.h"
@@ -83,9 +84,15 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
 
   char versionStr[24];
   if (Version::BuildTag()[0] != '\0') {
-    snprintf(versionStr, sizeof(versionStr), "%u.%u.%u.%s", Version::Major(), Version::Minor(), Version::Patch(), Version::BuildTag());
+    snprintf(versionStr,
+             sizeof(versionStr),
+             "%" PRIu32 ".%" PRIu32 ".%" PRIu32 ".%s",
+             Version::Major(),
+             Version::Minor(),
+             Version::Patch(),
+             Version::BuildTag());
   } else {
-    snprintf(versionStr, sizeof(versionStr), "%u.%u.%u", Version::Major(), Version::Minor(), Version::Patch());
+    snprintf(versionStr, sizeof(versionStr), "%" PRIu32 ".%" PRIu32 ".%" PRIu32, Version::Major(), Version::Minor(), Version::Patch());
   }
 
   lv_label_set_text_fmt(label,
