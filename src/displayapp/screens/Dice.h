@@ -5,6 +5,7 @@
 #include "displayapp/widgets/Counter.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 #include <array>
 #include <random>
@@ -35,8 +36,8 @@ namespace Pinetime {
         uint8_t currentColorIndex;
         void NextColor();
 
-        Widgets::Counter nCounter = Widgets::Counter(1, 9, jetbrains_mono_42);
-        Widgets::Counter dCounter = Widgets::Counter(2, 99, jetbrains_mono_42);
+        Widgets::Counter nCounter = Widgets::Counter(1, 9, *Fonts::large);
+        Widgets::Counter dCounter = Widgets::Counter(2, 99, *Fonts::large);
 
         bool openingRoll = true;
         uint8_t currentRollHysteresis = 0;

@@ -3,6 +3,7 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -147,7 +148,7 @@ WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController
   lv_label_set_recolor(labelTime, true);
   lv_obj_align(labelTime, lv_scr_act(), LV_ALIGN_CENTER, 0, -1);
   lv_label_set_align(labelTime, LV_LABEL_ALIGN_CENTER);
-  lv_obj_set_style_local_text_font(labelTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_font(labelTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::large);
   lv_obj_set_auto_realign(labelTime, true);
 
   labelDay = lv_label_create(lv_scr_act(), nullptr);
