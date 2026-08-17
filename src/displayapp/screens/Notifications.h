@@ -7,6 +7,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
+#include "components/settings/Settings.h"
 #include "systemtask/SystemTask.h"
 #include "systemtask/WakeLock.h"
 
@@ -25,6 +26,7 @@ namespace Pinetime {
                                Pinetime::Controllers::NotificationManager& notificationManager,
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                Pinetime::Controllers::MotorController& motorController,
+                               Pinetime::Controllers::Settings& settingsController,
                                System::SystemTask& systemTask,
                                Modes mode);
         ~Notifications() override;
@@ -38,14 +40,16 @@ namespace Pinetime {
         class NotificationItem {
         public:
           NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                           Pinetime::Controllers::MotorController& motorController);
+                           Pinetime::Controllers::MotorController& motorController,
+                           Pinetime::Controllers::Settings& settingsController);
           NotificationItem(const char* title,
                            const char* msg,
                            uint8_t notifNr,
                            Controllers::NotificationManager::Categories,
                            uint8_t notifNb,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                           Pinetime::Controllers::MotorController& motorController);
+                           Pinetime::Controllers::MotorController& motorController,
+                           Pinetime::Controllers::Settings& settingsController);
           ~NotificationItem();
 
           bool IsRunning() const {
@@ -65,6 +69,7 @@ namespace Pinetime {
           lv_obj_t* label_reject;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           Pinetime::Controllers::MotorController& motorController;
+          Pinetime::Controllers::Settings& settingsController;
 
           bool running = true;
         };
@@ -74,6 +79,7 @@ namespace Pinetime {
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::AlertNotificationService& alertNotificationService;
         Pinetime::Controllers::MotorController& motorController;
+        Pinetime::Controllers::Settings& settingsController;
         System::WakeLock wakeLock;
         Modes mode = Modes::Normal;
         std::unique_ptr<NotificationItem> currentItem;
@@ -85,7 +91,7 @@ namespace Pinetime {
         lv_obj_t* timeoutLine = nullptr;
         TickType_t timeoutTickCountStart;
 
-        static const TickType_t timeoutLength = pdMS_TO_TICKS(7000);
+        const TickType_t timeoutLength = pdMS_TO_TICKS(settingsController.GetNotificationTimeout());
         bool interacted = true;
 
         bool dismissingNotification = false;
