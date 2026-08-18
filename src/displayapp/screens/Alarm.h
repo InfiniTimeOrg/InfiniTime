@@ -31,7 +31,7 @@ namespace Pinetime {
       class Alarm : public Screen {
       public:
         explicit Alarm(Controllers::AlarmController& alarmController,
-                       Controllers::Settings::ClockType clockType,
+                       Controllers::Settings& settingsController,
                        System::SystemTask& systemTask,
                        Controllers::MotorController& motorController);
         ~Alarm() override;
@@ -44,6 +44,7 @@ namespace Pinetime {
 
       private:
         Controllers::AlarmController& alarmController;
+        Controllers::Settings& settingsController;
         System::WakeLock wakeLock;
         Controllers::MotorController& motorController;
 
@@ -74,7 +75,7 @@ namespace Pinetime {
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Alarm(controllers.alarmController,
-                                  controllers.settingsController.GetClockType(),
+                                  controllers.settingsController,
                                   *controllers.systemTask,
                                   controllers.motorController);
       };

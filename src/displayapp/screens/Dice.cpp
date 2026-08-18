@@ -4,8 +4,10 @@
 #include "components/settings/Settings.h"
 #include "components/motor/MotorController.h"
 #include "components/motion/MotionController.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   lv_obj_t* MakeLabel(lv_font_t* font,
@@ -166,10 +168,10 @@ void Dice::Roll() {
     if (dCounter.GetValue() == 2) {
       switch (resultTotal) {
         case 1:
-          lv_label_set_text(resultIndividualLabel, "HEADS");
+          lv_label_set_text(resultIndividualLabel, Translate(settingsController.GetLanguage(), StringId::Heads));
           break;
         case 2:
-          lv_label_set_text(resultIndividualLabel, "TAILS");
+          lv_label_set_text(resultIndividualLabel, Translate(settingsController.GetLanguage(), StringId::Tails));
           break;
       }
     }

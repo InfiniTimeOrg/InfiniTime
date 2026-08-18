@@ -3,13 +3,16 @@
 #include "components/ble/BleController.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
-FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) : bleController {bleController} {
+FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController, Pinetime::Controllers::Settings& settingsController)
+  : bleController {bleController}, settingsController {settingsController} {
 
   titleLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(titleLabel, "Firmware update");
+  lv_label_set_text_static(titleLabel, Translate(settingsController.GetLanguage(), StringId::FirmwareUpdate));
   lv_obj_align(titleLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 50);
 
   bar1 = lv_bar_create(lv_scr_act(), nullptr);
@@ -22,7 +25,7 @@ FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) 
   lv_bar_set_value(bar1, 0, LV_ANIM_OFF);
 
   percentLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(percentLabel, "Waiting...");
+  lv_label_set_text_static(percentLabel, Translate(settingsController.GetLanguage(), StringId::Waiting));
   lv_label_set_recolor(percentLabel, true);
   lv_obj_set_auto_realign(percentLabel, true);
   lv_obj_align(percentLabel, bar1, LV_ALIGN_OUT_TOP_MID, 0, 60);
@@ -85,11 +88,11 @@ void FirmwareUpdate::DisplayProgression() const {
 }
 
 void FirmwareUpdate::UpdateValidated() {
-  lv_label_set_text_static(percentLabel, "#00ff00 Image Ok!#");
+  lv_label_set_text_fmt(percentLabel, "#00ff00 %s#", Translate(settingsController.GetLanguage(), StringId::ImageOk));
 }
 
 void FirmwareUpdate::UpdateError() {
-  lv_label_set_text_static(percentLabel, "#ff0000 Error!#");
+  lv_label_set_text_fmt(percentLabel, "#ff0000 %s#", Translate(settingsController.GetLanguage(), StringId::Error));
   startTime = xTaskGetTickCount();
 }
 

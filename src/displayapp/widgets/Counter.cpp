@@ -87,7 +87,7 @@ void Counter::UpdateLabel() {
       lv_label_set_text_fmt(number, "%.*i", leadingZeroCount, value - 12);
     }
   } else if (monthMode) {
-    lv_label_set_text(number, Controllers::DateTime::MonthShortToStringLow(static_cast<Controllers::DateTime::Months>(value)));
+    lv_label_set_text(number, Controllers::DateTime::MonthShortToStringLow(static_cast<Controllers::DateTime::Months>(value), monthLanguage));
   } else {
     lv_label_set_text_fmt(number, "%.*i", leadingZeroCount, value);
   }
@@ -101,8 +101,9 @@ void Counter::EnableTwelveHourMode() {
 
 // Value is kept between 1 and 12, but the displayed value is the corresponding month
 // Make sure to set the max and min values to 1 and 12. Otherwise behaviour is undefined
-void Counter::EnableMonthMode() {
+void Counter::EnableMonthMode(Pinetime::Controllers::Settings::Language language) {
   monthMode = true;
+  monthLanguage = language;
 }
 
 // Counter cannot be resized after creation,

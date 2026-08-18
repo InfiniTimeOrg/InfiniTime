@@ -31,7 +31,7 @@ SettingSetDateTime::SettingSetDateTime(Pinetime::Applications::DisplayApp* app,
 std::unique_ptr<Screen> SettingSetDateTime::screenSetDate() {
   Widgets::DotIndicator dotIndicator(0, 2);
   dotIndicator.Create();
-  return std::make_unique<Screens::SettingSetDate>(dateTimeController, *this);
+  return std::make_unique<Screens::SettingSetDate>(dateTimeController, settingsController, *this);
 }
 
 std::unique_ptr<Screen> SettingSetDateTime::screenSetTime() {

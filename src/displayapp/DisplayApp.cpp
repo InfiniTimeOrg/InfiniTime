@@ -52,6 +52,7 @@
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingBluetooth.h"
 #include "displayapp/screens/settings/SettingOTA.h"
+#include "displayapp/screens/settings/SettingLanguage.h"
 
 #include "utility/Math.h"
 
@@ -549,14 +550,14 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       settingsController.SetAppMenu(0);
     } break;
     case Apps::Error:
-      currentScreen = std::make_unique<Screens::Error>(bootError);
+      currentScreen = std::make_unique<Screens::Error>(bootError, settingsController);
       break;
 
     case Apps::FirmwareValidation:
-      currentScreen = std::make_unique<Screens::FirmwareValidation>(validator);
+      currentScreen = std::make_unique<Screens::FirmwareValidation>(validator, settingsController);
       break;
     case Apps::FirmwareUpdate:
-      currentScreen = std::make_unique<Screens::FirmwareUpdate>(bleController);
+      currentScreen = std::make_unique<Screens::FirmwareUpdate>(bleController, settingsController);
       break;
 
     case Apps::PassKey:
@@ -568,6 +569,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                notificationManager,
                                                                systemTask->nimble().alertService(),
                                                                motorController,
+                                                               settingsController,
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Normal);
       break;
@@ -576,6 +578,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                notificationManager,
                                                                systemTask->nimble().alertService(),
                                                                motorController,
+                                                               settingsController,
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Preview);
       break;
@@ -634,8 +637,11 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::SettingOTA:
       currentScreen = std::make_unique<Screens::SettingOTA>(this, settingsController);
       break;
+    case Apps::SettingLanguage:
+      currentScreen = std::make_unique<Screens::SettingLanguage>(this, settingsController);
+      break;
     case Apps::BatteryInfo:
-      currentScreen = std::make_unique<Screens::BatteryInfo>(batteryController);
+      currentScreen = std::make_unique<Screens::BatteryInfo>(batteryController, settingsController);
       break;
     case Apps::SysInfo:
       currentScreen = std::make_unique<Screens::SystemInfo>(this,

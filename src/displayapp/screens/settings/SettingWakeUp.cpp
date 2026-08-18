@@ -4,9 +4,11 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
 #include "components/settings/Settings.h"
+#include "displayapp/localization/Localization.h"
 #include "displayapp/screens/Styles.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   void event_handler(lv_obj_t* obj, lv_event_t event) {
@@ -31,7 +33,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Controllers::Settings& settingsController
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Wake Up");
+  lv_label_set_text_static(title, Translate(settingsController.GetLanguage(), StringId::WakeUp));
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
@@ -43,7 +45,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Controllers::Settings& settingsController
 
   for (unsigned int i = 0; i < options.size(); i++) {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
-    lv_checkbox_set_text_static(cbOption[i], options[i].name);
+    lv_checkbox_set_text_static(cbOption[i], Translate(settingsController.GetLanguage(), options[i].name));
     if (settingsController.isWakeUpModeOn(static_cast<Controllers::Settings::WakeUpMode>(i))) {
       lv_checkbox_set_checked(cbOption[i], true);
     }

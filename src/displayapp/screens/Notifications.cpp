@@ -5,8 +5,10 @@
 #include "displayapp/screens/Symbols.h"
 #include <algorithm>
 #include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
 
@@ -14,12 +16,14 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::MotorController& motorController,
+                             Pinetime::Controllers::Settings& settingsController,
                              System::SystemTask& systemTask,
                              Modes mode)
   : app {app},
     notificationManager {notificationManager},
     alertNotificationService {alertNotificationService},
     motorController {motorController},
+    settingsController {settingsController},
     wakeLock(systemTask),
     mode {mode} {
 
@@ -33,10 +37,11 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.category,
                                                      notificationManager.NbNotifications(),
                                                      alertNotificationService,
-                                                     motorController);
+                                                     motorController,
+                                                     settingsController.GetLanguage());
     validDisplay = true;
   } else {
-    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController, settingsController.GetLanguage());
     validDisplay = false;
   }
   if (mode == Modes::Preview) {
@@ -109,7 +114,8 @@ void Notifications::Refresh() {
                                                        notification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       settingsController.GetLanguage());
     } else {
       running = false;
     }
@@ -202,7 +208,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        previousNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       settingsController.GetLanguage());
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeUp: {
@@ -229,7 +236,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        nextNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       settingsController.GetLanguage());
     }
       return true;
     default:
@@ -245,14 +253,16 @@ namespace {
 }
 
 Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController)
-  : NotificationItem("Notifications",
-                     "No notifications to display",
+                                                  Pinetime::Controllers::MotorController& motorController,
+                                                  Language language)
+  : NotificationItem(Translate(language, StringId::Notifications),
+                     Translate(language, StringId::NoNotifications),
                      0,
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
                      alertNotificationService,
-                     motorController) {
+                     motorController,
+                     language) {
 }
 
 Notifications::NotificationItem::NotificationItem(const char* title,
@@ -261,8 +271,9 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Controllers::NotificationManager::Categories category,
                                                   uint8_t notifNb,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController)
-  : alertNotificationService {alertNotificationService}, motorController {motorController} {
+                                                  Pinetime::Controllers::MotorController& motorController,
+                                                  Language language)
+  : alertNotificationService {alertNotificationService}, motorController {motorController}, language {language} {
   container = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
@@ -288,7 +299,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_t* alert_type = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
   if (title == nullptr) {
-    lv_label_set_text_static(alert_type, "Notification");
+    lv_label_set_text_static(alert_type, Translate(language, StringId::Notification));
   } else {
     // copy title to label and replace newlines with spaces
     lv_label_set_text(alert_type, title);
@@ -313,7 +324,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       break;
     case Controllers::NotificationManager::Categories::IncomingCall: {
       lv_obj_set_height(subject_container, 108);
-      lv_label_set_text_static(alert_subject, "Incoming call from");
+      lv_label_set_text_static(alert_subject, Translate(language, StringId::IncomingCallFrom));
 
       lv_obj_t* alert_caller = lv_label_create(subject_container, nullptr);
       lv_obj_align(alert_caller, alert_subject, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);

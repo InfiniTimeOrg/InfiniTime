@@ -123,8 +123,11 @@ namespace Pinetime {
       const char* DayOfWeekShortToString() const;
       const char* DayOfWeekToString() const;
       static const char* MonthShortToStringLow(Months month);
+      static const char* MonthShortToStringLow(Months month, Controllers::Settings::Language language);
       static const char* DayOfWeekShortToStringLow(Days day);
+      static const char* DayOfWeekShortToStringLow(Days day, Controllers::Settings::Language language);
       static const char* DayOfWeekToStringLow(Days day);
+      static const char* DayOfWeekToStringLow(Days day, Controllers::Settings::Language language);
 
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime();
 

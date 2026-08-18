@@ -2,9 +2,11 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/localization/Localization.h"
 #include <lvgl/lvgl.h>
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<Timer*>(obj->user_data);
@@ -17,8 +19,11 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-Timer::Timer(Controllers::Timer& timerController, Controllers::MotorController& motorController, System::SystemTask& systemTask)
-  : timer {timerController}, motorController {motorController}, wakeLock(systemTask) {
+Timer::Timer(Controllers::Timer& timerController,
+             Controllers::Settings& settingsController,
+             Controllers::MotorController& motorController,
+             System::SystemTask& systemTask)
+  : timer {timerController}, settingsController {settingsController}, motorController {motorController}, wakeLock(systemTask) {
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -99,7 +104,7 @@ void Timer::MaskReset() {
   // A click event is processed before a release event,
   // so the release event would override the "Pause" text without this check
   if (!timer.IsRunning()) {
-    lv_label_set_text_static(txtPlayPause, "Start");
+    lv_label_set_text_static(txtPlayPause, Translate(settingsController.GetLanguage(), StringId::Start));
   }
   maskPosition = 0;
   UpdateMask();
@@ -135,7 +140,7 @@ void Timer::Refresh() {
   } else if (timer.IsRunning()) {
     DisplayTime();
   } else if (buttonPressing && xTaskGetTickCount() - pressTime > pdMS_TO_TICKS(150)) {
-    lv_label_set_text_static(txtPlayPause, "Reset");
+    lv_label_set_text_static(txtPlayPause, Translate(settingsController.GetLanguage(), StringId::Reset));
     maskPosition += 15;
     if (maskPosition > 240) {
       MaskReset();
@@ -158,14 +163,14 @@ void Timer::DisplayTime() {
 void Timer::SetTimerRunning() {
   minuteCounter.HideControls();
   secondCounter.HideControls();
-  lv_label_set_text_static(txtPlayPause, "Pause");
+  lv_label_set_text_static(txtPlayPause, Translate(settingsController.GetLanguage(), StringId::Pause));
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
 }
 
 void Timer::SetTimerStopped() {
   minuteCounter.ShowControls();
   secondCounter.ShowControls();
-  lv_label_set_text_static(txtPlayPause, "Start");
+  lv_label_set_text_static(txtPlayPause, Translate(settingsController.GetLanguage(), StringId::Start));
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
 }
 
@@ -174,7 +179,7 @@ void Timer::SetTimerRinging() {
   wakeLock.Lock();
   minuteCounter.HideControls();
   secondCounter.HideControls();
-  lv_label_set_text_static(txtPlayPause, "Reset");
+  lv_label_set_text_static(txtPlayPause, Translate(settingsController.GetLanguage(), StringId::Reset));
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
 }
 

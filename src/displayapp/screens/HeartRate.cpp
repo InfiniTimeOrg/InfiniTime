@@ -4,20 +4,22 @@
 
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
-  const char* ToString(Pinetime::Controllers::HeartRateController::States s) {
+  const char* ToString(Pinetime::Controllers::Settings& settingsController, Pinetime::Controllers::HeartRateController::States s) {
     switch (s) {
       case Pinetime::Controllers::HeartRateController::States::NotEnoughData:
-        return "Not enough data,\nplease wait...";
+        return Translate(settingsController.GetLanguage(), StringId::NotEnoughData);
       case Pinetime::Controllers::HeartRateController::States::NoTouch:
-        return "No touch detected";
+        return Translate(settingsController.GetLanguage(), StringId::NoTouchDetected);
       case Pinetime::Controllers::HeartRateController::States::Running:
-        return "Measuring...";
+        return Translate(settingsController.GetLanguage(), StringId::Measuring);
       case Pinetime::Controllers::HeartRateController::States::Stopped:
-        return "Stopped";
+        return Translate(settingsController.GetLanguage(), StringId::Stopped);
     }
     return "";
   }
@@ -28,8 +30,10 @@ namespace {
   }
 }
 
-HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, System::SystemTask& systemTask)
-  : heartRateController {heartRateController}, wakeLock(systemTask) {
+HeartRate::HeartRate(Controllers::HeartRateController& heartRateController,
+                     Controllers::Settings& settingsController,
+                     System::SystemTask& systemTask)
+  : heartRateController {heartRateController}, settingsController {settingsController}, wakeLock(systemTask) {
   bool isHrRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
   label_hr = lv_label_create(lv_scr_act(), nullptr);
 
@@ -45,12 +49,12 @@ HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, Syst
   lv_obj_align(label_hr, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   label_bpm = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(label_bpm, "Heart rate BPM");
+  lv_label_set_text_static(label_bpm, Translate(settingsController.GetLanguage(), StringId::HeartRateBpm));
   lv_obj_align(label_bpm, label_hr, LV_ALIGN_OUT_TOP_MID, 0, -20);
 
   label_status = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_status, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-  lv_label_set_text_static(label_status, ToString(Pinetime::Controllers::HeartRateController::States::NotEnoughData));
+  lv_label_set_text_static(label_status, ToString(settingsController, Pinetime::Controllers::HeartRateController::States::NotEnoughData));
 
   lv_obj_align(label_status, label_hr, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
@@ -91,7 +95,7 @@ void HeartRate::Refresh() {
       }
   }
 
-  lv_label_set_text_static(label_status, ToString(state));
+  lv_label_set_text_static(label_status, ToString(settingsController, state));
   lv_obj_align(label_status, label_hr, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 }
 
@@ -113,8 +117,8 @@ void HeartRate::OnStartStopEvent(lv_event_t event) {
 
 void HeartRate::UpdateStartStopButton(bool isRunning) {
   if (isRunning) {
-    lv_label_set_text_static(label_startStop, "Stop");
+    lv_label_set_text_static(label_startStop, Translate(settingsController.GetLanguage(), StringId::Stop));
   } else {
-    lv_label_set_text_static(label_startStop, "Start");
+    lv_label_set_text_static(label_startStop, Translate(settingsController.GetLanguage(), StringId::Start));
   }
 }

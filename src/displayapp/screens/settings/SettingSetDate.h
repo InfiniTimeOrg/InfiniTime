@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <lvgl/lvgl.h>
 #include "components/datetime/DateTimeController.h"
+#include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
 #include "displayapp/widgets/DotIndicator.h"
@@ -14,6 +15,7 @@ namespace Pinetime {
       class SettingSetDate : public Screen {
       public:
         SettingSetDate(Pinetime::Controllers::DateTime& dateTimeController,
+                       Pinetime::Controllers::Settings& settingsController,
                        Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime);
         ~SettingSetDate() override;
 
@@ -22,6 +24,7 @@ namespace Pinetime {
 
       private:
         Controllers::DateTime& dateTimeController;
+        Controllers::Settings& settingsController;
         Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime;
 
         lv_obj_t* btnSetTime;

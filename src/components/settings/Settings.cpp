@@ -33,6 +33,10 @@ void Settings::LoadSettingsFromFile() {
   fs.FileClose(&settingsFile);
   if (bufferSettings.version == settingsVersion) {
     settings = bufferSettings;
+    if (static_cast<uint8_t>(settings.language) >= static_cast<uint8_t>(Language::Count)) {
+      settings.language = Language::English;
+      settingsChanged = true;
+    }
   }
 }
 

@@ -5,8 +5,10 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   void ButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
@@ -15,9 +17,11 @@ namespace {
   }
 }
 
-FirmwareValidation::FirmwareValidation(Pinetime::Controllers::FirmwareValidator& validator) : validator {validator} {
+FirmwareValidation::FirmwareValidation(Pinetime::Controllers::FirmwareValidator& validator,
+                                       Pinetime::Controllers::Settings& settingsController)
+  : validator {validator}, settingsController {settingsController} {
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Firmware");
+  lv_label_set_text_static(title, Translate(settingsController.GetLanguage(), StringId::Firmware));
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 10, 15);
 
@@ -30,11 +34,13 @@ FirmwareValidation::FirmwareValidation(Pinetime::Controllers::FirmwareValidator&
   labelVersion = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(labelVersion, true);
   lv_label_set_text_fmt(labelVersion,
-                        "#808080 Version# %lu.%lu.%lu\n"
-                        "#808080 Short Ref# %s\n",
+                        "#808080 %s# %lu.%lu.%lu\n"
+                        "#808080 %s# %s\n",
+                        Translate(settingsController.GetLanguage(), StringId::Version),
                         Version::Major(),
                         Version::Minor(),
                         Version::Patch(),
+                        Translate(settingsController.GetLanguage(), StringId::ShortRef),
                         Version::GitCommitHash());
   lv_obj_align(labelVersion, nullptr, LV_ALIGN_CENTER, 0, -40);
   lv_label_set_align(labelVersion, LV_LABEL_ALIGN_CENTER);
@@ -46,10 +52,10 @@ FirmwareValidation::FirmwareValidation(Pinetime::Controllers::FirmwareValidator&
   lv_label_set_recolor(labelIsValidated, true);
 
   if (validator.IsValidated()) {
-    lv_label_set_text_static(labelIsValidated, "This firmware has\nbeen #00ff00 validated#");
+    lv_label_set_text_static(labelIsValidated, Translate(settingsController.GetLanguage(), StringId::FirmwareValidated));
     lv_obj_align(labelIsValidated, nullptr, LV_ALIGN_CENTER, 0, 10);
   } else {
-    lv_label_set_text_static(labelIsValidated, "Any reboot will\nrollback to last\nvalidated firmware");
+    lv_label_set_text_static(labelIsValidated, Translate(settingsController.GetLanguage(), StringId::FirmwareRollbackWarning));
 
     buttonValidate = lv_btn_create(lv_scr_act(), nullptr);
     buttonValidate->user_data = this;
@@ -59,7 +65,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Controllers::FirmwareValidator&
     lv_obj_set_style_local_bg_color(buttonValidate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
 
     labelButtonValidate = lv_label_create(buttonValidate, nullptr);
-    lv_label_set_text_static(labelButtonValidate, "Validate");
+    lv_label_set_text_static(labelButtonValidate, Translate(settingsController.GetLanguage(), StringId::Validate));
 
     buttonReset = lv_btn_create(lv_scr_act(), nullptr);
     buttonReset->user_data = this;
@@ -69,7 +75,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Controllers::FirmwareValidator&
     lv_obj_set_event_cb(buttonReset, ButtonEventHandler);
 
     labelButtonReset = lv_label_create(buttonReset, nullptr);
-    lv_label_set_text_static(labelButtonReset, "Rollback");
+    lv_label_set_text_static(labelButtonReset, Translate(settingsController.GetLanguage(), StringId::Rollback));
   }
 }
 

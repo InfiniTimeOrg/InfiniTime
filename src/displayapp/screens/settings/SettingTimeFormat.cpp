@@ -4,8 +4,10 @@
 #include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   struct Option {
@@ -46,7 +48,7 @@ SettingTimeFormat::SettingTimeFormat(Pinetime::Controllers::Settings& settingsCo
   : checkboxList(
       0,
       1,
-      "Time format",
+      Translate(settingsController.GetLanguage(), StringId::TimeFormat),
       Symbols::clock,
       GetDefaultOption(settingsController.GetClockType()),
       [&settings = settingsController](uint32_t index) {

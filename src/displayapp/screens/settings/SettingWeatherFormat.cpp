@@ -6,28 +6,30 @@
 #include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   struct Option {
     Pinetime::Controllers::Settings::WeatherFormat weatherFormat;
-    const char* name;
+    StringId name;
   };
 
   constexpr std::array<Option, 2> options = {{
-    {Pinetime::Controllers::Settings::WeatherFormat::Metric, "Metric"},
-    {Pinetime::Controllers::Settings::WeatherFormat::Imperial, "Imperial"},
+    {Pinetime::Controllers::Settings::WeatherFormat::Metric, StringId::Metric},
+    {Pinetime::Controllers::Settings::WeatherFormat::Imperial, StringId::Imperial},
   }};
 
-  std::array<CheckboxList::Item, CheckboxList::MaxItems> CreateOptionArray() {
+  std::array<CheckboxList::Item, CheckboxList::MaxItems> CreateOptionArray(Language language) {
     std::array<Pinetime::Applications::Screens::CheckboxList::Item, CheckboxList::MaxItems> optionArray;
     for (size_t i = 0; i < CheckboxList::MaxItems; i++) {
       if (i >= options.size()) {
         optionArray[i].name = "";
         optionArray[i].enabled = false;
       } else {
-        optionArray[i].name = options[i].name;
+        optionArray[i].name = Translate(language, options[i].name);
         optionArray[i].enabled = true;
       }
     }
@@ -48,14 +50,14 @@ SettingWeatherFormat::SettingWeatherFormat(Pinetime::Controllers::Settings& sett
   : checkboxList(
       0,
       1,
-      "Weather format",
+      Translate(settingsController.GetLanguage(), StringId::Weather),
       Symbols::cloudSunRain,
       GetDefaultOption(settingsController.GetWeatherFormat()),
       [&settings = settingsController](uint32_t index) {
         settings.SetWeatherFormat(options[index].weatherFormat);
         settings.SaveSettings();
       },
-      CreateOptionArray()) {
+      CreateOptionArray(settingsController.GetLanguage())) {
 }
 
 SettingWeatherFormat::~SettingWeatherFormat() {

@@ -22,10 +22,12 @@
 #include "components/settings/Settings.h"
 #include "components/alarm/AlarmController.h"
 #include "components/motor/MotorController.h"
+#include "displayapp/localization/Localization.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Applications::Screens;
 using Pinetime::Controllers::AlarmController;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   void ValueChangedHandler(void* userData) {
@@ -45,14 +47,14 @@ static void StopAlarmTaskCallback(lv_task_t* task) {
 }
 
 Alarm::Alarm(Controllers::AlarmController& alarmController,
-             Controllers::Settings::ClockType clockType,
+             Controllers::Settings& settingsController,
              System::SystemTask& systemTask,
              Controllers::MotorController& motorController)
-  : alarmController {alarmController}, wakeLock(systemTask), motorController {motorController} {
+  : alarmController {alarmController}, settingsController {settingsController}, wakeLock(systemTask), motorController {motorController} {
 
   hourCounter.Create();
   lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
-  if (clockType == Controllers::Settings::ClockType::H12) {
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
     hourCounter.EnableTwelveHourMode();
 
     lblampm = lv_label_create(lv_scr_act(), nullptr);
@@ -252,6 +254,7 @@ void Alarm::ShowInfo() {
   lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
 
   if (alarmController.IsEnabled()) {
+    const auto language = settingsController.GetLanguage();
     auto timeToAlarm = alarmController.SecondsToAlarm();
 
     auto daysToAlarm = timeToAlarm / 86400;
@@ -260,13 +263,18 @@ void Alarm::ShowInfo() {
     auto secToAlarm = timeToAlarm % 60;
 
     lv_label_set_text_fmt(txtMessage,
-                          "Time to\nalarm:\n%2lu Days\n%2lu Hours\n%2lu Minutes\n%2lu Seconds",
+                          "%s\n%2lu %s\n%2lu %s\n%2lu %s\n%2lu %s",
+                          Translate(language, StringId::TimeToAlarm),
                           daysToAlarm,
+                          Translate(language, StringId::Days),
                           hrsToAlarm,
+                          Translate(language, StringId::Hours),
                           minToAlarm,
-                          secToAlarm);
+                          Translate(language, StringId::Minutes),
+                          secToAlarm,
+                          Translate(language, StringId::Seconds));
   } else {
-    lv_label_set_text_static(txtMessage, "Alarm\nis not\nset.");
+    lv_label_set_text_static(txtMessage, Translate(settingsController.GetLanguage(), StringId::AlarmNotSet));
   }
 }
 
@@ -278,15 +286,16 @@ void Alarm::HideInfo() {
 
 void Alarm::SetRecurButtonState() {
   using Pinetime::Controllers::AlarmController;
+  const auto language = settingsController.GetLanguage();
   switch (alarmController.Recurrence()) {
     case AlarmController::RecurType::None:
-      lv_label_set_text_static(txtRecur, "ONCE");
+      lv_label_set_text_static(txtRecur, Translate(language, StringId::Once));
       break;
     case AlarmController::RecurType::Daily:
-      lv_label_set_text_static(txtRecur, "DAILY");
+      lv_label_set_text_static(txtRecur, Translate(language, StringId::Daily));
       break;
     case AlarmController::RecurType::Weekdays:
-      lv_label_set_text_static(txtRecur, "MON-FRI");
+      lv_label_set_text_static(txtRecur, Translate(language, StringId::Weekdays));
   }
 }
 

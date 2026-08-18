@@ -2,10 +2,13 @@
 #include "displayapp/DisplayApp.h"
 #include "components/battery/BatteryController.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
-BatteryInfo::BatteryInfo(const Pinetime::Controllers::Battery& batteryController) : batteryController {batteryController} {
+BatteryInfo::BatteryInfo(const Pinetime::Controllers::Battery& batteryController, Pinetime::Controllers::Settings& settingsController)
+  : batteryController {batteryController}, settingsController {settingsController} {
 
   batteryPercent = batteryController.PercentRemaining();
   batteryVoltage = batteryController.Voltage();
@@ -24,7 +27,7 @@ BatteryInfo::BatteryInfo(const Pinetime::Controllers::Battery& batteryController
   lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_LIME);
 
   status = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(status, "Reading Battery status");
+  lv_label_set_text_static(status, Translate(settingsController.GetLanguage(), StringId::ReadingBattery));
   lv_label_set_align(status, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(status, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -17);
 
@@ -36,7 +39,11 @@ BatteryInfo::BatteryInfo(const Pinetime::Controllers::Battery& batteryController
 
   voltage = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(voltage, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
-  lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltage / 1000, batteryVoltage % 1000 / 10);
+  lv_label_set_text_fmt(voltage,
+                        "%1i.%02i %s",
+                        batteryVoltage / 1000,
+                        batteryVoltage % 1000 / 10,
+                        Translate(settingsController.GetLanguage(), StringId::Volts));
   lv_label_set_align(voltage, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(voltage, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -7);
 
@@ -56,25 +63,29 @@ void BatteryInfo::Refresh() {
 
   if (batteryController.IsCharging()) {
     lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_LIME);
-    lv_label_set_text_static(status, "Charging");
+    lv_label_set_text_static(status, Translate(settingsController.GetLanguage(), StringId::Charging));
   } else if (batteryPercent == 100) {
     lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_BLUE);
-    lv_label_set_text_static(status, "Fully charged");
+    lv_label_set_text_static(status, Translate(settingsController.GetLanguage(), StringId::FullyCharged));
   } else if (batteryPercent > 15) {
     lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_GREEN);
-    lv_label_set_text_static(status, "Discharging");
+    lv_label_set_text_static(status, Translate(settingsController.GetLanguage(), StringId::Discharging));
   } else if (batteryPercent > 5) {
     lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
-    lv_label_set_text_static(status, "Battery low");
+    lv_label_set_text_static(status, Translate(settingsController.GetLanguage(), StringId::BatteryLow));
   } else {
     lv_obj_set_style_local_line_color(chargingArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, Colors::deepOrange);
-    lv_label_set_text_static(status, "Battery critical");
+    lv_label_set_text_static(status, Translate(settingsController.GetLanguage(), StringId::BatteryCritical));
   }
 
   lv_label_set_text_fmt(percent, "%i%%", batteryPercent);
   lv_obj_align(percent, chargingArc, LV_ALIGN_CENTER, 0, 0);
 
   lv_obj_align(status, voltage, LV_ALIGN_IN_BOTTOM_MID, 0, -27);
-  lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltage / 1000, batteryVoltage % 1000 / 10);
+  lv_label_set_text_fmt(voltage,
+                        "%1i.%02i %s",
+                        batteryVoltage / 1000,
+                        batteryVoltage % 1000 / 10,
+                        Translate(settingsController.GetLanguage(), StringId::Volts));
   lv_arc_set_value(chargingArc, batteryPercent);
 }

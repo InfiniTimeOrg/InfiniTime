@@ -1,5 +1,6 @@
 #pragma once
 #include <lvgl/lvgl.h>
+#include "components/settings/Settings.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -15,7 +16,7 @@ namespace Pinetime {
         void HideControls();
         void ShowControls();
         void EnableTwelveHourMode();
-        void EnableMonthMode();
+        void EnableMonthMode(Pinetime::Controllers::Settings::Language language = Pinetime::Controllers::Settings::Language::English);
         void SetMax(int newMax);
         void SetValueChangedEventCallback(void* userData, void (*handler)(void* userData));
 
@@ -44,6 +45,7 @@ namespace Pinetime {
         const int leadingZeroCount;
         bool twelveHourMode = false;
         bool monthMode = false;
+        Pinetime::Controllers::Settings::Language monthLanguage = Pinetime::Controllers::Settings::Language::English;
         lv_font_t& font;
 
         void* userData = nullptr;

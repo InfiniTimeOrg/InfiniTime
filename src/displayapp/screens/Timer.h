@@ -1,6 +1,7 @@
 #pragma once
 
 #include "displayapp/screens/Screen.h"
+#include "components/settings/Settings.h"
 #include "components/motor/MotorController.h"
 #include "systemtask/SystemTask.h"
 #include "systemtask/WakeLock.h"
@@ -16,7 +17,10 @@ namespace Pinetime::Applications {
   namespace Screens {
     class Timer : public Screen {
     public:
-      Timer(Controllers::Timer& timerController, Controllers::MotorController& motorController, System::SystemTask& systemTask);
+      Timer(Controllers::Timer& timerController,
+            Controllers::Settings& settingsController,
+            Controllers::MotorController& motorController,
+            System::SystemTask& systemTask);
       ~Timer() override;
       void Refresh() override;
       void Reset();
@@ -31,6 +35,7 @@ namespace Pinetime::Applications {
       void UpdateMask();
       void DisplayTime();
       Pinetime::Controllers::Timer& timer;
+      Pinetime::Controllers::Settings& settingsController;
       Pinetime::Controllers::MotorController& motorController;
 
       Pinetime::System::WakeLock wakeLock;
@@ -60,7 +65,7 @@ namespace Pinetime::Applications {
     static constexpr const char* icon = Screens::Symbols::hourGlass;
 
     static Screens::Screen* Create(AppControllers& controllers) {
-      return new Screens::Timer(controllers.timer, controllers.motorController, *controllers.systemTask);
+      return new Screens::Timer(controllers.timer, controllers.settingsController, controllers.motorController, *controllers.systemTask);
     };
 
     static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
