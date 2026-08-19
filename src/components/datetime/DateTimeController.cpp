@@ -14,24 +14,12 @@ namespace {
   constexpr const char* const MonthsString[] = {"--", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
   constexpr const char* const MonthsStringLow[] =
     {"--", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
-  constexpr int compileTimeAtoi(const char* str) {
-    int result = 0;
-    while (*str >= '0' && *str <= '9') {
-      result = result * 10 + *str - '0';
-      str++;
-    }
-    return result;
-  }
 }
 
 DateTime::DateTime(Controllers::Settings& settingsController) : settingsController {settingsController} {
   mutex = xSemaphoreCreateMutex();
   ASSERT(mutex != nullptr);
   xSemaphoreGive(mutex);
-
-  // __DATE__ is a string of the format "MMM DD YYYY", so an offset of 7 gives the start of the year
-  SetTime(compileTimeAtoi(&__DATE__[7]), 1, 1, 0, 0, 0);
 }
 
 void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> t) {
