@@ -66,6 +66,8 @@ namespace Pinetime {
 
       void Init(Pinetime::Drivers::Bma421::DeviceTypes types);
 
+      void Restore(uint32_t carrySteps, uint32_t carryTripSteps);
+
       void SetService(Pinetime::Controllers::MotionService* service) {
         this->service = service;
       }
@@ -76,6 +78,7 @@ namespace Pinetime {
 
     private:
       Utility::CircularBuffer<uint32_t, stepHistorySize> nbSteps = {0};
+      uint32_t carrySteps = 0;
       uint32_t currentTripSteps = 0;
 
       void SetSteps(Days day, uint32_t steps) {
