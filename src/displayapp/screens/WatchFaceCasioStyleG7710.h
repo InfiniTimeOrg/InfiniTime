@@ -74,7 +74,6 @@ namespace Pinetime {
         lv_obj_t* line_day_of_week_number;
         lv_obj_t* label_day_of_year;
         lv_obj_t* line_day_of_year;
-        lv_obj_t* backgroundLabel;
         lv_obj_t* bleIcon;
         lv_obj_t* batteryPlug;
         lv_obj_t* label_battery_value;

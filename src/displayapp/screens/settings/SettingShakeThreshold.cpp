@@ -68,6 +68,8 @@ SettingShakeThreshold::SettingShakeThreshold(Controllers::Settings& settingsCont
     EnableForCal = true;
     settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, true);
   }
+
+  Refresh();
   refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
@@ -84,7 +86,6 @@ SettingShakeThreshold::~SettingShakeThreshold() {
 }
 
 void SettingShakeThreshold::Refresh() {
-
   if (calibrating == 1) {
     if (xTaskGetTickCount() - vCalTime > pdMS_TO_TICKS(2000)) {
       vCalTime = xTaskGetTickCount();

@@ -30,32 +30,27 @@ Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleW
   temperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_text_font(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text(temperature, "---");
   lv_obj_align(temperature, nullptr, LV_ALIGN_CENTER, 0, -30);
   lv_obj_set_auto_realign(temperature, true);
 
   minTemperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(minTemperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
-  lv_label_set_text(minTemperature, "");
   lv_obj_align(minTemperature, temperature, LV_ALIGN_OUT_LEFT_MID, -10, 0);
   lv_obj_set_auto_realign(minTemperature, true);
 
   maxTemperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(maxTemperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
-  lv_label_set_text(maxTemperature, "");
   lv_obj_align(maxTemperature, temperature, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
   lv_obj_set_auto_realign(maxTemperature, true);
 
   condition = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(condition, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_label_set_text(condition, "");
   lv_obj_align(condition, temperature, LV_ALIGN_OUT_TOP_MID, 0, -10);
   lv_obj_set_auto_realign(condition, true);
 
   icon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_text_font(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
-  lv_label_set_text(icon, "");
   lv_obj_align(icon, condition, LV_ALIGN_OUT_TOP_MID, 0, 0);
   lv_obj_set_auto_realign(icon, true);
 
@@ -93,8 +88,8 @@ Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleW
     lv_table_set_cell_align(forecast, 3, i, LV_LABEL_ALIGN_CENTER);
   }
 
-  taskRefresh = lv_task_create(RefreshTaskCallback, 1000, LV_TASK_PRIO_MID, this);
   Refresh();
+  taskRefresh = lv_task_create(RefreshTaskCallback, 1000, LV_TASK_PRIO_MID, this);
 }
 
 Weather::~Weather() {
@@ -124,12 +119,12 @@ void Weather::Refresh() {
       lv_label_set_text_fmt(minTemperature, "%d°", minTemp);
       lv_label_set_text_fmt(maxTemperature, "%d°", maxTemp);
     } else {
-      lv_label_set_text(icon, "");
-      lv_label_set_text(condition, "");
-      lv_label_set_text(temperature, "---");
+      lv_label_set_text_static(icon, "");
+      lv_label_set_text_static(condition, "");
+      lv_label_set_text_static(temperature, "---");
       lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-      lv_label_set_text(minTemperature, "");
-      lv_label_set_text(maxTemperature, "");
+      lv_label_set_text_static(minTemperature, "");
+      lv_label_set_text_static(maxTemperature, "");
     }
   }
 
