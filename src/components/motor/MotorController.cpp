@@ -21,7 +21,7 @@ void MotorController::NextEvent(TimerHandle_t timer) {
 
   TickType_t deviation = xTaskGetTickCount() - motorController->nextEvtTime;
 
-  TickType_t duration;
+  TickType_t duration {};
 
   switch (motorController->state) {
     case State::Buzz:
@@ -65,7 +65,7 @@ uint16_t MotorController::CalculateLength(Intensity intensity) {
   float durationMultiplier = motionController.CurrentShakeSpeed() / 200.f;
   durationMultiplier = std::max(std::min(durationMultiplier, 3.f), 1.f);
 
-  float length;
+  float length {};
 
   switch (intensity) {
     case Intensity::Light:
