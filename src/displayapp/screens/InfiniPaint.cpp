@@ -52,7 +52,7 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
 
       std::fill(b, b + bufferSize, selectColor);
-      motor.RunForDuration(35);
+      motor.Buzz(Controllers::MotorController::Intensity::Light);
       return true;
     default:
       return true;
