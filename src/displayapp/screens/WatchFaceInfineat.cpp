@@ -133,16 +133,8 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
     notificationManager {notificationManager},
     settingsController {settingsController},
     motionController {motionController} {
-  lfs_file f = {};
-  if (filesystem.FileOpen(&f, "/fonts/teko.bin", LFS_O_RDONLY) >= 0) {
-    filesystem.FileClose(&f);
-    font_teko = lv_font_load("F:/fonts/teko.bin");
-  }
-
-  if (filesystem.FileOpen(&f, "/fonts/bebas.bin", LFS_O_RDONLY) >= 0) {
-    filesystem.FileClose(&f);
-    font_bebas = lv_font_load("F:/fonts/bebas.bin");
-  }
+  font_teko = Components::FastFont::LoadFont(filesystem, "/fastfonts/teko.bin");
+  font_bebas = Components::FastFont::LoadFont(filesystem, "/fastfonts/bebas.bin");
 
   // Side Cover
   static constexpr lv_point_t linePoints[nLines][2] = {{{30, 25}, {68, -8}},
@@ -199,16 +191,16 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
 
   labelHour = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(labelHour, "01");
-  lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_bebas);
+  lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_bebas.get());
   lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
 
   labelMinutes = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(labelMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_bebas);
+  lv_obj_set_style_local_text_font(labelMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_bebas.get());
   lv_label_set_text_static(labelMinutes, "00");
   lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   labelTimeAmPm = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(labelTimeAmPm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+  lv_obj_set_style_local_text_font(labelTimeAmPm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko.get());
 
   lv_label_set_text_static(labelTimeAmPm, "");
   lv_obj_align(labelTimeAmPm, timeContainer, LV_ALIGN_OUT_RIGHT_TOP, 0, 15);
@@ -221,7 +213,7 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
   static constexpr lv_color_t grayColor = LV_COLOR_MAKE(0x99, 0x99, 0x99);
   labelDate = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
-  lv_obj_set_style_local_text_font(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+  lv_obj_set_style_local_text_font(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko.get());
   lv_obj_align(labelDate, dateContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
   lv_label_set_text_static(labelDate, "Mon 01");
 
@@ -232,7 +224,7 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
-  lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+  lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko.get());
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 10, 0);
   lv_label_set_text_static(stepValue, "0");
 
@@ -302,13 +294,6 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
 
 WatchFaceInfineat::~WatchFaceInfineat() {
   lv_task_del(taskRefresh);
-
-  if (font_bebas != nullptr) {
-    lv_font_free(font_bebas);
-  }
-  if (font_teko != nullptr) {
-    lv_font_free(font_teko);
-  }
 
   lv_obj_clean(lv_scr_act());
 }
@@ -491,22 +476,17 @@ void WatchFaceInfineat::ToggleBatteryIndicatorColor(bool showSideCover) {
 }
 
 bool WatchFaceInfineat::IsAvailable(Pinetime::Controllers::FS& filesystem) {
-  lfs_file file = {};
+  lfs_info stat {};
 
-  if (filesystem.FileOpen(&file, "/fonts/teko.bin", LFS_O_RDONLY) < 0) {
+  if (filesystem.Stat("/fastfonts/teko.bin", &stat) != LFS_ERR_OK) {
+    return false;
+  }
+  if (filesystem.Stat("/fastfonts/bebas.bin", &stat) != LFS_ERR_OK) {
+    return false;
+  }
+  if (filesystem.Stat("/images/pine_small.bin", &stat) != LFS_ERR_OK) {
     return false;
   }
 
-  filesystem.FileClose(&file);
-  if (filesystem.FileOpen(&file, "/fonts/bebas.bin", LFS_O_RDONLY) < 0) {
-    return false;
-  }
-
-  filesystem.FileClose(&file);
-  if (filesystem.FileOpen(&file, "/images/pine_small.bin", LFS_O_RDONLY) < 0) {
-    return false;
-  }
-
-  filesystem.FileClose(&file);
   return true;
 }
