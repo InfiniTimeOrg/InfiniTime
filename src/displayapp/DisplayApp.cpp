@@ -52,6 +52,7 @@
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingBluetooth.h"
 #include "displayapp/screens/settings/SettingOTA.h"
+#include "displayapp/screens/settings/SettingQuietHours.h"
 
 #include "utility/Math.h"
 
@@ -633,6 +634,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       break;
     case Apps::SettingOTA:
       currentScreen = std::make_unique<Screens::SettingOTA>(this, settingsController);
+      break;
+    case Apps::SettingQuietHours:
+      currentScreen = std::make_unique<Screens::SettingQuietHours>(settingsController);
       break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(batteryController);
