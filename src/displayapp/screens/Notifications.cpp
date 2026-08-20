@@ -44,7 +44,7 @@ Notifications::Notifications(DisplayApp* app,
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
       motorController.StartRinging();
     } else {
-      motorController.RunForDuration(35);
+      motorController.RunForDuration(250);
     }
 
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
