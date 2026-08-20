@@ -1,9 +1,11 @@
 #include "displayapp/DisplayApp.h"
+#include <displayapp/Messages.h>
 #include <libraries/log/nrf_log.h>
 #include "displayapp/screens/HeartRate.h"
 #include "displayapp/screens/Motion.h"
 #include "displayapp/screens/Timer.h"
 #include "displayapp/screens/Alarm.h"
+#include "displayapp/screens/Sleep.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
@@ -89,6 +91,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::StopWatchController& stopWatchController,
                        Pinetime::Controllers::AlarmController& alarmController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
+                       Pinetime::Controllers::SleepTrackingController& sleeptrackingController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
                        Pinetime::Controllers::FS& filesystem,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash)
@@ -106,6 +109,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     stopWatchController {stopWatchController},
     alarmController {alarmController},
     brightnessController {brightnessController},
+    sleeptrackingController {sleeptrackingController},
     touchHandler {touchHandler},
     filesystem {filesystem},
     spiNorFlash {spiNorFlash},
@@ -122,6 +126,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                  stopWatchController,
                  alarmController,
                  brightnessController,
+                 sleeptrackingController,
                  nullptr,
                  filesystem,
                  timer,
@@ -391,6 +396,18 @@ void DisplayApp::Refresh() {
         } else {
           LoadNewScreen(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
         }
+        break;
+      case Messages::WakeAlarmTriggered:
+        if (currentApp == Apps::Sleep) {
+          auto* sleep = static_cast<Screens::Sleep*>(currentScreen.get());
+          sleep->StartAlerting();
+        } else {
+          LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::None);
+        }
+        break;
+      case Messages::SleepSaveDataPoint:
+        sleeptrackingController.SaveDatapoint();
+        PushMessage(Messages::GoToSleep);
         break;
       case Messages::ShowPairingKey:
         LoadNewScreen(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
