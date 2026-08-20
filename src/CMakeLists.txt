@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 
 project(pinetime-app C CXX ASM)
 
-
 # define some variables just for this example to determine file locations
 set(NRF_PROJECT_NAME pinetime-app)
 set(NRF_BOARD pca10040)
@@ -473,6 +472,8 @@ list(APPEND SOURCE_FILES
         components/stopwatch/StopWatchController.cpp
         components/alarm/AlarmController.cpp
         components/fs/FS.cpp
+        components/rng/PCG.cpp
+        
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -662,6 +663,7 @@ set(INCLUDE_FILES
         components/timer/Timer.h
         components/stopwatch/StopWatchController.h
         components/alarm/AlarmController.h
+        components/rng/PCG.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
