@@ -377,11 +377,10 @@ void DisplayApp::Refresh() {
         // Load timer app if not loaded
         if (currentApp != Apps::Timer) {
           LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Up);
-        } else {
-          // Set the timer to ringing mode if already loaded
-          auto* timerScreen = static_cast<Screens::Timer*>(currentScreen.get());
-          timerScreen->SetTimerRinging();
         }
+        // Set the timer to ringing mode
+        auto* timerScreen = static_cast<Screens::Timer*>(currentScreen.get());
+        timerScreen->SetTimerRinging();
         break;
       }
       case Messages::AlarmTriggered:
