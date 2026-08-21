@@ -76,6 +76,9 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   int32_t deltaSteps = nbSteps - oldSteps;
   if (deltaSteps > 0) {
     currentTripSteps += deltaSteps;
+    locomotionDecay = 50; // 5 seconds x 10Hz
+  } else if (locomotionDecay > 0) {
+    locomotionDecay--;
   }
   SetSteps(Days::Today, nbSteps);
 }

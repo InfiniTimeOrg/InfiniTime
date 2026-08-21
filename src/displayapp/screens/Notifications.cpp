@@ -2,6 +2,8 @@
 #include "displayapp/DisplayApp.h"
 #include "components/ble/MusicService.h"
 #include "components/ble/AlertNotificationService.h"
+#include "components/brightness/BrightnessController.h"
+#include "components/motion/MotionController.h"
 #include "displayapp/screens/Symbols.h"
 #include <algorithm>
 #include "displayapp/InfiniTimeTheme.h"
@@ -14,12 +16,16 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::MotorController& motorController,
+                             Pinetime::Controllers::BrightnessController& brightnessController,
+                             Pinetime::Controllers::MotionController& motionController,
                              System::SystemTask& systemTask,
                              Modes mode)
   : app {app},
     notificationManager {notificationManager},
     alertNotificationService {alertNotificationService},
     motorController {motorController},
+    brightnessController {brightnessController},
+    motionController {motionController},
     wakeLock(systemTask),
     mode {mode} {
 
@@ -58,6 +64,10 @@ Notifications::Notifications(DisplayApp* app,
     interacted = false;
   }
 
+  previousBrightnessLevel = brightnessController.Level();
+  if (motionController.Locomotion()) {
+    brightnessController.Set(Pinetime::Controllers::BrightnessController::Levels::High);
+  }
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
@@ -66,6 +76,7 @@ Notifications::~Notifications() {
   // make sure we stop any vibrations before exiting
   motorController.StopRinging();
   lv_obj_clean(lv_scr_act());
+  brightnessController.Set(previousBrightnessLevel);
 }
 
 void Notifications::Refresh() {

@@ -7,6 +7,8 @@
 #include "displayapp/screens/Screen.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
+#include "components/brightness/BrightnessController.h"
+#include "components/motion/MotionController.h"
 #include "systemtask/SystemTask.h"
 #include "systemtask/WakeLock.h"
 
@@ -25,6 +27,8 @@ namespace Pinetime {
                                Pinetime::Controllers::NotificationManager& notificationManager,
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                Pinetime::Controllers::MotorController& motorController,
+                               Pinetime::Controllers::BrightnessController& brightnessController,
+                               Pinetime::Controllers::MotionController& motionController,
                                System::SystemTask& systemTask,
                                Modes mode);
         ~Notifications() override;
@@ -74,6 +78,8 @@ namespace Pinetime {
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::AlertNotificationService& alertNotificationService;
         Pinetime::Controllers::MotorController& motorController;
+        Pinetime::Controllers::BrightnessController& brightnessController;
+        Pinetime::Controllers::MotionController& motionController;
         System::WakeLock wakeLock;
         Modes mode = Modes::Normal;
         std::unique_ptr<NotificationItem> currentItem;
@@ -89,6 +95,8 @@ namespace Pinetime {
         bool interacted = true;
 
         bool dismissingNotification = false;
+
+        Pinetime::Controllers::BrightnessController::Levels previousBrightnessLevel;
 
         lv_task_t* taskRefresh;
       };
