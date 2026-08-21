@@ -7,6 +7,7 @@
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
+#include "utility/DirtyValue.h"
 
 namespace Pinetime {
 
@@ -29,16 +30,17 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
         Controllers::Settings& settingsController;
 
-        uint32_t currentTripSteps = 0;
+        Utility::DirtyValue<uint32_t> currentTripSteps {};
+        Utility::DirtyValue<uint32_t> stepsCount {};
+        Utility::DirtyValue<uint32_t> stepsGoal {};
 
         lv_obj_t* lSteps;
         lv_obj_t* lStepsYesterday;
+        lv_obj_t* lStepsGoal;
         lv_obj_t* stepsArc;
         lv_obj_t* resetBtn;
         lv_obj_t* resetButtonLabel;
         lv_obj_t* tripLabel;
-
-        uint32_t stepsCount;
 
         lv_task_t* taskRefresh;
       };

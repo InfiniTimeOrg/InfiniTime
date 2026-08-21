@@ -3,6 +3,7 @@
 #include <cstdint>
 #include "displayapp/screens/Screen.h"
 #include <lvgl/lvgl.h>
+#include "utility/DirtyValue.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -29,8 +30,9 @@ namespace Pinetime {
 
         lv_task_t* taskRefresh;
 
-        uint8_t batteryPercent = 0;
-        uint16_t batteryVoltage = 0;
+        Utility::DirtyValue<uint8_t> batteryPercent {};
+        Utility::DirtyValue<uint16_t> batteryVoltage {};
+        Utility::DirtyValue<bool> batteryCharging {};
       };
     }
   }
