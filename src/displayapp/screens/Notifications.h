@@ -9,6 +9,7 @@
 #include "components/motor/MotorController.h"
 #include "components/brightness/BrightnessController.h"
 #include "components/motion/MotionController.h"
+#include <components/settings/Settings.h>
 #include "systemtask/SystemTask.h"
 #include "systemtask/WakeLock.h"
 
@@ -29,6 +30,7 @@ namespace Pinetime {
                                Pinetime::Controllers::MotorController& motorController,
                                Pinetime::Controllers::BrightnessController& brightnessController,
                                Pinetime::Controllers::MotionController& motionController,
+                               Pinetime::Controllers::Settings& settingsController,
                                System::SystemTask& systemTask,
                                Modes mode);
         ~Notifications() override;
@@ -80,6 +82,7 @@ namespace Pinetime {
         Pinetime::Controllers::MotorController& motorController;
         Pinetime::Controllers::BrightnessController& brightnessController;
         Pinetime::Controllers::MotionController& motionController;
+        Pinetime::Controllers::Settings& settingsController;
         System::WakeLock wakeLock;
         Modes mode = Modes::Normal;
         std::unique_ptr<NotificationItem> currentItem;

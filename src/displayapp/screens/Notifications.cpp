@@ -18,6 +18,7 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::MotorController& motorController,
                              Pinetime::Controllers::BrightnessController& brightnessController,
                              Pinetime::Controllers::MotionController& motionController,
+                             Pinetime::Controllers::Settings& settingsController,
                              System::SystemTask& systemTask,
                              Modes mode)
   : app {app},
@@ -26,6 +27,7 @@ Notifications::Notifications(DisplayApp* app,
     motorController {motorController},
     brightnessController {brightnessController},
     motionController {motionController},
+    settingsController {settingsController},
     wakeLock(systemTask),
     mode {mode} {
 
@@ -64,7 +66,7 @@ Notifications::Notifications(DisplayApp* app,
     interacted = false;
   }
 
-  if (motionController.Locomotion()) {
+  if (settingsController.GetMotionAutoBrightSetting() && motionController.Locomotion()) {
     brightnessController.Set(Pinetime::Controllers::BrightnessController::Levels::High);
   }
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
