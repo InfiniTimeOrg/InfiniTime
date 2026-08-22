@@ -96,8 +96,6 @@ namespace Pinetime {
 
         bool dismissingNotification = false;
 
-        Pinetime::Controllers::BrightnessController::Levels previousBrightnessLevel;
-
         lv_task_t* taskRefresh;
       };
     }

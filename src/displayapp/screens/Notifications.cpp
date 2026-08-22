@@ -64,7 +64,6 @@ Notifications::Notifications(DisplayApp* app,
     interacted = false;
   }
 
-  previousBrightnessLevel = brightnessController.Level();
   if (motionController.Locomotion()) {
     brightnessController.Set(Pinetime::Controllers::BrightnessController::Levels::High);
   }
@@ -76,7 +75,6 @@ Notifications::~Notifications() {
   // make sure we stop any vibrations before exiting
   motorController.StopRinging();
   lv_obj_clean(lv_scr_act());
-  brightnessController.Set(previousBrightnessLevel);
 }
 
 void Notifications::Refresh() {
