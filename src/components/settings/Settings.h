@@ -244,6 +244,17 @@ namespace Pinetime {
         return settings.alwaysOnDisplay;
       }
 
+      void SetMotionAutoBrightSetting(bool state) {
+        if (state != settings.motionAutoBright) {
+          settingsChanged = true;
+        }
+        settings.motionAutoBright = state;
+      }
+
+      bool GetMotionAutoBrightSetting() const {
+        return settings.motionAutoBright;
+      }
+
       void SetShakeThreshold(uint16_t thresh) {
         if (settings.shakeWakeThreshold != thresh) {
           settings.shakeWakeThreshold = thresh;
@@ -362,6 +373,7 @@ namespace Pinetime {
         uint32_t screenTimeOut = 15000;
 
         bool alwaysOnDisplay = false;
+        bool motionAutoBright = false;
 
         ClockType clockType = ClockType::H24;
         WeatherFormat weatherFormat = WeatherFormat::Metric;
