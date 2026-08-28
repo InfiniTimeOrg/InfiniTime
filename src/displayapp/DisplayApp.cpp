@@ -741,9 +741,35 @@ void DisplayApp::Register(Pinetime::Controllers::NavigationService* NavigationSe
 void DisplayApp::ApplyBrightness() {
   auto brightness = settingsController.GetBrightness();
   if ((brightness != Controllers::BrightnessController::Levels::Low && brightness != Controllers::BrightnessController::Levels::Medium &&
-      brightness != Controllers::BrightnessController::Levels::High) ||
-      (settingsController.GetMotionAutoBrightSetting() && motionController.Locomotion())) {
+       brightness != Controllers::BrightnessController::Levels::High) || (DisplayApp::InvokeMotionAutoBright())) {
     brightness = Controllers::BrightnessController::Levels::High;
   }
   brightnessController.Set(brightness);
+}
+
+bool DisplayApp::InvokeMotionAutoBright() {
+  if (!settingsController.GetMotionAutoBrightSetting()) {
+    return false;
+  }
+  if (!DisplayApp::Daytime()) {
+    return false;
+  }
+  if (!motionController.Locomotion()) {
+    return false;
+  }
+  return true;
+}
+
+bool DisplayApp::Daytime() {
+  // TODO - enable these to be the values from Gadgetbridge weather
+  static constexpr uint8_t hourSunRise = 7;
+  static constexpr uint8_t minSunRise = 0;
+  static constexpr uint8_t hourSunSet = 19;
+  static constexpr uint8_t minSunSet = 0;
+  uint8_t hour = dateTimeController.Hours();
+  uint8_t minute = dateTimeController.Minutes();
+  if ((hour <= hourSunRise && minute <= minSunRise) || (hour >= hourSunSet && minute >= minSunSet)) {
+    return false;
+  }
+  return true;
 }
