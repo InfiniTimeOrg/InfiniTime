@@ -751,24 +751,10 @@ bool DisplayApp::InvokeMotionAutoBright() {
   if (!settingsController.GetMotionAutoBrightSetting()) {
     return false;
   }
-  if (!DisplayApp::Daytime()) {
+  if (this->controllers.weatherController->IsNight()) {
     return false;
   }
   if (!motionController.Locomotion()) {
-    return false;
-  }
-  return true;
-}
-
-bool DisplayApp::Daytime() {
-  // TODO - enable these to be the values from Gadgetbridge weather
-  static constexpr uint8_t hourSunRise = 7;
-  static constexpr uint8_t minSunRise = 0;
-  static constexpr uint8_t hourSunSet = 19;
-  static constexpr uint8_t minSunSet = 0;
-  uint8_t hour = dateTimeController.Hours();
-  uint8_t minute = dateTimeController.Minutes();
-  if ((hour <= hourSunRise && minute <= minSunRise) || (hour >= hourSunSet && minute >= minSunSet)) {
     return false;
   }
   return true;
