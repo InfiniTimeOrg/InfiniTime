@@ -149,21 +149,21 @@ InfiniTime uses the Alert Notification Service (ANS) for notifications. The rele
 The new alert characteristic allows sending new notifications to InfiniTime. It requires the following format:
 
 ```
-<category><amount>\x00<\x00-separated data>
+<category><amount><\x00-separated data>
 ```
 
 For example, here is what a normal notification looks like in Golang (language of `itd`):
 
 ```go
 // \x00 is the category for simple alert, and there is one new notification, hence \x01.
-"\x00\x01\x00Test Title\x00Test Body"
+"\x00\x01Test Title\x00Test Body"
 ```
 
 A call notification looks like so:
 
 ```go
 // \x03 is the category for calls, and there is one new call notification, hence \x01.
-"\x03\x01\x00Mary"
+"\x03\x01Mary"
 ```
 
 The `\x00` stands for hexadecimal `00` which means null.
@@ -180,6 +180,7 @@ Here is the list of categories and commands:
 - Schedule: `7`
 - High Prioritized Alert: `8`
 - Instant Message: `9`
+- Custom Huami: `xFA` - one extra byte for icon is added into header
 - All Alerts: `0xFF`
 
 These lists and information were retrieved from the following pages in the Nordic docs:
