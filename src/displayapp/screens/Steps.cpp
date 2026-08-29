@@ -16,8 +16,10 @@ static void lap_event_handler(lv_obj_t* obj, lv_event_t event) {
   steps->lapBtnEventHandler(event);
 }
 
-Steps::Steps(Controllers::MotionController& motionController, Controllers::Settings& settingsController)
-  : motionController {motionController}, settingsController {settingsController} {
+Steps::Steps(DisplayApp* app, Controllers::MotionController& motionController, Controllers::Settings& settingsController)
+  : app {app},
+  motionController {motionController},
+  settingsController {settingsController} {
 
   stepsArc = lv_arc_create(lv_scr_act(), nullptr);
 

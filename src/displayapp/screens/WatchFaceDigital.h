@@ -39,9 +39,12 @@ namespace Pinetime {
                          Controllers::SimpleWeatherService& weather);
         ~WatchFaceDigital() override;
 
+        void OnButtonEvent(lv_obj_t* object, lv_event_t event);
+
         void Refresh() override;
 
       private:
+        DisplayApp* app;
         uint8_t displayedHour = -1;
         uint8_t displayedMinute = -1;
 

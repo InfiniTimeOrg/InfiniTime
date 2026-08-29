@@ -24,8 +24,10 @@ namespace {
   }
 }
 
-Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleWeatherService& weatherService)
-  : settingsController {settingsController}, weatherService {weatherService} {
+Weather::Weather(DisplayApp* app, Controllers::Settings& settingsController, Controllers::SimpleWeatherService& weatherService)
+  : app {app},
+  settingsController {settingsController},
+  weatherService {weatherService} {
 
   temperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
