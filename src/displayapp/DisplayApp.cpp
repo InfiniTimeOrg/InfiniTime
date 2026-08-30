@@ -741,7 +741,8 @@ void DisplayApp::Register(Pinetime::Controllers::NavigationService* NavigationSe
 void DisplayApp::ApplyBrightness() {
   auto brightness = settingsController.GetBrightness();
   if ((brightness != Controllers::BrightnessController::Levels::Low && brightness != Controllers::BrightnessController::Levels::Medium &&
-       brightness != Controllers::BrightnessController::Levels::High) || (DisplayApp::InvokeMotionAutoBright())) {
+       brightness != Controllers::BrightnessController::Levels::High) ||
+      (DisplayApp::InvokeMotionAutoBright())) {
     brightness = Controllers::BrightnessController::Levels::High;
   }
   brightnessController.Set(brightness);
