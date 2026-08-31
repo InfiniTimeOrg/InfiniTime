@@ -209,9 +209,12 @@ void WatchFaceDigital::Refresh() {
 }
 
 void WatchFaceDigital::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
-  if (object == stepIcon && event == LV_EVENT_PRESSED) {
+  if (event != LV_EVENT_CLICKED) {
+    return;
+  }
+  if (object == stepIcon) {
     app->StartApp(Apps::Steps, DisplayApp::FullRefreshDirections::Up);
-  } else if (object == weatherIcon && event == LV_EVENT_PRESSED) {
+  } else if (object == weatherIcon) {
     app->StartApp(Apps::Weather, DisplayApp::FullRefreshDirections::Up);
   }
 }
