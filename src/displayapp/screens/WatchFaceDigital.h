@@ -28,7 +28,8 @@ namespace Pinetime {
 
       class WatchFaceDigital : public Screen {
       public:
-        WatchFaceDigital(Controllers::DateTime& dateTimeController,
+        WatchFaceDigital(DisplayApp* app,
+                         Controllers::DateTime& dateTimeController,
                          const Controllers::Battery& batteryController,
                          const Controllers::Ble& bleController,
                          const Controllers::AlarmController& alarmController,
@@ -86,7 +87,8 @@ namespace Pinetime {
       static constexpr const char* name = "Digital";
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::WatchFaceDigital(controllers.dateTimeController,
+        return new Screens::WatchFaceDigital(controllers.displayApp,
+                                             controllers.dateTimeController,
                                              controllers.batteryController,
                                              controllers.bleController,
                                              controllers.alarmController,

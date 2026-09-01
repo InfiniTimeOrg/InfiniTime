@@ -23,7 +23,8 @@ namespace {
   }
 }
 
-WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
+WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
+                                   Controllers::DateTime& dateTimeController,
                                    const Controllers::Battery& batteryController,
                                    const Controllers::Ble& bleController,
                                    const Controllers::AlarmController& alarmController,
@@ -32,7 +33,8 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController,
                                    Controllers::SimpleWeatherService& weatherService)
-  : currentDateTime {{}},
+  : app {app},
+    currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
     settingsController {settingsController},

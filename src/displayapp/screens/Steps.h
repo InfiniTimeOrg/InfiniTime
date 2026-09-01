@@ -19,14 +19,13 @@ namespace Pinetime {
 
       class Steps : public Screen {
       public:
-        Steps(DisplayApp* app, Controllers::MotionController& motionController, Controllers::Settings& settingsController);
+        Steps(Controllers::MotionController& motionController, Controllers::Settings& settingsController);
         ~Steps() override;
 
         void Refresh() override;
         void lapBtnEventHandler(lv_event_t event);
 
       private:
-        DisplayApp* app;
         Controllers::MotionController& motionController;
         Controllers::Settings& settingsController;
 
@@ -51,7 +50,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::shoe;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Steps(controllers.displayApp, controllers.motionController, controllers.settingsController);
+        return new Screens::Steps(controllers.motionController, controllers.settingsController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

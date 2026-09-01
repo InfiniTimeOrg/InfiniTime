@@ -20,13 +20,12 @@ namespace Pinetime {
 
       class Weather : public Screen {
       public:
-        Weather(DisplayApp* app, Controllers::Settings& settingsController, Controllers::SimpleWeatherService& weatherService);
+        Weather(Controllers::Settings& settingsController, Controllers::SimpleWeatherService& weatherService);
         ~Weather() override;
 
         void Refresh() override;
 
       private:
-        DisplayApp* app;
         Controllers::Settings& settingsController;
         Controllers::SimpleWeatherService& weatherService;
 
@@ -50,7 +49,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::cloudSunRain;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Weather(controllers.displayApp, controllers.settingsController, *controllers.weatherController);
+        return new Screens::Weather(controllers.settingsController, *controllers.weatherController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

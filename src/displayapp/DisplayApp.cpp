@@ -652,10 +652,10 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::FlashLight>(*systemTask, brightnessController);
       break;
     case Apps::Weather:
-      currentScreen = std::make_unique<Screens::Weather>(this, settingsController, *controllers.weatherController);
+      currentScreen = std::make_unique<Screens::Weather>(settingsController, *controllers.weatherController);
       break;
     case Apps::Steps:
-      currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
+      currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);
       break;
     default: {
       const auto* d = std::ranges::find_if(userApps, [app](const AppDescription& appDescription) {
