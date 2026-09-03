@@ -71,6 +71,8 @@ DfuService::DfuService(Pinetime::System::SystemTask& systemTask,
 }
 
 void DfuService::Init() {
+  systemTask.nimble().AddCharacteristicSecurity(serviceDefinition);
+
   int res;
   res = ble_gatts_count_cfg(serviceDefinition);
   ASSERT(res == 0);
@@ -88,6 +90,8 @@ int DfuService::OnServiceData(uint16_t connectionHandle, uint16_t attributeHandl
     systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
     return BLE_ATT_ERR_INSUFFICIENT_AUTHOR;
   }
+  if (!systemTask.nimble().IsConnSecurityOK())
+    return BLE_ATT_ERR_INSUFFICIENT_AUTHEN;
 #endif
 
   if (bleController.IsFirmwareUpdating()) {
