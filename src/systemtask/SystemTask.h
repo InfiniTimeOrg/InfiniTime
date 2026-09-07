@@ -18,6 +18,7 @@
 #include "components/stopwatch/StopWatchController.h"
 #include "components/alarm/AlarmController.h"
 #include "components/fs/FS.h"
+#include "components/persistence/RebootPersist.h"
 #include "touchhandler/TouchHandler.h"
 #include "buttonhandler/ButtonHandler.h"
 #include "buttonhandler/ButtonActions.h"
@@ -32,7 +33,7 @@
 #include "drivers/Watchdog.h"
 #include "systemtask/Messages.h"
 
-extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
+extern volatile Pinetime::Components::RebootPersist NoInit_Persistence;
 
 namespace Pinetime {
   namespace Drivers {
