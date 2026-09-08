@@ -129,6 +129,7 @@ namespace Pinetime {
       void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void PushMessageToSystemTask(Pinetime::System::Messages message);
+      bool InvokeMotionAutoBright();
 
       Apps nextApp = Apps::None;
       DisplayApp::FullRefreshDirections nextDirection;

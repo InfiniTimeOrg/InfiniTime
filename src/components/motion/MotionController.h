@@ -74,6 +74,10 @@ namespace Pinetime {
         return service;
       }
 
+      bool Locomotion() const {
+        return (locomotionDecay != 0);
+      }
+
     private:
       Utility::CircularBuffer<uint32_t, stepHistorySize> nbSteps = {0};
       uint32_t currentTripSteps = 0;
@@ -112,6 +116,7 @@ namespace Pinetime {
 
       DeviceTypes deviceType = DeviceTypes::Unknown;
       Pinetime::Controllers::MotionService* service = nullptr;
+      uint8_t locomotionDecay = 0;
     };
   }
 }
