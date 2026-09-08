@@ -85,6 +85,8 @@ SettingSetDate::SettingSetDate(Pinetime::Controllers::DateTime& dateTimeControll
   lblSetTime = lv_label_create(btnSetTime, nullptr);
   lv_label_set_text_static(lblSetTime, "Set");
   lv_obj_set_event_cb(btnSetTime, event_handler);
+
+  pageIndicator.Create();
 }
 
 SettingSetDate::~SettingSetDate() {

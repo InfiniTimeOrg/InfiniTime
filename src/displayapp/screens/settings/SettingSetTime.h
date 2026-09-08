@@ -6,7 +6,7 @@
 #include "components/settings/Settings.h"
 #include "displayapp/widgets/Counter.h"
 #include "displayapp/screens/Screen.h"
-#include "displayapp/widgets/DotIndicator.h"
+#include "displayapp/widgets/PageIndicator.h"
 #include "displayapp/screens/settings/SettingSetDateTime.h"
 
 namespace Pinetime {
@@ -32,6 +32,7 @@ namespace Pinetime {
         lv_obj_t* lblSetTime;
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_42);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_42);
+        Widgets::PageIndicator pageIndicator = Widgets::PageIndicator(1, 2);
       };
     }
   }
