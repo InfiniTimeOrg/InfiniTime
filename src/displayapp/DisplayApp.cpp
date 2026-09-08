@@ -320,8 +320,8 @@ void DisplayApp::Refresh() {
           brightnessController.Set(Controllers::BrightnessController::Levels::Off);
         }
         // Since the active screen is not really an app, go back to Clock.
-        if (currentApp == Apps::Launcher || currentApp == Apps::Notifications || currentApp == Apps::QuickSettings ||
-            currentApp == Apps::Settings) {
+        if (currentApp == Apps::Launcher || currentApp == Apps::Notifications || currentApp == Apps::NotificationsPreview ||
+            currentApp == Apps::QuickSettings || currentApp == Apps::Settings) {
           LoadScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
           // Wait for the clock app to load before moving on.
           while (!lv_task_handler()) {
