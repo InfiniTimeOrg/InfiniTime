@@ -42,6 +42,8 @@ FSService::FSService(Pinetime::System::SystemTask& systemTask, Pinetime::Control
 }
 
 void FSService::Init() {
+  systemTask.nimble().AddCharacteristicSecurity(serviceDefinition);
+
   int res = 0;
   res = ble_gatts_count_cfg(serviceDefinition);
   ASSERT(res == 0);
@@ -61,6 +63,8 @@ int FSService::OnFSServiceRequested(uint16_t connectionHandle, uint16_t attribut
     systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
     return BLE_ATT_ERR_INSUFFICIENT_AUTHOR;
   }
+  if (!systemTask.nimble().IsConnSecurityOK())
+    return BLE_ATT_ERR_INSUFFICIENT_AUTHEN;
 #endif
 
   if (attributeHandle == versionCharacteristicHandle) {

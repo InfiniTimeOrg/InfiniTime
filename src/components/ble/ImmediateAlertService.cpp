@@ -48,6 +48,8 @@ ImmediateAlertService::ImmediateAlertService(Pinetime::System::SystemTask& syste
 }
 
 void ImmediateAlertService::Init() {
+  systemTask.nimble().AddCharacteristicSecurity(serviceDefinition);
+
   int res = 0;
   res = ble_gatts_count_cfg(serviceDefinition);
   ASSERT(res == 0);

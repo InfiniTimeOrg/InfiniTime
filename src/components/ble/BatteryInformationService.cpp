@@ -1,6 +1,7 @@
 #include "components/ble/BatteryInformationService.h"
 #include <nrf_log.h>
 #include "components/battery/BatteryController.h"
+#include "components/ble/NimbleController.h"
 
 using namespace Pinetime::Controllers;
 
@@ -12,8 +13,9 @@ int BatteryInformationServiceCallback(uint16_t /*conn_handle*/, uint16_t attr_ha
   return batteryInformationService->OnBatteryServiceRequested(attr_handle, ctxt);
 }
 
-BatteryInformationService::BatteryInformationService(Controllers::Battery& batteryController)
+BatteryInformationService::BatteryInformationService(Controllers::NimbleController& nimble, Controllers::Battery& batteryController)
   : batteryController {batteryController},
+    nimble {nimble},
     characteristicDefinition {{.uuid = &batteryLevelUuid.u,
                                .access_cb = BatteryInformationServiceCallback,
                                .arg = this,
@@ -30,6 +32,8 @@ BatteryInformationService::BatteryInformationService(Controllers::Battery& batte
 }
 
 void BatteryInformationService::Init() {
+  nimble.AddCharacteristicSecurity(serviceDefinition);
+
   int res = 0;
   res = ble_gatts_count_cfg(serviceDefinition);
   ASSERT(res == 0);

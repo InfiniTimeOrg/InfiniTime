@@ -420,6 +420,8 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingChimes.cpp
         displayapp/screens/settings/SettingShakeThreshold.cpp
         displayapp/screens/settings/SettingBluetooth.cpp
+        displayapp/screens/settings/SettingBluetoothMain.cpp
+        displayapp/screens/settings/SettingBluetoothSecurity.cpp
         displayapp/screens/settings/SettingOTA.cpp
 
         ## Watch faces
@@ -795,6 +797,7 @@ add_definitions(-DFREERTOS)
 add_definitions(-D__STACK_SIZE=1024)
 add_definitions(-D__HEAP_SIZE=0)
 add_definitions(-DMYNEWT_VAL_BLE_LL_RFMGMT_ENABLE_TIME=1500)
+add_definitions(-DMYNEWT_VAL_BLE_RPA_TIMEOUT=900)
 add_definitions(-DLFS_CONFIG=libs/lfs_config.h)
 
 # _sbrk is purposefully not implemented so that builds fail when it is used

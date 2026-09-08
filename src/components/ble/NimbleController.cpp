@@ -7,6 +7,7 @@
 #include <host/ble_gap.h>
 #include <host/ble_hs.h>
 #include <host/ble_hs_id.h>
+#include <../src/ble_hs_priv.h>
 #include <host/util/util.h>
 #include <controller/ble_ll.h>
 #include <controller/ble_hw.h>
@@ -41,10 +42,10 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     currentTimeClient {dateTimeController},
     anService {systemTask, notificationManager},
     alertNotificationClient {systemTask, notificationManager},
-    currentTimeService {dateTimeController},
+    currentTimeService {*this, dateTimeController},
     musicService {*this},
-    weatherService {dateTimeController},
-    batteryInformationService {batteryController},
+    weatherService {*this, dateTimeController},
+    batteryInformationService {*this, batteryController},
     immediateAlertService {systemTask, notificationManager},
     heartRateService {*this, heartRateController},
     motionService {*this, motionController},
@@ -77,6 +78,17 @@ void NimbleController::Init() {
     vTaskDelay(10);
   }
 
+  if (systemTask.GetSettings().GetBleSecured()) {
+    ble_hs_cfg.sm_sc = 1;
+    ble_hs_cfg.sm_mitm = 1;
+    ble_hs_cfg.sm_bonding = 1;
+    ble_hs_cfg.sm_io_cap = BLE_HS_IO_DISPLAY_ONLY;
+    ble_hs_cfg.sm_our_key_dist = BLE_SM_PAIR_KEY_DIST_ENC | BLE_SM_PAIR_KEY_DIST_ID;
+    ble_hs_cfg.sm_their_key_dist = BLE_SM_PAIR_KEY_DIST_ENC | BLE_SM_PAIR_KEY_DIST_ID;
+
+    RandomizeOurIRK();
+  }
+
   nptr = this;
   ble_hs_cfg.reset_cb = nimble_on_reset;
   ble_hs_cfg.sync_cb = nimble_on_sync;
@@ -102,7 +114,7 @@ void NimbleController::Init() {
   int rc;
   rc = ble_hs_util_ensure_addr(0);
   ASSERT(rc == 0);
-  rc = ble_hs_id_infer_auto(0, &addrType);
+  rc = ble_hs_id_infer_auto(systemTask.GetSettings().GetBleSecured() ? 1 : 0, &addrType);
   ASSERT(rc == 0);
   rc = ble_svc_gap_device_name_set(deviceName);
   ASSERT(rc == 0);
@@ -136,17 +148,50 @@ void NimbleController::Init() {
   StartAdvertising();
 }
 
+void NimbleController::AddCharacteristicSecurity(const struct ble_gatt_svc_def* svcs) {
+  if (!systemTask.GetSettings().GetBleSecured())
+    return;
+
+  struct ble_gatt_chr_def* chrs;
+  for (int si = 0; svcs[si].type != 0; si++) {
+    chrs = const_cast<struct ble_gatt_chr_def*>(svcs[si].characteristics);
+    for (int ci = 0; chrs[ci].uuid != NULL; ci++) {
+      if (chrs[ci].flags & BLE_GATT_CHR_F_READ) {
+        chrs[ci].flags |= BLE_GATT_CHR_F_READ_ENC | BLE_GATT_CHR_F_READ_AUTHEN;
+      }
+      if ((chrs[ci].flags & BLE_GATT_CHR_F_WRITE) || (chrs[ci].flags & BLE_GATT_CHR_F_WRITE_NO_RSP)) {
+        chrs[ci].flags |= BLE_GATT_CHR_F_WRITE_ENC | BLE_GATT_CHR_F_WRITE_AUTHEN;
+      }
+      chrs[ci].min_key_size = 16;
+    }
+  }
+}
+
+bool NimbleController::IsConnSecurityOK() {
+#ifndef PINETIME_IS_RECOVERY
+  if (!bleController.IsRadioEnabled() || !systemTask.GetSettings().GetBleRadioEnabled())
+    return false;
+
+  if (!systemTask.GetSettings().GetBleSecured())
+    return true;
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE)
+    return false;
+
+  struct ble_gap_conn_desc desc;
+  return (ble_gap_conn_find(connectionHandle, &desc) == 0 && desc.sec_state.encrypted && desc.sec_state.authenticated &&
+          desc.sec_state.bonded && desc.sec_state.key_size >= 16);
+#else
+  return true;
+#endif
+}
+
 void NimbleController::StartAdvertising() {
   struct ble_gap_adv_params adv_params;
-  struct ble_hs_adv_fields fields;
-  struct ble_hs_adv_fields rsp_fields;
+  int rc;
 
   memset(&adv_params, 0, sizeof(adv_params));
-  memset(&fields, 0, sizeof(fields));
-  memset(&rsp_fields, 0, sizeof(rsp_fields));
 
-  adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
-  adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
   /* fast advertise for 30 sec */
   if (fastAdvCount < 15) {
     adv_params.itvl_min = 32;
@@ -157,25 +202,59 @@ void NimbleController::StartAdvertising() {
     adv_params.itvl_max = 1651;
   }
 
-  fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
-  fields.uuids16 = &HeartRateService::heartRateServiceUuid;
-  fields.num_uuids16 = 1;
-  fields.uuids16_is_complete = 1;
-  fields.uuids128 = &DfuService::serviceUuid;
-  fields.num_uuids128 = 1;
-  fields.uuids128_is_complete = 1;
-  fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
+  if (systemTask.GetSettings().GetBlePairingAllowed()) {
+    struct ble_hs_adv_fields fields;
+    struct ble_hs_adv_fields rsp_fields;
+    memset(&fields, 0, sizeof(fields));
+    memset(&rsp_fields, 0, sizeof(rsp_fields));
 
-  rsp_fields.name = reinterpret_cast<const uint8_t*>(deviceName);
-  rsp_fields.name_len = strlen(deviceName);
-  rsp_fields.name_is_complete = 1;
+    adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
+    adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
 
-  int rc;
-  rc = ble_gap_adv_set_fields(&fields);
-  ASSERT(rc == 0);
+    fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
+    fields.uuids16 = &HeartRateService::heartRateServiceUuid;
+    fields.num_uuids16 = 1;
+    fields.uuids16_is_complete = 1;
+    fields.uuids128 = &DfuService::serviceUuid;
+    fields.num_uuids128 = 1;
+    fields.uuids128_is_complete = 1;
+    fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
 
-  rc = ble_gap_adv_rsp_set_fields(&rsp_fields);
-  ASSERT(rc == 0);
+    rsp_fields.name = reinterpret_cast<const uint8_t*>(deviceName);
+    rsp_fields.name_len = strlen(deviceName);
+    rsp_fields.name_is_complete = 1;
+
+    rc = ble_gap_adv_set_fields(&fields);
+    ASSERT(rc == 0);
+
+    rc = ble_gap_adv_rsp_set_fields(&rsp_fields);
+    ASSERT(rc == 0);
+
+  } else {
+    ble_addr_t peer_addrs[2];
+    int num_peers;
+
+    adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
+    adv_params.disc_mode = BLE_GAP_DISC_MODE_NON;
+    adv_params.filter_policy = BLE_HCI_ADV_FILT_BOTH;
+
+    rc = ble_store_util_bonded_peers(peer_addrs, &num_peers, 2);
+    if (rc != 0 || num_peers != 1) {
+      NRF_LOG_INFO("No or multiple bonds, resetting");
+      ClearBonds();
+      RandomizeOurIRK();
+      return;
+    }
+
+    rc = ble_gap_adv_set_data(NULL, 0);
+    ASSERT(rc == 0);
+
+    rc = ble_gap_adv_rsp_set_data(NULL, 0);
+    ASSERT(rc == 0);
+
+    rc = ble_gap_wl_set(&peer_addrs[0], 1);
+    ASSERT(rc == 0);
+  }
 
   rc = ble_gap_adv_start(addrType, NULL, 2000, &adv_params, GAPEventCallback, this);
   ASSERT(rc == 0);
@@ -205,6 +284,9 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
         fastAdvCount = 0;
         StartAdvertising();
       } else {
+        if (systemTask.GetSettings().GetBleSecured()) {
+          ble_gap_security_initiate(event->connect.conn_handle);
+        }
         connectionHandle = event->connect.conn_handle;
         bleController.Connect();
         systemTask.PushMessage(Pinetime::System::Messages::BleConnected);
@@ -217,7 +299,9 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       NRF_LOG_INFO("Disconnect event : BLE_GAP_EVENT_DISCONNECT");
       NRF_LOG_INFO("disconnect reason=%d", event->disconnect.reason);
 
-      if (event->disconnect.conn.sec_state.bonded) {
+      if ((!systemTask.GetSettings().GetBleSecured() && event->disconnect.conn.sec_state.bonded) ||
+          (event->disconnect.conn.sec_state.encrypted && event->disconnect.conn.sec_state.authenticated &&
+           event->disconnect.conn.sec_state.bonded && event->disconnect.conn.sec_state.key_size >= 16)) {
         PersistBond(event->disconnect.conn);
       }
 
@@ -252,8 +336,13 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       NRF_LOG_INFO("Security event : BLE_GAP_EVENT_ENC_CHANGE");
       NRF_LOG_INFO("encryption change event; status=%0X ", event->enc_change.status);
 
-      if (event->enc_change.status == 0) {
-        struct ble_gap_conn_desc desc;
+      struct ble_gap_conn_desc desc;
+      if (systemTask.GetSettings().GetBleSecured() &&
+          (event->enc_change.status != 0 || ble_gap_conn_find(event->enc_change.conn_handle, &desc) != 0 || !desc.sec_state.encrypted ||
+           !desc.sec_state.authenticated || (!desc.sec_state.bonded && !systemTask.GetSettings().GetBlePairingAllowed()) ||
+           desc.sec_state.key_size < 16)) {
+        ble_gap_terminate(event->enc_change.conn_handle, BLE_ERR_INSUFFICIENT_SEC);
+      } else if (event->enc_change.status == 0) {
         ble_gap_conn_find(event->enc_change.conn_handle, &desc);
         if (desc.sec_state.bonded) {
           PersistBond(desc);
@@ -281,7 +370,15 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
        * Use the tinycrypt prng here since rand() is predictable.
        */
       NRF_LOG_INFO("Security event : BLE_GAP_EVENT_PASSKEY_ACTION");
-      if (event->passkey.params.action == BLE_SM_IOACT_DISP) {
+      if (!systemTask.GetSettings().GetBlePairingAllowed() ||
+          (systemTask.GetSettings().GetBleSecured() && event->passkey.params.action != BLE_SM_IOACT_DISP)) {
+        ble_gap_terminate(event->passkey.conn_handle, BLE_ERR_NO_PAIRING);
+      } else if (event->passkey.params.action == BLE_SM_IOACT_DISP) {
+        if (systemTask.GetSettings().GetBleSecured()) {
+          /* If BLE security enabled, delete all previous bonding data from RAM and flash, and generate new IRK */
+          ClearBonds();
+          RandomizeOurIRK();
+        }
         struct ble_sm_io pkey = {0};
         pkey.action = event->passkey.params.action;
 
@@ -302,7 +399,14 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
          */
         uint32_t passkey_rand;
         do {
-          passkey_rand = ble_ll_rand();
+          if (systemTask.GetSettings().GetBleSecured()) {
+            if (ble_ll_rand_data_get(reinterpret_cast<uint8_t*>(&passkey_rand), 4) != 0) {
+              NRF_LOG_INFO("Pairing RNG failure");
+              return 0;
+            }
+          } else {
+            passkey_rand = ble_ll_rand();
+          }
         } while (passkey_rand > 4293999999);
         pkey.passkey = passkey_rand % 1000000;
 
@@ -338,23 +442,35 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       NRF_LOG_INFO("MTU Update event; conn_handle=%d cid=%d mtu=%d", event->mtu.conn_handle, event->mtu.channel_id, event->mtu.value);
       break;
 
-    case BLE_GAP_EVENT_REPEAT_PAIRING: {
+    case BLE_GAP_EVENT_REPEAT_PAIRING:
       NRF_LOG_INFO("Pairing event : BLE_GAP_EVENT_REPEAT_PAIRING");
-      /* We already have a bond with the peer, but it is attempting to
-       * establish a new secure link.  This app sacrifices security for
-       * convenience: just throw away the old bond and accept the new link.
-       */
+      if (!systemTask.GetSettings().GetBlePairingAllowed()) {
+        ble_gap_terminate(event->repeat_pairing.conn_handle, BLE_ERR_INSUFFICIENT_SEC);
+      } else if (systemTask.GetSettings().GetBleSecured()) {
+        /* Delete all previous bonding data from RAM and flash */
+        ClearBonds();
 
-      /* Delete the old bond. */
-      struct ble_gap_conn_desc desc;
-      ble_gap_conn_find(event->repeat_pairing.conn_handle, &desc);
-      ble_store_util_delete_peer(&desc.peer_id_addr);
+        /* Return BLE_GAP_REPEAT_PAIRING_RETRY to indicate that the host should
+         * continue with the pairing operation.
+         */
+        return BLE_GAP_REPEAT_PAIRING_RETRY;
+      } else {
+        /* We already have a bond with the peer, but it is attempting to
+         * establish a new secure link.  This app sacrifices security for
+         * convenience: just throw away the old bond and accept the new link.
+         */
 
-      /* Return BLE_GAP_REPEAT_PAIRING_RETRY to indicate that the host should
-       * continue with the pairing operation.
-       */
-    }
-      return BLE_GAP_REPEAT_PAIRING_RETRY;
+        /* Delete the old bond. */
+        struct ble_gap_conn_desc desc;
+        ble_gap_conn_find(event->repeat_pairing.conn_handle, &desc);
+        ble_store_util_delete_peer(&desc.peer_id_addr);
+
+        /* Return BLE_GAP_REPEAT_PAIRING_RETRY to indicate that the host should
+         * continue with the pairing operation.
+         */
+        return BLE_GAP_REPEAT_PAIRING_RETRY;
+      }
+      break;
 
     case BLE_GAP_EVENT_NOTIFY_RX: {
       /* Peer sent us a notification or indication. */
@@ -489,6 +605,9 @@ void NimbleController::RestoreBond() {
     memset(&sec, 0, sizeof sec);
     fs.FileRead(&file_p, reinterpret_cast<uint8_t*>(&sec.sec), sizeof sec);
     ble_store_write_our_sec(&sec.sec);
+    if (systemTask.GetSettings().GetBleSecured() && sec.sec.irk_present == 1) {
+      ble_hs_pvcy_set_our_irk(sec.sec.irk);
+    }
 
     memset(&sec, 0, sizeof sec);
     fs.FileRead(&file_p, reinterpret_cast<uint8_t*>(&sec.sec), sizeof sec);
@@ -503,4 +622,19 @@ void NimbleController::RestoreBond() {
     fs.FileClose(&file_p);
     fs.FileDelete("/bond.dat");
   }
+}
+
+void NimbleController::RandomizeOurIRK() {
+  uint8_t rand_irk[16];
+
+  if (ble_ll_rand_data_get(rand_irk, 16) == 0) {
+    ble_hs_pvcy_set_our_irk(rand_irk);
+  } else {
+    NRF_LOG_INFO("IRK RNG failure");
+  }
+}
+
+void NimbleController::ClearBonds() {
+  ble_store_clear();
+  fs.FileDelete("/bond.dat");
 }

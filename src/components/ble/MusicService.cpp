@@ -116,6 +116,8 @@ Pinetime::Controllers::MusicService::MusicService(Pinetime::Controllers::NimbleC
 }
 
 void Pinetime::Controllers::MusicService::Init() {
+  nimble.AddCharacteristicSecurity(serviceDefinition);
+
   uint8_t res = 0;
   res = ble_gatts_count_cfg(serviceDefinition);
   ASSERT(res == 0);

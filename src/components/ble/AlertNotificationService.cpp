@@ -2,6 +2,7 @@
 #include <hal/nrf_rtc.h>
 #include <cstring>
 #include <algorithm>
+#include "components/ble/NimbleController.h"
 #include "components/ble/NotificationManager.h"
 #include "systemtask/SystemTask.h"
 
@@ -17,6 +18,8 @@ int AlertNotificationCallback(uint16_t /*conn_handle*/, uint16_t /*attr_handle*/
 }
 
 void AlertNotificationService::Init() {
+  systemTask.nimble().AddCharacteristicSecurity(serviceDefinition);
+
   int res;
   res = ble_gatts_count_cfg(serviceDefinition);
   ASSERT(res == 0);

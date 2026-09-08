@@ -481,6 +481,9 @@ void DisplayApp::Refresh() {
       case Messages::BleRadioEnableToggle:
         PushMessageToSystemTask(System::Messages::BleRadioEnableToggle);
         break;
+      case Messages::BleAllowPairingToggle:
+        PushMessageToSystemTask(System::Messages::BleAllowPairingToggle);
+        break;
       case Messages::Chime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
