@@ -28,7 +28,8 @@ namespace Pinetime {
 
       class WatchFaceDigital : public Screen {
       public:
-        WatchFaceDigital(Controllers::DateTime& dateTimeController,
+        WatchFaceDigital(DisplayApp* app,
+                         Controllers::DateTime& dateTimeController,
                          const Controllers::Battery& batteryController,
                          const Controllers::Ble& bleController,
                          const Controllers::AlarmController& alarmController,
@@ -39,9 +40,12 @@ namespace Pinetime {
                          Controllers::SimpleWeatherService& weather);
         ~WatchFaceDigital() override;
 
+        void OnButtonEvent(lv_obj_t* object, lv_event_t event);
+
         void Refresh() override;
 
       private:
+        DisplayApp* app;
         uint8_t displayedHour = -1;
         uint8_t displayedMinute = -1;
 
@@ -83,7 +87,8 @@ namespace Pinetime {
       static constexpr const char* name = "Digital";
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::WatchFaceDigital(controllers.dateTimeController,
+        return new Screens::WatchFaceDigital(controllers.displayApp,
+                                             controllers.dateTimeController,
                                              controllers.batteryController,
                                              controllers.bleController,
                                              controllers.alarmController,

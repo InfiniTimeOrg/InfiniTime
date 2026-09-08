@@ -16,7 +16,15 @@
 
 using namespace Pinetime::Applications::Screens;
 
-WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
+namespace {
+  void ButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<WatchFaceDigital*>(obj->user_data);
+    screen->OnButtonEvent(obj, event);
+  }
+}
+
+WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
+                                   Controllers::DateTime& dateTimeController,
                                    const Controllers::Battery& batteryController,
                                    const Controllers::Ble& bleController,
                                    const Controllers::AlarmController& alarmController,
@@ -25,7 +33,8 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController,
                                    Controllers::SimpleWeatherService& weatherService)
-  : currentDateTime {{}},
+  : app {app},
+    currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
     settingsController {settingsController},
@@ -42,6 +51,10 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   weatherIcon = lv_label_create(lv_scr_act(), nullptr);
+  weatherIcon->user_data = this;
+  lv_obj_set_click(weatherIcon, true);
+  lv_obj_set_ext_click_area(weatherIcon, 25, 25, 25, 25);
+  lv_obj_set_event_cb(weatherIcon, ButtonEventHandler);
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
   lv_label_set_text(weatherIcon, "");
@@ -82,6 +95,10 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
 
   stepIcon = lv_label_create(lv_scr_act(), nullptr);
+  stepIcon->user_data = this;
+  lv_obj_set_click(stepIcon, true);
+  lv_obj_set_ext_click_area(stepIcon, 0, 25, 25, 0);
+  lv_obj_set_event_cb(stepIcon, ButtonEventHandler);
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
@@ -190,5 +207,16 @@ void WatchFaceDigital::Refresh() {
     }
     lv_obj_realign(temperature);
     lv_obj_realign(weatherIcon);
+  }
+}
+
+void WatchFaceDigital::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
+  if (event != LV_EVENT_CLICKED) {
+    return;
+  }
+  if (object == stepIcon) {
+    app->StartApp(Apps::Steps, DisplayApp::FullRefreshDirections::Up);
+  } else if (object == weatherIcon) {
+    app->StartApp(Apps::Weather, DisplayApp::FullRefreshDirections::Up);
   }
 }
