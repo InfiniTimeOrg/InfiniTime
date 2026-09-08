@@ -49,7 +49,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     heartRateService {*this, heartRateController},
     motionService {*this, motionController},
     fsService {systemTask, fs},
-    serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
+    ancsClient {systemTask, notificationManager},
+    serviceDiscovery({&currentTimeClient, &alertNotificationClient, &ancsClient}) {
 }
 
 void nimble_on_reset(int reason) {
@@ -161,8 +162,9 @@ void NimbleController::StartAdvertising() {
   fields.uuids16 = &HeartRateService::heartRateServiceUuid;
   fields.num_uuids16 = 1;
   fields.uuids16_is_complete = 1;
-  fields.uuids128 = &DfuService::serviceUuid;
-  fields.num_uuids128 = 1;
+  const ble_uuid128_t uuids128[2] = {DfuService::serviceUuid, AppleNotificationCenterClient::ancsUuid};
+  fields.uuids128 = uuids128;
+  fields.num_uuids128 = 2;
   fields.uuids128_is_complete = 1;
   fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
 
@@ -200,6 +202,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
         /* Connection failed; resume advertising. */
         currentTimeClient.Reset();
         alertNotificationClient.Reset();
+        ancsClient.Reset();
         connectionHandle = BLE_HS_CONN_HANDLE_NONE;
         bleController.Disconnect();
         fastAdvCount = 0;
@@ -209,6 +212,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
         bleController.Connect();
         systemTask.PushMessage(Pinetime::System::Messages::BleConnected);
         // Service discovery is deferred via systemtask
+        ble_gap_security_initiate(event->connect.conn_handle);
       }
       break;
 
@@ -223,6 +227,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
 
       currentTimeClient.Reset();
       alertNotificationClient.Reset();
+      ancsClient.Reset();
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
       if (bleController.IsConnected()) {
         bleController.Disconnect();
@@ -370,6 +375,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
                    notifSize);
 
       alertNotificationClient.OnNotification(event);
+      ancsClient.OnNotification(event);
     } break;
 
     case BLE_GAP_EVENT_NOTIFY_TX:
