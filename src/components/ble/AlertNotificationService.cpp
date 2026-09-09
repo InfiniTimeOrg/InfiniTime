@@ -72,6 +72,9 @@ int AlertNotificationService::OnAlert(struct ble_gatt_access_ctxt* ctxt) {
       case Categories::Call:
         notif.category = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
         break;
+      case Categories::HighPrioritizedAlert:
+        notif.category = Pinetime::Controllers::NotificationManager::Categories::PhoneAlarm;
+        break;
       default:
         notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
         break;
@@ -113,6 +116,32 @@ void AlertNotificationService::RejectIncomingCall() {
 void AlertNotificationService::MuteIncomingCall() {
   auto response = IncomingCallResponses::Mute;
   auto* om = ble_hs_mbuf_from_flat(&response, 1);
+
+  uint16_t connectionHandle = systemTask.nimble().connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+
+  ble_gattc_notify_custom(connectionHandle, eventHandle, om);
+}
+
+void AlertNotificationService::DismissPhoneAlarm() {
+  uint8_t response[2] = {0x01, static_cast<uint8_t>(PhoneAlarmResponses::Dismiss)};
+  auto* om = ble_hs_mbuf_from_flat(response, sizeof(response));
+
+  uint16_t connectionHandle = systemTask.nimble().connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+
+  ble_gattc_notify_custom(connectionHandle, eventHandle, om);
+}
+
+void AlertNotificationService::SnoozePhoneAlarm() {
+  uint8_t response[2] = {0x01, static_cast<uint8_t>(PhoneAlarmResponses::Snooze)};
+  auto* om = ble_hs_mbuf_from_flat(response, sizeof(response));
 
   uint16_t connectionHandle = systemTask.nimble().connHandle();
 

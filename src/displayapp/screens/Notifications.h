@@ -66,6 +66,7 @@ namespace Pinetime {
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           Pinetime::Controllers::MotorController& motorController;
 
+          Controllers::NotificationManager::Categories category = Controllers::NotificationManager::Categories::Unknown;
           bool running = true;
         };
 

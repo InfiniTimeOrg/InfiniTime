@@ -41,7 +41,8 @@ Notifications::Notifications(DisplayApp* app,
   }
   if (mode == Modes::Preview) {
     wakeLock.Lock();
-    if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
+    if (notification.category == Controllers::NotificationManager::Categories::IncomingCall ||
+        notification.category == Controllers::NotificationManager::Categories::PhoneAlarm) {
       motorController.StartRinging();
     } else {
       motorController.RunForDuration(35);
@@ -262,7 +263,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   uint8_t notifNb,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                                   Pinetime::Controllers::MotorController& motorController)
-  : alertNotificationService {alertNotificationService}, motorController {motorController} {
+  : alertNotificationService {alertNotificationService}, motorController {motorController}, category {category} {
   container = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
@@ -348,6 +349,34 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_label_set_text_static(label_mute, Symbols::volumMute);
       lv_obj_set_style_local_bg_color(bt_mute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
     } break;
+    case Controllers::NotificationManager::Categories::PhoneAlarm: {
+      lv_obj_set_height(subject_container, 108);
+      lv_label_set_text_static(alert_subject, "Phone Alarm");
+
+      lv_obj_t* alert_label = lv_label_create(subject_container, nullptr);
+      lv_obj_align(alert_label, alert_subject, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+      lv_label_set_long_mode(alert_label, LV_LABEL_LONG_BREAK);
+      lv_obj_set_width(alert_label, LV_HOR_RES - 20);
+      lv_label_set_text(alert_label, msg);
+
+      bt_reject = lv_btn_create(container, nullptr);
+      bt_reject->user_data = this;
+      lv_obj_set_event_cb(bt_reject, CallEventHandler);
+      lv_obj_set_size(bt_reject, 115, 76);
+      lv_obj_align(bt_reject, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+      label_reject = lv_label_create(bt_reject, nullptr);
+      lv_label_set_text_static(label_reject, Symbols::stop);
+      lv_obj_set_style_local_bg_color(bt_reject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+
+      bt_mute = lv_btn_create(container, nullptr);
+      bt_mute->user_data = this;
+      lv_obj_set_event_cb(bt_mute, CallEventHandler);
+      lv_obj_set_size(bt_mute, 115, 76);
+      lv_obj_align(bt_mute, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+      label_mute = lv_label_create(bt_mute, nullptr);
+      lv_label_set_text_static(label_mute, "zzz");
+      lv_obj_set_style_local_bg_color(bt_mute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::violet);
+    } break;
   }
 }
 
@@ -358,12 +387,20 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
 
   motorController.StopRinging();
 
-  if (obj == bt_accept) {
-    alertNotificationService.AcceptIncomingCall();
-  } else if (obj == bt_reject) {
-    alertNotificationService.RejectIncomingCall();
-  } else if (obj == bt_mute) {
-    alertNotificationService.MuteIncomingCall();
+  if (category == Controllers::NotificationManager::Categories::PhoneAlarm) {
+    if (obj == bt_reject) {
+      alertNotificationService.DismissPhoneAlarm();
+    } else if (obj == bt_mute) {
+      alertNotificationService.SnoozePhoneAlarm();
+    }
+  } else {
+    if (obj == bt_accept) {
+      alertNotificationService.AcceptIncomingCall();
+    } else if (obj == bt_reject) {
+      alertNotificationService.RejectIncomingCall();
+    } else if (obj == bt_mute) {
+      alertNotificationService.MuteIncomingCall();
+    }
   }
 
   running = false;
