@@ -4,6 +4,8 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/Controllers.h"
 
+#include "displayapp/screens/Dice.h"
+
 namespace Pinetime {
   namespace Applications {
     struct TwosTile {
@@ -14,7 +16,7 @@ namespace Pinetime {
     namespace Screens {
       class Twos : public Screen {
       public:
-        Twos();
+        Twos(Controllers::RNG& prngController);
         ~Twos() override;
 
         bool OnTouchEvent(TouchEvents event) override;
@@ -29,6 +31,7 @@ namespace Pinetime {
         static constexpr int nRows = 4;
         static constexpr int nCells = nCols * nRows;
         TwosTile grid[nRows][nCols];
+        Controllers::RNG rng;
         unsigned int score = 0;
         void updateGridDisplay();
         bool tryMerge(int newRow, int newCol, int oldRow, int oldCol);
@@ -42,8 +45,8 @@ namespace Pinetime {
       static constexpr Apps app = Apps::Twos;
       static constexpr const char* icon = "2";
 
-      static Screens::Screen* Create(AppControllers& /*controllers*/) {
-        return new Screens::Twos();
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Twos(*controllers.prngController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

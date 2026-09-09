@@ -7,3 +7,6 @@
 [submodule "src/libs/arduinoFFT"]
 	path = src/libs/arduinoFFT
 	url = https://github.com/kosme/arduinoFFT.git
+[submodule "src/pcg-cpp"]
+	path = src/pcg-cpp
+	url = https://github.com/imneme/pcg-cpp
