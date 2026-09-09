@@ -30,6 +30,9 @@ namespace Pinetime {
                      std::array<Item, MaxItems> options);
         ~CheckboxList() override;
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
+        void SetTitle(const char* optionsTitle);
+        void SetSymbol(const char* optionsSymbol);
+        void SetOptions(std::array<Item, MaxItems> updatedOptions);
 
       private:
         const uint8_t screenID;
@@ -37,6 +40,8 @@ namespace Pinetime {
         std::array<Item, MaxItems> options;
         std::array<lv_obj_t*, MaxItems> cbOption;
         uint32_t value;
+        lv_obj_t* title;
+        lv_obj_t* icon;
 
         Widgets::PageIndicator pageIndicator;
       };

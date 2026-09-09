@@ -398,6 +398,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Alarm.cpp
         displayapp/screens/Styles.cpp
         displayapp/screens/WeatherSymbols.cpp
+        displayapp/localization/Localization.cpp
         displayapp/Colors.cpp
         displayapp/widgets/Counter.cpp
         displayapp/widgets/PageIndicator.cpp
@@ -421,6 +422,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingShakeThreshold.cpp
         displayapp/screens/settings/SettingBluetooth.cpp
         displayapp/screens/settings/SettingOTA.cpp
+        displayapp/screens/settings/SettingLanguage.cpp
 
         ## Watch faces
         displayapp/screens/WatchFaceAnalog.cpp
@@ -611,6 +613,7 @@ set(INCLUDE_FILES
         displayapp/screens/FirmwareValidation.h
         displayapp/screens/ApplicationList.h
         displayapp/screens/CheckboxList.h
+        displayapp/localization/Localization.h
         displayapp/Apps.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
@@ -671,6 +674,7 @@ set(INCLUDE_FILES
         systemtask/SystemMonitor.h
         systemtask/WakeLock.h
         displayapp/screens/Symbols.h
+        displayapp/screens/settings/SettingLanguage.h
         drivers/TwiMaster.h
         heartratetask/HeartRateTask.h
         components/heartrate/Ppg.h
@@ -1143,4 +1147,3 @@ endif()
 if(BUILD_RESOURCES)
   add_subdirectory(resources)
 endif()
-

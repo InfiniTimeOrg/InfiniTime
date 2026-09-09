@@ -5,28 +5,30 @@
 #include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   struct Option {
-    const char* name;
+    StringId name;
     bool radioEnabled;
   };
 
   constexpr std::array<Option, 2> options = {{
-    {"Enabled", true},
-    {"Disabled", false},
+    {StringId::Enabled, true},
+    {StringId::Disabled, false},
   }};
 
-  std::array<CheckboxList::Item, CheckboxList::MaxItems> CreateOptionArray() {
+  std::array<CheckboxList::Item, CheckboxList::MaxItems> CreateOptionArray(Language language) {
     std::array<Pinetime::Applications::Screens::CheckboxList::Item, CheckboxList::MaxItems> optionArray;
     for (size_t i = 0; i < CheckboxList::MaxItems; i++) {
       if (i >= options.size()) {
         optionArray[i].name = "";
         optionArray[i].enabled = false;
       } else {
-        optionArray[i].name = options[i].name;
+        optionArray[i].name = Translate(language, options[i].name);
         optionArray[i].enabled = true;
       }
     }
@@ -40,7 +42,7 @@ SettingBluetooth::SettingBluetooth(Pinetime::Applications::DisplayApp* app, Pine
     checkboxList(
       0,
       1,
-      "Bluetooth",
+      Translate(settingsController.GetLanguage(), StringId::Bluetooth),
       Symbols::bluetooth,
       settingsController.GetBleRadioEnabled() ? 0 : 1,
       [this](uint32_t index) {
@@ -51,7 +53,7 @@ SettingBluetooth::SettingBluetooth(Pinetime::Applications::DisplayApp* app, Pine
           this->app->PushMessage(Pinetime::Applications::Display::Messages::BleRadioEnableToggle);
         }
       },
-      CreateOptionArray()) {
+      CreateOptionArray(settingsController.GetLanguage())) {
 }
 
 SettingBluetooth::~SettingBluetooth() {

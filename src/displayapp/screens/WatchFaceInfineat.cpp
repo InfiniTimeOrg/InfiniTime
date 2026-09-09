@@ -427,7 +427,10 @@ void WatchFaceInfineat::Refresh() {
     if (currentDate.IsUpdated()) {
       uint8_t day = dateTimeController.Day();
       Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
-      lv_label_set_text_fmt(labelDate, "%s %02d", dateTimeController.DayOfWeekShortToStringLow(dayOfWeek), day);
+      lv_label_set_text_fmt(labelDate,
+                            "%s %02d",
+                            dateTimeController.DayOfWeekShortToStringLow(dayOfWeek, settingsController.GetLanguage()),
+                            day);
       lv_obj_realign(labelDate);
     }
   }

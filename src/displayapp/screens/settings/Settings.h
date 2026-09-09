@@ -32,24 +32,25 @@ namespace Pinetime {
         static constexpr int nScreens = 4;
 
         static constexpr std::array<List::Applications, entriesPerScreen * nScreens> entries {{
-          {Symbols::sun, "Display", Apps::SettingDisplay},
-          {Symbols::eye, "Wake Up", Apps::SettingWakeUp},
-          {Symbols::clock, "Time format", Apps::SettingTimeFormat},
-          {Symbols::home, "Watch face", Apps::SettingWatchFace},
+          {Symbols::sun, Localization::StringId::Display, Apps::SettingDisplay},
+          {Symbols::eye, Localization::StringId::WakeUp, Apps::SettingWakeUp},
+          {Symbols::clock, Localization::StringId::TimeFormat, Apps::SettingTimeFormat},
+          {Symbols::home, Localization::StringId::WatchFace, Apps::SettingWatchFace},
 
-          {Symbols::shoe, "Steps", Apps::SettingSteps},
-          {Symbols::heartBeat, "Heartrate", Apps::SettingHeartRate},
-          {Symbols::clock, "Date & Time", Apps::SettingSetDateTime},
-          {Symbols::cloudSunRain, "Weather", Apps::SettingWeatherFormat},
+          {Symbols::shoe, Localization::StringId::Steps, Apps::SettingSteps},
+          {Symbols::heartBeat, Localization::StringId::HeartRate, Apps::SettingHeartRate},
+          {Symbols::clock, Localization::StringId::DateTime, Apps::SettingSetDateTime},
+          {Symbols::cloudSunRain, Localization::StringId::Weather, Apps::SettingWeatherFormat},
 
-          {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
-          {Symbols::clock, "Chimes", Apps::SettingChimes},
-          {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
-          {Symbols::check, "Firmware", Apps::FirmwareValidation},
+          {Symbols::batteryHalf, Localization::StringId::Battery, Apps::BatteryInfo},
+          {Symbols::clock, Localization::StringId::Chimes, Apps::SettingChimes},
+          {Symbols::tachometer, Localization::StringId::ShakeCalibration, Apps::SettingShakeThreshold},
+          {Symbols::check, Localization::StringId::Firmware, Apps::FirmwareValidation},
 
-          {Symbols::shieldAlt, "Over-the-air", Apps::SettingOTA},
-          {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
-          {Symbols::list, "About", Apps::SysInfo},
+          {Symbols::shieldAlt, Localization::StringId::Ota, Apps::SettingOTA},
+          {Symbols::bluetooth, Localization::StringId::Bluetooth, Apps::SettingBluetooth},
+          {Symbols::map, Localization::StringId::Language, Apps::SettingLanguage},
+          {Symbols::list, Localization::StringId::About, Apps::SysInfo},
         }};
         ScreenList<nScreens> screens;
       };

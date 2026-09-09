@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <chrono>
 #include "displayapp/screens/Screen.h"
+#include "components/settings/Settings.h"
 #include "systemtask/SystemTask.h"
 #include "systemtask/WakeLock.h"
 #include "Symbols.h"
@@ -19,7 +20,9 @@ namespace Pinetime {
 
       class HeartRate : public Screen {
       public:
-        HeartRate(Controllers::HeartRateController& HeartRateController, System::SystemTask& systemTask);
+        HeartRate(Controllers::HeartRateController& HeartRateController,
+                  Controllers::Settings& settingsController,
+                  System::SystemTask& systemTask);
         ~HeartRate() override;
 
         void Refresh() override;
@@ -28,6 +31,7 @@ namespace Pinetime {
 
       private:
         Controllers::HeartRateController& heartRateController;
+        Controllers::Settings& settingsController;
         Pinetime::System::WakeLock wakeLock;
         void UpdateStartStopButton(bool isRunning);
         lv_obj_t* label_hr;
@@ -46,7 +50,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::heartBeat;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::HeartRate(controllers.heartRateController, *controllers.systemTask);
+        return new Screens::HeartRate(controllers.heartRateController, controllers.settingsController, *controllers.systemTask);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

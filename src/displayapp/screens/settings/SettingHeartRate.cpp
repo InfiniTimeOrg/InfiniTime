@@ -2,13 +2,34 @@
 #include <lvgl/lvgl.h>
 #include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   void EventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingHeartRate*>(obj->user_data);
     screen->UpdateSelected(obj, event);
+  }
+
+  const char* IntervalLabel(std::optional<uint16_t> interval) {
+    if (interval == 30) {
+      return " 30s";
+    }
+    if (interval == 60) {
+      return "  1m";
+    }
+    if (interval == 5 * 60) {
+      return "  5m";
+    }
+    if (interval == 10 * 60) {
+      return " 10m";
+    }
+    if (interval == 30 * 60) {
+      return " 30m";
+    }
+    return "";
   }
 }
 
@@ -26,8 +47,7 @@ SettingHeartRate::SettingHeartRate(Pinetime::Controllers::Settings& settingsCont
   lv_cont_set_layout(container, LV_LAYOUT_PRETTY_TOP);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Backg. Interval");
-  lv_label_set_text(title, "Backg. Interval");
+  lv_label_set_text_static(title, Translate(settingsController.GetLanguage(), StringId::BackgroundInterval));
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 10, 15);
 
@@ -41,7 +61,13 @@ SettingHeartRate::SettingHeartRate(Pinetime::Controllers::Settings& settingsCont
 
   for (std::size_t i = 0; i < options.size(); i++) {
     cbOption[i] = lv_checkbox_create(container, nullptr);
-    lv_checkbox_set_text(cbOption[i], options[i].name);
+    if (options[i].intervalInSeconds == std::nullopt) {
+      lv_checkbox_set_text(cbOption[i], Translate(settingsController.GetLanguage(), StringId::Off));
+    } else if (options[i].intervalInSeconds == 0) {
+      lv_checkbox_set_text(cbOption[i], Translate(settingsController.GetLanguage(), StringId::Continuous));
+    } else {
+      lv_checkbox_set_text(cbOption[i], IntervalLabel(options[i].intervalInSeconds));
+    }
     cbOption[i]->user_data = this;
     lv_obj_set_event_cb(cbOption[i], EventHandler);
     SetRadioButtonStyle(cbOption[i]);

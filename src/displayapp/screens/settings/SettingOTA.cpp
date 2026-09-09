@@ -5,29 +5,31 @@
 #include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   struct Option {
-    const char* name;
+    StringId name;
     Pinetime::Controllers::Settings::DfuAndFsMode mode;
   };
 
   constexpr std::array<Option, 3> options = {{
-    {"Enabled", Pinetime::Controllers::Settings::DfuAndFsMode::Enabled},
-    {"Disabled", Pinetime::Controllers::Settings::DfuAndFsMode::Disabled},
-    {"Till reboot", Pinetime::Controllers::Settings::DfuAndFsMode::EnabledTillReboot},
+    {StringId::Enabled, Pinetime::Controllers::Settings::DfuAndFsMode::Enabled},
+    {StringId::Disabled, Pinetime::Controllers::Settings::DfuAndFsMode::Disabled},
+    {StringId::TillReboot, Pinetime::Controllers::Settings::DfuAndFsMode::EnabledTillReboot},
   }};
 
-  std::array<CheckboxList::Item, CheckboxList::MaxItems> CreateOptionArray() {
+  std::array<CheckboxList::Item, CheckboxList::MaxItems> CreateOptionArray(Language language) {
     std::array<Pinetime::Applications::Screens::CheckboxList::Item, CheckboxList::MaxItems> optionArray;
     for (size_t i = 0; i < CheckboxList::MaxItems; i++) {
       if (i >= options.size()) {
         optionArray[i].name = "";
         optionArray[i].enabled = false;
       } else {
-        optionArray[i].name = options[i].name;
+        optionArray[i].name = Translate(language, options[i].name);
         optionArray[i].enabled = true;
       }
     }
@@ -41,7 +43,7 @@ SettingOTA::SettingOTA(Pinetime::Applications::DisplayApp* app, Pinetime::Contro
     checkboxList(
       0,
       1,
-      "Firmware & files",
+      Translate(settingsController.GetLanguage(), StringId::FirmwareAndFiles),
       Symbols::shieldAlt,
       settingsController.GetDfuAndFsMode() == Pinetime::Controllers::Settings::DfuAndFsMode::Enabled             ? 0
       : settingsController.GetDfuAndFsMode() == Pinetime::Controllers::Settings::DfuAndFsMode::EnabledTillReboot ? 2
@@ -49,7 +51,7 @@ SettingOTA::SettingOTA(Pinetime::Applications::DisplayApp* app, Pinetime::Contro
       [&settings = settingsController](uint32_t index) {
         settings.SetDfuAndFsMode(options[index].mode);
       },
-      CreateOptionArray()) {
+      CreateOptionArray(settingsController.GetLanguage())) {
 }
 
 SettingOTA::~SettingOTA() {

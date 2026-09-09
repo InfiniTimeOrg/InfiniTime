@@ -2,14 +2,12 @@
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/localization/Localization.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 using Days = Pinetime::Controllers::MotionController::Days;
-
-namespace {
-  constexpr const char* yesterdayStr = "Yest: %5lu";
-}
 
 static void lap_event_handler(lv_obj_t* obj, lv_event_t event) {
   auto* steps = static_cast<Steps*>(obj->user_data);
@@ -44,18 +42,22 @@ Steps::Steps(Controllers::MotionController& motionController, Controllers::Setti
 
   lv_obj_t* lstepsL = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lstepsL, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_label_set_text_static(lstepsL, "Steps");
+  lv_label_set_text_static(lstepsL, Translate(settingsController.GetLanguage(), StringId::Steps));
   lv_obj_align(lstepsL, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
   lStepsYesterday = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lStepsYesterday, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_label_set_text_fmt(lStepsYesterday, yesterdayStr, motionController.NbSteps(Days::Yesterday));
+  lv_label_set_text_fmt(lStepsYesterday,
+                        "%s: %5lu",
+                        Translate(settingsController.GetLanguage(), StringId::Yesterday),
+                        motionController.NbSteps(Days::Yesterday));
   lv_label_set_align(lStepsYesterday, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lStepsYesterday, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
 
   lv_obj_t* lstepsGoal = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lstepsGoal, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
-  lv_label_set_text_fmt(lstepsGoal, "Goal: %5lu", settingsController.GetStepsGoal());
+  lv_label_set_text_fmt(
+    lstepsGoal, "%s: %5lu", Translate(settingsController.GetLanguage(), StringId::Goal), settingsController.GetStepsGoal());
   lv_label_set_align(lstepsGoal, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lstepsGoal, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 40);
 
@@ -67,13 +69,14 @@ Steps::Steps(Controllers::MotionController& motionController, Controllers::Setti
   lv_obj_set_style_local_bg_color(resetBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_align(resetBtn, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   resetButtonLabel = lv_label_create(resetBtn, nullptr);
-  lv_label_set_text_static(resetButtonLabel, "Reset");
+  lv_label_set_text_static(resetButtonLabel, Translate(settingsController.GetLanguage(), StringId::Reset));
 
   currentTripSteps = motionController.GetTripSteps();
 
   tripLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(tripLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-  lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps);
+  lv_label_set_text_fmt(
+    tripLabel, "%s: %5li", Translate(settingsController.GetLanguage(), StringId::Trip), currentTripSteps);
   lv_obj_align(tripLabel, lstepsGoal, LV_ALIGN_IN_LEFT_MID, 0, 20);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
@@ -91,13 +94,17 @@ void Steps::Refresh() {
   lv_label_set_text_fmt(lSteps, "%lu", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
-  lv_label_set_text_fmt(lStepsYesterday, yesterdayStr, motionController.NbSteps(Days::Yesterday));
+  lv_label_set_text_fmt(lStepsYesterday,
+                        "%s: %5lu",
+                        Translate(settingsController.GetLanguage(), StringId::Yesterday),
+                        motionController.NbSteps(Days::Yesterday));
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   if (currentTripSteps < 100000) {
-    lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps);
+    lv_label_set_text_fmt(
+      tripLabel, "%s: %5li", Translate(settingsController.GetLanguage(), StringId::Trip), currentTripSteps);
   } else {
-    lv_label_set_text_fmt(tripLabel, "Trip: 99999+");
+    lv_label_set_text_fmt(tripLabel, "%s: 99999+", Translate(settingsController.GetLanguage(), StringId::Trip));
   }
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
 }

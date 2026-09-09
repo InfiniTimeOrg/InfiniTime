@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include "displayapp/screens/Screen.h"
+#include "components/settings/Settings.h"
 #include <lvgl/lvgl.h>
 
 namespace Pinetime {
@@ -14,13 +15,14 @@ namespace Pinetime {
 
       class BatteryInfo : public Screen {
       public:
-        BatteryInfo(const Pinetime::Controllers::Battery& batteryController);
+        BatteryInfo(const Pinetime::Controllers::Battery& batteryController, Pinetime::Controllers::Settings& settingsController);
         ~BatteryInfo() override;
 
         void Refresh() override;
 
       private:
         const Pinetime::Controllers::Battery& batteryController;
+        Pinetime::Controllers::Settings& settingsController;
 
         lv_obj_t* voltage;
         lv_obj_t* percent;

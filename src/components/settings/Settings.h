@@ -6,6 +6,7 @@
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 #include "displayapp/apps/Apps.h"
+#include "displayapp/localization/Localization.h"
 #include <nrf_log.h>
 
 namespace Pinetime {
@@ -41,6 +42,7 @@ namespace Pinetime {
       enum class PTSWeather : uint8_t { On, Off };
       enum class PrideFlag : uint8_t { Gay, Trans, Bi, Lesbian };
       enum class DfuAndFsMode : uint8_t { Disabled, Enabled, EnabledTillReboot };
+      using Language = Pinetime::Applications::Localization::Language;
 
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
@@ -351,10 +353,21 @@ namespace Pinetime {
         settings.heartRateBackgroundPeriod = newIntervalInSeconds.value();
       }
 
+      void SetLanguage(Language language) {
+        if (language != settings.language) {
+          settingsChanged = true;
+        }
+        settings.language = language;
+      }
+
+      Language GetLanguage() const {
+        return settings.language;
+      }
+
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x000a;
+      static constexpr uint32_t settingsVersion = 0x000b;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -383,6 +396,7 @@ namespace Pinetime {
 
         bool dfuAndFsEnabledOnBoot = false;
         uint16_t heartRateBackgroundPeriod = std::numeric_limits<uint16_t>::max(); // Disabled by default
+        Language language = Language::English;
       };
 
       SettingsData settings;

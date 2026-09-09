@@ -19,9 +19,11 @@
 #include <cstdint>
 #include "displayapp/DisplayApp.h"
 #include "components/ble/NavigationService.h"
+#include "displayapp/localization/Localization.h"
 #include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 /* Notes about the navigation icons :
  *  - Icons are generated from a TTF font converted in PNG images. Those images are all appended
@@ -190,7 +192,8 @@ namespace {
  * Navigation watchapp
  *
  */
-Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navService(nav) {
+Navigation::Navigation(Pinetime::Controllers::NavigationService& nav, Pinetime::Controllers::Settings& settingsController)
+  : navService(nav), settingsController(settingsController) {
   const auto& image = GetIcon("flag");
   imgFlag = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_auto_size(imgFlag, false);
@@ -206,7 +209,7 @@ Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navServi
   lv_label_set_long_mode(txtNarrative, LV_LABEL_LONG_DOT);
   lv_obj_set_width(txtNarrative, LV_HOR_RES);
   lv_obj_set_height(txtNarrative, 80);
-  lv_label_set_text_static(txtNarrative, "Navigation");
+  lv_label_set_text_static(txtNarrative, Translate(settingsController.GetLanguage(), StringId::Navigation));
   lv_label_set_align(txtNarrative, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(txtNarrative, nullptr, LV_ALIGN_CENTER, 0, 30);
 

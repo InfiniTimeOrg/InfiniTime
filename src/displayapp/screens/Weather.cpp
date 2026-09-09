@@ -119,7 +119,7 @@ void Weather::Refresh() {
       }
       lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, optCurrentWeather->temperature.Color());
       lv_label_set_text(icon, Symbols::GetSymbol(optCurrentWeather->iconId, weatherService.IsNight()));
-      lv_label_set_text(condition, Symbols::GetCondition(optCurrentWeather->iconId));
+      lv_label_set_text(condition, Symbols::GetCondition(optCurrentWeather->iconId, settingsController.GetLanguage()));
       lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
       lv_label_set_text_fmt(minTemperature, "%d°", minTemp);
       lv_label_set_text_fmt(maxTemperature, "%d°", maxTemp);
@@ -152,7 +152,8 @@ void Weather::Refresh() {
         if (wday > 7) {
           wday -= 7;
         }
-        const char* dayOfWeek = Controllers::DateTime::DayOfWeekShortToStringLow(static_cast<Controllers::DateTime::Days>(wday));
+        const char* dayOfWeek = Controllers::DateTime::DayOfWeekShortToStringLow(static_cast<Controllers::DateTime::Days>(wday),
+                                                                                   settingsController.GetLanguage());
         lv_table_set_cell_value(forecast, 0, i, dayOfWeek);
         lv_table_set_cell_value(forecast, 1, i, Symbols::GetSymbol(optCurrentForecast->days[i]->iconId, false));
         // Pad cells based on the largest number of digits on each column

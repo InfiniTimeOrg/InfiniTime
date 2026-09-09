@@ -37,14 +37,13 @@ namespace Pinetime {
         auto CreateScreenList() const;
         std::unique_ptr<Screen> CreateScreen(unsigned int screenNum) const;
 
-        static constexpr int settingsPerScreen = 4;
+        static constexpr int settingsPerScreen = CheckboxList::MaxItems;
         std::array<Item, UserWatchFaceTypes::Count> watchfaceItems;
-        static constexpr int nScreens = UserWatchFaceTypes::Count > 0 ? (UserWatchFaceTypes ::Count - 1) / settingsPerScreen + 1 : 1;
+        static constexpr int nScreens = UserWatchFaceTypes::Count > 0 ? (UserWatchFaceTypes::Count - 1) / settingsPerScreen + 1 : 1;
 
         Controllers::Settings& settingsController;
         Pinetime::Controllers::FS& filesystem;
 
-        static constexpr const char* title = "Watch face";
         static constexpr const char* symbol = Symbols::home;
 
         ScreenList<nScreens> screens;

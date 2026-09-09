@@ -2,9 +2,11 @@
 #include <lvgl/lvgl.h>
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
+#include "displayapp/localization/Localization.h"
 #include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   void EventHandler(lv_obj_t* obj, lv_event_t event) {
@@ -198,9 +200,13 @@ void WatchFacePrideFlag::Refresh() {
   bleState = bleController.IsConnected();
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated() || powerPresent.IsUpdated() || themeChanged) {
-    lv_label_set_text_fmt(batteryValue, "%d%%", batteryPercentRemaining.Get());
     if (batteryController.IsPowerPresent()) {
-      lv_label_ins_text(batteryValue, LV_LABEL_POS_LAST, " Charging");
+      lv_label_set_text_fmt(batteryValue,
+                            "%d%% %s",
+                            batteryPercentRemaining.Get(),
+                            Translate(settingsController.GetLanguage(), StringId::Charging));
+    } else {
+      lv_label_set_text_fmt(batteryValue, "%d%%", batteryPercentRemaining.Get());
     }
   }
   if (bleState.IsUpdated()) {
@@ -214,7 +220,7 @@ void WatchFacePrideFlag::Refresh() {
   notificationState = notificationManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     if (notificationState.Get()) {
-      lv_label_set_text_static(notificationText, "You have\nmail!");
+      lv_label_set_text_static(notificationText, Translate(settingsController.GetLanguage(), StringId::YouHaveMail));
     } else {
       lv_label_set_text_static(notificationText, "");
     }
@@ -246,18 +252,19 @@ void WatchFacePrideFlag::Refresh() {
       const Controllers::DateTime::Months month = dateTimeController.Month();
       const uint8_t day = dateTimeController.Day();
       const Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
+      const auto language = settingsController.GetLanguage();
       lv_label_set_text_fmt(labelDate, "%02d-%02d-%04d", day, static_cast<uint8_t>(month), year);
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-        lv_label_set_text_fmt(labelDay, "%s %s", dateTimeController.DayOfWeekToStringLow(dayOfWeek), ampmChar);
+        lv_label_set_text_fmt(labelDay, "%s %s", dateTimeController.DayOfWeekToStringLow(dayOfWeek, language), ampmChar);
       } else {
-        lv_label_set_text_fmt(labelDay, "%s", dateTimeController.DayOfWeekToStringLow(dayOfWeek));
+        lv_label_set_text_fmt(labelDay, "%s", dateTimeController.DayOfWeekToStringLow(dayOfWeek, language));
       }
     }
   }
 
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated() || themeChanged) {
-    lv_label_set_text_fmt(stepValue, "%lu steps", stepCount.Get());
+    lv_label_set_text_fmt(stepValue, "%lu %s", stepCount.Get(), Translate(settingsController.GetLanguage(), StringId::Steps));
   }
   if (themeChanged) {
     themeChanged = false;

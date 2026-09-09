@@ -6,6 +6,7 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/PageIndicator.h"
 #include "displayapp/apps/Apps.h"
+#include "displayapp/localization/Localization.h"
 #include "components/settings/Settings.h"
 
 #define MAXLISTITEMS 4
@@ -17,7 +18,7 @@ namespace Pinetime {
       public:
         struct Applications {
           const char* icon;
-          const char* name;
+          Pinetime::Applications::Localization::StringId name;
           Pinetime::Applications::Apps application;
         };
 

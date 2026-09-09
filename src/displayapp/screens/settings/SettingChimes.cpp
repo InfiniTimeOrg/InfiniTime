@@ -4,30 +4,32 @@
 #include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/localization/Localization.h"
 #include <array>
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Localization;
 
 namespace {
   struct Option {
     Pinetime::Controllers::Settings::ChimesOption chimesOption;
-    const char* name;
+    StringId name;
   };
 
   constexpr std::array<Option, 3> options = {{
-    {Pinetime::Controllers::Settings::ChimesOption::None, "Off"},
-    {Pinetime::Controllers::Settings::ChimesOption::Hours, "Every hour"},
-    {Pinetime::Controllers::Settings::ChimesOption::HalfHours, "Every 30 mins"},
+    {Pinetime::Controllers::Settings::ChimesOption::None, StringId::Off},
+    {Pinetime::Controllers::Settings::ChimesOption::Hours, StringId::EveryHour},
+    {Pinetime::Controllers::Settings::ChimesOption::HalfHours, StringId::Every30Minutes},
   }};
 
-  std::array<CheckboxList::Item, CheckboxList::MaxItems> CreateOptionArray() {
+  std::array<CheckboxList::Item, CheckboxList::MaxItems> CreateOptionArray(Language language) {
     std::array<Pinetime::Applications::Screens::CheckboxList::Item, CheckboxList::MaxItems> optionArray;
     for (size_t i = 0; i < CheckboxList::MaxItems; i++) {
       if (i >= options.size()) {
         optionArray[i].name = "";
         optionArray[i].enabled = false;
       } else {
-        optionArray[i].name = options[i].name;
+        optionArray[i].name = Translate(language, options[i].name);
         optionArray[i].enabled = true;
       }
     }
@@ -48,14 +50,14 @@ SettingChimes::SettingChimes(Pinetime::Controllers::Settings& settingsController
   : checkboxList(
       0,
       1,
-      "Chimes",
+      Translate(settingsController.GetLanguage(), StringId::Chimes),
       Symbols::clock,
       GetDefaultOption(settingsController.GetChimeOption()),
       [&settings = settingsController](uint32_t index) {
         settings.SetChimeOption(options[index].chimesOption);
         settings.SaveSettings();
       },
-      CreateOptionArray()) {
+      CreateOptionArray(settingsController.GetLanguage())) {
 }
 
 SettingChimes::~SettingChimes() {

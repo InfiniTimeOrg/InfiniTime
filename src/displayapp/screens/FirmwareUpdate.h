@@ -1,6 +1,7 @@
 #pragma once
 
 #include "displayapp/screens/Screen.h"
+#include "components/settings/Settings.h"
 #include <lvgl/src/lv_core/lv_obj.h>
 #include "FreeRTOS.h"
 
@@ -14,7 +15,7 @@ namespace Pinetime {
 
       class FirmwareUpdate : public Screen {
       public:
-        FirmwareUpdate(const Pinetime::Controllers::Ble& bleController);
+        FirmwareUpdate(const Pinetime::Controllers::Ble& bleController, Pinetime::Controllers::Settings& settingsController);
         ~FirmwareUpdate() override;
 
         void Refresh() override;
@@ -22,6 +23,7 @@ namespace Pinetime {
       private:
         enum class States { Idle, Running, Validated, Error };
         const Pinetime::Controllers::Ble& bleController;
+        Pinetime::Controllers::Settings& settingsController;
         lv_obj_t* bar1;
         lv_obj_t* percentLabel;
         lv_obj_t* titleLabel;
