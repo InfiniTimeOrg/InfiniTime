@@ -22,7 +22,7 @@ namespace Pinetime {
         HighProriotyAlert,
         InstantMessage
       };
-      static constexpr uint8_t MessageSize {100};
+      static constexpr uint8_t MessageSize {150};
 
       struct Notification {
         using Id = uint8_t;
