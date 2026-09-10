@@ -55,3 +55,10 @@ src/arm-none-eabi
 node_modules
 package.json
 package-lock.json
+
+# Toolchain and External dependencies
+sdk-toolchain/
+
+# Developer files
+CMakeUserPresets.json
+compile_commands.json

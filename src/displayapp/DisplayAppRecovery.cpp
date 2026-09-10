@@ -24,6 +24,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::StopWatchController& /*stopWatchController*/,
                        Pinetime::Controllers::AlarmController& /*alarmController*/,
                        Pinetime::Controllers::BrightnessController& /*brightnessController*/,
+                       Pinetime::Controllers::SleepTrackingController& /*sleeptrackingController*/,
                        Pinetime::Controllers::TouchHandler& /*touchHandler*/,
                        Pinetime::Controllers::FS& /*filesystem*/,
                        Pinetime::Drivers::SpiNorFlash& /*spiNorFlash*/)
