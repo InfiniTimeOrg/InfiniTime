@@ -72,5 +72,15 @@
       ],
       "bpp": 2,
       "size": 25
+   },
+   "azeret_mono": {
+      "sources": [
+         {
+            "file": "AzeretMono-Regular.ttf",
+            "range": "0x30-0x3a"
+         }
+      ],
+      "bpp": 4,
+      "size": 82
    }
 }
