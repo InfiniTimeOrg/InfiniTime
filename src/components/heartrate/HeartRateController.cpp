@@ -1,11 +1,15 @@
 #include "components/heartrate/HeartRateController.h"
-#include <heartratetask/HeartRateTask.h>
-#include <systemtask/SystemTask.h>
+
+#include <cstdint>
+#include "heartratetask/HeartRateTask.h"
 
 using namespace Pinetime::Controllers;
 
-void HeartRateController::Update(HeartRateController::States newState, uint8_t heartRate) {
+void HeartRateController::UpdateState(HeartRateController::States newState) {
   this->state = newState;
+}
+
+void HeartRateController::UpdateHeartRate(uint8_t heartRate) {
   if (this->heartRate != heartRate) {
     this->heartRate = heartRate;
     service->OnNewHeartRateValue(heartRate);
@@ -14,14 +18,14 @@ void HeartRateController::Update(HeartRateController::States newState, uint8_t h
 
 void HeartRateController::Enable() {
   if (task != nullptr) {
-    state = States::NotEnoughData;
+    state = States::Stopped;
     task->PushMessage(Pinetime::Applications::HeartRateTask::Messages::Enable);
   }
 }
 
 void HeartRateController::Disable() {
   if (task != nullptr) {
-    state = States::Stopped;
+    state = States::Disabled;
     task->PushMessage(Pinetime::Applications::HeartRateTask::Messages::Disable);
   }
 }

@@ -675,9 +675,9 @@ set(INCLUDE_FILES
         heartratetask/HeartRateTask.h
         components/heartrate/Ppg.h
         components/heartrate/HeartRateController.h
-        libs/arduinoFFT/src/arduinoFFT.h
-        libs/arduinoFFT/src/defs.h
-        libs/arduinoFFT/src/types.h
+        components/heartrate/FFT.h
+        components/heartrate/IIR.h
+        components/heartrate/RLS.h
         components/motor/MotorController.h
         buttonhandler/ButtonHandler.h
         touchhandler/TouchHandler.h
