@@ -170,7 +170,7 @@ void Timer::SetTimerStopped() {
 }
 
 void Timer::SetTimerRinging() {
-  motorController.StartRinging();
+  motorController.Ring(Controllers::MotorController::Intensity::Medium, pdMS_TO_TICKS(1000));
   wakeLock.Lock();
   minuteCounter.HideControls();
   secondCounter.HideControls();
