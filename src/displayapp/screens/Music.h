@@ -19,12 +19,14 @@
 
 #include <FreeRTOS.h>
 #include <lvgl/src/lv_core/lv_obj.h>
+#include <array>
 #include <string>
 #include "displayapp/screens/Screen.h"
-#include "displayapp/widgets/PageIndicator.h"
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
+#include "components/ble/BleController.h"
+#include "utility/DirtyValue.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -35,7 +37,7 @@ namespace Pinetime {
     namespace Screens {
       class Music : public Screen {
       public:
-        Music(Pinetime::Controllers::MusicService& music);
+        Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble& bleController);
 
         ~Music() override;
 
@@ -48,42 +50,57 @@ namespace Pinetime {
 
         void UpdateLength();
 
+        void RefreshTrackInfo();
+
+        void SetDisconnectedUI();
+
+        void SetConnectedUI();
+
         lv_obj_t* btnPrev;
         lv_obj_t* btnPlayPause;
         lv_obj_t* btnNext;
         lv_obj_t* btnVolDown;
         lv_obj_t* btnVolUp;
+
+        std::array<lv_obj_t*, 5> GetButtons() {
+          return {btnPrev, btnPlayPause, btnNext, btnVolDown, btnVolUp};
+        }
+
+        lv_obj_t* txtBtnPrev;
+        lv_obj_t* txtPlayPause;
+        lv_obj_t* txtBtnNext;
+        lv_obj_t* txtVolDown;
+        lv_obj_t* txtVolUp;
+
+        std::array<lv_obj_t*, 5> GetButtonLabels() {
+          return {txtBtnPrev, txtPlayPause, txtBtnNext, txtVolDown, txtVolUp};
+        }
+
         lv_obj_t* txtArtist;
         lv_obj_t* txtTrack;
-        lv_obj_t* txtPlayPause;
 
-        lv_obj_t* imgDisc;
-        lv_obj_t* imgDiscAnim;
         lv_obj_t* txtTrackDuration;
+        lv_obj_t* txtCurrentPosition;
+        lv_obj_t* barTrackDuration;
 
         lv_style_t btn_style;
 
-        /** For the spinning disc animation */
-        bool frameB;
-
         Pinetime::Controllers::MusicService& musicService;
+        const Controllers::Ble& bleController;
 
-        std::string artist;
-        std::string album;
-        std::string track;
+        Utility::DirtyValue<std::string> artist;
+        Utility::DirtyValue<std::string> track;
 
         /** Total length in seconds */
         int totalLength = 0;
         /** Current position in seconds */
         int currentPosition;
-        /** Last time an animation update or timer was incremented */
-        TickType_t lastIncrement = 0;
 
         bool playing;
 
         lv_task_t* taskRefresh;
 
-        Widgets::PageIndicator pageIndicator = Widgets::PageIndicator(0, 2);
+        Utility::DirtyValue<bool> bleState;
 
         /** Watchapp */
       };
@@ -95,7 +112,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::music;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::Music(*controllers.musicService);
+        return new Screens::Music(*controllers.musicService, controllers.bleController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
