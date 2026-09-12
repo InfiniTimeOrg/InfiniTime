@@ -128,9 +128,21 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
   const auto* buffer = ctxt->om;
   const auto* dataBuffer = buffer->om_data;
 
+  // The parsers below read fixed offsets out of the packet, so there has to be
+  // a packet that long. Message type and version are the first two bytes.
+  const size_t packetLen = buffer->om_len;
+  if (packetLen < 2) {
+    return 0;
+  }
+
   switch (GetMessageType(dataBuffer)) {
     case MessageType::CurrentWeather:
       if (GetVersion(dataBuffer) <= 1) {
+        // Version 0 ends after the icon at offset 48, version 1 adds sunrise
+        // and sunset up to offset 52.
+        if (packetLen < (GetVersion(dataBuffer) == 1 ? 53u : 49u)) {
+          return 0;
+        }
         currentWeather = CreateCurrentWeather(dataBuffer);
         NRF_LOG_INFO("Current weather :\n\tTimestamp : %d\n\tTemperature:%d\n\tMin:%d\n\tMax:%d\n\tIcon:%d\n\tLocation:%s",
                      currentWeather->timestamp,
@@ -146,9 +158,17 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
       break;
     case MessageType::Forecast:
       if (GetVersion(dataBuffer) == 0) {
+        // The day count sits at offset 10 and each day takes five bytes.
+        if (packetLen < 11) {
+          return 0;
+        }
+        const uint8_t nbDaysInBuffer = std::min(MaxNbForecastDays, dataBuffer[10]);
+        if (packetLen < 11u + (nbDaysInBuffer * 5u)) {
+          return 0;
+        }
         forecast = CreateForecast(dataBuffer);
         NRF_LOG_INFO("Forecast : Timestamp : %d", forecast->timestamp);
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < forecast->nbDays; i++) {
           NRF_LOG_INFO("\t[%d] Min: %d - Max : %d - Icon : %d",
                        i,
                        forecast->days[i]->minTemperature.PreciseCelsius(),
