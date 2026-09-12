@@ -129,6 +129,11 @@ int DfuService::SendDfuRevision(os_mbuf* om) const {
 int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
   switch (state) {
     case States::Start: {
+      // Three 32 bit sizes are expected here.
+      if (om->om_len < 12) {
+        NRF_LOG_INFO("[DFU] -> Start data too short");
+        return 0;
+      }
       softdeviceSize = om->om_data[0] + (om->om_data[1] << 8) + (om->om_data[2] << 16) + (om->om_data[3] << 24);
       bootloaderSize = om->om_data[4] + (om->om_data[5] << 8) + (om->om_data[6] << 16) + (om->om_data[7] << 24);
       applicationSize = om->om_data[8] + (om->om_data[9] << 8) + (om->om_data[10] << 16) + (om->om_data[11] << 24);
@@ -153,24 +158,33 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
     }
       return 0;
     case States::Init: {
+      // The softdevice list is variable length and its size comes from the
+      // packet, so it decides where the CRC sits. Only the CRC is used, so the
+      // list is skipped rather than copied; sizing an array from that field
+      // asked for up to 128 KB of stack on a part that has 64 KB of RAM.
+      constexpr size_t headerSize = 10;
+      if (om->om_len < headerSize + 2) {
+        NRF_LOG_INFO("[DFU] -> Init data too short");
+        return 0;
+      }
       uint16_t deviceType = om->om_data[0] + (om->om_data[1] << 8);
       uint16_t deviceRevision = om->om_data[2] + (om->om_data[3] << 8);
       uint32_t applicationVersion = om->om_data[4] + (om->om_data[5] << 8) + (om->om_data[6] << 16) + (om->om_data[7] << 24);
       uint16_t softdeviceArrayLength = om->om_data[8] + (om->om_data[9] << 8);
-      uint16_t sd[softdeviceArrayLength];
-      for (int i = 0; i < softdeviceArrayLength; i++) {
-        sd[i] = om->om_data[10 + (i * 2)] + (om->om_data[10 + (i * 2) + 1] << 8);
-      }
-      expectedCrc = om->om_data[10 + (softdeviceArrayLength * 2)] + (om->om_data[10 + (softdeviceArrayLength * 2) + 1] << 8);
 
-      NRF_LOG_INFO(
-        "[DFU] -> Init data received : deviceType = %d, deviceRevision = %d, applicationVersion = %d, nb SD = %d, First SD = %d, CRC = %u",
-        deviceType,
-        deviceRevision,
-        applicationVersion,
-        softdeviceArrayLength,
-        sd[0],
-        expectedCrc);
+      const size_t crcOffset = headerSize + (static_cast<size_t>(softdeviceArrayLength) * 2);
+      if (crcOffset + 2 > om->om_len) {
+        NRF_LOG_INFO("[DFU] -> Init data announces %d softdevices but is too short for them", softdeviceArrayLength);
+        return 0;
+      }
+      expectedCrc = om->om_data[crcOffset] + (om->om_data[crcOffset + 1] << 8);
+
+      NRF_LOG_INFO("[DFU] -> Init data received : deviceType = %d, deviceRevision = %d, applicationVersion = %d, nb SD = %d, CRC = %u",
+                   deviceType,
+                   deviceRevision,
+                   applicationVersion,
+                   softdeviceArrayLength,
+                   expectedCrc);
 
       return 0;
     }
@@ -181,7 +195,9 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
       bytesReceived += om->om_len;
       bleController.FirmwareUpdateCurrentBytes(bytesReceived);
 
-      if ((nbPacketReceived % nbPacketsToNotify) == 0 && bytesReceived != applicationSize) {
+      // A peer that skips the packet receipt notification request leaves
+      // nbPacketsToNotify at zero, and the modulo below would divide by it.
+      if (nbPacketsToNotify > 0 && (nbPacketReceived % nbPacketsToNotify) == 0 && bytesReceived != applicationSize) {
         uint8_t data[5] {static_cast<uint8_t>(Opcodes::PacketReceiptNotification),
                          static_cast<uint8_t>(bytesReceived & 0x000000FFu),
                          static_cast<uint8_t>(bytesReceived >> 8u),
@@ -208,8 +224,18 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
 }
 
 int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
+  if (om->om_len < 1) {
+    return 0;
+  }
   auto opcode = static_cast<Opcodes>(om->om_data[0]);
   NRF_LOG_INFO("[DFU] -> ControlPointHandler");
+
+  // StartDFU, InitDFUParameters and PacketReceiptNotificationRequest all read
+  // a second byte.
+  if ((opcode == Opcodes::StartDFU || opcode == Opcodes::InitDFUParameters || opcode == Opcodes::PacketReceiptNotificationRequest) &&
+      om->om_len < 2) {
+    return 0;
+  }
 
   switch (opcode) {
     case Opcodes::StartDFU: {
