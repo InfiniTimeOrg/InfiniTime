@@ -128,6 +128,8 @@ namespace Pinetime {
       void Refresh();
       void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
+      /// Is the watch itself alerting the user (alarm or expired timer)?
+      bool IsAlerting();
       void PushMessageToSystemTask(Pinetime::System::Messages message);
 
       Apps nextApp = Apps::None;
