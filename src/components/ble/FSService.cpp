@@ -74,7 +74,31 @@ int FSService::OnFSServiceRequested(uint16_t connectionHandle, uint16_t attribut
   return 0;
 }
 
+namespace {
+  // The path follows its header in the same packet. Both the length field and
+  // the buffer it is copied into have to be respected, so check against the
+  // bytes that actually arrived and against the destination size.
+  bool CopyPath(const char* pathstr, uint16_t pathlen, size_t pathOffset, size_t packetLen, char* out, size_t outSize) {
+    if (static_cast<size_t>(pathlen) + 1 > outSize) {
+      return false;
+    }
+    if (pathOffset + static_cast<size_t>(pathlen) > packetLen) {
+      return false;
+    }
+    memcpy(out, pathstr, pathlen);
+    out[pathlen] = '\0';
+    return true;
+  }
+}
+
 int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
+  // Every case below reads its header straight out of the received buffer.
+  // om_len is how much is really there, so header and path lengths are
+  // measured against it before they are used.
+  const size_t packetLen = om->om_len;
+  if (packetLen < 1) {
+    return 0;
+  }
   auto command = static_cast<commands>(om->om_data[0]);
   NRF_LOG_INFO("[FS_S] -> FSCommandHandler Command %d", command);
   // Just always make sure we are awake...
@@ -89,13 +113,13 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   switch (command) {
     case commands::READ: {
       NRF_LOG_INFO("[FS_S] -> Read");
-      auto* header = (ReadHeader*) om->om_data;
-      uint16_t plen = header->pathlen;
-      if (plen > maxpathlen) { //> counts for null term
-        return -1;
+      if (packetLen < sizeof(ReadHeader)) {
+        return 0;
       }
-      memcpy(filepath, header->pathstr, plen);
-      filepath[plen] = 0; // Copy and null terminate string
+      auto* header = (ReadHeader*) om->om_data;
+      if (!CopyPath(header->pathstr, header->pathlen, sizeof(ReadHeader), packetLen, filepath, sizeof(filepath))) {
+        return 0;
+      }
       ReadResponse resp;
       os_mbuf* om;
       resp.command = commands::READ_DATA;
@@ -108,11 +132,11 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         resp.totallen = 0;
         om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
       } else {
-        resp.chunklen = std::min(header->chunksize, info.size); // TODO add mtu somehow
+        resp.chunklen = std::min<uint32_t>(std::min<uint32_t>(header->chunksize, info.size), maxChunkLen);
         resp.totallen = info.size;
         fs.FileOpen(&f, filepath, LFS_O_RDONLY);
         fs.FileSeek(&f, header->chunkoff);
-        uint8_t fileData[resp.chunklen] = {0};
+        uint8_t fileData[maxChunkLen] = {0};
         resp.chunklen = fs.FileRead(&f, fileData, resp.chunklen);
         om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
         os_mbuf_append(om, fileData, resp.chunklen);
@@ -124,6 +148,9 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
     }
     case commands::READ_PACING: {
       NRF_LOG_INFO("[FS_S] -> Readpacing");
+      if (packetLen < sizeof(ReadHeader)) {
+        return 0;
+      }
       auto* header = (ReadHeader*) om->om_data;
       ReadResponse resp;
       resp.command = commands::READ_DATA;
@@ -135,14 +162,14 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         resp.chunklen = 0;
         resp.totallen = 0;
       } else {
-        resp.chunklen = std::min(header->chunksize, info.size); // TODO add mtu somehow
+        resp.chunklen = std::min<uint32_t>(std::min<uint32_t>(header->chunksize, info.size), maxChunkLen);
         resp.totallen = info.size;
         fs.FileOpen(&f, filepath, LFS_O_RDONLY);
         fs.FileSeek(&f, header->chunkoff);
       }
       os_mbuf* om;
       if (resp.chunklen > 0) {
-        uint8_t fileData[resp.chunklen] = {0};
+        uint8_t fileData[maxChunkLen] = {0};
         resp.chunklen = fs.FileRead(&f, fileData, resp.chunklen);
         om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
         os_mbuf_append(om, fileData, resp.chunklen);
@@ -156,13 +183,13 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
     }
     case commands::WRITE: {
       NRF_LOG_INFO("[FS_S] -> Write");
-      auto* header = (WriteHeader*) om->om_data;
-      uint16_t plen = header->pathlen;
-      if (plen > maxpathlen) { //> counts for null term
-        return -1;             // TODO make this actually return a BLE notif
+      if (packetLen < sizeof(WriteHeader)) {
+        return 0;
       }
-      memcpy(filepath, header->pathstr, plen);
-      filepath[plen] = 0; // Copy and null terminate string
+      auto* header = (WriteHeader*) om->om_data;
+      if (!CopyPath(header->pathstr, header->pathlen, sizeof(WriteHeader), packetLen, filepath, sizeof(filepath))) {
+        return 0; // TODO make this actually return a BLE notif
+      }
       fileSize = header->totalSize;
       WriteResponse resp;
       resp.command = commands::WRITE_PACING;
@@ -181,7 +208,13 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
     }
     case commands::WRITE_DATA: {
       NRF_LOG_INFO("[FS_S] -> WriteData");
+      if (packetLen < sizeof(WritePacing)) {
+        return 0;
+      }
       auto* header = (WritePacing*) om->om_data;
+      // dataSize is announced by the peer. Only what arrived may be written,
+      // otherwise the write runs off the end of the packet and into the file.
+      const uint32_t dataSize = std::min<uint32_t>(header->dataSize, packetLen - sizeof(WritePacing));
       WriteResponse resp;
       resp.command = commands::WRITE_PACING;
       resp.offset = header->offset;
@@ -189,7 +222,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
 
       if (!(res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT))) {
         if ((res = fs.FileSeek(&f, header->offset)) >= 0) {
-          res = fs.FileWrite(&f, header->data, header->dataSize);
+          res = fs.FileWrite(&f, header->data, dataSize);
         }
         fs.FileClose(&f);
       }
@@ -203,11 +236,14 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
     }
     case commands::DELETE: {
       NRF_LOG_INFO("[FS_S] -> Delete");
+      if (packetLen < sizeof(DelHeader)) {
+        return 0;
+      }
       auto* header = (DelHeader*) om->om_data;
-      uint16_t plen = header->pathlen;
-      char path[plen + 1] = {0};
-      memcpy(path, header->pathstr, plen);
-      path[plen] = 0; // Copy and null terminate string
+      char path[maxpathlen];
+      if (!CopyPath(header->pathstr, header->pathlen, sizeof(DelHeader), packetLen, path, sizeof(path))) {
+        return 0;
+      }
       DelResponse resp {};
       resp.command = commands::DELETE_STATUS;
       int res = fs.FileDelete(path);
@@ -218,11 +254,14 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
     }
     case commands::MKDIR: {
       NRF_LOG_INFO("[FS_S] -> MKDir");
+      if (packetLen < sizeof(MKDirHeader)) {
+        return 0;
+      }
       auto* header = (MKDirHeader*) om->om_data;
-      uint16_t plen = header->pathlen;
-      char path[plen + 1] = {0};
-      memcpy(path, header->pathstr, plen);
-      path[plen] = 0; // Copy and null terminate string
+      char path[maxpathlen];
+      if (!CopyPath(header->pathstr, header->pathlen, sizeof(MKDirHeader), packetLen, path, sizeof(path))) {
+        return 0;
+      }
       MKDirResponse resp {};
       resp.command = commands::MKDIR_STATUS;
       resp.modification_time = 0;
@@ -234,11 +273,14 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
     }
     case commands::LISTDIR: {
       NRF_LOG_INFO("[FS_S] -> ListDir");
+      if (packetLen < sizeof(ListDirHeader)) {
+        return 0;
+      }
       ListDirHeader* header = (ListDirHeader*) om->om_data;
-      uint16_t plen = header->pathlen;
-      char path[plen + 1] = {0};
-      path[plen] = 0; // Copy and null terminate string
-      memcpy(path, header->pathstr, plen);
+      char path[maxpathlen];
+      if (!CopyPath(header->pathstr, header->pathlen, sizeof(ListDirHeader), packetLen, path, sizeof(path))) {
+        return 0;
+      }
 
       ListDirResponse resp {};
 
@@ -298,19 +340,34 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
     }
     case commands::MOVE: {
       NRF_LOG_INFO("[FS_S] -> Move");
+      if (packetLen < sizeof(MoveHeader)) {
+        return 0;
+      }
       MoveHeader* header = (MoveHeader*) om->om_data;
-      uint16_t plen = header->OldPathLength;
-      // Null Terminate string
-      header->pathstr[plen] = 0;
-      char path[header->NewPathLength + 1] = {0};
-      memcpy(path, &header->pathstr[plen + 1], header->NewPathLength);
-      path[header->NewPathLength] = 0; // Copy and null terminate string
+      // Both paths sit behind the header, separated by a terminator. The old
+      // one used to be terminated in place, which wrote into the received
+      // packet at an offset the peer chose.
+      const size_t oldPathLen = header->OldPathLength;
+      char oldPath[maxpathlen];
+      char newPath[maxpathlen];
+      if (!CopyPath(header->pathstr, header->OldPathLength, sizeof(MoveHeader), packetLen, oldPath, sizeof(oldPath))) {
+        return 0;
+      }
+      if (!CopyPath(&header->pathstr[oldPathLen + 1],
+                    header->NewPathLength,
+                    sizeof(MoveHeader) + oldPathLen + 1,
+                    packetLen,
+                    newPath,
+                    sizeof(newPath))) {
+        return 0;
+      }
       MoveResponse resp {};
       resp.command = commands::MOVE_STATUS;
-      int8_t res = (int8_t) fs.Rename(header->pathstr, path);
+      int8_t res = (int8_t) fs.Rename(oldPath, newPath);
       resp.status = (res == 0) ? 1 : res;
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MoveResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+      break;
     }
     default:
       break;
@@ -321,24 +378,3 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
 }
 
 // Loads resp with file data given a valid filepath header and resp
-void FSService::prepareReadDataResp(ReadHeader* header, ReadResponse* resp) {
-  // uint16_t plen = header->pathlen;
-  resp->command = commands::READ_DATA;
-  resp->chunkoff = header->chunkoff;
-  resp->status = 0x01;
-  struct lfs_info info = {};
-  int res = fs.Stat(filepath, &info);
-  if (res == LFS_ERR_NOENT && info.type != LFS_TYPE_DIR) {
-    resp->status = 0x03;
-    resp->chunklen = 0;
-    resp->totallen = 0;
-  } else {
-    lfs_file f;
-    resp->chunklen = std::min(header->chunksize, info.size);
-    resp->totallen = info.size;
-    fs.FileOpen(&f, filepath, LFS_O_RDONLY);
-    fs.FileSeek(&f, header->chunkoff);
-    resp->chunklen = fs.FileRead(&f, resp->chunk, resp->chunklen);
-    fs.FileClose(&f);
-  }
-}
