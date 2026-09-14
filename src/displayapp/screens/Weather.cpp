@@ -35,13 +35,13 @@ Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleW
   lv_obj_set_auto_realign(temperature, true);
 
   minTemperature = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(minTemperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
+  lv_obj_set_style_local_text_color(minTemperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::accent_light);
   lv_label_set_text(minTemperature, "");
   lv_obj_align(minTemperature, temperature, LV_ALIGN_OUT_LEFT_MID, -10, 0);
   lv_obj_set_auto_realign(minTemperature, true);
 
   maxTemperature = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(maxTemperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bg);
+  lv_obj_set_style_local_text_color(maxTemperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::accent_light);
   lv_label_set_text(maxTemperature, "");
   lv_obj_align(maxTemperature, temperature, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
   lv_obj_set_auto_realign(maxTemperature, true);
