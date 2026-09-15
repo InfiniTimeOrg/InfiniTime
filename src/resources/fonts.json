@@ -58,5 +58,53 @@
       "size": 115,
       "format": "bin",
       "target_path": "/fonts/"
+   },
+   "antonio_78" : {
+      "sources": [
+         {
+            "file": "fonts/antonio.ttf",
+            "symbols": "0123456789:"
+         }
+      ],
+      "bpp": 1,
+      "size": 78,
+      "format": "bin",
+      "target_path": "/fonts/"
+   },
+   "antonio_33" : {
+      "sources": [
+         {
+            "file": "fonts/antonio.ttf",
+            "symbols": "0123456789WK"
+         }
+      ],
+      "bpp": 1,
+      "size": 33,
+      "format": "bin",
+      "target_path": "/fonts/"
+   },
+   "antonio_21" : {
+      "sources": [
+         {
+            "file": "fonts/antonio.ttf",
+            "symbols": "0123456789:APMONTUEWDHFRISATJBYLGKVZ% "
+         }
+      ],
+      "bpp": 1,
+      "size": 21,
+      "format": "bin",
+      "target_path": "/fonts/"
+   },
+   "antonio_13" : {
+      "sources": [
+         {
+            "file": "fonts/antonio.ttf",
+            "symbols": "0123456789 "
+         }
+      ],
+      "bpp": 1,
+      "size": 13,
+      "format": "bin",
+      "target_path": "/fonts/"
    }
 }
