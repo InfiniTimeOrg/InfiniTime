@@ -53,18 +53,16 @@ lv_obj_t* logo = lv_img_create(lv_scr_act(), nullptr);
 lv_img_set_src(logo, "F:/images/logo.bin");
 ```
 
-Load a font from the external resources: you first need to check that the file actually exists. LVGL will crash when trying to open a font that doesn't exist.
+Load a font from the external resources. 
+
+You don't need to check if it exists in the constructor as LVGL can handle the font not existing gracefully (nothing will render).
+However, do check that it exists in the `IsAvailable()` method so users can see when resources are missing (the watchface will not be selectable in the list if `IsAvailable()` returns `false`).
+The fonts will free themselves when the owning object is destructed.
 
 ```
-lv_font_t* font_teko = nullptr;
-if (filesystem.FileOpen(&f, "/fonts/font.bin", LFS_O_RDONLY) >= 0) {
-    filesystem.FileClose(&f);
-    font_teko = lv_font_load("F:/fonts/font.bin");
-}
+Components::FastFont::Font fontTeko = Components::FastFont::LoadFont(filesystem, "/fastfonts/teko.bin");
 
-if(font != nullptr) {
-    lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font);
-}
+lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, fontTeko.get());
 
 ```
 

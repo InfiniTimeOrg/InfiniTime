@@ -18,11 +18,8 @@ class Source(object):
         self.symbols = d.get('symbols')
 
 
-def gen_lvconv_line(lv_font_conv: str, dest: str, size: int, bpp: int, format: str, sources: typing.List[Source], compress:bool=False):
-    if format != "lvgl" and format != "bin":
-        format = "bin" if dest.lower().endswith(".bin") else "lvgl"
-
-    args = [lv_font_conv, '--size', str(size), '--output', dest, '--bpp', str(bpp), '--format', format]
+def gen_lvconv_line(lv_font_conv: str, dest: str, size: int, bpp: int, sources: typing.List[Source], compress:bool=False):
+    args = [lv_font_conv, '--size', str(size), '--output', dest, '--bpp', str(bpp), '--format', 'lvgl']
     if not compress:
         args.append('--no-compress')
     for source in sources:
@@ -64,15 +61,14 @@ def main():
     for name in fonts_to_run:
         font = data[name]
         sources = font.pop('sources')
+        del font["target_path"]
         patches = font.pop('patches') if 'patches' in font else  []
         font['sources'] = [Source(thing) for thing in sources]
-        extension = 'c' if font['format'] != 'bin' else 'bin'
-        font.pop('target_path')
-        line = gen_lvconv_line(args.lv_font_conv, f'{name}.{extension}', **font)
+        line = gen_lvconv_line(args.lv_font_conv, f'{name}.c', **font)
         subprocess.check_call(line)
         if patches:
             for patch in patches:
-                subprocess.check_call(['/usr/bin/env', 'patch', name+'.'+extension, patch])
+                subprocess.check_call(['/usr/bin/env', 'patch', '--silent', name+'.c', patch])
 
 
 
