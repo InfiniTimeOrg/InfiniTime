@@ -4,6 +4,8 @@
 
 #include "displayapp/screens/Alarm.h"
 #include "displayapp/screens/Dice.h"
+#include "displayapp/screens/Pawn.h"
+#include "displayapp/screens/PawnList.h"
 #include "displayapp/screens/Timer.h"
 #include "displayapp/screens/Twos.h"
 #include "displayapp/screens/Tile.h"
