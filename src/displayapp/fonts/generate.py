@@ -9,11 +9,43 @@ import os.path
 import argparse
 import subprocess
 
+# Common system font locations to try when a font file is not found locally
+COMMON_FONT_DIRS = [
+    '/usr/share/fonts',
+    '/usr/local/share/fonts',
+    os.path.expanduser('~/.local/share/fonts'),
+    os.path.expanduser('~/.fonts'),
+]
+
 class Source(object):
     def __init__(self, d):
         self.file = d['file']
         if not os.path.exists(self.file):
-            self.file = os.path.join(os.path.dirname(sys.argv[0]), self.file)
+            # First try relative to the script directory (previous behavior)
+            candidate = os.path.join(os.path.dirname(sys.argv[0]), self.file)
+            if os.path.exists(candidate):
+                self.file = candidate
+            else:
+                # Fallback: search common system font directories for a matching basename
+                name = os.path.basename(self.file)
+                found = None
+                for font_dir in COMMON_FONT_DIRS:
+                    if not font_dir:
+                        continue
+                    font_dir = os.path.expanduser(font_dir)
+                    if not os.path.isdir(font_dir):
+                        continue
+                    for root, _, files in os.walk(font_dir):
+                        for f in files:
+                            if f.lower() == name.lower():
+                                found = os.path.join(root, f)
+                                break
+                        if found:
+                            break
+                    if found:
+                        break
+                if found:
+                    self.file = found
         self.range = d.get('range')
         self.symbols = d.get('symbols')
 
