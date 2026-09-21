@@ -58,5 +58,29 @@
       "size": 115,
       "format": "bin",
       "target_path": "/fonts/"
+   },
+   "rounded_large": {
+      "sources": [
+         {
+            "file": "fonts/BloggerSans-Bold.ttf",
+            "symbols": "0123456789"
+         }
+      ],
+      "bpp": 1,
+      "size": 150,
+      "format": "bin",
+      "target_path": "/fonts/"
+   },
+   "rounded_small": {
+      "sources": [
+         {
+            "file": "fonts/BloggerSans-Bold.ttf",
+            "symbols": "0123456789APMONTUEWDHRFIS"
+         }
+      ],
+      "bpp": 1,
+      "size": 30,
+      "format": "bin",
+      "target_path": "/fonts/"
    }
 }
