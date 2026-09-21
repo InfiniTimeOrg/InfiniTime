@@ -149,7 +149,7 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       ShowInfo();
       return;
     }
-    if (obj == btnMessage) {
+    if (obj == btnEsc) {
       HideInfo();
       return;
     }
@@ -169,7 +169,7 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 bool Alarm::OnButtonPushed() {
-  if (txtMessage != nullptr && btnMessage != nullptr) {
+  if (exitMessage != nullptr && btnEsc != nullptr) {
     HideInfo();
     return true;
   }
@@ -239,17 +239,27 @@ void Alarm::SetSwitchState(lv_anim_enable_t anim) {
 }
 
 void Alarm::ShowInfo() {
-  if (btnMessage != nullptr) {
-    return;
-  }
-  btnMessage = lv_btn_create(lv_scr_act(), nullptr);
-  btnMessage->user_data = this;
-  lv_obj_set_event_cb(btnMessage, btnEventHandler);
-  lv_obj_set_height(btnMessage, 200);
-  lv_obj_set_width(btnMessage, 150);
-  lv_obj_align(btnMessage, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  txtMessage = lv_label_create(btnMessage, nullptr);
-  lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
+  messageContainer = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_event_cb(messageContainer, btnEventHandler);
+  lv_obj_set_size(messageContainer, LV_HOR_RES, LV_VER_RES);
+  lv_obj_align(messageContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  exitMessage = lv_label_create(messageContainer, nullptr);
+  lv_obj_set_style_local_bg_color(messageContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+
+  exitMessageHeader = lv_label_create(messageContainer, nullptr);
+  lv_obj_align(exitMessageHeader, messageContainer, LV_ALIGN_IN_TOP_LEFT, 0, -2);
+  lv_label_set_text_static(exitMessageHeader, "Time until\nalarm:");
+  lv_obj_set_hidden(exitMessageHeader, true);
+
+  btnEsc = lv_btn_create(lv_scr_act(), nullptr);
+  btnEsc->user_data = this;
+  lv_obj_set_event_cb(btnEsc, btnEventHandler);
+  lv_obj_set_size(btnEsc, 50, 50);
+  lv_obj_align(btnEsc, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  lv_obj_set_style_local_bg_color(btnEsc, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+
+  lv_obj_t* txtClose = lv_label_create(btnEsc, nullptr);
+  lv_label_set_text_static(txtClose, "X");
 
   if (alarmController.IsEnabled()) {
     auto timeToAlarm = alarmController.SecondsToAlarm();
@@ -259,21 +269,26 @@ void Alarm::ShowInfo() {
     auto minToAlarm = (timeToAlarm % 3600) / 60;
     auto secToAlarm = timeToAlarm % 60;
 
-    lv_label_set_text_fmt(txtMessage,
-                          "Time to\nalarm:\n%2lu Days\n%2lu Hours\n%2lu Minutes\n%2lu Seconds",
+    lv_obj_align(exitMessage, messageContainer, LV_ALIGN_IN_LEFT_MID, 60, -15);
+    lv_label_set_text_fmt(exitMessage,
+                          "%2lu Days\n%2lu Hours\n%2lu Minutes\n%2lu Seconds",
                           daysToAlarm,
                           hrsToAlarm,
                           minToAlarm,
                           secToAlarm);
+    lv_label_set_align(exitMessage, LV_LABEL_ALIGN_CENTER);
+    lv_obj_set_hidden(exitMessageHeader, false);
   } else {
-    lv_label_set_text_static(txtMessage, "Alarm\nis not\nset.");
+    lv_obj_align(exitMessage, messageContainer, LV_ALIGN_IN_LEFT_MID, 20, 0);
+    lv_label_set_text_static(exitMessage, "Alarm is not set.");
   }
 }
 
 void Alarm::HideInfo() {
-  lv_obj_del(btnMessage);
-  txtMessage = nullptr;
-  btnMessage = nullptr;
+  lv_obj_del(messageContainer);
+  lv_obj_del(btnEsc);
+  exitMessage = nullptr;
+  exitMessageHeader = nullptr;
 }
 
 void Alarm::SetRecurButtonState() {
