@@ -309,10 +309,15 @@ void DisplayApp::Refresh() {
         if (state != States::Running || !systemTask->IsSleeping()) {
           break;
         }
-        while (brightnessController.Level() != Controllers::BrightnessController::Levels::Low) {
+        // Levels are ordered Off, AlwaysOn, Low, Medium, High and Lower() is a no-op at Off
+        // and AlwaysOn, so a plain "until the level is Low" loop cannot terminate if this
+        // handler is ever entered at one of those two levels. Step down only from above Low,
+        // then set the level outright.
+        while (brightnessController.Level() > Controllers::BrightnessController::Levels::Low) {
           brightnessController.Lower();
           vTaskDelay(100);
         }
+        brightnessController.Set(Controllers::BrightnessController::Levels::Low);
         // Turn brightness down (or set to AlwaysOn mode)
         if (msg == Messages::GoToAOD) {
           brightnessController.Set(Controllers::BrightnessController::Levels::AlwaysOn);
@@ -324,7 +329,10 @@ void DisplayApp::Refresh() {
             currentApp == Apps::Settings) {
           LoadScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
           // Wait for the clock app to load before moving on.
-          while (!lv_task_handler()) {
+          // Bounded for the same reason as the brightness loop above: if lv_task_handler()
+          // never reports work done, spinning here wedges the display task permanently.
+          uint16_t attempts = 0;
+          while (!lv_task_handler() && ++attempts < 1000) {
           };
         }
         // Clear any ongoing touch pressed events
