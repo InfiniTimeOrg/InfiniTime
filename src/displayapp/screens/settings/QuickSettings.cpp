@@ -15,11 +15,6 @@ namespace {
     }
   }
 
-  void lv_update_task(struct _lv_task_t* task) {
-    auto* user_data = static_cast<QuickSettings*>(task->user_data);
-    user_data->UpdateScreen();
-  }
-
   enum class ButtonState : lv_state_t {
     NotificationsOn = LV_STATE_CHECKED,
     NotificationsOff = LV_STATE_DEFAULT,
@@ -119,21 +114,23 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_style_local_text_font(lbl_btn, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);
   lv_label_set_text_static(lbl_btn, Symbols::settings);
 
-  taskUpdate = lv_task_create(lv_update_task, 5000, LV_TASK_PRIO_MID, this);
-
-  UpdateScreen();
+  Refresh();
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 QuickSettings::~QuickSettings() {
   lv_style_reset(&btn_style);
-  lv_task_del(taskUpdate);
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
   settingsController.SaveSettings();
 }
 
-void QuickSettings::UpdateScreen() {
-  lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
+void QuickSettings::Refresh() {
   statusIcons.Update();
+  currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
+  if (currentDateTime.IsUpdated()) {
+    lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
+  }
 }
 
 void QuickSettings::OnButtonEvent(lv_obj_t* object) {
