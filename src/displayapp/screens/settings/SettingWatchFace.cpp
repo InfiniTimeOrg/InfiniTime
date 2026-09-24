@@ -8,6 +8,7 @@ using namespace Pinetime::Applications::Screens;
 
 constexpr const char* SettingWatchFace::title;
 constexpr const char* SettingWatchFace::symbol;
+constexpr const char* SettingWatchFace::helptext;
 
 namespace {
   uint32_t IndexOf(const std::array<Pinetime::Applications::Screens::SettingWatchFace::Item,
@@ -70,12 +71,14 @@ bool SettingWatchFace::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
 std::unique_ptr<Screen> SettingWatchFace::CreateScreen(unsigned int screenNum) const {
   std::array<Screens::CheckboxList::Item, settingsPerScreen> watchfacesOnThisScreen;
+  bool needsHelptext = false;
   for (int i = 0; i < settingsPerScreen; i++) {
     if (i + (screenNum * settingsPerScreen) >= watchfaceItems.size()) {
       watchfacesOnThisScreen[i] = {"", false};
     } else {
       auto& item = watchfaceItems[i + (screenNum * settingsPerScreen)];
       watchfacesOnThisScreen[i] = Screens::CheckboxList::Item {item.name, item.enabled};
+      needsHelptext |= !item.enabled;
     }
   }
 
@@ -89,5 +92,6 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen(unsigned int screenNum) c
       settings.SetWatchFace(IndexToWatchFace(watchfaceItems, index));
       settings.SaveSettings();
     },
-    watchfacesOnThisScreen);
+    watchfacesOnThisScreen,
+    needsHelptext ? helptext : nullptr);
 }
