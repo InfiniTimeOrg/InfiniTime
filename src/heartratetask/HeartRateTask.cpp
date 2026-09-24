@@ -1,6 +1,7 @@
 #include "heartratetask/HeartRateTask.h"
 #include <drivers/Hrs3300.h>
 #include <components/heartrate/HeartRateController.h>
+#include <components/battery/BatteryController.h>
 #include <limits>
 
 #include "utility/Math.h"
@@ -86,8 +87,9 @@ TickType_t HeartRateTask::CurrentTaskDelay() {
 
 HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor,
                              Controllers::HeartRateController& controller,
+                             Controllers::Battery& battery,
                              Controllers::Settings& settings)
-  : heartRateSensor {heartRateSensor}, controller {controller}, settings {settings} {
+  : heartRateSensor {heartRateSensor}, controller {controller}, battery {battery}, settings {settings} {
 }
 
 void HeartRateTask::Start() {
@@ -149,10 +151,15 @@ void HeartRateTask::Work() {
           break;
       }
     }
-    if (newState == States::Waiting && BackgroundMeasurementNeeded()) {
-      newState = States::BackgroundMeasuring;
-    } else if (newState == States::BackgroundMeasuring && !BackgroundMeasurementNeeded()) {
+
+    if (newState != States::Disabled && battery.IsPowerPresent()) {
       newState = States::Waiting;
+    } else {
+      if (newState == States::Waiting && BackgroundMeasurementNeeded()) {
+        newState = States::BackgroundMeasuring;
+      } else if (newState == States::BackgroundMeasuring && !BackgroundMeasurementNeeded()) {
+        newState = States::Waiting;
+      }
     }
 
     // Apply state transition (switch sensor on/off)
