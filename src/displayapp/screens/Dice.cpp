@@ -123,20 +123,11 @@ Dice::Dice(Controllers::MotionController& motionController,
                            0,
                            0);
 
-  // Spagetti code in motion controller: it only updates the shake speed when shake to wake is on...
-  enableShakeForDice = !settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake);
-  if (enableShakeForDice) {
-    settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, true);
-  }
+  Refresh();
   refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Dice::~Dice() {
-  // reset the shake to wake mode.
-  if (enableShakeForDice) {
-    settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, false);
-    enableShakeForDice = false;
-  }
   lv_task_del(refreshTask);
   lv_obj_clean(lv_scr_act());
 }
@@ -185,7 +176,7 @@ void Dice::Roll() {
   }
 
   lv_label_set_text_fmt(resultTotalLabel, "%d", resultTotal);
-  if (openingRoll == false) {
+  if (!openingRoll) {
     motorController.RunForDuration(30);
     NextColor();
     currentRollHysteresis = rollHysteresis;

@@ -67,6 +67,7 @@ Metronome::Metronome(Controllers::MotorController& motorController, System::Syst
   lblPlayPause = lv_label_create(playPause, nullptr);
   lv_label_set_text_static(lblPlayPause, Symbols::play);
 
+  Refresh();
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 

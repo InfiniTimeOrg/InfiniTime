@@ -57,7 +57,6 @@ StopWatch::StopWatch(System::SystemTask& systemTask, StopWatchController& stopWa
 
   lapText = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lapText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_label_set_text_static(lapText, "");
   lv_label_set_long_mode(lapText, LV_LABEL_LONG_BREAK);
   lv_label_set_align(lapText, LV_LABEL_ALIGN_CENTER);
   lv_obj_set_width(lapText, LV_HOR_RES_MAX);
@@ -66,7 +65,6 @@ StopWatch::StopWatch(System::SystemTask& systemTask, StopWatchController& stopWa
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_label_set_text_static(time, "00:00");
   lv_label_set_long_mode(time, LV_LABEL_LONG_CROP);
   lv_label_set_align(time, LV_LABEL_ALIGN_CENTER);
   lv_obj_set_width(time, LV_HOR_RES_MAX);
@@ -74,18 +72,14 @@ StopWatch::StopWatch(System::SystemTask& systemTask, StopWatchController& stopWa
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
-  lv_label_set_text_static(msecTime, "00");
   lv_obj_align(msecTime, time, LV_ALIGN_OUT_BOTTOM_MID, 0, -2);
-
-  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+  lv_obj_set_auto_realign(msecTime, true);
 
   // Figure out what the current state of the stopwatch is and select the correct display
   if (stopWatchController.IsCleared()) {
     DisplayCleared();
   } else {
-    if (stopWatchController.GetMaxLapNumber() > 0) {
-      RenderLaps();
-    }
+    RenderLaps();
     RenderTime();
 
     if (stopWatchController.IsRunning()) {
@@ -99,6 +93,8 @@ StopWatch::StopWatch(System::SystemTask& systemTask, StopWatchController& stopWa
       DisplayPaused();
     }
   }
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 StopWatch::~StopWatch() {

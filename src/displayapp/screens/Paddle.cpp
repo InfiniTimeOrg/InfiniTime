@@ -17,8 +17,8 @@ Paddle::Paddle(Pinetime::Components::LittleVgl& lvgl) : lvgl {lvgl} {
 
   points = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(points, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text_static(points, "0000");
   lv_obj_align(points, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 10);
+  lv_obj_set_auto_realign(points, true);
 
   paddle = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(paddle, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
@@ -30,6 +30,7 @@ Paddle::Paddle(Pinetime::Components::LittleVgl& lvgl) : lvgl {lvgl} {
   lv_obj_set_style_local_radius(ball, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_obj_set_size(ball, ballSize, ballSize);
 
+  Refresh();
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
