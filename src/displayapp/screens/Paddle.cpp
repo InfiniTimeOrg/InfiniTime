@@ -6,7 +6,12 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Paddle::Paddle(Pinetime::Components::LittleVgl& lvgl) : lvgl {lvgl} {
+Paddle::Paddle(Pinetime::Components::LittleVgl& lvgl, 
+               Pinetime::Controllers::FS& fs)
+  : Persistent(fs),
+    lvgl {lvgl} {
+  LoadPersistentState();
+
   background = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(background, LV_HOR_RES + 1, LV_VER_RES);
   lv_obj_set_pos(background, -1, 0);
@@ -34,6 +39,8 @@ Paddle::Paddle(Pinetime::Components::LittleVgl& lvgl) : lvgl {lvgl} {
 }
 
 Paddle::~Paddle() {
+  SavePersistentState();
+
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
@@ -66,17 +73,17 @@ void Paddle::Refresh() {
     if (ballX >= -ballSize / 4) {
       if (ballY <= (paddlePos + 30 - ballSize / 4) && ballY >= (paddlePos - 30 - ballSize + ballSize / 4)) {
         dx *= -1;
-        score++;
+        persistent_state.score++;
       }
     }
     // checks if it has gone behind the paddle
     else if (ballX <= -ballSize * 2) {
       ballX = (LV_HOR_RES - ballSize) / 2;
       ballY = (LV_VER_RES - ballSize) / 2;
-      score = 0;
+      persistent_state.score = 0;
     }
   }
-  lv_label_set_text_fmt(points, "%04d", score);
+  lv_label_set_text_fmt(points, "%04d", persistent_state.score);
 }
 
 bool Paddle::OnTouchEvent(Pinetime::Applications::TouchEvents /*event*/) {
