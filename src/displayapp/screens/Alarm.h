@@ -33,7 +33,8 @@ namespace Pinetime {
         explicit Alarm(Controllers::AlarmController& alarmController,
                        Controllers::Settings::ClockType clockType,
                        System::SystemTask& systemTask,
-                       Controllers::MotorController& motorController);
+                       Controllers::MotorController& motorController,
+                       Controllers::DateTime& dateTimeController);
         ~Alarm() override;
         void SetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
@@ -41,13 +42,15 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
         void OnValueChanged();
         void StopAlerting();
+        void SetCurrentTime();
 
       private:
+        Controllers::DateTime& dateTimeController;
         Controllers::AlarmController& alarmController;
         System::WakeLock wakeLock;
         Controllers::MotorController& motorController;
 
-        lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch;
+        lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch, *btnCurrentTime;
         lv_obj_t* lblampm = nullptr;
         lv_obj_t* txtMessage = nullptr;
         lv_obj_t* btnMessage = nullptr;
@@ -76,7 +79,8 @@ namespace Pinetime {
         return new Screens::Alarm(controllers.alarmController,
                                   controllers.settingsController.GetClockType(),
                                   *controllers.systemTask,
-                                  controllers.motorController);
+                                  controllers.motorController,
+                                  controllers.dateTimeController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
