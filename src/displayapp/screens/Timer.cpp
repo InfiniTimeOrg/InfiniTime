@@ -122,6 +122,11 @@ void Timer::Refresh() {
     // Timer exists and has expired, so we're in ringing mode
     DisplayTime();
 
+    if (timerStatus->distanceToExpiry.count() < 10000 && !motorController.IsRinging()) {
+      // If 10 seconds haven't passed and we're not buzzing, keep buzzing
+      motorController.StartRinging();
+    }
+
     if (timerStatus->distanceToExpiry.count() > 10000 && motorController.IsRinging()) {
       // Stop buzzing after 10 seconds, but continue the counter
       motorController.StopRinging();
