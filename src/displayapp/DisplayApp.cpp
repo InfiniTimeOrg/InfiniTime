@@ -323,6 +323,8 @@ void DisplayApp::Refresh() {
         if (currentApp == Apps::Launcher || currentApp == Apps::Notifications || currentApp == Apps::QuickSettings ||
             currentApp == Apps::Settings) {
           LoadScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+          appStackDirections.Reset();
+          returnAppStack.Reset();
           // Wait for the clock app to load before moving on.
           while (!lv_task_handler()) {
           };
