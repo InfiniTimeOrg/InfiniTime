@@ -104,7 +104,8 @@ void DateTime::UpdateTime(uint32_t systickCounter, bool forceUpdate) {
   currentDateTime += std::chrono::seconds(correctedDelta);
   uptime += std::chrono::seconds(correctedDelta);
 
-  std::time_t currentTime = std::chrono::system_clock::to_time_t(currentDateTime);
+  std::time_t currentTime =
+    std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::system_clock::duration>(currentDateTime));
   localTime = *std::localtime(&currentTime);
 
   auto minute = Minutes();
