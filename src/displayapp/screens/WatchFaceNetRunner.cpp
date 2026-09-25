@@ -296,7 +296,7 @@ void WatchFaceNetRunner::Refresh() {
       }
       lv_label_set_text_fmt(labelEnv, "#9d4edd ENV# %d°%c %s", temp, tempUnit, Symbols::GetSimpleCondition(optCurrentWeather->iconId));
     } else {
-      lv_label_set_text_static(labelEnv, "#9d4edd ENV# NO WEATHER");
+      lv_label_set_text_static(labelEnv, "#9d4edd ENV# NO SIGNAL");
     }
   }
 }

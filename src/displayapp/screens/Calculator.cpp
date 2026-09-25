@@ -59,13 +59,6 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 void Calculator::HandleInput() {
-  // A press between or outside the buttons leaves LVGL's "active" button on the previous key,
-  // which would replay it. Only accept presses that actually landed on a button.
-  const auto* ext = static_cast<lv_btnmatrix_ext_t*>(lv_obj_get_ext_attr(buttonMatrix));
-  if (ext->btn_id_pr == LV_BTNMATRIX_BTN_NONE) {
-    return;
-  }
-
   const char* buttonText = lv_btnmatrix_get_active_btn_text(buttonMatrix);
 
   if (buttonText == nullptr) {
@@ -195,15 +188,14 @@ void Calculator::HandleInput() {
       break;
 
     case '=':
-      Eval();
-      if (error == Error::None) {
-        // Show the answer on the main line, like a regular calculator.
-        // The next digit starts a new number, the next operator keeps working on the answer.
-        value = result;
-        operation = ' ';
-        UpdateOperation();
-      }
       equalSignPressedBefore = true;
+      Eval();
+      // If the operation is ' ' then we move the value to the result.
+      // We reset the input after this.
+      // This seems more convenient.
+      if (operation == ' ') {
+        ResetInput();
+      }
       break;
   }
 
