@@ -85,7 +85,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                      spiNorFlash,
                      heartRateController,
                      motionController,
-                     fs) {
+                     fs),
+    sleepTracker {fs} {
 }
 
 void SystemTask::Start() {
@@ -141,6 +142,7 @@ void SystemTask::Work() {
   motionSensor.Init();
   motionController.Init(motionSensor.DeviceType());
   settingsController.Init();
+  sleepTracker.Load();
 
   displayApp.Register(this);
   displayApp.Register(&nimbleController.weather());
@@ -345,6 +347,7 @@ void SystemTask::Work() {
           motionController.AdvanceDay();
           break;
         case Messages::OnNewHour:
+          sleepTracker.Finalize();
           using Pinetime::Controllers::AlarmController;
           if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
               settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours && !alarmController.IsAlerting()) {
@@ -413,6 +416,23 @@ void SystemTask::Work() {
       }
       monitor.Process();
       NoInit_BackUpTime = dateTimeController.CurrentDateTime();
+      {
+        const auto localMinute = std::chrono::duration_cast<std::chrono::minutes>(NoInit_BackUpTime.time_since_epoch()).count();
+        const bool heartRateRunning = heartRateController.State() == Controllers::HeartRateController::States::Running;
+        sleepTracker.OnMotion(motionController.X(),
+                              motionController.Y(),
+                              motionController.Z(),
+                              static_cast<uint32_t>(localMinute),
+                              batteryController.IsPowerPresent(),
+                              heartRateRunning ? heartRateController.HeartRate() : 0);
+      }
+      // The SPI flash is only powered while running, persist pending data then
+      if (state == SystemTaskState::Running) {
+        if (sleepTracker.IsDirty()) {
+          sleepTracker.Save();
+        }
+        SaveIntrusionLog();
+      }
       if (nrf_gpio_pin_read(PinMap::Button) == 0) {
         watchdog.Reload();
       }

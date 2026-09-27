@@ -396,6 +396,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Matrix.cpp
         displayapp/screens/Badge.cpp
         displayapp/screens/IntrusionLog.cpp
+        displayapp/screens/Sleep.cpp
         displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
@@ -468,6 +469,8 @@ list(APPEND SOURCE_FILES
         components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/IntrusionLog.cpp
+        components/sleep/SleepAnalysis.cpp
+        components/sleep/SleepTracker.cpp
         components/ble/ServiceDiscovery.cpp
         components/ble/HeartRateService.cpp
         components/ble/MotionService.cpp
@@ -539,6 +542,8 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/IntrusionLog.cpp
+        components/sleep/SleepAnalysis.cpp
+        components/sleep/SleepTracker.cpp
         components/ble/ServiceDiscovery.cpp
         components/ble/NavigationService.cpp
         components/ble/HeartRateService.cpp
@@ -629,6 +634,7 @@ set(INCLUDE_FILES
         displayapp/screens/Badge.h
         displayapp/screens/BadgeQr.h
         displayapp/screens/IntrusionLog.h
+        displayapp/screens/Sleep.h
         displayapp/screens/Alarm.h
         displayapp/Colors.h
         displayapp/widgets/Counter.h
@@ -665,6 +671,8 @@ set(INCLUDE_FILES
         components/ble/FSService.h
         components/ble/ImmediateAlertService.h
         components/ble/IntrusionLog.h
+        components/sleep/SleepAnalysis.h
+        components/sleep/SleepTracker.h
         components/ble/ServiceDiscovery.h
         components/ble/BleClient.h
         components/ble/HeartRateService.h

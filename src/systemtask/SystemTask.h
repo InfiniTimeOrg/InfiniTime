@@ -14,6 +14,7 @@
 
 #include "systemtask/SystemMonitor.h"
 #include "components/ble/NimbleController.h"
+#include "components/sleep/SleepTracker.h"
 #include "components/ble/NotificationManager.h"
 #include "components/stopwatch/StopWatchController.h"
 #include "components/alarm/AlarmController.h"
@@ -83,6 +84,10 @@ namespace Pinetime {
         return wakeLocksHeld > 0;
       }
 
+      Pinetime::Controllers::SleepTracker& sleep() {
+        return sleepTracker;
+      }
+
       Pinetime::Controllers::NimbleController& nimble() {
         return nimbleController;
       };
@@ -127,6 +132,7 @@ namespace Pinetime {
       Pinetime::Controllers::TouchHandler& touchHandler;
       Pinetime::Controllers::ButtonHandler& buttonHandler;
       Pinetime::Controllers::NimbleController nimbleController;
+      Pinetime::Controllers::SleepTracker sleepTracker;
 
       static void Process(void* instance);
       void Work();
