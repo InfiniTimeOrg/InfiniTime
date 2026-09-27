@@ -1,6 +1,7 @@
 #include "components/sleep/SleepTracker.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdlib>
 #include "components/fs/FS.h"
 
@@ -8,6 +9,7 @@ using namespace Pinetime::Controllers;
 
 namespace {
   constexpr uint32_t sameNightSeconds = 3 * 60 * 60;
+  constexpr float radiansToDegrees = 57.2957795f;
 
   uint32_t Distance(uint32_t a, uint32_t b) {
     return a > b ? a - b : b - a;
@@ -17,7 +19,7 @@ namespace {
 SleepTracker::SleepTracker(FS& fs) : fs {fs} {
   mutex = xSemaphoreCreateMutex();
   xSemaphoreGive(mutex);
-  levels.fill(Sleep::LevelNoData);
+  medians.fill(Sleep::Invalid);
 }
 
 void SleepTracker::Load() {
@@ -68,48 +70,105 @@ void SleepTracker::OnMotion(int16_t x, int16_t y, int16_t z, uint32_t localMinut
       currentMinute = localMinute;
     }
     xSemaphoreGive(mutex);
-    movement = 0;
+    deltaCount = 0;
+    minutePostureChange = false;
     minuteOffWrist = false;
     minuteHeartRate = 0;
+    minuteHasSamples = false;
   }
 
-  if (havePrevious) {
-    const int32_t change = std::abs(x - previousX) + std::abs(y - previousY) + std::abs(z - previousZ);
-    if (change > NoiseFloor) {
-      movement += change - NoiseFloor;
-    }
+  // Range of each axis during this minute, for non-wear detection
+  const std::array<int16_t, 3> sample {x, y, z};
+  for (size_t axis = 0; axis < 3; axis++) {
+    minuteMin[axis] = minuteHasSamples ? std::min(minuteMin[axis], sample[axis]) : sample[axis];
+    minuteMax[axis] = minuteHasSamples ? std::max(minuteMax[axis], sample[axis]) : sample[axis];
   }
-  havePrevious = true;
-  previousX = x;
-  previousY = y;
-  previousZ = z;
-
+  minuteHasSamples = true;
   minuteOffWrist = minuteOffWrist || offWrist;
   if (heartRate != 0) {
     minuteHeartRate = heartRate;
   }
+
+  // Forearm angle from the 5 second average, like GGIR's anglez
+  sumX += x;
+  sumY += y;
+  sumZ += z;
+  if (++samples < SamplesPerEpoch) {
+    return;
+  }
+  const float meanX = static_cast<float>(sumX) / SamplesPerEpoch;
+  const float meanY = static_cast<float>(sumY) / SamplesPerEpoch;
+  const float meanZ = static_cast<float>(sumZ) / SamplesPerEpoch;
+  sumX = sumY = sumZ = 0;
+  samples = 0;
+
+  const float angle = std::atan2(meanZ, std::sqrt(meanX * meanX + meanY * meanY)) * radiansToDegrees;
+  if (haveAngle) {
+    const float change = std::fabs(angle - previousAngle);
+    if (change > Sleep::PostureChangeDegrees) {
+      minutePostureChange = true;
+    }
+    if (deltaCount < EpochsPerMinute) {
+      deltas[deltaCount++] = static_cast<uint8_t>(std::min(std::lround(change / Sleep::DeltaUnit), static_cast<long>(Sleep::DeltaMax)));
+    }
+  }
+  previousAngle = angle;
+  haveAngle = true;
+}
+
+void SleepTracker::Push(uint8_t median, bool postureChange) {
+  newest = (newest + 1) % Minutes;
+  medians[newest] = median;
+  Sleep::SetBit(changeBits.data(), newest, postureChange);
+  count = std::min<uint16_t>(count + 1, Minutes);
+}
+
+void SleepTracker::MarkInvalid(uint16_t minutes) {
+  for (uint16_t i = 0; i < minutes && i < count; i++) {
+    medians[(newest + Minutes - i) % Minutes] = Sleep::Invalid;
+  }
 }
 
 void SleepTracker::CloseMinute() {
-  uint8_t level = static_cast<uint8_t>(std::min<uint32_t>(movement / LevelDivider, Sleep::LevelMax));
-  if (minuteOffWrist) {
-    level = Sleep::LevelOffWrist;
+  uint8_t median = Sleep::Invalid;
+  if (!minuteOffWrist && deltaCount > 0) {
+    std::nth_element(deltas.begin(), deltas.begin() + deltaCount / 2, deltas.begin() + deltaCount);
+    median = deltas[deltaCount / 2];
   }
 
-  // Nobody lies perfectly still for hours: the watch is on the nightstand
-  stillMinutes = (level == 0) ? stillMinutes + 1 : 0;
-  if (stillMinutes >= OffWristStillMinutes) {
-    if (stillMinutes == OffWristStillMinutes) {
-      for (uint16_t i = 0; i < OffWristStillMinutes - 1 && i < count; i++) {
-        levels[(newest + Minutes - i) % Minutes] = Sleep::LevelOffWrist;
+  // Non-wear (GGIR): range under 50mg on at least 2 of the 3 axes for 60 minutes
+  if (minuteHasSamples) {
+    auto quietAxes = [&]() {
+      uint8_t quiet = 0;
+      for (size_t axis = 0; axis < 3; axis++) {
+        quiet += (stillMax[axis] - stillMin[axis]) < NonWearRange ? 1 : 0;
+      }
+      return quiet;
+    };
+    if (stillMinutes > 0) {
+      for (size_t axis = 0; axis < 3; axis++) {
+        stillMin[axis] = std::min(stillMin[axis], minuteMin[axis]);
+        stillMax[axis] = std::max(stillMax[axis], minuteMax[axis]);
       }
     }
-    level = Sleep::LevelOffWrist;
+    if (stillMinutes == 0 || quietAxes() < 2) {
+      // Start a new still stretch with this minute
+      stillMin = minuteMin;
+      stillMax = minuteMax;
+      stillMinutes = quietAxes() >= 2 ? 1 : 0;
+    } else {
+      stillMinutes++;
+    }
+  } else {
+    stillMinutes = 0;
   }
 
-  newest = (newest + 1) % Minutes;
-  levels[newest] = level;
-  count = std::min<uint16_t>(count + 1, Minutes);
+  Push(median, minutePostureChange);
+  if (stillMinutes == NonWearMinutes) {
+    MarkInvalid(NonWearMinutes);
+  } else if (stillMinutes > NonWearMinutes) {
+    medians[newest] = Sleep::Invalid;
+  }
 
   if (minuteHeartRate != 0) {
     auto& slot = heartRates[(currentMinute / 10) % HeartRateSlots];
@@ -125,17 +184,24 @@ void SleepTracker::AdvanceTo(uint32_t minute) {
     }
     if (m != minute) {
       // Minutes without samples (shouldn't happen, the system task runs all the time)
-      newest = (newest + 1) % Minutes;
-      levels[newest] = Sleep::LevelNoData;
-      count = std::min<uint16_t>(count + 1, Minutes);
+      Push(Sleep::Invalid, false);
       stillMinutes = 0;
     }
   }
   currentMinute = minute;
 }
 
-bool SleepTracker::Build(const Sleep::Session& session, Night& night) {
-  const Sleep::Window window(levels.data(), Minutes, newest, count);
+Pinetime::Controllers::Sleep::Window SleepTracker::MakeWindow() const {
+  return Sleep::Window(medians.data(), changeBits.data(), Minutes, newest, count);
+}
+
+Pinetime::Controllers::Sleep::Scratch SleepTracker::MakeScratch() {
+  return {windowBits.data(), asleepBits.data(), histogram.data()};
+}
+
+void SleepTracker::Build(const Sleep::Session& session, Night& night) {
+  const Sleep::Window window = MakeWindow();
+  const Sleep::Scratch scratch = MakeScratch();
   // Window index i is the minute (currentMinute - count + i)
   const uint32_t firstMinute = currentMinute - count;
 
@@ -143,41 +209,32 @@ bool SleepTracker::Build(const Sleep::Session& session, Night& night) {
   night.start = (firstMinute + session.start) * 60;
   night.inBed = session.end - session.start + 1;
   night.asleep = session.asleep;
-  night.still = session.still;
   night.awake = session.awake;
+  night.wakeUps = session.wakeUps;
   night.ongoing = session.ongoing ? 1 : 0;
   night.epochs = std::min<uint16_t>((night.inBed + EpochMinutes - 1) / EpochMinutes, MaxEpochs);
 
   for (uint8_t epoch = 0; epoch < night.epochs; epoch++) {
     uint8_t awake = 0;
-    uint8_t still = 0;
-    uint8_t light = 0;
+    uint8_t asleep = 0;
     for (uint8_t m = 0; m < EpochMinutes; m++) {
       const uint16_t index = session.start + epoch * EpochMinutes + m;
-      if (index > session.end) {
-        break;
-      }
-      switch (Sleep::StageAt(window, asleepBits.data(), index)) {
+      switch (Sleep::StageAt(window, scratch, session, index)) {
         case Sleep::Stage::Awake:
           awake++;
           break;
-        case Sleep::Stage::Still:
-          still++;
-          break;
-        case Sleep::Stage::Light:
-          light++;
+        case Sleep::Stage::Asleep:
+          asleep++;
           break;
         case Sleep::Stage::None:
           break;
       }
     }
     Sleep::Stage stage = Sleep::Stage::None;
-    if (awake >= 2) {
+    if (awake > asleep) {
       stage = Sleep::Stage::Awake;
-    } else if (still >= 3) {
-      stage = Sleep::Stage::Still;
-    } else if (still + light > 0) {
-      stage = Sleep::Stage::Light;
+    } else if (asleep > 0) {
+      stage = Sleep::Stage::Asleep;
     }
     night.stages[epoch / 4] |= static_cast<uint8_t>(stage) << ((epoch % 4) * 2);
   }
@@ -201,16 +258,16 @@ bool SleepTracker::Build(const Sleep::Session& session, Night& night) {
     night.avgHeartRate = sum / slots;
     night.minHeartRate = minimum;
   }
-  return true;
 }
 
 bool SleepTracker::Live(Night& night) {
   xSemaphoreTake(mutex, portMAX_DELAY);
-  const Sleep::Window window(levels.data(), Minutes, newest, count);
-  const Sleep::Session session = Sleep::Analyze(window, asleepBits.data());
-  const bool found = session.found && Build(session, night);
+  const Sleep::Session session = Sleep::Analyze(MakeWindow(), MakeScratch());
+  if (session.found) {
+    Build(session, night);
+  }
   xSemaphoreGive(mutex);
-  return found;
+  return session.found;
 }
 
 void SleepTracker::Finalize() {

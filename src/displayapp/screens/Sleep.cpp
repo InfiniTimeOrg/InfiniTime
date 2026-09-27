@@ -70,11 +70,11 @@ Sleep::Sleep(Controllers::SleepTracker& tracker) : tracker {tracker} {
   labelTimes = CreateLabel(Colors::neonYellow, 0, 56);
   lv_label_set_align(labelTimes, LV_LABEL_ALIGN_RIGHT);
 
-  // Hypnogram: awake at the top, light in the middle, still at the bottom
+  // Hypnogram: awake at the top, asleep at the bottom, not worn in the middle
   graphAxis = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(graphAxis, true);
   lv_obj_set_style_local_text_line_space(graphAxis, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, -6);
-  lv_label_set_text_static(graphAxis, "#ff2a6d W#\n#05d9e8 L#\n#9d4edd S#");
+  lv_label_set_text_static(graphAxis, "#ff2a6d W#\n\n#9d4edd S#");
   lv_obj_set_pos(graphAxis, 2, graphTop - 10);
 
   graph = lv_line_create(lv_scr_act(), nullptr);
@@ -154,7 +154,6 @@ void Sleep::ShowPage() {
 
   DrawGraph(night);
 
-  const uint16_t light = night.asleep - night.still;
   const unsigned efficiency = night.inBed == 0 ? 0 : (night.asleep * 100U) / night.inBed;
   char heartRate[8];
   char lowest[8];
@@ -166,17 +165,16 @@ void Sleep::ShowPage() {
     snprintf(lowest, sizeof(lowest), "--");
   }
   lv_label_set_text_fmt(labelStats,
-                        "#9d4edd STILL# %d:%02d  #ff2a6d HR#  %s\n"
-                        "#05d9e8 LIGHT# %d:%02d  #fcee0a LOW# %s\n"
-                        "#ff2a6d AWAKE# %d:%02d  #fcee0a EFF# %u%%",
-                        night.still / 60,
-                        night.still % 60,
+                        "#05d9e8 IN BED# %d:%02d  #ff2a6d HR#  %s\n"
+                        "#ff2a6d AWAKE#  %d:%02d  #fcee0a LOW# %s\n"
+                        "#9d4edd WAKES#  %-4d  #fcee0a EFF# %u%%",
+                        night.inBed / 60,
+                        night.inBed % 60,
                         heartRate,
-                        light / 60,
-                        light % 60,
-                        lowest,
                         night.awake / 60,
                         night.awake % 60,
+                        lowest,
+                        night.wakeUps,
                         efficiency);
 }
 
@@ -189,7 +187,7 @@ void Sleep::DrawGraph(const Night& night) {
       case Stage::Awake:
         y = 0;
         break;
-      case Stage::Still:
+      case Stage::Asleep:
         y = 2 * rowHeight;
         break;
       default:

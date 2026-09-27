@@ -11,8 +11,9 @@ namespace Pinetime {
   namespace Controllers {
     class FS;
 
-    // Records wrist movement per minute for the last 24 hours, detects sleep from it
-    // and keeps a short history of nights on the filesystem.
+    // Records the forearm angle every 5 seconds, keeps per-minute angle statistics for the last
+    // 24 hours, detects sleep from them (see SleepAnalysis.h) and keeps a short history of nights
+    // on the filesystem.
     class SleepTracker {
     public:
       static constexpr uint16_t Minutes = 24 * 60;
@@ -22,14 +23,15 @@ namespace Pinetime {
 
       struct Night {
         uint32_t start;  // Local time, seconds since epoch
-        uint16_t inBed;  // Minutes from falling asleep to waking up
+        uint16_t inBed;  // Minutes in the sleep period
         uint16_t asleep; // Minutes
-        uint16_t still;
         uint16_t awake;
+        uint8_t wakeUps;
         uint8_t avgHeartRate; // 0 when unknown
         uint8_t minHeartRate;
         uint8_t epochs;
         uint8_t ongoing;
+        uint8_t reserved;
         std::array<uint8_t, MaxEpochs / 4> stages; // 2 bits per epoch, Sleep::Stage values
 
         Sleep::Stage EpochStage(uint8_t epoch) const {
@@ -64,24 +66,35 @@ namespace Pinetime {
 
     private:
       static constexpr uint16_t HeartRateSlots = Minutes / 10;
-      static constexpr int16_t NoiseFloor = 24;             // Sample-to-sample change (mg, summed over axes) ignored as noise
-      static constexpr uint8_t LevelDivider = 16;           // Movement sum per minute divided by this is the level
-      static constexpr uint16_t OffWristStillMinutes = 150; // No movement at all for this long: watch is off the wrist
-      static constexpr uint32_t magic = 0x50454c53;         // "SLEP"
-      static constexpr uint8_t fileVersion = 1;
+      static constexpr uint8_t SamplesPerEpoch = 50; // 5 seconds at 10Hz
+      static constexpr uint8_t EpochsPerMinute = 12;
+      static constexpr int16_t NonWearRange = 50;    // mg: less than this on 2 of 3 axes...
+      static constexpr uint16_t NonWearMinutes = 60; // ...for this long means the watch isn't worn (GGIR)
+      static constexpr uint32_t magic = 0x50454c53;  // "SLEP"
+      static constexpr uint8_t fileVersion = 2;
       static constexpr const char* fileName = "/sleep.dat";
 
       void CloseMinute();
       void AdvanceTo(uint32_t minute);
-      bool Build(const Sleep::Session& session, Night& night);
+      void Push(uint8_t median, bool postureChange);
+      void MarkInvalid(uint16_t minutes);
+      Sleep::Window MakeWindow() const;
+      Sleep::Scratch MakeScratch();
+      void Build(const Sleep::Session& session, Night& night);
 
       FS& fs;
       SemaphoreHandle_t mutex;
 
-      std::array<uint8_t, Minutes> levels;
-      std::array<uint8_t, Minutes / 8 + 1> asleepBits {};
+      // Per minute, ring buffers
+      std::array<uint8_t, Minutes> medians;
+      std::array<uint8_t, Minutes / 8 + 1> changeBits {};
       uint16_t newest = Minutes - 1;
       uint16_t count = 0;
+
+      // Analysis scratch space
+      std::array<uint8_t, Minutes / 8 + 1> windowBits {};
+      std::array<uint8_t, Minutes / 8 + 1> asleepBits {};
+      std::array<uint16_t, 256> histogram {};
 
       struct HeartRateSlot {
         uint16_t sum;
@@ -92,14 +105,29 @@ namespace Pinetime {
 
       uint32_t currentMinute = 0;
       bool started = false;
-      uint32_t movement = 0;
+
+      // Current 5 second epoch
+      int32_t sumX = 0;
+      int32_t sumY = 0;
+      int32_t sumZ = 0;
+      uint8_t samples = 0;
+      bool haveAngle = false;
+      float previousAngle = 0;
+
+      // Current minute
+      std::array<uint8_t, EpochsPerMinute> deltas {};
+      uint8_t deltaCount = 0;
+      bool minutePostureChange = false;
       bool minuteOffWrist = false;
       uint8_t minuteHeartRate = 0;
+      std::array<int16_t, 3> minuteMin {};
+      std::array<int16_t, 3> minuteMax {};
+      bool minuteHasSamples = false;
+
+      // Non-wear detection: range of each axis since the start of the current still stretch
+      std::array<int16_t, 3> stillMin {};
+      std::array<int16_t, 3> stillMax {};
       uint16_t stillMinutes = 0;
-      bool havePrevious = false;
-      int16_t previousX = 0;
-      int16_t previousY = 0;
-      int16_t previousZ = 0;
 
       std::array<Night, MaxNights> history {};
       uint8_t historyCount = 0;
