@@ -141,6 +141,9 @@ namespace Pinetime {
       // Counts down in state update periods after a connection, then the connection is classified
       uint8_t intrusionCheckTimer = 0;
       void RaiseIntrusionAlert();
+      void RaiseTrackerAlert();
+      // Counts state update periods between automatic tracker scans
+      uint16_t trackerScanTimer = 0;
       void SaveIntrusionLog();
       TimerHandle_t measureBatteryTimer;
       uint8_t wakeLocksHeld = 0;

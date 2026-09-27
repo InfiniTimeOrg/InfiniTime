@@ -380,6 +380,9 @@ void SystemTask::Work() {
         case Messages::OnIntrusion:
           RaiseIntrusionAlert();
           break;
+        case Messages::OnTrackerAlert:
+          RaiseTrackerAlert();
+          break;
         case Messages::IntrusionLogChanged:
           SaveIntrusionLog();
           break;
@@ -407,6 +410,13 @@ void SystemTask::Work() {
           bleDiscoveryTimer--;
         }
       }
+      // Automatic tracker scan every 5 minutes (3000 state update periods)
+      if (++trackerScanTimer >= 3000) {
+        trackerScanTimer = 0;
+        if (nimbleController.IsTrackerScanEnabled()) {
+          nimbleController.StartTrackerScan(false);
+        }
+      }
       if (intrusionCheckTimer > 0 && --intrusionCheckTimer == 0) {
         if (nimbleController.CheckIntrusion()) {
           RaiseIntrusionAlert();
@@ -432,6 +442,9 @@ void SystemTask::Work() {
           sleepTracker.Save();
         }
         SaveIntrusionLog();
+        if (nimbleController.TrackerSettingsDirty()) {
+          nimbleController.SaveTrackerSettings();
+        }
       }
       if (nrf_gpio_pin_read(PinMap::Button) == 0) {
         watchdog.Reload();
@@ -465,6 +478,25 @@ void SystemTask::RaiseIntrusionAlert() {
   Controllers::NotificationManager::Notification notif;
   const int size =
     snprintf(notif.message.data(), notif.message.size(), "UNKNOWN LINK%c%s\n%s", '\0', address, Controllers::IntrusionLog::Describe(entry));
+  notif.size = std::min<size_t>(size + 1, notif.message.size());
+  notif.category = Controllers::NotificationManager::Categories::SimpleAlert;
+  notificationManager.Push(std::move(notif));
+  if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::On) {
+    displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
+  }
+}
+
+void SystemTask::RaiseTrackerAlert() {
+  GoToRunning();
+  const auto tracker = nimbleController.LastTrackerAlert();
+
+  Controllers::NotificationManager::Notification notif;
+  const int size = snprintf(notif.message.data(),
+                            notif.message.size(),
+                            "TRACKER NEARBY%c%s has been near you for %u min. Open Trackers to find it.",
+                            '\0',
+                            Controllers::TrackerDetector::Name(tracker.type),
+                            static_cast<unsigned>(tracker.FollowingSeconds() / 60));
   notif.size = std::min<size_t>(size + 1, notif.message.size());
   notif.category = Controllers::NotificationManager::Categories::SimpleAlert;
   notificationManager.Push(std::move(notif));

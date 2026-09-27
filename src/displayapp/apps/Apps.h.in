@@ -34,6 +34,7 @@ namespace Pinetime {
       Badge,
       IntrusionLog,
       Sleep,
+      Trackers,
       PassKey,
       QuickSettings,
       Settings,

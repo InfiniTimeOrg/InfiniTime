@@ -134,6 +134,7 @@ void NimbleController::Init() {
 
   RestoreBond();
   intrusionLogger.Load();
+  LoadTrackerSettings();
 
   StartAdvertising();
 }
@@ -434,6 +435,7 @@ void NimbleController::EnableRadio() {
 }
 
 void NimbleController::DisableRadio() {
+  StopTrackerScan();
   bleController.DisableRadio();
   if (bleController.IsConnected()) {
     ble_gap_terminate(connectionHandle, BLE_ERR_REM_USER_CONN_TERM);
@@ -501,6 +503,130 @@ void NimbleController::PersistBond(struct ble_gap_conn_desc& desc) {
     }
     systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
   }
+}
+
+namespace {
+  constexpr const char* trackerSettingsFile = "/trackers.dat";
+  constexpr int32_t autoScanMilliseconds = 8000;
+  constexpr int32_t liveScanMilliseconds = 20000;
+
+  uint32_t UptimeSeconds() {
+    return xTaskGetTickCount() / configTICK_RATE_HZ;
+  }
+
+  int TrackerScanCallback(struct ble_gap_event* event, void* arg) {
+    return static_cast<NimbleController*>(arg)->OnTrackerScanEvent(event);
+  }
+}
+
+void NimbleController::LoadTrackerSettings() {
+  lfs_file_t file;
+  if (fs.FileOpen(&file, trackerSettingsFile, LFS_O_RDONLY) == LFS_ERR_OK) {
+    uint8_t enabled = 0;
+    if (fs.FileRead(&file, &enabled, 1) == 1) {
+      trackerScanEnabled = enabled != 0;
+    }
+    fs.FileClose(&file);
+  }
+}
+
+void NimbleController::SaveTrackerSettings() {
+  lfs_file_t file;
+  if (fs.FileOpen(&file, trackerSettingsFile, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC) == LFS_ERR_OK) {
+    const uint8_t enabled = trackerScanEnabled ? 1 : 0;
+    fs.FileWrite(&file, &enabled, 1);
+    fs.FileClose(&file);
+    trackerSettingsDirty = false;
+  }
+}
+
+void NimbleController::SetTrackerScanEnabled(bool enabled) {
+  trackerScanEnabled = enabled;
+  trackerSettingsDirty = true;
+}
+
+void NimbleController::StartTrackerScan(bool live) {
+  if (!bleController.IsRadioEnabled() || bleController.State() == Ble::FirmwareUpdateStates::Running) {
+    return;
+  }
+  if (trackerScanActive) {
+    if (!live) {
+      // A scan is already running
+      return;
+    }
+    // Restart to switch to (or extend) the live scan
+    ble_gap_disc_cancel();
+    trackerScanActive = false;
+  }
+
+  struct ble_gap_disc_params params {};
+
+  params.itvl = 160;                       // 100ms
+  params.window = live ? 160 : 80;         // Continuous while hunting, half the time otherwise
+  params.passive = 1;                      // Only listen, never send scan requests
+  params.filter_duplicates = live ? 0 : 1; // Live needs every report for the signal strength
+  taskENTER_CRITICAL();
+  trackerDetector.BeginScan();
+  taskEXIT_CRITICAL();
+  const int rc = ble_gap_disc(addrType, live ? liveScanMilliseconds : autoScanMilliseconds, &params, TrackerScanCallback, this);
+  if (rc == 0) {
+    trackerScanActive = true;
+    trackerScanLive = live;
+  }
+}
+
+void NimbleController::StopTrackerScan() {
+  if (trackerScanActive) {
+    ble_gap_disc_cancel();
+    trackerScanActive = false;
+    trackerScanLive = false;
+  }
+  EvaluateTrackers();
+}
+
+void NimbleController::EvaluateTrackers() {
+  size_t index = 0;
+  bool alert = false;
+  taskENTER_CRITICAL();
+  alert = trackerDetector.Evaluate(UptimeSeconds(), index);
+  if (alert) {
+    lastTrackerAlert = trackerDetector.Get(index);
+  }
+  taskEXIT_CRITICAL();
+  if (alert) {
+    systemTask.PushMessage(Pinetime::System::Messages::OnTrackerAlert);
+  }
+}
+
+size_t NimbleController::TrackerSnapshot(std::array<TrackerDetector::Tracker, MaxTrackers>& out) {
+  taskENTER_CRITICAL();
+  const size_t count = trackerDetector.Count();
+  for (size_t i = 0; i < count; i++) {
+    out[i] = trackerDetector.Get(i);
+  }
+  taskEXIT_CRITICAL();
+  return count;
+}
+
+int NimbleController::OnTrackerScanEvent(ble_gap_event* event) {
+  switch (event->type) {
+    case BLE_GAP_EVENT_DISC: {
+      const auto type = TrackerDetector::Classify(event->disc.data, event->disc.length_data);
+      if (type != TrackerDetector::Type::None) {
+        taskENTER_CRITICAL();
+        trackerDetector.OnSighting(event->disc.addr.val, type, event->disc.rssi, UptimeSeconds());
+        taskEXIT_CRITICAL();
+      }
+    } break;
+    case BLE_GAP_EVENT_DISC_COMPLETE:
+      trackerScanActive = false;
+      trackerScanLive = false;
+      EvaluateTrackers();
+      break;
+    default:
+      break;
+  }
+  return 0;
 }
 
 bool NimbleController::HasBond() {

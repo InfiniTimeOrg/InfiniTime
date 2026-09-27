@@ -397,6 +397,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Badge.cpp
         displayapp/screens/IntrusionLog.cpp
         displayapp/screens/Sleep.cpp
+        displayapp/screens/Trackers.cpp
         displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
@@ -469,6 +470,7 @@ list(APPEND SOURCE_FILES
         components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/IntrusionLog.cpp
+        components/ble/TrackerDetector.cpp
         components/sleep/SleepAnalysis.cpp
         components/sleep/SleepTracker.cpp
         components/ble/ServiceDiscovery.cpp
@@ -542,6 +544,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/IntrusionLog.cpp
+        components/ble/TrackerDetector.cpp
         components/sleep/SleepAnalysis.cpp
         components/sleep/SleepTracker.cpp
         components/ble/ServiceDiscovery.cpp
@@ -635,6 +638,7 @@ set(INCLUDE_FILES
         displayapp/screens/BadgeQr.h
         displayapp/screens/IntrusionLog.h
         displayapp/screens/Sleep.h
+        displayapp/screens/Trackers.h
         displayapp/screens/Alarm.h
         displayapp/Colors.h
         displayapp/widgets/Counter.h
@@ -671,6 +675,7 @@ set(INCLUDE_FILES
         components/ble/FSService.h
         components/ble/ImmediateAlertService.h
         components/ble/IntrusionLog.h
+        components/ble/TrackerDetector.h
         components/sleep/SleepAnalysis.h
         components/sleep/SleepTracker.h
         components/ble/ServiceDiscovery.h
@@ -815,6 +820,8 @@ add_definitions(-DFREERTOS)
 add_definitions(-D__STACK_SIZE=1024)
 add_definitions(-D__HEAP_SIZE=0)
 add_definitions(-DMYNEWT_VAL_BLE_LL_RFMGMT_ENABLE_TIME=1500)
+# Tracker detection scans in crowded places, remember more devices for duplicate filtering
+add_definitions(-DMYNEWT_VAL_BLE_LL_NUM_SCAN_DUP_ADVS=32)
 add_definitions(-DLFS_CONFIG=libs/lfs_config.h)
 
 # _sbrk is purposefully not implemented so that builds fail when it is used

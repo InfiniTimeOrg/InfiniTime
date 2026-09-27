@@ -31,6 +31,7 @@ namespace Pinetime {
       StopFileTransfer,
       BleRadioEnableToggle,
       OnIntrusion,
+      OnTrackerAlert,
       IntrusionLogChanged
     };
   }

@@ -19,6 +19,7 @@
 #include "components/ble/HeartRateService.h"
 #include "components/ble/ImmediateAlertService.h"
 #include "components/ble/IntrusionLog.h"
+#include "components/ble/TrackerDetector.h"
 #include "components/ble/MusicService.h"
 #include "components/ble/NavigationService.h"
 #include "components/ble/ServiceDiscovery.h"
@@ -80,6 +81,38 @@ namespace Pinetime {
       // Classifies the current connection for the intrusion log, returns true if it should raise an alert
       bool CheckIntrusion();
 
+      // Tracker detection. Automatic scans run in the background when enabled, a live scan
+      // (continuous, for hunting a tag down by signal strength) runs while the Trackers app is open.
+      static constexpr size_t MaxTrackers = TrackerDetector::MaxTrackers;
+
+      bool IsTrackerScanEnabled() const {
+        return trackerScanEnabled;
+      }
+
+      void SetTrackerScanEnabled(bool enabled);
+      void StartTrackerScan(bool live);
+      void StopTrackerScan();
+
+      bool IsTrackerScanning() const {
+        return trackerScanActive;
+      }
+
+      size_t TrackerSnapshot(std::array<TrackerDetector::Tracker, MaxTrackers>& out);
+
+      TrackerDetector::Tracker LastTrackerAlert() const {
+        return lastTrackerAlert;
+      }
+
+      // Drops trackers that went away and raises an alert for one that's following
+      void EvaluateTrackers();
+      void SaveTrackerSettings();
+
+      bool TrackerSettingsDirty() const {
+        return trackerSettingsDirty;
+      }
+
+      int OnTrackerScanEvent(ble_gap_event* event);
+
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
 
@@ -118,6 +151,14 @@ namespace Pinetime {
       FSService fsService;
       ServiceDiscovery serviceDiscovery;
       IntrusionLog intrusionLogger;
+
+      void LoadTrackerSettings();
+      TrackerDetector trackerDetector;
+      TrackerDetector::Tracker lastTrackerAlert {};
+      bool trackerScanEnabled = false;
+      bool trackerSettingsDirty = false;
+      bool trackerScanActive = false;
+      bool trackerScanLive = false;
 
       uint8_t addrType;
       uint16_t connectionHandle = BLE_HS_CONN_HANDLE_NONE;

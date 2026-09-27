@@ -29,8 +29,8 @@ This fork reworks InfiniTime into a neon, hacker-con-ready build for the PineTim
 | ![NetRunner](doc/cyberpunk/netrunner.png) | ![Glitch](doc/cyberpunk/netrunner-glitch.png) | ![Matrix](doc/cyberpunk/matrix.png) | ![Badge](doc/cyberpunk/badge.png) |
 | **Launcher** | **Settings** | **Terminal** | **Intrusions** |
 | ![Launcher](doc/cyberpunk/launcher.png) | ![Settings](doc/cyberpunk/settings.png) | ![Terminal](doc/cyberpunk/terminal.png) | ![Intrusions](doc/cyberpunk/intrusions.png) |
-| **Sleep** | | | |
-| ![Sleep](doc/cyberpunk/sleep.png) | | | |
+| **Sleep** | **Trackers** | | |
+| ![Sleep](doc/cyberpunk/sleep.png) | ![Trackers](doc/cyberpunk/trackers.png) | | |
 
 What's different from upstream:
 
@@ -39,6 +39,7 @@ What's different from upstream:
 - **Badge app** (skull icon): your handle and a scannable QR code linking to your GitHub. The screen stays on while it is open. To point it somewhere else, run `python3 tools/badge/generate_badge_qr.py <url>` (needs `pip install segno`).
 - **Intrusion log** (shield icon): every Bluetooth connection that isn't your bonded phone is logged with time, address, duration and what it tried (pairing, failed pairing). If you have a bonded phone, an unknown connection vibrates and pops up an `UNKNOWN LINK` alert. Toggle alerts on/off or wipe the log from the app. Your phone counts as trusted only when it is paired with the PIN (bonded), so pair it that way.
 - **Sleep tracking** (moon icon): detects sleep automatically from wrist movement, no button to press. Shows time asleep, when you fell asleep and woke up, a hypnogram (awake / light / still), average and lowest heart rate and sleep efficiency, for tonight (marked LIVE while you're asleep) and the last 7 nights. It uses the accelerometer that is already running for step counting, so it costs no extra battery. Stages come from motion only: "still" means no movement at all, it's not the same as EEG deep sleep. Charging, or lying perfectly still for 2.5 hours, counts as off the wrist. Naps under an hour are ignored. The code lives in `src/components/sleep/`; the tuning constants are at the top of `SleepAnalysis.h` and `SleepTracker.h`.
+- **Tracker detector** (crosshairs icon): spots Bluetooth item trackers that could be following you: AirTags and other Find My accessories in "separated from owner" mode, Samsung SmartTag, Tile, Chipolo, Google Find My Device tags and trackers using the DULT anti-stalking beacon. With *AUTO SCAN ON* the watch listens (passively, it never transmits) for 8 seconds every 5 minutes; a tracker seen in 3+ scans over 30+ minutes raises a `TRACKER NEARBY` alert. While the app is open it scans continuously and lists trackers by signal strength, so you can walk around and home in on one. Your own AirTag near your iPhone is not reported; your own Tile/SmartTag/Chipolo will be.
 - **Bluetooth name** is your handle (`VOIDSEC`), set in `src/Identity.h`. Gadgetbridge only auto-detects watches whose name starts with `InfiniTime`, so pair it before flashing this firmware, or temporarily change the name back to pair.
 - **Heart rate in the background**: measurement starts at boot and runs every 5 minutes by default, so you never have to open the heart rate app. If no pulse is found for 30 seconds (the watch is off your wrist or on the charger), it backs off and retries every 5 minutes, so even *Cont* mode doesn't run the sensor all day on the nightstand. Change the interval in *Settings → Heart rate*.
 - **Neon theme**: cyan and magenta outlined buttons, sharp corners, dark purple surfaces, and recolored launcher tiles, lists, sliders, and switches.

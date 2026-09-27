@@ -8,6 +8,7 @@
 #include "displayapp/screens/Badge.h"
 #include "displayapp/screens/IntrusionLog.h"
 #include "displayapp/screens/Sleep.h"
+#include "displayapp/screens/Trackers.h"
 #include "displayapp/screens/Timer.h"
 #include "displayapp/screens/Twos.h"
 #include "displayapp/screens/Tile.h"
