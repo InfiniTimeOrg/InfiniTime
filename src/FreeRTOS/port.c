@@ -73,6 +73,7 @@ void vPortStartFirstTask( void )
 #ifdef SOFTDEVICE_PRESENT
                     ::"i"(configKERNEL_INTERRUPT_PRIORITY  << (8 - configPRIO_BITS))
 #endif
+                    " .ltorg                \n"
                 );
 }
 
@@ -92,6 +93,7 @@ void vPortSVCHandler( void )
                     "   bx r14                          \n"
                     "                                   \n"
                     "   .align 2                        \n"
+                    "   .ltorg                          \n"
                 );
 }
 
@@ -122,7 +124,7 @@ void xPortPendSVHandler( void )
     "   msr basepri, r0                     \n"
     "   dsb                                 \n"
     "   isb                                 \n"
-    "   bl vTaskSwitchContext               \n"
+    "   bl _vTaskSwitchContext              \n"
     "   mov r0, #0                          \n"
     "   msr basepri, r0                     \n"
     "   ldmia sp!, {r3}                     \n"
@@ -143,6 +145,12 @@ void xPortPendSVHandler( void )
     "   bx r14                              \n"
     "                                       \n"
     "   .align 2                            \n"
+    "   .ltorg                              \n"
     ::"i"(configMAX_SYSCALL_INTERRUPT_PRIORITY  << (8 - configPRIO_BITS))
     );
+}
+
+// Need __attribute__((used)) to prevent LTO stripping, as used in ASM above
+void __attribute__((used)) _vTaskSwitchContext(void) {
+  vTaskSwitchContext();
 }
