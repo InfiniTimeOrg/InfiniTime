@@ -42,9 +42,6 @@ namespace Pinetime {
         void Refresh() override;
 
       private:
-        uint8_t displayedHour = -1;
-        uint8_t displayedMinute = -1;
-
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<uint8_t> heartbeat {};
