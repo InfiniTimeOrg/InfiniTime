@@ -86,7 +86,6 @@ namespace Pinetime {
         TickType_t timeoutTickCountStart;
 
         static const TickType_t timeoutLength = pdMS_TO_TICKS(7000);
-        bool interacted = true;
 
         bool dismissingNotification = false;
 
