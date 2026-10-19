@@ -367,7 +367,12 @@ void DisplayApp::Refresh() {
         // Only used for recovery firmware
         break;
       case Messages::NewNotification:
-        LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
+        // Loading the preview destroys the current screen. While the alarm or an expired timer is
+        // ringing, ~Alarm() and ~Timer() stop the ringing, so the alert would be cancelled instead
+        // of just being hidden. The notification is still stored and can be read from the list.
+        if (!IsAlerting()) {
+          LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
+        }
         break;
       case Messages::TimerDone: {
         if (state != States::Running) {
@@ -682,6 +687,14 @@ void DisplayApp::PushMessage(Messages msg) {
 
     xQueueSend(msgQueue, &msg, timeout);
   }
+}
+
+bool DisplayApp::IsAlerting() {
+  if (alarmController.IsAlerting()) {
+    return true;
+  }
+  auto timerState = timer.GetTimerState();
+  return timerState && timerState->expired;
 }
 
 void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
