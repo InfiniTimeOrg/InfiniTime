@@ -57,6 +57,7 @@ Notifications::Notifications(DisplayApp* app,
     timeoutTickCountStart = xTaskGetTickCount();
   }
 
+  Refresh();
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 

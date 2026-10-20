@@ -73,6 +73,7 @@ Timer::Timer(Controllers::Timer& timerController, Controllers::MotorController& 
     SetTimerStopped();
   }
 
+  Refresh();
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
