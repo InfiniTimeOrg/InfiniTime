@@ -55,7 +55,7 @@ lv_img_set_src(logo, "F:/images/logo.bin");
 
 Load a font from the external resources. 
 
-You don't need to check if it exists in the constructor as LVGL can handle the font not existing gracefully (nothing will render).
+You don't need to check if it exists in the constructor a missing font is handled gracefully (a fallback font will be used, which is currently the main system font). If memory allocation fails the fallback font will also be used.
 However, do check that it exists in the `IsAvailable()` method so users can see when resources are missing (the watchface will not be selectable in the list if `IsAvailable()` returns `false`).
 The fonts will free themselves when the owning object is destructed.
 

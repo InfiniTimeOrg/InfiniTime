@@ -26,19 +26,19 @@ FastFont::Font FastFont::LoadFont(Pinetime::Controllers::FS& filesystem, const c
   lfs_file_t file;
   ret = filesystem.FileOpen(&file, fontPath, LFS_O_RDONLY);
   if (ret < 0) {
-    return nullptr;
+    return FastFont::Font(FallbackFont);
   }
   // Can use stat to get the size, but since the file is open we can grab it from there
   lfs_size_t size = file.ctz.size;
-  auto fontData = std::make_unique_for_overwrite<uint8_t[]>(size);
-  if (fontData.get() == nullptr) {
+  auto fontData = std::unique_ptr<uint8_t[]>(static_cast<uint8_t*>(malloc(size)));
+  if (fontData == nullptr) {
     filesystem.FileClose(&file);
-    return nullptr;
+    return FastFont::Font(FallbackFont);
   }
   ret = filesystem.FileRead(&file, fontData.get(), size);
   filesystem.FileClose(&file);
   if (ret != static_cast<int>(size)) {
-    return nullptr;
+    return FastFont::Font(FallbackFont);
   }
   auto* font = reinterpret_cast<lv_font_t*>(fontData.get());
   auto base = reinterpret_cast<uintptr_t>(fontData.get());
