@@ -64,6 +64,7 @@ FastFont::Font FastFont::LoadFont(Pinetime::Controllers::FS& filesystem, const c
     }
   }
   if (font_dsc->kern_dsc != nullptr) {
+    FixPointer(&font_dsc->kern_dsc, base);
     if (font_dsc->kern_classes == 0) {
       auto* kern_dsc = static_cast<lv_font_fmt_txt_kern_pair_t*>(const_cast<void*>(font_dsc->kern_dsc));
       FixPointer(&kern_dsc->glyph_ids, base);
