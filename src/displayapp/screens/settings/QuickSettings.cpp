@@ -71,6 +71,9 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
 
   btn1_lvl = lv_label_create(btn1, nullptr);
   lv_obj_set_style_local_text_font(btn1_lvl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);
+  if (settingsController.GetMotionAutoBrightSetting()) {
+    lv_obj_set_style_local_text_color(btn1_lvl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+  }
   lv_label_set_text_static(btn1_lvl, brightness.GetIcon());
 
   btn2 = lv_btn_create(lv_scr_act(), nullptr);
