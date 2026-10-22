@@ -37,6 +37,7 @@ namespace Pinetime {
         ~Alarm() override;
         void SetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
+        void OnLauncherButtonClicked(lv_obj_t* obj);
         bool OnButtonPushed() override;
         bool OnTouchEvent(TouchEvents event) override;
         void OnValueChanged();
@@ -46,22 +47,36 @@ namespace Pinetime {
         Controllers::AlarmController& alarmController;
         System::WakeLock wakeLock;
         Controllers::MotorController& motorController;
+        Controllers::Settings::ClockType clockType;
 
-        lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch;
+        bool launcherMode = true;
+        uint8_t selectedAlarmIndex = 0;
+
+        // Launcher mode elements
+        lv_obj_t* alarmButtons[Controllers::AlarmController::MaxAlarms] = {nullptr};
+        lv_obj_t* alarmTimeLabels[Controllers::AlarmController::MaxAlarms] = {nullptr};
+        lv_obj_t* alarmRecurLabels[Controllers::AlarmController::MaxAlarms] = {nullptr};
+        lv_obj_t* alarmSwitches[Controllers::AlarmController::MaxAlarms] = {nullptr};
+        lv_style_t launcherButtonStyle;
+
+        // Config mode elements
+        lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *btnBack;
         lv_obj_t* lblampm = nullptr;
         lv_obj_t* txtMessage = nullptr;
         lv_obj_t* btnMessage = nullptr;
         lv_task_t* taskStopAlarm = nullptr;
 
         enum class EnableButtonState { On, Off, Alerting };
+        void CreateLauncherUI();
+        void CreateAlarmConfigUI(uint8_t alarmIndex);
         void DisableAlarm();
         void SetRecurButtonState();
-        void SetSwitchState(lv_anim_enable_t anim);
         void SetAlarm();
         void ShowInfo();
         void HideInfo();
         void ToggleRecurrence();
         void UpdateAlarmTime();
+        void ReturnToLauncher();
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
       };
