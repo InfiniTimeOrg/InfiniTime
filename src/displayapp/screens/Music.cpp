@@ -20,27 +20,27 @@
 #include <cstdint>
 #include "displayapp/DisplayApp.h"
 #include "components/ble/MusicService.h"
-#include "displayapp/icons/music/disc.c"
-#include "displayapp/icons/music/disc_f_1.c"
-#include "displayapp/icons/music/disc_f_2.c"
 #include "displayapp/InfiniTimeTheme.h"
+#include "components/ble/BleController.h"
 
 using namespace Pinetime::Applications::Screens;
 
-static void event_handler(lv_obj_t* obj, lv_event_t event) {
-  Music* screen = static_cast<Music*>(obj->user_data);
-  screen->OnObjectEvent(obj, event);
-}
+namespace {
+  void EventHandler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<Music*>(obj->user_data);
+    screen->OnObjectEvent(obj, event);
+  }
 
-/**
- * Set the pixel array to display by the image
- * This just calls lv_img_set_src but adds type safety
- *
- * @param img pointer to an image object
- * @param data the image array
- */
-inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
-  lv_img_set_src(img, src_img);
+  /**
+   * Set the pixel array to display by the image
+   * This just calls lv_img_set_src but adds type safety
+   *
+   * @param img pointer to an image object
+   * @param data the image array
+   */
+  inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
+    lv_img_set_src(img, src_img);
+  }
 }
 
 /**
@@ -48,8 +48,8 @@ inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
  *
  * TODO: Investigate Apple Media Service and AVRCPv1.6 support for seamless integration
  */
-Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
-  lv_obj_t* label;
+Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble& bleController)
+  : musicService(music), bleController {bleController} {
 
   lv_style_init(&btn_style);
   lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, 20);
@@ -57,90 +57,94 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
 
   btnVolDown = lv_btn_create(lv_scr_act(), nullptr);
   btnVolDown->user_data = this;
-  lv_obj_set_event_cb(btnVolDown, event_handler);
-  lv_obj_set_size(btnVolDown, 76, 76);
-  lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 3, 0);
+  lv_obj_set_event_cb(btnVolDown, EventHandler);
+  lv_obj_set_size(btnVolDown, 117, 60);
+  lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   lv_obj_add_style(btnVolDown, LV_STATE_DEFAULT, &btn_style);
-  label = lv_label_create(btnVolDown, nullptr);
-  lv_label_set_text_static(label, Symbols::volumDown);
-  lv_obj_set_hidden(btnVolDown, true);
+  txtVolDown = lv_label_create(btnVolDown, nullptr);
+  lv_label_set_text_static(txtVolDown, Symbols::volumDown);
 
   btnVolUp = lv_btn_create(lv_scr_act(), nullptr);
   btnVolUp->user_data = this;
-  lv_obj_set_event_cb(btnVolUp, event_handler);
-  lv_obj_set_size(btnVolUp, 76, 76);
-  lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
+  lv_obj_set_event_cb(btnVolUp, EventHandler);
+  lv_obj_set_size(btnVolUp, 117, 60);
+  lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
   lv_obj_add_style(btnVolUp, LV_STATE_DEFAULT, &btn_style);
-  label = lv_label_create(btnVolUp, nullptr);
-  lv_label_set_text_static(label, Symbols::volumUp);
-  lv_obj_set_hidden(btnVolUp, true);
+  txtVolUp = lv_label_create(btnVolUp, nullptr);
+  lv_label_set_text_static(txtVolUp, Symbols::volumUp);
 
   btnPrev = lv_btn_create(lv_scr_act(), nullptr);
   btnPrev->user_data = this;
-  lv_obj_set_event_cb(btnPrev, event_handler);
+  lv_obj_set_event_cb(btnPrev, EventHandler);
   lv_obj_set_size(btnPrev, 76, 76);
   lv_obj_align(btnPrev, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 3, 0);
   lv_obj_add_style(btnPrev, LV_STATE_DEFAULT, &btn_style);
-  label = lv_label_create(btnPrev, nullptr);
-  lv_label_set_text_static(label, Symbols::stepBackward);
+  txtBtnPrev = lv_label_create(btnPrev, nullptr);
+  lv_label_set_text_static(txtBtnPrev, Symbols::stepBackward);
 
   btnNext = lv_btn_create(lv_scr_act(), nullptr);
   btnNext->user_data = this;
-  lv_obj_set_event_cb(btnNext, event_handler);
+  lv_obj_set_event_cb(btnNext, EventHandler);
   lv_obj_set_size(btnNext, 76, 76);
   lv_obj_align(btnNext, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
   lv_obj_add_style(btnNext, LV_STATE_DEFAULT, &btn_style);
-  label = lv_label_create(btnNext, nullptr);
-  lv_label_set_text_static(label, Symbols::stepForward);
+  txtBtnNext = lv_label_create(btnNext, nullptr);
+  lv_label_set_text_static(txtBtnNext, Symbols::stepForward);
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
-  lv_obj_set_event_cb(btnPlayPause, event_handler);
+  lv_obj_set_event_cb(btnPlayPause, EventHandler);
   lv_obj_set_size(btnPlayPause, 76, 76);
   lv_obj_align(btnPlayPause, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   lv_obj_add_style(btnPlayPause, LV_STATE_DEFAULT, &btn_style);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   lv_label_set_text_static(txtPlayPause, Symbols::play);
 
-  txtTrackDuration = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_long_mode(txtTrackDuration, LV_LABEL_LONG_SROLL);
-  lv_obj_align(txtTrackDuration, nullptr, LV_ALIGN_IN_TOP_LEFT, 12, 20);
-  lv_label_set_text_static(txtTrackDuration, "--:--/--:--");
-  lv_label_set_align(txtTrackDuration, LV_ALIGN_IN_LEFT_MID);
-  lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
-
-  constexpr uint8_t FONT_HEIGHT = 12;
-  constexpr uint8_t LINE_PAD = 15;
-  constexpr int8_t MIDDLE_OFFSET = -25;
-  txtArtist = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_align(txtArtist, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 2 * FONT_HEIGHT + LINE_PAD);
-  lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
-  lv_obj_set_width(txtArtist, LV_HOR_RES - 12);
-  lv_label_set_text_static(txtArtist, "");
-  lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  // I'm using the txtTrack label as the top anchor for the whole lot
+  // of song, artist, progress bar and duration text (0:00 and -0:00) so
+  // its much easier to move that around and mess with the buttons separately
+  constexpr int16_t BASE_Y = -40; // -45 for buttons at the top
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
+  lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 0, BASE_Y);
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
-  lv_obj_set_width(txtTrack, LV_HOR_RES - 12);
+  lv_obj_set_width(txtTrack, LV_HOR_RES);
   lv_label_set_text_static(txtTrack, "");
 
-  pageIndicator.Create();
+  txtArtist = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SROLL_CIRC);
+  lv_obj_align(txtArtist, txtTrack, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+  lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
+  lv_obj_set_width(txtArtist, LV_HOR_RES);
+  lv_label_set_text_static(txtArtist, "");
+  lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
-  /** Init animation */
-  imgDisc = lv_img_create(lv_scr_act(), nullptr);
-  lv_img_set_src_arr(imgDisc, &disc);
-  lv_obj_align(imgDisc, nullptr, LV_ALIGN_IN_TOP_RIGHT, -15, 15);
+  barTrackDuration = lv_bar_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_color(barTrackDuration, LV_BAR_PART_BG, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(barTrackDuration, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_bg_opa(barTrackDuration, LV_BAR_PART_BG, LV_STATE_DEFAULT, LV_OPA_100);
+  lv_obj_set_style_local_radius(barTrackDuration, LV_BAR_PART_BG, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+  lv_obj_set_size(barTrackDuration, 240, 10);
+  lv_obj_align(barTrackDuration, txtArtist, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+  lv_bar_set_range(barTrackDuration, 0, 1000);
+  lv_bar_set_value(barTrackDuration, 0, LV_ANIM_OFF);
 
-  imgDiscAnim = lv_img_create(lv_scr_act(), nullptr);
-  lv_img_set_src_arr(imgDiscAnim, &disc_f_1);
-  lv_obj_align(imgDiscAnim, nullptr, LV_ALIGN_IN_TOP_RIGHT, -15 - 32, 15);
+  txtCurrentPosition = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_long_mode(txtCurrentPosition, LV_LABEL_LONG_SROLL);
+  lv_obj_align(txtCurrentPosition, barTrackDuration, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+  lv_label_set_text_static(txtCurrentPosition, "--:--");
+  lv_label_set_align(txtCurrentPosition, LV_ALIGN_IN_LEFT_MID);
+  lv_obj_set_width(txtCurrentPosition, LV_HOR_RES);
+  lv_obj_set_style_local_text_color(txtCurrentPosition, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
-  frameB = false;
-
-  musicService.event(Controllers::MusicService::EVENT_MUSIC_OPEN);
+  txtTrackDuration = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_long_mode(txtTrackDuration, LV_LABEL_LONG_SROLL);
+  lv_obj_align(txtTrackDuration, barTrackDuration, LV_ALIGN_OUT_BOTTOM_RIGHT, -13, 0);
+  lv_label_set_text_static(txtTrackDuration, "--:--");
+  lv_label_set_align(txtTrackDuration, LV_ALIGN_IN_RIGHT_MID);
+  lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
+  lv_obj_set_style_local_text_color(txtTrackDuration, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
@@ -152,22 +156,71 @@ Music::~Music() {
 }
 
 void Music::Refresh() {
-  if (artist != musicService.getArtist()) {
-    artist = musicService.getArtist();
-    lv_label_set_text(txtArtist, artist.data());
+  bleState = bleController.IsConnected();
+
+  if (bleState.IsUpdated()) {
+    const bool connected = bleState.Get();
+
+    if (!connected) {
+      SetDisconnectedUI();
+      return;
+    }
+    musicService.event(Controllers::MusicService::EVENT_MUSIC_OPEN);
+    SetConnectedUI();
+    RefreshTrackInfo();
+    return;
   }
 
-  if (track != musicService.getTrack()) {
-    track = musicService.getTrack();
-    lv_label_set_text(txtTrack, track.data());
+  if (bleState.Get()) {
+    RefreshTrackInfo();
+  }
+}
+
+void Music::SetDisconnectedUI() {
+  lv_label_set_text_static(txtArtist, "Disconnected");
+  lv_label_set_text_static(txtTrack, "");
+
+  for (auto* btn : GetButtons()) {
+    lv_obj_set_style_local_bg_color(btn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
   }
 
-  if (album != musicService.getAlbum()) {
-    album = musicService.getAlbum();
+  for (auto* lbl : GetButtonLabels()) {
+    lv_obj_set_style_local_text_color(lbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
   }
 
+  lv_label_set_text_static(txtCurrentPosition, "--:--");
+  lv_label_set_text_static(txtTrackDuration, "--:--");
+  lv_bar_set_range(barTrackDuration, 0, 1000);
+  lv_bar_set_value(barTrackDuration, 0, LV_ANIM_OFF);
+
+  artist = "";
+  track = "";
+}
+
+void Music::SetConnectedUI() {
+  for (auto* btn : GetButtons()) {
+    lv_obj_set_style_local_bg_color(btn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  }
+
+  for (auto* lbl : GetButtonLabels()) {
+    lv_obj_set_style_local_text_color(lbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  }
+}
+
+void Music::RefreshTrackInfo() {
   if (playing != musicService.isPlaying()) {
     playing = musicService.isPlaying();
+    lv_label_set_text_static(txtPlayPause, playing ? Symbols::pause : Symbols::play);
+  }
+
+  artist = musicService.getArtist();
+  if (artist.IsUpdated()) {
+    lv_label_set_text(txtArtist, artist.Get().data());
+  }
+
+  track = musicService.getTrack();
+  if (track.IsUpdated()) {
+    lv_label_set_text(txtTrack, track.Get().data());
   }
 
   if (currentPosition != musicService.getProgress()) {
@@ -179,47 +232,25 @@ void Music::Refresh() {
     totalLength = musicService.getTrackLength();
     UpdateLength();
   }
-
-  if (playing) {
-    lv_label_set_text_static(txtPlayPause, Symbols::pause);
-    if (xTaskGetTickCount() - 1024 >= lastIncrement) {
-
-      if (frameB) {
-        lv_img_set_src(imgDiscAnim, &disc_f_1);
-      } else {
-        lv_img_set_src(imgDiscAnim, &disc_f_2);
-      }
-      frameB = !frameB;
-
-      if (currentPosition >= totalLength) {
-        // Let's assume the getTrack finished, paused when the timer ends
-        //  and there's no new getTrack being sent to us
-        playing = false;
-      }
-      lastIncrement = xTaskGetTickCount();
-    }
-  } else {
-    lv_label_set_text_static(txtPlayPause, Symbols::play);
-  }
 }
 
 void Music::UpdateLength() {
+  int remaining = std::max(totalLength - currentPosition, 0);
+  int range = std::min(totalLength > 0 ? totalLength : 1, static_cast<int>(std::numeric_limits<int16_t>::max()));
+
   if (totalLength > (99 * 60 * 60)) {
-    lv_label_set_text_static(txtTrackDuration, "Inf/Inf");
+    lv_label_set_text_static(txtCurrentPosition, "Inf");
+    lv_label_set_text_static(txtTrackDuration, "Inf");
   } else if (totalLength > (99 * 60)) {
-    lv_label_set_text_fmt(txtTrackDuration,
-                          "%02d:%02d/%02d:%02d",
-                          (currentPosition / (60 * 60)) % 100,
-                          ((currentPosition % (60 * 60)) / 60) % 100,
-                          (totalLength / (60 * 60)) % 100,
-                          ((totalLength % (60 * 60)) / 60) % 100);
+    lv_label_set_text_fmt(txtCurrentPosition, "%d:%02d", (currentPosition / (60 * 60)) % 100, ((currentPosition % (60 * 60)) / 60) % 100);
+    lv_label_set_text_fmt(txtTrackDuration, "-%d:%02d", (remaining / (60 * 60)) % 100, ((remaining % (60 * 60)) / 60) % 100);
+    lv_bar_set_range(barTrackDuration, 0, range);
+    lv_bar_set_value(barTrackDuration, std::min(currentPosition, range), LV_ANIM_OFF);
   } else {
-    lv_label_set_text_fmt(txtTrackDuration,
-                          "%02d:%02d/%02d:%02d",
-                          (currentPosition / 60) % 100,
-                          (currentPosition % 60) % 100,
-                          (totalLength / 60) % 100,
-                          (totalLength % 60) % 100);
+    lv_label_set_text_fmt(txtCurrentPosition, "%d:%02d", (currentPosition / 60) % 100, (currentPosition % 60) % 100);
+    lv_label_set_text_fmt(txtTrackDuration, "-%d:%02d", (remaining / 60) % 100, (remaining % 60) % 100);
+    lv_bar_set_range(barTrackDuration, 0, range);
+    lv_bar_set_value(barTrackDuration, std::min(currentPosition, range), LV_ANIM_OFF);
   }
 }
 
@@ -232,18 +263,14 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
     } else if (obj == btnPrev) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_PREV);
     } else if (obj == btnPlayPause) {
-      if (playing == Pinetime::Controllers::MusicService::MusicStatus::Playing) {
+      if (playing) {
         musicService.event(Controllers::MusicService::EVENT_MUSIC_PAUSE);
-
-        // Let's assume it stops playing instantly
-        playing = Controllers::MusicService::NotPlaying;
       } else {
         musicService.event(Controllers::MusicService::EVENT_MUSIC_PLAY);
-
-        // Let's assume it starts playing instantly
-        // TODO: In the future should check for BT connection for better UX
-        playing = Controllers::MusicService::Playing;
       }
+      // Let's assume it stops/starts playing instantly
+      // TODO: In the future should check for BT connection for better UX
+      playing = !playing;
     } else if (obj == btnNext) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);
     }
@@ -252,25 +279,6 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
 
 bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch (event) {
-    case TouchEvents::SwipeUp: {
-      lv_obj_set_hidden(btnVolDown, false);
-      lv_obj_set_hidden(btnVolUp, false);
-      lv_obj_set_hidden(btnNext, true);
-      lv_obj_set_hidden(btnPrev, true);
-      pageIndicator.SetPageIndicatorPosition(1);
-      return true;
-    }
-    case TouchEvents::SwipeDown: {
-      if (lv_obj_get_hidden(btnNext)) {
-        lv_obj_set_hidden(btnNext, false);
-        lv_obj_set_hidden(btnPrev, false);
-        lv_obj_set_hidden(btnVolDown, true);
-        lv_obj_set_hidden(btnVolUp, true);
-        pageIndicator.SetPageIndicatorPosition(0);
-        return true;
-      }
-      return false;
-    }
     case TouchEvents::SwipeLeft: {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);
       return true;
