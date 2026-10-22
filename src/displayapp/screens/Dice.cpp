@@ -4,11 +4,12 @@
 #include "components/settings/Settings.h"
 #include "components/motor/MotorController.h"
 #include "components/motion/MotionController.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  lv_obj_t* MakeLabel(lv_font_t* font,
+  lv_obj_t* MakeLabel(const lv_font_t* font,
                       lv_color_t color,
                       lv_label_long_mode_t longMode,
                       uint8_t width,
@@ -49,7 +50,7 @@ Dice::Dice(Controllers::MotionController& motionController,
                       static_cast<uint32_t>(motionController.Z())};
   gen.seed(sseq);
 
-  lv_obj_t* nCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
+  lv_obj_t* nCounterLabel = MakeLabel(Fonts::normal,
                                       LV_COLOR_WHITE,
                                       LV_LABEL_LONG_EXPAND,
                                       0,
@@ -60,7 +61,7 @@ Dice::Dice(Controllers::MotionController& motionController,
                                       0,
                                       0);
 
-  lv_obj_t* dCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
+  lv_obj_t* dCounterLabel = MakeLabel(Fonts::normal,
                                       LV_COLOR_WHITE,
                                       LV_LABEL_LONG_EXPAND,
                                       0,
@@ -82,7 +83,7 @@ Dice::Dice(Controllers::MotionController& motionController,
   std::uniform_int_distribution<> distrib(0, resultColors.size() - 1);
   currentColorIndex = distrib(gen);
 
-  resultTotalLabel = MakeLabel(&jetbrains_mono_42,
+  resultTotalLabel = MakeLabel(Fonts::large,
                                resultColors[currentColorIndex],
                                LV_LABEL_LONG_BREAK,
                                120,
@@ -92,7 +93,7 @@ Dice::Dice(Controllers::MotionController& motionController,
                                LV_ALIGN_IN_TOP_RIGHT,
                                11,
                                38);
-  resultIndividualLabel = MakeLabel(&jetbrains_mono_bold_20,
+  resultIndividualLabel = MakeLabel(Fonts::normal,
                                     resultColors[currentColorIndex],
                                     LV_LABEL_LONG_BREAK,
                                     90,
@@ -112,16 +113,8 @@ Dice::Dice(Controllers::MotionController& motionController,
   lv_obj_set_size(btnRoll, 240, 50);
   lv_obj_align(btnRoll, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
-  btnRollLabel = MakeLabel(&jetbrains_mono_bold_20,
-                           LV_COLOR_WHITE,
-                           LV_LABEL_LONG_EXPAND,
-                           0,
-                           LV_LABEL_ALIGN_CENTER,
-                           Symbols::dice,
-                           btnRoll,
-                           LV_ALIGN_CENTER,
-                           0,
-                           0);
+  btnRollLabel =
+    MakeLabel(Fonts::normal, LV_COLOR_WHITE, LV_LABEL_LONG_EXPAND, 0, LV_LABEL_ALIGN_CENTER, Symbols::dice, btnRoll, LV_ALIGN_CENTER, 0, 0);
 
   // Spagetti code in motion controller: it only updates the shake speed when shake to wake is on...
   enableShakeForDice = !settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake);

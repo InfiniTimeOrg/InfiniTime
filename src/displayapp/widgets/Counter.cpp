@@ -29,7 +29,8 @@ namespace {
   }
 }
 
-Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, value {min}, leadingZeroCount {digitCount(max)}, font {font} {
+Counter::Counter(int min, int max, const lv_font_t& font)
+  : min {min}, max {max}, value {min}, leadingZeroCount {digitCount(max)}, font {font} {
 }
 
 void Counter::UpBtnPressed() {
@@ -151,7 +152,7 @@ void Counter::Create() {
   lv_obj_set_event_cb(upBtn, upBtnEventHandler);
 
   lv_obj_t* upLabel = lv_label_create(upBtn, nullptr);
-  lv_obj_set_style_local_text_font(upLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_font(upLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::large);
   lv_label_set_text_static(upLabel, "+");
   lv_obj_align(upLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
 
@@ -163,7 +164,7 @@ void Counter::Create() {
   lv_obj_set_event_cb(downBtn, downBtnEventHandler);
 
   lv_obj_t* downLabel = lv_label_create(downBtn, nullptr);
-  lv_obj_set_style_local_text_font(downLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_font(downLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::large);
   lv_label_set_text_static(downLabel, "-");
   lv_obj_align(downLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
 

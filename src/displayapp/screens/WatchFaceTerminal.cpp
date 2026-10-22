@@ -41,32 +41,41 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
 
   labelPrompt1 = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(labelPrompt1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_text_font(labelPrompt1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
   lv_label_set_text_static(labelPrompt1, "user@watch:~ $ now");
 
   labelTime = lv_label_create(container, nullptr);
+  lv_obj_set_style_local_text_font(labelTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
   lv_label_set_recolor(labelTime, true);
 
   labelDate = lv_label_create(container, nullptr);
+  lv_obj_set_style_local_text_font(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
   lv_label_set_recolor(labelDate, true);
 
   batteryValue = lv_label_create(container, nullptr);
+  lv_obj_set_style_local_text_font(batteryValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
   lv_label_set_recolor(batteryValue, true);
 
   stepValue = lv_label_create(container, nullptr);
   lv_label_set_recolor(stepValue, true);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
+  lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
 
   heartbeatValue = lv_label_create(container, nullptr);
+  lv_obj_set_style_local_text_font(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
   lv_label_set_recolor(heartbeatValue, true);
 
   weather = lv_label_create(container, nullptr);
+  lv_obj_set_style_local_text_font(weather, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
   lv_label_set_recolor(weather, true);
 
   connectState = lv_label_create(container, nullptr);
+  lv_obj_set_style_local_text_font(connectState, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
   lv_label_set_recolor(connectState, true);
 
   labelPrompt2 = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(labelPrompt2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_text_font(labelPrompt2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Fonts::mono);
   lv_label_set_text_static(labelPrompt2, "user@watch:~ $");
 
   lv_obj_align(container, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 7);
