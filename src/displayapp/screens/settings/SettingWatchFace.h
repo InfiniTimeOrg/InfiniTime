@@ -37,6 +37,8 @@ namespace Pinetime {
         auto CreateScreenList() const;
         std::unique_ptr<Screen> CreateScreen(unsigned int screenNum) const;
 
+        uint8_t GetActiveScreenIndex();
+
         static constexpr int settingsPerScreen = 4;
         std::array<Item, UserWatchFaceTypes::Count> watchfaceItems;
         static constexpr int nScreens = UserWatchFaceTypes::Count > 0 ? (UserWatchFaceTypes ::Count - 1) / settingsPerScreen + 1 : 1;

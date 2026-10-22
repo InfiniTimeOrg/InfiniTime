@@ -50,6 +50,14 @@ auto SettingWatchFace::CreateScreenList() const {
   return screens;
 }
 
+uint8_t SettingWatchFace::GetActiveScreenIndex() {
+  uint8_t index = IndexOf(watchfaceItems, settingsController.GetWatchFace()) / settingsPerScreen;
+  if (index > nScreens - 1) {
+    index = 0;
+  }
+  return index;
+}
+
 SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app,
                                    std::array<Screens::SettingWatchFace::Item, UserWatchFaceTypes::Count>&& watchfaceItems,
                                    Pinetime::Controllers::Settings& settingsController,
@@ -57,7 +65,7 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app,
   : watchfaceItems {std::move(watchfaceItems)},
     settingsController {settingsController},
     filesystem {filesystem},
-    screens {app, 0, CreateScreenList(), Screens::ScreenListModes::UpDown} {
+    screens {app, GetActiveScreenIndex(), CreateScreenList(), Screens::ScreenListModes::UpDown} {
 }
 
 SettingWatchFace::~SettingWatchFace() {
