@@ -73,6 +73,7 @@ SettingSetTime::SettingSetTime(Pinetime::Controllers::DateTime& dateTimeControll
   lv_obj_set_style_local_text_color(lblSetTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, LV_COLOR_GRAY);
   lv_obj_set_event_cb(btnSetTime, SetTimeEventHandler);
 
+  pageIndicator.Create();
   UpdateScreen();
 }
 
