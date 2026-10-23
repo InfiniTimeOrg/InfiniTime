@@ -49,7 +49,7 @@ Since those resources are not part of the firmware, they need to be flashed and 
 Resources are packaged into a single .zip file named `infinitime-resources-x.y.z.zip` (where `x`, `y` and `z` are the version numbers of InfiniTime). 
 You can use the companion app of your choice to flash the resources.
 
-**Note: at the time of writing this page, [Amazfish](https://github.com/piggz/harbour-amazfish) and [ITD](https://gitea.arsenm.dev/Arsen6331/itd) have already integrated this functionality. Other companion apps will hopefully implement it soon!*
+**Note: at the time of writing this page, [Amazfish](https://github.com/piggz/harbour-amazfish) and [ITD](https://git.elara.ws/Elara6331/itd) have already integrated this functionality. Other companion apps will hopefully implement it soon!*
 
 ## Amazfish
 Use the `Download file` functionality of Amazfish. 
