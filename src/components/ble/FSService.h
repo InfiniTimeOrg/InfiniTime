@@ -37,6 +37,10 @@ namespace Pinetime {
       static constexpr uint16_t fsTransferId {0x0200};
       uint16_t fsVersion = {0x0004};
       static constexpr uint16_t maxpathlen = 256;
+      // A chunk has to fit into a single notification, so there is no point in
+      // honouring a larger request. Sizing a buffer from the request instead
+      // put the peer in charge of how much stack was used.
+      static constexpr uint32_t maxChunkLen = 200;
       static constexpr ble_uuid16_t fsServiceUuid {
         .u {.type = BLE_UUID_TYPE_16},
         .value = {0xFEBB}}; // {0x72, 0x65, 0x66, 0x73, 0x6e, 0x61, 0x72, 0x54, 0x65, 0x6c, 0x69, 0x46, 0xBB, 0xFE, 0xAF, 0xAD}};
@@ -197,7 +201,6 @@ namespace Pinetime {
       };
 
       int FSCommandHandler(uint16_t connectionHandle, os_mbuf* om);
-      void prepareReadDataResp(ReadHeader* header, ReadResponse* resp);
     };
   }
 }
