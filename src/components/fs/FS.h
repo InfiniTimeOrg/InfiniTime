@@ -3,12 +3,39 @@
 #include <cstdint>
 #include "drivers/SpiNorFlash.h"
 #include <littlefs/lfs.h>
+#include <FreeRTOS.h>
+#include <semphr.h>
 
 namespace Pinetime {
   namespace Controllers {
     class FS {
     public:
       FS(Pinetime::Drivers::SpiNorFlash&);
+
+      // Serializes littlefs access across tasks (littlefs itself is not
+      // thread-safe and the lfs_t state is shared). Every public FS method
+      // takes it, so single calls need nothing; hold a Lock across a
+      // multi-call sequence whose intermediate state must not be observed
+      // torn - in particular any open-file handle that a concurrent Rename
+      // or Delete of the same file would invalidate.
+      class Lock {
+      public:
+        explicit Lock(FS& fs) : fs {fs} {
+          xSemaphoreTakeRecursive(fs.mutex, portMAX_DELAY);
+        }
+
+        ~Lock() {
+          xSemaphoreGiveRecursive(fs.mutex);
+        }
+
+        Lock(const Lock&) = delete;
+        Lock& operator=(const Lock&) = delete;
+        Lock(Lock&&) = delete;
+        Lock& operator=(Lock&&) = delete;
+
+      private:
+        FS& fs;
+      };
 
       void Init();
 
@@ -41,6 +68,7 @@ namespace Pinetime {
 
     private:
       Pinetime::Drivers::SpiNorFlash& flashDriver;
+      SemaphoreHandle_t mutex = nullptr;
 
       /*
        * External Flash MAP (4 MBytes)
