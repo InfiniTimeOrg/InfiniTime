@@ -29,7 +29,38 @@ namespace Pinetime {
         lv_task_t* refreshTask;
         bool enableShakeForDice = false;
 
-        std::mt19937 gen;
+        // std::mt19937 keeps 624 words of state and needs roughly 2.5 KB of
+        // stack to seed from a seed_seq, on a display task that has 3.2 KB in
+        // total. A dice roll does not need that much generator.
+        class Rng {
+        public:
+          using result_type = uint32_t;
+
+          static constexpr result_type min() {
+            return 1;
+          }
+
+          static constexpr result_type max() {
+            return UINT32_MAX;
+          }
+
+          void Seed(result_type value) {
+            // Zero is the one state xorshift cannot leave again.
+            state = (value != 0) ? value : 0x9e3779b9;
+          }
+
+          result_type operator()() {
+            state ^= state << 13;
+            state ^= state >> 17;
+            state ^= state << 5;
+            return state;
+          }
+
+        private:
+          result_type state = 0x9e3779b9;
+        };
+
+        Rng gen;
 
         std::array<lv_color_t, 3> resultColors = {LV_COLOR_YELLOW, LV_COLOR_MAGENTA, LV_COLOR_AQUA};
         uint8_t currentColorIndex;

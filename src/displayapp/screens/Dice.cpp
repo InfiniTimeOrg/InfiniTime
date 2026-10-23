@@ -43,11 +43,11 @@ Dice::Dice(Controllers::MotionController& motionController,
            Controllers::MotorController& motorController,
            Controllers::Settings& settingsController)
   : motorController {motorController}, motionController {motionController}, settingsController {settingsController} {
-  std::seed_seq sseq {static_cast<uint32_t>(xTaskGetTickCount()),
-                      static_cast<uint32_t>(motionController.X()),
-                      static_cast<uint32_t>(motionController.Y()),
-                      static_cast<uint32_t>(motionController.Z())};
-  gen.seed(sseq);
+  uint32_t seed = static_cast<uint32_t>(xTaskGetTickCount());
+  seed = seed * 31 + static_cast<uint32_t>(motionController.X());
+  seed = seed * 31 + static_cast<uint32_t>(motionController.Y());
+  seed = seed * 31 + static_cast<uint32_t>(motionController.Z());
+  gen.Seed(seed);
 
   lv_obj_t* nCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
                                       LV_COLOR_WHITE,
