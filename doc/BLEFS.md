@@ -14,7 +14,7 @@ There are two relevant UUIDs in this protocol: the version characteristic, and t
 
 UUID: `adaf0100-4669-6c65-5472-616e73666572`
 
-The version characteristic returns the version of the protocol to which the sender adheres. It returns a single unsigned 32-bit integer. The latest version at the time of writing this is 4.
+The version characteristic returns the version of the protocol to which the sender adheres. It returns a single unsigned 16-bit integer. The latest version at the time of writing this is 4.
 
 ### Transfer
 
@@ -71,7 +71,7 @@ To begin writing to a file, a header must first be sent. The header packet shoul
 - Unsigned 32-bit integer encoding the size of the file that will be sent
 - File path: UTF-8 encoded string that is _not_ null terminated.
 
-To continue reading the file after this initial packet, the following packet should be sent until all the data has been sent and a response had been received with 0 free space. No close command is required after the data has been received.
+To continue writing the file after this initial packet, the following packet should be sent until all the data has been sent and a response had been received with 0 free space. No close command is required after the data has been received.
 
 - Command (single byte): `0x22`
 - Status: `0x01`

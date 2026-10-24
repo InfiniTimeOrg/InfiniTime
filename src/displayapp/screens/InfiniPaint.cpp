@@ -61,12 +61,17 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 bool InfiniPaint::OnTouchEvent(uint16_t x, uint16_t y) {
+  // If currently scrolling in or out of InfiniPaint, don't paint anything!
+  // Since InfiniPaint writes directly to the display bypassing LVGL, painting
+  // while scrolling is happening causes bad behaviour
+  if (lvgl.IsScrolling()) {
+    return false;
+  }
   lv_area_t area;
   area.x1 = x - (width / 2);
   area.y1 = y - (height / 2);
   area.x2 = x + (width / 2) - 1;
   area.y2 = y + (height / 2) - 1;
-  lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
   lvgl.FlushDisplay(&area, b);
   return true;
 }

@@ -71,6 +71,7 @@ namespace Pinetime {
       uint16_t dataIndex = 0;
       float peakLocation;
       bool resetSpectralAvg = true;
+      bool enoughData = false;
 
       int ProcessHeartRate(bool init);
       float HeartRateAverage(float hr);

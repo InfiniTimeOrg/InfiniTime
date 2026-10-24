@@ -3,6 +3,7 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "displayapp/screens/Symbols.h"
+#include "lvgl/src/lv_misc/lv_color.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -15,7 +16,7 @@ namespace {
   Pinetime::Controllers::Settings::PrideFlag GetNext(Pinetime::Controllers::Settings::PrideFlag prideFlag) {
     const auto prideFlagAsInt = static_cast<uint8_t>(prideFlag);
     Pinetime::Controllers::Settings::PrideFlag nextFlag;
-    if (prideFlagAsInt < 3) {
+    if (prideFlagAsInt < 8) {
       nextFlag = static_cast<Pinetime::Controllers::Settings::PrideFlag>(prideFlagAsInt + 1);
     } else {
       nextFlag = static_cast<Pinetime::Controllers::Settings::PrideFlag>(0);
@@ -29,7 +30,7 @@ namespace {
     if (prideFlagAsInt > 0) {
       prevFlag = static_cast<Pinetime::Controllers::Settings::PrideFlag>(prideFlagAsInt - 1);
     } else {
-      prevFlag = static_cast<Pinetime::Controllers::Settings::PrideFlag>(3);
+      prevFlag = static_cast<Pinetime::Controllers::Settings::PrideFlag>(8);
     }
     return prevFlag;
   }
@@ -62,6 +63,8 @@ namespace {
   constexpr lv_color_t grayPurple = LV_COLOR_MAKE(0x9b, 0x4f, 0x96);
   constexpr lv_color_t darkBlue = LV_COLOR_MAKE(0x00, 0x38, 0xa8);
   constexpr lv_color_t orange = LV_COLOR_MAKE(0xef, 0x76, 0x27);
+  constexpr lv_color_t sunOrange = LV_COLOR_MAKE(0xe2, 0x8c, 0x00);
+  constexpr lv_color_t brightYellow = LV_COLOR_MAKE(0xec, 0xcd, 0x00);
   constexpr lv_color_t lightOrange = LV_COLOR_MAKE(0xff, 0x9b, 0x55);
   constexpr lv_color_t lightPurple = LV_COLOR_MAKE(0xd4, 0x61, 0xa6);
   constexpr lv_color_t darkPurple = LV_COLOR_MAKE(0xb5, 0x56, 0x90);
@@ -71,14 +74,29 @@ namespace {
   constexpr lv_color_t lightGreen = LV_COLOR_MAKE(0x98, 0xe8, 0xc1);
   constexpr lv_color_t indigo = LV_COLOR_MAKE(0x50, 0x49, 0xcc);
   constexpr lv_color_t steelBlue = LV_COLOR_MAKE(0x3d, 0x1a, 0x78);
+  constexpr lv_color_t skyBlue = LV_COLOR_MAKE(0x4a, 0x91, 0xe8);
   constexpr std::array<lv_color_t, 7> gayColours {darkGreen, cyan, lightGreen, LV_COLOR_WHITE, lightBlue, indigo, steelBlue};
   constexpr std::array<lv_color_t, 5> transColours {lightBlue, lightPink, LV_COLOR_WHITE, lightPink, lightBlue};
   constexpr std::array<lv_color_t, 5> biColours {hotPink, hotPink, grayPurple, darkBlue, darkBlue};
   constexpr std::array<lv_color_t, 7> lesbianColours {LV_COLOR_RED, orange, lightOrange, LV_COLOR_WHITE, lightPurple, darkPurple, magenta};
+  constexpr std::array<lv_color_t, 4> nonbinaryColours {LV_COLOR_YELLOW, LV_COLOR_WHITE, LV_COLOR_PURPLE, LV_COLOR_BLACK};
+  constexpr std::array<lv_color_t, 4> aceColours {LV_COLOR_BLACK, LV_COLOR_GRAY, LV_COLOR_WHITE, LV_COLOR_PURPLE};
+  constexpr std::array<lv_color_t, 5> aroColours {LV_COLOR_GREEN, lightGreen, LV_COLOR_WHITE, LV_COLOR_GRAY, LV_COLOR_BLACK};
+  constexpr std::array<lv_color_t, 5> aroaceColours {sunOrange,
+                                                     brightYellow,
+                                                     LV_COLOR_WHITE,
+                                                     LV_COLOR_MAKE(0x62, 0xae, 0xdc),
+                                                     LV_COLOR_MAKE(0x20, 0x38, 0x56)};
+  constexpr std::array<lv_color_t, 3> panColours {hotPink, LV_COLOR_YELLOW, skyBlue};
   constexpr PrideFlagData gayFlagData(gayColours, LV_COLOR_BLACK, LV_COLOR_BLACK, LV_COLOR_WHITE);
   constexpr PrideFlagData transFlagData(transColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
   constexpr PrideFlagData biFlagData(biColours, LV_COLOR_BLACK, LV_COLOR_WHITE, LV_COLOR_BLACK);
   constexpr PrideFlagData lesbianFlagData(lesbianColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
+  constexpr PrideFlagData nonbinaryFlagData(nonbinaryColours, LV_COLOR_BLACK, LV_COLOR_BLACK, LV_COLOR_WHITE);
+  constexpr PrideFlagData aceFlagData(aceColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_BLACK);
+  constexpr PrideFlagData aroFlagData(aroColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
+  constexpr PrideFlagData aroaceFlagData(aroaceColours, LV_COLOR_WHITE, LV_COLOR_BLACK, LV_COLOR_WHITE);
+  constexpr PrideFlagData panFlagData(panColours, LV_COLOR_BLACK, LV_COLOR_BLACK, LV_COLOR_BLACK);
 }
 
 WatchFacePrideFlag::WatchFacePrideFlag(Controllers::DateTime& dateTimeController,
@@ -332,6 +350,21 @@ void WatchFacePrideFlag::UpdateScreen(const Pinetime::Controllers::Settings::Pri
       break;
     case Pinetime::Controllers::Settings::PrideFlag::Lesbian:
       UseFlagData(lesbianFlagData);
+      break;
+    case Pinetime::Controllers::Settings::PrideFlag::Nonbinary:
+      UseFlagData(nonbinaryFlagData);
+      break;
+    case Pinetime::Controllers::Settings::PrideFlag::Ace:
+      UseFlagData(aceFlagData);
+      break;
+    case Pinetime::Controllers::Settings::PrideFlag::Aro:
+      UseFlagData(aroFlagData);
+      break;
+    case Pinetime::Controllers::Settings::PrideFlag::AroAce:
+      UseFlagData(aroaceFlagData);
+      break;
+    case Pinetime::Controllers::Settings::PrideFlag::Pan:
+      UseFlagData(panFlagData);
       break;
   }
 }

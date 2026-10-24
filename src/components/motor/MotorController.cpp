@@ -34,6 +34,10 @@ void MotorController::StopRinging() {
   nrf_gpio_pin_set(PinMap::Motor);
 }
 
+bool MotorController::IsRinging() {
+  return (xTimerIsTimerActive(longVib) == pdTRUE);
+}
+
 void MotorController::StopMotor(TimerHandle_t /*xTimer*/) {
   nrf_gpio_pin_set(PinMap::Motor);
 }

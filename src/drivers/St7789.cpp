@@ -17,7 +17,6 @@ void St7789::Init() {
   HardwareReset();
   SoftwareReset();
   Command2Enable();
-  SleepOut();
   PixelFormat();
   MemoryDataAccessControl();
   SetAddrWindow(0, 0, Width, Height);
@@ -32,6 +31,7 @@ void St7789::Init() {
   SetVdv();
   PowerControl();
   GateControl();
+  SleepOut();
   DisplayOn();
 }
 
