@@ -58,7 +58,7 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app,
     settingsController {settingsController},
     filesystem {filesystem},
     screens {app,
-             static_cast<uint8_t>(static_cast<uint8_t>(settingsController.GetWatchFace()) / 4),
+             static_cast<uint8_t>(static_cast<uint8_t>(settingsController.GetWatchFace()) / settingsPerScreen),
              CreateScreenList(),
              Screens::ScreenListModes::UpDown} {
 }
