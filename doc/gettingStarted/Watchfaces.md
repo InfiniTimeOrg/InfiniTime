@@ -1,6 +1,6 @@
 # Watchfaces
 
-InfiniTime has 6 apps on the `main` branch at the time of writing.
+InfiniTime has 9 watch faces on the `main` branch at the time of writing.
 
 ## List of apps
 - Digital
@@ -9,6 +9,9 @@ InfiniTime has 6 apps on the `main` branch at the time of writing.
 - Terminal
 - Infinineat
 - Casio G7710
+- Numerals
+- Pride Flag
+- Legend
 
 ### Digital
 ![Digital face](/doc/gettingStarted/Watchfaces/Digital.png)
@@ -30,6 +33,12 @@ InfiniTime has 6 apps on the `main` branch at the time of writing.
 ### Casio G7710
 ![Casio G7710 face](/doc/gettingStarted/Watchfaces/CasioG7710.png)
 
+### Numerals
+![Numerals face](/doc/gettingStarted/Watchfaces/Numerals.png)
+
 ### Pride Flag
 ![Pride flag face](/doc/gettingStarted/Watchfaces/Pride.png)
     - You can long-press on the display to change flags. (Gay, Lesbian, Bi, Trans, Non-binary, Aromantic, Asexual, AroAce, Pansexual)
+
+### Legend
+![Legend face](/doc/gettingStarted/Watchfaces/Legend.png)
