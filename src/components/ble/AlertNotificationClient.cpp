@@ -101,8 +101,9 @@ int AlertNotificationClient::OnCharacteristicsDiscoveryEvent(uint16_t connection
     } else if (characteristic != nullptr && ble_uuid_cmp(&controlPointUuid.u, &characteristic->uuid.u) == 0) {
       NRF_LOG_INFO("ANS Characteristic discovered : controlPointUuid");
       controlPointHandle = characteristic->val_handle;
-    } else
+    } else if (characteristic != nullptr) {
       NRF_LOG_INFO("ANS Characteristic discovered : 0x%x", characteristic->val_handle);
+    }
   }
   return 0;
 }
