@@ -570,6 +570,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                notificationManager,
                                                                systemTask->nimble().alertService(),
                                                                motorController,
+                                                               brightnessController,
+                                                               motionController,
+                                                               settingsController,
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Normal);
       break;
@@ -578,6 +581,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                notificationManager,
                                                                systemTask->nimble().alertService(),
                                                                motorController,
+                                                               brightnessController,
+                                                               motionController,
+                                                               settingsController,
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Preview);
       break;
@@ -736,9 +742,23 @@ void DisplayApp::Register(Pinetime::Controllers::NavigationService* NavigationSe
 
 void DisplayApp::ApplyBrightness() {
   auto brightness = settingsController.GetBrightness();
-  if (brightness != Controllers::BrightnessController::Levels::Low && brightness != Controllers::BrightnessController::Levels::Medium &&
-      brightness != Controllers::BrightnessController::Levels::High) {
+  if ((brightness != Controllers::BrightnessController::Levels::Low && brightness != Controllers::BrightnessController::Levels::Medium &&
+       brightness != Controllers::BrightnessController::Levels::High) ||
+      (DisplayApp::InvokeMotionAutoBright())) {
     brightness = Controllers::BrightnessController::Levels::High;
   }
   brightnessController.Set(brightness);
+}
+
+bool DisplayApp::InvokeMotionAutoBright() {
+  if (!settingsController.GetMotionAutoBrightSetting()) {
+    return false;
+  }
+  if (this->controllers.weatherController->IsNight()) {
+    return false;
+  }
+  if (!motionController.Locomotion()) {
+    return false;
+  }
+  return true;
 }
