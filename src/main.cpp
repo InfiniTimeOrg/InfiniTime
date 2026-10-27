@@ -99,7 +99,7 @@ Pinetime::Controllers::Settings settingsController {fs};
 Pinetime::Controllers::MotorController motorController {};
 
 Pinetime::Controllers::HeartRateController heartRateController;
-Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController, settingsController);
+Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController, settingsController, motionSensor);
 
 Pinetime::Controllers::DateTime dateTimeController {settingsController};
 Pinetime::Drivers::Watchdog watchdog;
