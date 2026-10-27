@@ -51,6 +51,8 @@ MotionService::MotionService(NimbleController& nimble, Controllers::MotionContro
 }
 
 void MotionService::Init() {
+  nimble.AddCharacteristicSecurity(serviceDefinition);
+
   int res = 0;
   res = ble_gatts_count_cfg(serviceDefinition);
   ASSERT(res == 0);
@@ -60,6 +62,9 @@ void MotionService::Init() {
 }
 
 int MotionService::OnStepCountRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
+  if (!nimble.IsConnSecurityOK())
+    return BLE_ATT_ERR_INSUFFICIENT_AUTHEN;
+
   if (attributeHandle == stepCountHandle) {
     NRF_LOG_INFO("Motion-stepcount : handle = %d", stepCountHandle);
     uint32_t buffer = motionController.NbSteps();
@@ -86,7 +91,7 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
 
   uint16_t connectionHandle = nimble.connHandle();
 
-  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE || !nimble.IsConnSecurityOK()) {
     return;
   }
 
@@ -103,7 +108,7 @@ void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
 
   uint16_t connectionHandle = nimble.connHandle();
 
-  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE || !nimble.IsConnSecurityOK()) {
     return;
   }
 
