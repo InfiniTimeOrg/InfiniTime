@@ -41,13 +41,10 @@ namespace {
 
 Dice::Dice(Controllers::MotionController& motionController,
            Controllers::MotorController& motorController,
-           Controllers::Settings& settingsController)
+           Controllers::Settings& settingsController,
+           Controllers::RNG& prngController)
   : motorController {motorController}, motionController {motionController}, settingsController {settingsController} {
-  std::seed_seq sseq {static_cast<uint32_t>(xTaskGetTickCount()),
-                      static_cast<uint32_t>(motionController.X()),
-                      static_cast<uint32_t>(motionController.Y()),
-                      static_cast<uint32_t>(motionController.Z())};
-  gen.seed(sseq);
+  rng.seed(prngController);
 
   lv_obj_t* nCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
                                       LV_COLOR_WHITE,
@@ -79,8 +76,7 @@ Dice::Dice(Controllers::MotionController& motionController,
   lv_obj_align(dCounter.GetObject(), dCounterLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
   dCounter.SetValue(6);
 
-  std::uniform_int_distribution<> distrib(0, resultColors.size() - 1);
-  currentColorIndex = distrib(gen);
+  currentColorIndex = rng(resultColors.size());
 
   resultTotalLabel = MakeLabel(&jetbrains_mono_42,
                                resultColors[currentColorIndex],
@@ -157,12 +153,10 @@ void Dice::Refresh() {
 void Dice::Roll() {
   uint8_t resultIndividual;
   uint16_t resultTotal = 0;
-  std::uniform_int_distribution<> distrib(1, dCounter.GetValue());
-
   lv_label_set_text(resultIndividualLabel, "");
 
   if (nCounter.GetValue() == 1) {
-    resultTotal = distrib(gen);
+    resultTotal = rng(dCounter.GetValue()) + 1;
     if (dCounter.GetValue() == 2) {
       switch (resultTotal) {
         case 1:
@@ -175,7 +169,7 @@ void Dice::Roll() {
     }
   } else {
     for (uint8_t i = 0; i < nCounter.GetValue(); i++) {
-      resultIndividual = distrib(gen);
+      resultIndividual = rng(dCounter.GetValue()) + 1;
       resultTotal += resultIndividual;
       lv_label_ins_text(resultIndividualLabel, LV_LABEL_POS_LAST, std::to_string(resultIndividual).c_str());
       if (i < (nCounter.GetValue() - 1)) {
