@@ -38,12 +38,15 @@ namespace {
 void MotionController::AdvanceDay() {
   --nbSteps; // Higher index = further in the past
   SetSteps(Days::Today, 0);
+  carrySteps = 0;
   if (service != nullptr) {
     service->OnNewStepCountValue(NbSteps(Days::Today));
   }
 }
 
 void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
+  // Offset the sensor value by whatever we are carrying forward
+  nbSteps += carrySteps;
   uint32_t oldSteps = NbSteps(Days::Today);
   if (oldSteps != nbSteps && service != nullptr) {
     service->OnNewStepCountValue(nbSteps);
@@ -159,4 +162,10 @@ void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
       this->deviceType = DeviceTypes::Unknown;
       break;
   }
+}
+
+void MotionController::Restore(uint32_t carrySteps, uint32_t carryTripSteps) {
+  this->carrySteps = carrySteps;
+  SetSteps(Days::Today, carrySteps);
+  currentTripSteps = carryTripSteps;
 }
