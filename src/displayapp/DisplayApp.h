@@ -81,6 +81,7 @@ namespace Pinetime {
       void Register(Pinetime::Controllers::SimpleWeatherService* weatherService);
       void Register(Pinetime::Controllers::MusicService* musicService);
       void Register(Pinetime::Controllers::NavigationService* NavigationService);
+      void Register(Pinetime::Controllers::HomeService* homeService);
 
     private:
       Pinetime::Drivers::St7789& lcd;
