@@ -42,3 +42,4 @@ InfiniTime has 9 watch faces on the `main` branch at the time of writing.
 
 ### Legend
 ![Legend face](/doc/gettingStarted/Watchfaces/Legend.png)
+    - The amber dot in top-left corner is a notification indicator. The red or blue line indicates that notifications are muted.
