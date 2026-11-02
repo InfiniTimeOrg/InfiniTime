@@ -43,7 +43,7 @@ void StatusIcons::Update() {
     batteryIcon.SetBatteryPercentage(batteryPercent);
   }
 
-  alarmEnabled = alarmController.IsEnabled();
+  alarmEnabled = alarmController.AnyAlarmEnabled();
   if (alarmEnabled.IsUpdated()) {
     lv_obj_set_hidden(alarmIcon, !alarmEnabled.Get());
   }

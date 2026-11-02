@@ -166,7 +166,7 @@ void WatchFaceLegend::Refresh() {
   }
 
   // ---- Services (Alarm, Timer, StopWatch) ----
-  alarmEnabled = alarmController.IsEnabled();
+  alarmEnabled = alarmController.AnyAlarmEnabled();
   timerRunning = timerController.IsRunning();
   stopWatchRunning = stopWatchController.IsRunning();
   if (alarmEnabled.IsUpdated() || timerRunning.IsUpdated() || stopWatchRunning.IsUpdated()) {
