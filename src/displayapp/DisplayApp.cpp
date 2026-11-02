@@ -396,7 +396,7 @@ void DisplayApp::Refresh() {
         break;
       case Messages::ShowPairingKey:
         LoadNewScreen(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
-        motorController.RunForDuration(35);
+        motorController.Buzz(Controllers::MotorController::Intensity::Light);
         break;
       case Messages::TouchEvent: {
         if (state != States::Running) {
@@ -485,7 +485,7 @@ void DisplayApp::Refresh() {
         break;
       case Messages::Chime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
-        motorController.RunForDuration(35);
+        motorController.Ring(Controllers::MotorController::Intensity::Light, pdMS_TO_TICKS(200), 2);
         break;
     }
   }
