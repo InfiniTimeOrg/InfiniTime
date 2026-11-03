@@ -49,7 +49,7 @@ Since those resources are not part of the firmware, they need to be flashed and 
 Resources are packaged into a single .zip file named `infinitime-resources-x.y.z.zip` (where `x`, `y` and `z` are the version numbers of InfiniTime). 
 You can use the companion app of your choice to flash the resources.
 
-**Note: at the time of writing this page, [Amazfish](https://github.com/piggz/harbour-amazfish) and [ITD](https://git.elara.ws/Elara6331/itd) have already integrated this functionality. Other companion apps will hopefully implement it soon!*
+**Note: at the time of writing this page, [Amazfish](https://github.com/piggz/harbour-amazfish), [ITD](https://git.elara.ws/Elara6331/itd) and [Gadgetbridge](https://gadgetbridge.org/) have already integrated this functionality. Other companion apps will hopefully implement it soon!*
 
 ## Amazfish
 Use the `Download file` functionality of Amazfish. 
@@ -71,3 +71,6 @@ itctl res load infinitime-resources-1.10.0.zip
 Example:
 
 ![Update resources using itctl](itd-external-resources.png)
+
+## Gadgetbridge
+To update resources use the [updating with Gadgetbridge](/doc/gettingStarted/ota-gadgetbridge.md) procedure without the firmware validation step. During the update there will be no progress bar on the watch, but its screen will turn on and stay on. InfiniTime does not need to be rebooted after updating the resources.
