@@ -119,6 +119,7 @@ namespace Pinetime {
 
       enum class States : uint8_t { Idle, Init, Start, Data, Validate, Validated };
       States state = States::Idle;
+      bool strayPacketReported = false;
 
       enum class ImageTypes : uint8_t {
         NoImage = 0x00,
@@ -160,6 +161,7 @@ namespace Pinetime {
       int SendDfuRevision(os_mbuf* om) const;
       int WritePacketHandler(uint16_t connectionHandle, os_mbuf* om);
       int ControlPointHandler(uint16_t connectionHandle, os_mbuf* om);
+      void SendInvalidState(uint16_t connectionHandle, Opcodes opcode);
 
       TimerHandle_t timeoutTimer;
     };
