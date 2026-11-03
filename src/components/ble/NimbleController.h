@@ -81,9 +81,14 @@ namespace Pinetime {
       void EnableRadio();
       void DisableRadio();
 
+      void AddCharacteristicSecurity(const struct ble_gatt_svc_def* svcs);
+      bool IsConnSecurityOK();
+
     private:
       void PersistBond(struct ble_gap_conn_desc& desc);
       void RestoreBond();
+      void RandomizeOurIRK();
+      void ClearBonds();
 
       static constexpr const char* deviceName = "InfiniTime";
       Pinetime::System::SystemTask& systemTask;

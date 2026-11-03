@@ -1,12 +1,10 @@
 #pragma once
 
-#include <array>
 #include <cstdint>
 #include <lvgl/lvgl.h>
 
-#include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
-#include "displayapp/screens/CheckboxList.h"
+#include "displayapp/screens/ScreenList.h"
 
 namespace Pinetime {
 
@@ -18,10 +16,15 @@ namespace Pinetime {
         SettingBluetooth(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingBluetooth() override;
 
+        bool OnTouchEvent(TouchEvents event) override;
+
       private:
         DisplayApp* app;
         Pinetime::Controllers::Settings& settings;
-        CheckboxList checkboxList;
+
+        ScreenList<2> screens;
+        std::unique_ptr<Screen> screenBluetoothMain();
+        std::unique_ptr<Screen> screenBluetoothSecurity();
       };
     }
   }

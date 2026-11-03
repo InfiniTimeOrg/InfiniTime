@@ -114,6 +114,9 @@ void SystemTask::Work() {
 
   fs.Init();
 
+  // Settings controller is needed by NimbleController
+  settingsController.Init();
+
   nimbleController.Init();
 
   twiMaster.Init();
@@ -137,7 +140,6 @@ void SystemTask::Work() {
 
   motionSensor.Init();
   motionController.Init(motionSensor.DeviceType());
-  settingsController.Init();
 
   displayApp.Register(this);
   displayApp.Register(&nimbleController.weather());
@@ -371,6 +373,14 @@ void SystemTask::Work() {
             nimbleController.EnableRadio();
           } else {
             nimbleController.DisableRadio();
+          }
+          break;
+        case Messages::BleAllowPairingToggle:
+          if (settingsController.GetBleRadioEnabled() && settingsController.GetBleSecured() &&
+              (!bleController.IsConnected() || settingsController.GetBlePairingAllowed())) {
+            nimbleController.DisableRadio();
+            vTaskDelay(pdMS_TO_TICKS(250));
+            nimbleController.EnableRadio();
           }
           break;
         default:

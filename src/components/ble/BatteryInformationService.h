@@ -12,10 +12,11 @@ namespace Pinetime {
 
   namespace Controllers {
     class Battery;
+    class NimbleController;
 
     class BatteryInformationService {
     public:
-      BatteryInformationService(Controllers::Battery& batteryController);
+      BatteryInformationService(Controllers::NimbleController& nimble, Controllers::Battery& batteryController);
       void Init();
 
       int OnBatteryServiceRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context);
@@ -23,6 +24,7 @@ namespace Pinetime {
 
     private:
       Controllers::Battery& batteryController;
+      Controllers::NimbleController& nimble;
       static constexpr uint16_t batteryInformationServiceId {0x180F};
       static constexpr uint16_t batteryLevelId {0x2A19};
 

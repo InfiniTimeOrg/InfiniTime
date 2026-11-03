@@ -11,9 +11,11 @@
 
 namespace Pinetime {
   namespace Controllers {
+    class NimbleController;
+
     class CurrentTimeService {
     public:
-      CurrentTimeService(DateTime& dateTimeController);
+      CurrentTimeService(NimbleController& nimble, DateTime& dateTimeController);
       void Init();
 
       int OnCurrentTimeServiceAccessed(struct ble_gatt_access_ctxt* ctxt);
@@ -52,6 +54,7 @@ namespace Pinetime {
       } CtsLocalTimeData;
 
       DateTime& m_dateTimeController;
+      NimbleController& nimble;
     };
   }
 }

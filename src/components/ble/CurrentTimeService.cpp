@@ -1,4 +1,5 @@
 #include "components/ble/CurrentTimeService.h"
+#include "components/ble/NimbleController.h"
 #include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
@@ -24,6 +25,8 @@ int CurrentTimeService::OnCurrentTimeServiceAccessed(struct ble_gatt_access_ctxt
 }
 
 void CurrentTimeService::Init() {
+  nimble.AddCharacteristicSecurity(serviceDefinition);
+
   int res;
   res = ble_gatts_count_cfg(serviceDefinition);
   ASSERT(res == 0);
@@ -97,7 +100,7 @@ int CurrentTimeService::OnLocalTimeAccessed(struct ble_gatt_access_ctxt* ctxt) {
   return 0;
 }
 
-CurrentTimeService::CurrentTimeService(DateTime& dateTimeController)
+CurrentTimeService::CurrentTimeService(NimbleController& nimble, DateTime& dateTimeController)
   : characteristicDefinition {
 
                               {.uuid = &ctsLtChrUuid.u,
@@ -118,5 +121,6 @@ CurrentTimeService::CurrentTimeService(DateTime& dateTimeController)
        .characteristics = characteristicDefinition},
       {0},
     },
-    m_dateTimeController {dateTimeController} {
+    m_dateTimeController {dateTimeController},
+    nimble{nimble} {
 }
