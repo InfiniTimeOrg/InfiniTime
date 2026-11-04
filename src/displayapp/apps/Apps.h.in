@@ -23,6 +23,7 @@ namespace Pinetime {
       Twos,
       HeartRate,
       Navigation,
+      Calendar,
       StopWatch,
       Metronome,
       Motion,
