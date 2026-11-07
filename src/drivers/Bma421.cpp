@@ -85,7 +85,7 @@ void Bma421::Init() {
     return;
 
   accel_conf.odr = BMA4_OUTPUT_DATA_RATE_100HZ;
-  accel_conf.range = BMA4_ACCEL_RANGE_2G;
+  accel_conf.range = BMA4_ACCEL_RANGE_8G;
   accel_conf.bandwidth = BMA4_ACCEL_NORMAL_AVG4;
   accel_conf.perf_mode = BMA4_CIC_AVG_MODE;
   ret = bma4_set_accel_config(&accel_conf, &bma);
