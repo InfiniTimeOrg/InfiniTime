@@ -14,6 +14,7 @@ namespace Pinetime {
 
   namespace Controllers {
     class HeartRateController;
+    class Battery;
   }
 
   namespace Applications {
@@ -23,6 +24,7 @@ namespace Pinetime {
 
       explicit HeartRateTask(Drivers::Hrs3300& heartRateSensor,
                              Controllers::HeartRateController& controller,
+                             Controllers::Battery& battery,
                              Controllers::Settings& settings);
       void Start();
       void Work();
@@ -47,6 +49,7 @@ namespace Pinetime {
       uint16_t count;
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
+      Controllers::Battery& battery;
       Controllers::Settings& settings;
       Controllers::Ppg ppg;
       TickType_t lastMeasurementTime;
