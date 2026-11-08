@@ -219,8 +219,8 @@ void SystemTask::Work() {
           GoToSleep();
           break;
         case Messages::OnNewTime:
-          if (alarmController.IsEnabled()) {
-            alarmController.ScheduleAlarm();
+          if (alarmController.AnyAlarmEnabled()) {
+            alarmController.ScheduleNextAlarm();
           }
           break;
         case Messages::OnNewNotification:
