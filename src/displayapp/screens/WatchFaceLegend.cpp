@@ -107,42 +107,48 @@ WatchFaceLegend::WatchFaceLegend(Controllers::DateTime& dateTimeController,
   lv_obj_align(divider, nullptr, LV_ALIGN_IN_TOP_LEFT, 4, 177);
 
   // ---- Bottom row --------------------------------------------------
-  stepValue = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorSecondary);
-  lv_label_set_text_static(stepValue, "0");
-  lv_obj_align(stepValue, nullptr, LV_ALIGN_IN_TOP_LEFT, 4, 186);
+  if (settingsController.IsWidgetOn(Pinetime::Controllers::Settings::Widget::Steps)) {
+    stepValue = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorSecondary);
+    lv_label_set_text_static(stepValue, "0");
+    lv_obj_align(stepValue, nullptr, LV_ALIGN_IN_TOP_LEFT, 4, 186);
 
-  stepCaption = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(stepCaption, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorCaption);
-  lv_label_set_text_static(stepCaption, "steps");
-  lv_obj_align(stepCaption, nullptr, LV_ALIGN_IN_TOP_LEFT, 4, 210);
+    stepCaption = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_color(stepCaption, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorCaption);
+    lv_label_set_text_static(stepCaption, "steps");
+    lv_obj_align(stepCaption, nullptr, LV_ALIGN_IN_TOP_LEFT, 4, 210);
+  }
 
-  heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorSecondary);
-  lv_label_set_text_static(heartbeatValue, "--");
-  lv_obj_align(heartbeatValue, nullptr, LV_ALIGN_IN_TOP_LEFT, 100, 186);
+  if (settingsController.IsWidgetOn(Pinetime::Controllers::Settings::Widget::HeartRate)) {
+    heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorSecondary);
+    lv_label_set_text_static(heartbeatValue, "--");
+    lv_obj_align(heartbeatValue, nullptr, LV_ALIGN_IN_TOP_LEFT, 100, 186);
 
-  heartbeatCaption = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(heartbeatCaption, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorCaption);
-  lv_label_set_text_static(heartbeatCaption, "BPM");
-  lv_obj_align(heartbeatCaption, nullptr, LV_ALIGN_IN_TOP_LEFT, 100, 210);
+    heartbeatCaption = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_color(heartbeatCaption, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorCaption);
+    lv_label_set_text_static(heartbeatCaption, "BPM");
+    lv_obj_align(heartbeatCaption, nullptr, LV_ALIGN_IN_TOP_LEFT, 100, 210);
+  }
 
-  weatherValue = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(weatherValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorSecondary);
-  lv_label_set_text_static(weatherValue, "--");
-  lv_obj_align(weatherValue, nullptr, LV_ALIGN_IN_TOP_LEFT, 188, 186);
+  if (settingsController.IsWidgetOn(Pinetime::Controllers::Settings::Widget::Weather)) {
+    weatherValue = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_color(weatherValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorSecondary);
+    lv_label_set_text_static(weatherValue, "--");
+    lv_obj_align(weatherValue, nullptr, LV_ALIGN_IN_TOP_LEFT, 188, 186);
 
-  weatherCaption = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(weatherCaption, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorCaption);
-  lv_label_set_text_static(weatherCaption, "\xC2\xB0");
-  lv_obj_align(weatherCaption, nullptr, LV_ALIGN_IN_TOP_LEFT, 188, 210);
+    weatherCaption = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_color(weatherCaption, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorCaption);
+    lv_label_set_text_static(weatherCaption, "\xC2\xB0");
+    lv_obj_align(weatherCaption, nullptr, LV_ALIGN_IN_TOP_LEFT, 188, 210);
 
-  weatherIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorSecondary);
-  lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
-  lv_label_set_text_static(weatherIcon, "");
-  lv_obj_align(weatherIcon, weatherValue, LV_ALIGN_OUT_LEFT_BOTTOM, -5, 12);
-  lv_obj_set_auto_realign(weatherIcon, true);
+    weatherIcon = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, colorSecondary);
+    lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
+    lv_label_set_text_static(weatherIcon, "");
+    lv_obj_align(weatherIcon, weatherValue, LV_ALIGN_OUT_LEFT_BOTTOM, -5, 12);
+    lv_obj_set_auto_realign(weatherIcon, true);
+  }
 
   Refresh();
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
@@ -252,80 +258,86 @@ void WatchFaceLegend::Refresh() {
   }
 
   // ---- Steps ----
-  stepCount = motionController.NbSteps();
-  if (stepCount.IsUpdated()) {
-    lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
+  if (settingsController.IsWidgetOn(Pinetime::Controllers::Settings::Widget::Steps)) {
+    stepCount = motionController.NbSteps();
+    if (stepCount.IsUpdated()) {
+      lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
+    }
   }
 
   // ---- Heart rate ----
-  heartbeat = heartRateController.HeartRate();
-  heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
-  if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
-    if (heartbeatRunning.Get()) {
-      lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());
-    } else {
-      lv_label_set_text_static(heartbeatValue, "--");
+  if (settingsController.IsWidgetOn(Pinetime::Controllers::Settings::Widget::HeartRate)) {
+    heartbeat = heartRateController.HeartRate();
+    heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
+    if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
+      if (heartbeatRunning.Get()) {
+        lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());
+      } else {
+        lv_label_set_text_static(heartbeatValue, "--");
+      }
     }
   }
 
   // ---- Weather ----
-  currentWeather = weatherService.Current();
-  if (currentWeather.IsUpdated()) {
-    if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
-      lv_label_set_text_static(weatherCaption,
-                               "\xC2\xB0"
-                               "F");
-    } else {
-      lv_label_set_text_static(weatherCaption,
-                               "\xC2\xB0"
-                               "C");
-    }
-
-    auto optCurrentWeather = currentWeather.Get();
-    if (optCurrentWeather) {
-      int16_t temp;
+  if (settingsController.IsWidgetOn(Pinetime::Controllers::Settings::Widget::Weather)) {
+    currentWeather = weatherService.Current();
+    if (currentWeather.IsUpdated()) {
       if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
-        temp = optCurrentWeather->temperature.Fahrenheit();
+        lv_label_set_text_static(weatherCaption,
+                                 "\xC2\xB0"
+                                 "F");
       } else {
-        temp = optCurrentWeather->temperature.Celsius();
+        lv_label_set_text_static(weatherCaption,
+                                 "\xC2\xB0"
+                                 "C");
       }
-      if (temp > -100) {
-        lv_label_set_text_fmt(weatherValue, "%d", temp);
+
+      auto optCurrentWeather = currentWeather.Get();
+      if (optCurrentWeather) {
+        int16_t temp;
+        if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
+          temp = optCurrentWeather->temperature.Fahrenheit();
+        } else {
+          temp = optCurrentWeather->temperature.Celsius();
+        }
+        if (temp > -100) {
+          lv_label_set_text_fmt(weatherValue, "%d", temp);
+        } else {
+          lv_label_set_text_static(weatherValue, "--");
+        }
+
+        lv_color_t color;
+        switch (optCurrentWeather->iconId) {
+          case Controllers::SimpleWeatherService::Icons::Sun:
+            color = colorWeatherYellow;
+            break;
+          case Controllers::SimpleWeatherService::Icons::Snow:
+          case Controllers::SimpleWeatherService::Icons::Thunderstorm:
+            color = colorWeatherLightBlue;
+            break;
+          default:
+            color = colorWeatherDefault;
+            break;
+        }
+        lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color);
+        lv_label_set_text_static(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId, weatherService.IsNight()));
+
+        if (!weatherDisplayed) { // adjust the layout when necessary
+          lv_obj_align(weatherValue, nullptr, LV_ALIGN_IN_TOP_LEFT, 200, 186);
+          lv_obj_align(weatherCaption, nullptr, LV_ALIGN_IN_TOP_LEFT, 200, 210);
+          lv_obj_align(weatherIcon, weatherValue, LV_ALIGN_OUT_LEFT_BOTTOM, -5, 12);
+          weatherDisplayed = true;
+        }
       } else {
         lv_label_set_text_static(weatherValue, "--");
-      }
+        lv_label_set_text_static(weatherIcon, "");
 
-      lv_color_t color;
-      switch (optCurrentWeather->iconId) {
-        case Controllers::SimpleWeatherService::Icons::Sun:
-          color = colorWeatherYellow;
-          break;
-        case Controllers::SimpleWeatherService::Icons::Snow:
-        case Controllers::SimpleWeatherService::Icons::Thunderstorm:
-          color = colorWeatherLightBlue;
-          break;
-        default:
-          color = colorWeatherDefault;
-          break;
-      }
-      lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color);
-      lv_label_set_text_static(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId, weatherService.IsNight()));
-
-      if (!weatherDisplayed) { // adjust the layout when necessary
-        lv_obj_align(weatherValue, nullptr, LV_ALIGN_IN_TOP_LEFT, 200, 186);
-        lv_obj_align(weatherCaption, nullptr, LV_ALIGN_IN_TOP_LEFT, 200, 210);
-        lv_obj_align(weatherIcon, weatherValue, LV_ALIGN_OUT_LEFT_BOTTOM, -5, 12);
-        weatherDisplayed = true;
-      }
-    } else {
-      lv_label_set_text_static(weatherValue, "--");
-      lv_label_set_text_static(weatherIcon, "");
-
-      if (weatherDisplayed) { // adjust the layout when necessary
-        lv_obj_align(weatherValue, nullptr, LV_ALIGN_IN_TOP_LEFT, 188, 186);
-        lv_obj_align(weatherCaption, nullptr, LV_ALIGN_IN_TOP_LEFT, 188, 210);
-        lv_obj_align(weatherIcon, weatherValue, LV_ALIGN_OUT_LEFT_BOTTOM, -5, 12);
-        weatherDisplayed = false;
+        if (weatherDisplayed) { // adjust the layout when necessary
+          lv_obj_align(weatherValue, nullptr, LV_ALIGN_IN_TOP_LEFT, 188, 186);
+          lv_obj_align(weatherCaption, nullptr, LV_ALIGN_IN_TOP_LEFT, 188, 210);
+          lv_obj_align(weatherIcon, weatherValue, LV_ALIGN_OUT_LEFT_BOTTOM, -5, 12);
+          weatherDisplayed = false;
+        }
       }
     }
   }
