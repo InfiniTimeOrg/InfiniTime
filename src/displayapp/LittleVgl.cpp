@@ -15,41 +15,79 @@ namespace {
     lv_theme_set_act(theme);
   }
 
+  constexpr lv_fs_res_t MapError(int err) {
+    switch (err) {
+      case LFS_ERR_OK:
+        return LV_FS_RES_OK;
+      case LFS_ERR_IO:
+        return LV_FS_RES_HW_ERR;
+      case LFS_ERR_CORRUPT:
+        return LV_FS_RES_FS_ERR;
+      case LFS_ERR_NOENT:
+        return LV_FS_RES_NOT_EX;
+      case LFS_ERR_EXIST:
+        return LV_FS_RES_FS_ERR;
+      case LFS_ERR_NOTDIR:
+        return LV_FS_RES_FS_ERR;
+      case LFS_ERR_ISDIR:
+        return LV_FS_RES_FS_ERR;
+      case LFS_ERR_NOTEMPTY:
+        return LV_FS_RES_FS_ERR;
+      case LFS_ERR_BADF:
+        return LV_FS_RES_INV_PARAM;
+      case LFS_ERR_FBIG:
+        return LV_FS_RES_FULL;
+      case LFS_ERR_INVAL:
+        return LV_FS_RES_INV_PARAM;
+      case LFS_ERR_NOSPC:
+        return LV_FS_RES_FULL;
+      case LFS_ERR_NOMEM:
+        return LV_FS_RES_OUT_OF_MEM;
+      case LFS_ERR_NOATTR:
+        return LV_FS_RES_UNKNOWN;
+      case LFS_ERR_NAMETOOLONG:
+        return LV_FS_RES_INV_PARAM;
+      default:
+        return LV_FS_RES_UNKNOWN;
+    }
+  }
+
   lv_fs_res_t lvglOpen(lv_fs_drv_t* drv, void* file_p, const char* path, lv_fs_mode_t /*mode*/) {
     lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
     Pinetime::Controllers::FS* filesys = static_cast<Pinetime::Controllers::FS*>(drv->user_data);
     int res = filesys->FileOpen(file, path, LFS_O_RDONLY);
-    if (res == 0) {
-      if (file->type == 0) {
-        return LV_FS_RES_FS_ERR;
-      } else {
-        return LV_FS_RES_OK;
-      }
-    }
-    return LV_FS_RES_NOT_EX;
+    return MapError(res);
   }
 
   lv_fs_res_t lvglClose(lv_fs_drv_t* drv, void* file_p) {
     Pinetime::Controllers::FS* filesys = static_cast<Pinetime::Controllers::FS*>(drv->user_data);
     lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
-    filesys->FileClose(file);
-
-    return LV_FS_RES_OK;
+    int res = filesys->FileClose(file);
+    return MapError(res);
   }
 
   lv_fs_res_t lvglRead(lv_fs_drv_t* drv, void* file_p, void* buf, uint32_t btr, uint32_t* br) {
     Pinetime::Controllers::FS* filesys = static_cast<Pinetime::Controllers::FS*>(drv->user_data);
     lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
-    filesys->FileRead(file, static_cast<uint8_t*>(buf), btr);
-    *br = btr;
-    return LV_FS_RES_OK;
+    int res = filesys->FileRead(file, static_cast<uint8_t*>(buf), btr);
+    if (res >= 0) {
+      // br (bytes read) is allowed to be null
+      if (br != nullptr) {
+        *br = res;
+      }
+      return LV_FS_RES_OK;
+    }
+    return MapError(res);
   }
 
   lv_fs_res_t lvglSeek(lv_fs_drv_t* drv, void* file_p, uint32_t pos) {
     Pinetime::Controllers::FS* filesys = static_cast<Pinetime::Controllers::FS*>(drv->user_data);
     lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
-    filesys->FileSeek(file, pos);
-    return LV_FS_RES_OK;
+    int res = filesys->FileSeek(file, pos);
+    if (res >= 0) {
+      return LV_FS_RES_OK;
+    }
+    return MapError(res);
   }
 }
 
