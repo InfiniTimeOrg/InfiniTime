@@ -20,6 +20,13 @@ namespace {
       screen->ToggleAlwaysOn();
     }
   }
+
+  void MotionAutoBrightEventHandler(lv_obj_t* obj, lv_event_t event) {
+    if (event == LV_EVENT_VALUE_CHANGED) {
+      auto* screen = static_cast<SettingDisplay*>(obj->user_data);
+      screen->ToggleMotionAutoBright();
+    }
+  }
 }
 
 constexpr std::array<uint16_t, 6> SettingDisplay::options;
@@ -64,11 +71,18 @@ SettingDisplay::SettingDisplay(Pinetime::Controllers::Settings& settingsControll
   }
 
   alwaysOnCheckbox = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text(alwaysOnCheckbox, "Always On");
+  lv_checkbox_set_text(alwaysOnCheckbox, "AOD");
   lv_checkbox_set_checked(alwaysOnCheckbox, settingsController.GetAlwaysOnDisplaySetting());
   lv_obj_add_state(alwaysOnCheckbox, LV_STATE_DEFAULT);
   alwaysOnCheckbox->user_data = this;
   lv_obj_set_event_cb(alwaysOnCheckbox, AlwaysOnEventHandler);
+
+  motionAutoBrightCheckbox = lv_checkbox_create(container1, nullptr);
+  lv_checkbox_set_text(motionAutoBrightCheckbox, "MAB");
+  lv_checkbox_set_checked(motionAutoBrightCheckbox, settingsController.GetMotionAutoBrightSetting());
+  lv_obj_add_state(motionAutoBrightCheckbox, LV_STATE_DEFAULT);
+  motionAutoBrightCheckbox->user_data = this;
+  lv_obj_set_event_cb(motionAutoBrightCheckbox, MotionAutoBrightEventHandler);
 }
 
 SettingDisplay::~SettingDisplay() {
@@ -79,6 +93,11 @@ SettingDisplay::~SettingDisplay() {
 void SettingDisplay::ToggleAlwaysOn() {
   settingsController.SetAlwaysOnDisplaySetting(!settingsController.GetAlwaysOnDisplaySetting());
   lv_checkbox_set_checked(alwaysOnCheckbox, settingsController.GetAlwaysOnDisplaySetting());
+}
+
+void SettingDisplay::ToggleMotionAutoBright() {
+  settingsController.SetMotionAutoBrightSetting(!settingsController.GetMotionAutoBrightSetting());
+  lv_checkbox_set_checked(motionAutoBrightCheckbox, settingsController.GetMotionAutoBrightSetting());
 }
 
 void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
