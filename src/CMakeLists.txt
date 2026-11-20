@@ -432,6 +432,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/WatchFaceNumerals.cpp
         displayapp/screens/WatchFacePrideFlag.cpp
         displayapp/screens/WatchFaceLegend.cpp
+        displayapp/screens/WatchFaceBinary.cpp
 
         ##
 
