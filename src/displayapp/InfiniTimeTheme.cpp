@@ -1,5 +1,8 @@
 #include "displayapp/InfiniTimeTheme.h"
+#include <libraries/log/nrf_log.h>
+#include "components/fs/FS.h"
 #include <algorithm>
+#include <cstring>
 
 // Replace LV_DPX with a constexpr version using a constant LV_DPI
 #undef LV_DPX
@@ -10,6 +13,184 @@ namespace {
       return 0;
     }
     return std::max(((LV_DPI * n + 80) / 160), 1); /*+80 for rounding*/
+  }
+
+  /**
+   * Parse hex color string (RRGGBB format) to lv_color_t
+   * Returns the parsed color or defaultColor if parsing fails
+   */
+  lv_color_t parseHexColor(const char* hexStr, lv_color_t defaultColor) {
+    if (!hexStr || std::strlen(hexStr) < 6) {
+      return defaultColor;
+    }
+
+    char* endptr;
+    uint32_t value = std::strtoul(hexStr, &endptr, 16);
+
+    // Check if conversion was successful and we consumed all characters
+    if (endptr == hexStr || *endptr != '\0' || value > 0xFFFFFF) {
+      return defaultColor;
+    }
+
+    uint8_t r = (value >> 16) & 0xFF;
+    uint8_t g = (value >> 8) & 0xFF;
+    uint8_t b = value & 0xFF;
+
+    lv_color_t result = LV_COLOR_MAKE(r, g, b);
+
+    return result;
+  }
+
+  /**
+   * Parse a configuration line in format: KEY=VALUE
+   * Lines starting with # are treated as comments
+   * Returns true if the line was successfully parsed
+   */
+  bool parseLine(const char* line, char* key, char* value, size_t maxKeyLen, size_t maxValueLen) {
+    // Skip whitespace and comments
+    while (*line == ' ' || *line == '\t') {
+      line++;
+    }
+    if (*line == '#' || *line == '\0' || *line == '\n' || *line == '\r') {
+      return false;
+    }
+
+    // Parse key
+    size_t keyLen = 0;
+    while (*line != '=' && *line != '\0' && *line != '\n' && keyLen < maxKeyLen - 1) {
+      char c = *line++;
+      // Trim trailing whitespace from key
+      if (c != ' ' && c != '\t') {
+        key[keyLen++] = c;
+      } else if (keyLen > 0 && key[keyLen - 1] != ' ') {
+        key[keyLen++] = c;
+      }
+    }
+
+    // Trim trailing whitespace from key
+    while (keyLen > 0 && (key[keyLen - 1] == ' ' || key[keyLen - 1] == '\t')) {
+      keyLen--;
+    }
+
+    key[keyLen] = '\0';
+
+    if (*line != '=' || keyLen == 0) {
+      return false;
+    }
+    line++; // Skip '='
+
+    // Skip leading whitespace in value
+    while (*line == ' ' || *line == '\t') {
+      line++;
+    }
+
+    // Parse value
+    size_t valueLen = 0;
+    while (*line != '\0' && *line != '\n' && *line != '\r' && valueLen < maxValueLen - 1) {
+      value[valueLen++] = *line++;
+    }
+    value[valueLen] = '\0';
+
+    return true;
+  }
+
+  /**
+   * Load colors from /themes/theme.cfg file in LittleFS
+   * File format:
+   * # This is a comment
+   * bg=5D697E
+   * accent=383838
+   * accent_dark=181818
+   * highlight=00B000
+   * color_primary=FFFFFF
+   * color_secondary=808080
+   */
+  void loadThemeConfig(Pinetime::Controllers::FS* filesystem) {
+    if (!filesystem) {
+      return;
+    }
+
+    lfs_file_t file;
+    if (filesystem->FileOpen(&file, "/themes/theme.cfg", LFS_O_RDONLY) != LFS_ERR_OK) {
+      NRF_LOG_INFO("loadThemeConfig: Failed to open /themes/theme.cfg");
+      return;
+    }
+
+    // Read the entire file into a buffer (reasonable limit for config file)
+    constexpr size_t maxConfigSize = 1024;
+    uint8_t buffer[maxConfigSize];
+    lfs_ssize_t bytesRead = filesystem->FileRead(&file, buffer, maxConfigSize - 1);
+    filesystem->FileClose(&file);
+
+    if (bytesRead <= 0) {
+      return;
+    }
+
+    buffer[bytesRead] = '\0';
+    const char* configData = reinterpret_cast<const char*>(buffer);
+
+    // Parse the configuration file line by line
+    char line[256];
+    char key[64];
+    char value[64];
+    size_t lineStart = 0;
+
+    while (lineStart < static_cast<size_t>(bytesRead)) {
+      size_t lineEnd = lineStart;
+      // Find the end of the line
+      while (lineEnd < static_cast<size_t>(bytesRead) && configData[lineEnd] != '\n') {
+        lineEnd++;
+      }
+
+      size_t lineLen = lineEnd - lineStart;
+      if (lineLen >= sizeof(line)) {
+        lineLen = sizeof(line) - 1;
+      }
+
+      std::memcpy(line, &configData[lineStart], lineLen);
+      line[lineLen] = '\0';
+
+      if (parseLine(line, key, value, sizeof(key), sizeof(value))) {
+        if (std::strcmp(key, "accent_light") == 0) {
+          Colors::accent_light = parseHexColor(value, Colors::accent_light);
+        } else if (std::strcmp(key, "accent") == 0) {
+          Colors::accent = parseHexColor(value, Colors::accent);
+        } else if (std::strcmp(key, "accent_dark") == 0) {
+          Colors::accent_dark = parseHexColor(value, Colors::accent_dark);
+        } else if (std::strcmp(key, "highlight") == 0) {
+          Colors::highlight = parseHexColor(value, Colors::highlight);
+        } else if (std::strcmp(key, "text_primary") == 0) {
+          Colors::text_primary = parseHexColor(value, Colors::text_primary);
+        } else if (std::strcmp(key, "text_header") == 0) {
+          Colors::text_header = parseHexColor(value, Colors::text_header);
+        } else if (std::strcmp(key, "page_bg") == 0) {
+          Colors::page_bg = parseHexColor(value, Colors::page_bg);
+        } else if (std::strcmp(key, "icon") == 0) {
+          Colors::icon = parseHexColor(value, Colors::icon);
+        }
+      }
+
+      lineStart = lineEnd + 1; // Skip the newline character
+    }
+  }
+}
+
+static Pinetime::Controllers::FS* themeFilesystem = nullptr;
+
+// Helper function to recursively refresh styles of an object and all its children
+static void refresh_object_tree(lv_obj_t* obj) {
+  if (obj == nullptr) {
+    return;
+  }
+
+  // Refresh this object
+  lv_obj_refresh_style(obj, LV_OBJ_PART_ALL, LV_STYLE_PROP_ALL);
+
+  // Recursively refresh all children
+  lv_obj_t* child = lv_obj_get_child(obj, nullptr);
+  while (child != nullptr) {
+    refresh_object_tree(child);
+    child = lv_obj_get_child(obj, child);
   }
 }
 
@@ -54,7 +235,7 @@ static void style_init_reset(lv_style_t* style) {
 static void basic_init() {
   style_init_reset(&style_bg);
   lv_style_set_bg_opa(&style_bg, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_bg, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_style_set_bg_color(&style_bg, LV_STATE_DEFAULT, Colors::page_bg);
   lv_style_set_text_font(&style_bg, LV_STATE_DEFAULT, theme.font_normal);
 
   style_init_reset(&style_box);
@@ -63,24 +244,24 @@ static void basic_init() {
   lv_style_set_value_font(&style_box, LV_STATE_DEFAULT, theme.font_normal);
 
   style_init_reset(&style_label_white);
-  lv_style_set_text_color(&style_label_white, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_style_set_text_color(&style_label_white, LV_STATE_DEFAULT, Colors::text_primary);
   lv_style_set_text_color(&style_label_white, LV_STATE_DISABLED, LV_COLOR_GRAY);
 
   style_init_reset(&style_btn);
   lv_style_set_radius(&style_btn, LV_STATE_DEFAULT, 10);
   lv_style_set_bg_opa(&style_btn, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_btn, LV_STATE_DEFAULT, Colors::bg);
+  lv_style_set_bg_color(&style_btn, LV_STATE_DEFAULT, Colors::accent_light);
   lv_style_set_bg_color(&style_btn, LV_STATE_CHECKED, Colors::highlight);
-  lv_style_set_bg_color(&style_btn, LV_STATE_DISABLED, Colors::bgDark);
+  lv_style_set_bg_color(&style_btn, LV_STATE_DISABLED, Colors::accent_dark);
 
-  lv_style_set_text_color(&style_btn, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_style_set_text_color(&style_btn, LV_STATE_DEFAULT, Colors::text_primary);
   lv_style_set_text_color(&style_btn, LV_STATE_DISABLED, LV_COLOR_GRAY);
 
   lv_style_set_pad_all(&style_btn, LV_STATE_DEFAULT, LV_DPX(20));
   lv_style_set_pad_inner(&style_btn, LV_STATE_DEFAULT, LV_DPX(15));
 
   style_init_reset(&style_icon);
-  lv_style_set_text_color(&style_icon, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_style_set_text_color(&style_icon, LV_STATE_DEFAULT, Colors::text_primary);
 
   style_init_reset(&style_bar_indic);
   lv_style_set_bg_opa(&style_bar_indic, LV_STATE_DEFAULT, LV_OPA_COVER);
@@ -96,9 +277,9 @@ static void basic_init() {
   style_init_reset(&style_list_btn);
   lv_style_set_bg_opa(&style_list_btn, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_style_set_bg_color(&style_list_btn, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_style_set_text_color(&style_list_btn, LV_STATE_DEFAULT, Colors::bg);
+  lv_style_set_text_color(&style_list_btn, LV_STATE_DEFAULT, Colors::accent_light);
   lv_style_set_text_color(&style_list_btn, LV_STATE_CHECKED, LV_COLOR_WHITE);
-  lv_style_set_image_recolor(&style_list_btn, LV_STATE_DEFAULT, Colors::bg);
+  lv_style_set_image_recolor(&style_list_btn, LV_STATE_DEFAULT, Colors::accent_light);
   lv_style_set_image_recolor(&style_list_btn, LV_STATE_CHECKED, LV_COLOR_WHITE);
   lv_style_set_pad_left(&style_list_btn, LV_STATE_DEFAULT, LV_HOR_RES / 25);
   lv_style_set_pad_right(&style_list_btn, LV_STATE_DEFAULT, LV_HOR_RES / 25);
@@ -115,11 +296,11 @@ static void basic_init() {
 
   style_init_reset(&style_ddlist_selected);
   lv_style_set_bg_opa(&style_ddlist_selected, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_ddlist_selected, LV_STATE_DEFAULT, Colors::bg);
+  lv_style_set_bg_color(&style_ddlist_selected, LV_STATE_DEFAULT, Colors::accent_light);
 
   style_init_reset(&style_sw_bg);
   lv_style_set_bg_opa(&style_sw_bg, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_sw_bg, LV_STATE_DEFAULT, Colors::bg);
+  lv_style_set_bg_color(&style_sw_bg, LV_STATE_DEFAULT, Colors::accent_light);
   lv_style_set_radius(&style_sw_bg, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
 
   style_init_reset(&style_sw_indic);
@@ -143,12 +324,12 @@ static void basic_init() {
   lv_style_set_pad_all(&style_slider_knob, LV_STATE_PRESSED, 14);
 
   style_init_reset(&style_arc_indic);
-  lv_style_set_line_color(&style_arc_indic, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_style_set_line_color(&style_arc_indic, LV_STATE_DEFAULT, Colors::accent_light);
   lv_style_set_line_width(&style_arc_indic, LV_STATE_DEFAULT, LV_DPX(25));
   lv_style_set_line_rounded(&style_arc_indic, LV_STATE_DEFAULT, true);
 
   style_init_reset(&style_arc_bg);
-  lv_style_set_line_color(&style_arc_bg, LV_STATE_DEFAULT, Colors::bg);
+  lv_style_set_line_color(&style_arc_bg, LV_STATE_DEFAULT, Colors::accent_dark);
   lv_style_set_line_width(&style_arc_bg, LV_STATE_DEFAULT, LV_DPX(25));
   lv_style_set_line_rounded(&style_arc_bg, LV_STATE_DEFAULT, true);
   lv_style_set_pad_all(&style_arc_bg, LV_STATE_DEFAULT, LV_DPX(5));
@@ -206,18 +387,18 @@ static void basic_init() {
 
 /**
  * Initialize the default
- * @param color_primary the primary color of the theme
- * @param color_secondary the secondary color for the theme
- * @param flags ORed flags starting with `LV_THEME_DEF_FLAG_...`
- * @param font_small pointer to a small font
- * @param font_normal pointer to a normal font
- * @param font_subtitle pointer to a large font
- * @param font_title pointer to a extra large font
  * @return a pointer to reference this theme later
  */
-lv_theme_t* lv_pinetime_theme_init() {
-  theme.color_primary = LV_COLOR_WHITE;
-  theme.color_secondary = LV_COLOR_GRAY;
+lv_theme_t* lv_pinetime_theme_init(Pinetime::Controllers::FS* filesystem) {
+
+  // Set the filesystem pointer if provided
+  if (filesystem != nullptr) {
+    themeFilesystem = filesystem;
+    loadThemeConfig(filesystem);
+  }
+
+  theme.color_primary = Colors::text_primary;
+  theme.color_secondary = Colors::text_header;
   theme.font_small = &jetbrains_mono_bold_20;
   theme.font_normal = &jetbrains_mono_bold_20;
   theme.font_subtitle = &jetbrains_mono_bold_20;
@@ -231,6 +412,36 @@ lv_theme_t* lv_pinetime_theme_init() {
   inited = true;
 
   return &theme;
+}
+
+void lv_pinetime_theme_set_filesystem(Pinetime::Controllers::FS* filesystem) {
+
+  themeFilesystem = filesystem;
+
+  // If theme was already initialized and we now have a filesystem, try to reload colors
+  if (inited && filesystem != nullptr) {
+    loadThemeConfig(filesystem);
+  }
+}
+
+void lv_pinetime_theme_reload_config() {
+  if (themeFilesystem != nullptr) {
+    loadThemeConfig(themeFilesystem);
+
+    // Update the theme struct with new colors
+    theme.color_primary = Colors::text_primary;
+    theme.color_secondary = Colors::text_header;
+
+    // Reinitialize the theme styles with the new colors
+    basic_init();
+
+    // Refresh all objects on screen to apply the new styles
+    lv_obj_t* scr = lv_scr_act();
+    if (scr != nullptr) {
+      refresh_object_tree(scr);
+      lv_obj_invalidate(scr);
+    }
+  }
 }
 
 static void theme_apply(lv_obj_t* obj, lv_theme_style_t name) {
@@ -416,4 +627,25 @@ static void theme_apply(lv_obj_t* obj, lv_theme_style_t name) {
   }
 
   lv_obj_refresh_style(obj, LV_OBJ_PART_ALL, LV_STYLE_PROP_ALL);
+}
+
+bool lv_pinetime_theme_is_custom_loaded() {
+  if (themeFilesystem == nullptr) {
+    return false;
+  }
+
+  // Simple heuristic: if primary color differs from white, we likely loaded custom theme
+  // White is the default color_primary in the header
+  if (Colors::text_primary.full != LV_COLOR_WHITE.full) {
+    return true;
+  }
+
+  // Additional check: if bg color differs from default
+  // Default is LV_COLOR_MAKE(0x5d, 0x69, 0x7e)
+  const lv_color_t defaultBg = LV_COLOR_MAKE(0x5d, 0x69, 0x7e);
+  if (Colors::accent_light.full != defaultBg.full) {
+    return true;
+  }
+
+  return false;
 }
