@@ -74,6 +74,14 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
   lv_label_set_text_static(colonLabel, ":");
   lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
 
+  progressStop = lv_bar_create(lv_scr_act(), nullptr);
+  lv_bar_set_range(progressStop, 0, progressBarSize);
+  lv_bar_set_value(progressStop, 0, LV_ANIM_OFF);
+  lv_obj_set_size(progressStop, progressBarSize, 10);
+  lv_obj_align(progressStop, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_set_style_local_bg_color(progressStop, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+  lv_obj_set_hidden(progressStop, true);
+
   btnStop = lv_btn_create(lv_scr_act(), nullptr);
   btnStop->user_data = this;
   lv_obj_set_event_cb(btnStop, btnEventHandler);
@@ -122,12 +130,28 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
   } else {
     SetSwitchState(LV_ANIM_OFF);
   }
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, 50, LV_TASK_PRIO_MID, this);
+}
+
+void Alarm::Refresh() {
+  if (stopBtnPressTime.has_value()) {
+    TickType_t elapsed = xTaskGetTickCount() - stopBtnPressTime.value();
+    if (elapsed >= longPressTimeout) {
+      ResetStopProgress();
+      StopAlerting();
+    } else {
+      lv_coord_t stopPosition = (elapsed * progressBarSize) / longPressTimeout;
+      UpdateStopProgress(stopPosition);
+    }
+  }
 }
 
 Alarm::~Alarm() {
   if (alarmController.IsAlerting()) {
     StopAlerting();
   }
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
   alarmController.SaveAlarm();
 }
@@ -139,12 +163,32 @@ void Alarm::DisableAlarm() {
   }
 }
 
+void Alarm::StopButtonPressed() {
+  stopBtnPressTime = xTaskGetTickCount();
+  UpdateStopProgress(0);
+  lv_obj_set_hidden(progressStop, false);
+}
+
+void Alarm::ResetStopProgress() {
+  stopBtnPressTime = std::nullopt;
+  lv_obj_set_hidden(progressStop, true);
+  UpdateStopProgress(0);
+}
+
+void Alarm::UpdateStopProgress(lv_coord_t stopPosition) {
+  lv_bar_set_value(progressStop, progressBarSize - stopPosition, LV_ANIM_OFF);
+}
+
 void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
-  if (event == LV_EVENT_CLICKED) {
-    if (obj == btnStop) {
-      StopAlerting();
-      return;
+  if (obj == btnStop) {
+    if (event == LV_EVENT_PRESSED) {
+      StopButtonPressed();
+    } else if (event == LV_EVENT_RELEASED || event == LV_EVENT_PRESS_LOST) {
+      ResetStopProgress();
     }
+    return;
+  }
+  if (event == LV_EVENT_CLICKED) {
     if (obj == btnInfo) {
       ShowInfo();
       return;
