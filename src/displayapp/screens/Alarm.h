@@ -47,10 +47,11 @@ namespace Pinetime {
         System::WakeLock wakeLock;
         Controllers::MotorController& motorController;
 
-        lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch;
+        lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch, *messageContainer;
         lv_obj_t* lblampm = nullptr;
-        lv_obj_t* txtMessage = nullptr;
-        lv_obj_t* btnMessage = nullptr;
+        lv_obj_t* exitMessage = nullptr;
+        lv_obj_t* exitMessageHeader = nullptr;
+        lv_obj_t* btnEsc = nullptr;
         lv_task_t* taskStopAlarm = nullptr;
 
         enum class EnableButtonState { On, Off, Alerting };
