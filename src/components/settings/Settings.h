@@ -313,6 +313,33 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
+      void SetBleSecured(bool secured) {
+        if (secured != settings.bleSecured) {
+          settingsChanged = true;
+        }
+        settings.bleSecured = secured;
+      };
+
+      bool GetBleSecured() const {
+#ifndef PINETIME_IS_RECOVERY
+        return settings.bleSecured;
+#else
+        return false;
+#endif
+      };
+
+      void SetBlePairingAllowed(bool allowed) {
+        blePairingAllowed = allowed;
+      };
+
+      bool GetBlePairingAllowed() const {
+#ifndef PINETIME_IS_RECOVERY
+        return blePairingAllowed || !settings.bleSecured;
+#else
+        return true;
+#endif
+      };
+
       void SetDfuAndFsMode(DfuAndFsMode mode) {
         if (mode == GetDfuAndFsMode()) {
           return;
@@ -383,6 +410,8 @@ namespace Pinetime {
 
         bool dfuAndFsEnabledOnBoot = false;
         uint16_t heartRateBackgroundPeriod = std::numeric_limits<uint16_t>::max(); // Disabled by default
+
+        bool bleSecured = false;
       };
 
       SettingsData settings;
@@ -396,6 +425,7 @@ namespace Pinetime {
        */
       bool bleRadioEnabled = true;
       bool dfuAndFsEnabledTillReboot = false;
+      bool blePairingAllowed = false;
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile();

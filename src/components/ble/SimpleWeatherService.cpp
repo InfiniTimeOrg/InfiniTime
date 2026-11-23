@@ -17,6 +17,7 @@
 */
 
 #include "components/ble/SimpleWeatherService.h"
+#include "components/ble/NimbleController.h"
 
 #include <algorithm>
 #include <array>
@@ -116,10 +117,12 @@ int WeatherCallback(uint16_t /*connHandle*/, uint16_t /*attrHandle*/, struct ble
   return static_cast<Pinetime::Controllers::SimpleWeatherService*>(arg)->OnCommand(ctxt);
 }
 
-SimpleWeatherService::SimpleWeatherService(DateTime& dateTimeController) : dateTimeController(dateTimeController) {
+SimpleWeatherService::SimpleWeatherService(NimbleController& nimble, DateTime& dateTimeController)
+  : dateTimeController(dateTimeController), nimble {nimble} {
 }
 
 void SimpleWeatherService::Init() {
+  nimble.AddCharacteristicSecurity(serviceDefinition);
   ble_gatts_count_cfg(serviceDefinition);
   ble_gatts_add_svcs(serviceDefinition);
 }

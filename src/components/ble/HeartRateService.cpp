@@ -37,6 +37,8 @@ HeartRateService::HeartRateService(NimbleController& nimble, Controllers::HeartR
 }
 
 void HeartRateService::Init() {
+  nimble.AddCharacteristicSecurity(serviceDefinition);
+
   int res = 0;
   res = ble_gatts_count_cfg(serviceDefinition);
   ASSERT(res == 0);
@@ -46,6 +48,9 @@ void HeartRateService::Init() {
 }
 
 int HeartRateService::OnHeartRateRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
+  if (!nimble.IsConnSecurityOK())
+    return BLE_ATT_ERR_INSUFFICIENT_AUTHEN;
+
   if (attributeHandle == heartRateMeasurementHandle) {
     NRF_LOG_INFO("HEARTRATE : handle = %d", heartRateMeasurementHandle);
     uint8_t buffer[2] = {0, heartRateController.HeartRate()}; // [0] = flags, [1] = hr value
@@ -65,7 +70,7 @@ void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
 
   uint16_t connectionHandle = nimble.connHandle();
 
-  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE || !nimble.IsConnSecurityOK()) {
     return;
   }
 

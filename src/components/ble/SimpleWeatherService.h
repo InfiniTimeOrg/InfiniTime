@@ -40,10 +40,11 @@ int WeatherCallback(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_ac
 
 namespace Pinetime {
   namespace Controllers {
+    class NimbleController;
 
     class SimpleWeatherService {
     public:
-      explicit SimpleWeatherService(DateTime& dateTimeController);
+      explicit SimpleWeatherService(NimbleController& nimble, DateTime& dateTimeController);
 
       void Init();
 
@@ -176,12 +177,12 @@ namespace Pinetime {
 
       ble_uuid128_t weatherDataCharUuid {CharUuid(0x00, 0x01)};
 
-      const struct ble_gatt_chr_def characteristicDefinition[2] = {{.uuid = &weatherDataCharUuid.u,
-                                                                    .access_cb = WeatherCallback,
-                                                                    .arg = this,
-                                                                    .flags = BLE_GATT_CHR_F_WRITE,
-                                                                    .val_handle = &eventHandle},
-                                                                   {0}};
+      struct ble_gatt_chr_def characteristicDefinition[2] = {{.uuid = &weatherDataCharUuid.u,
+                                                              .access_cb = WeatherCallback,
+                                                              .arg = this,
+                                                              .flags = BLE_GATT_CHR_F_WRITE,
+                                                              .val_handle = &eventHandle},
+                                                             {0}};
       const struct ble_gatt_svc_def serviceDefinition[2] = {
         {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &weatherUuid.u, .characteristics = characteristicDefinition},
         {0}};
@@ -189,6 +190,7 @@ namespace Pinetime {
       uint16_t eventHandle {};
 
       Pinetime::Controllers::DateTime& dateTimeController;
+      NimbleController& nimble;
 
       std::optional<CurrentWeather> currentWeather;
       std::optional<Forecast> forecast;
