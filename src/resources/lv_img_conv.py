@@ -79,12 +79,12 @@ def main():
         if args.force:
             print(f"overwriting {args.output_file}")
         else:
-            pritn(f"Error: refusing to overwrite {args.output_file} without -f specified.")
+            print(f"Error: refusing to overwrite {args.output_file} without -f specified.")
             return 1
     out.touch()
 
     # only implemented the bare minimum, everything else is not implemented
-    if args.color_format not in ["CF_INDEXED_1_BIT", "CF_TRUE_COLOR_ALPHA"]:
+    if args.color_format not in ["CF_INDEXED_1_BIT", "CF_TRUE_COLOR", "CF_TRUE_COLOR_ALPHA"]:
         raise NotImplementedError(f"argument --color-format '{args.color_format}' not implemented")
     if args.output_format != "bin":
         raise NotImplementedError(f"argument --output-format '{args.output_format}' not implemented")
@@ -105,6 +105,9 @@ def main():
         # support pictures stored in other formats like with a color palette 'P'
         # see: https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes
         img = img.convert(mode="RGBA")
+    elif args.color_format == "CF_TRUE_COLOR" and img.mode != "RGB":
+        # CF_TRUE_COLOR carries no alpha, so drop any it may have
+        img = img.convert(mode="RGB")
     elif args.color_format == "CF_INDEXED_1_BIT" and img.mode != "L":
         # for CF_INDEXED_1_BIT we need just a grayscale value per pixel
         img = img.convert(mode="L")
@@ -138,6 +141,22 @@ def main():
                 buf[i + 1] = c16 & 0xFF
                 buf[i + 2] = a
 
+    elif args.color_format == "CF_TRUE_COLOR" and args.binary_format == "ARGB8565_RBSWAP":
+        buf = bytearray(img_height*img_width*2) # 2 bytes (16 bit) per pixel
+        for y in range(img_height):
+            for x in range(img_width):
+                i = (y*img_width + x)*2 # buffer-index
+                pixel = img.getpixel((x,y))
+                r_act = classify_pixel(pixel[0], 5)
+                g_act = classify_pixel(pixel[1], 6)
+                b_act = classify_pixel(pixel[2], 5)
+                r_act = min(r_act, 0xF8)
+                g_act = min(g_act, 0xFC)
+                b_act = min(b_act, 0xF8)
+                c16 = ((r_act) << 8) | ((g_act) << 3) | ((b_act) >> 3) # RGB565
+                buf[i + 0] = (c16 >> 8) & 0xFF
+                buf[i + 1] = c16 & 0xFF
+
     elif args.color_format == "CF_INDEXED_1_BIT": # ignore binary format, use color format as binary format
         w = img_width >> 3
         if img_width & 0x07:
@@ -168,6 +187,8 @@ def main():
 
     # write header
     match args.color_format:
+        case "CF_TRUE_COLOR":
+            lv_cf = 4
         case "CF_TRUE_COLOR_ALPHA":
             lv_cf = 5
         case "CF_INDEXED_1_BIT":
