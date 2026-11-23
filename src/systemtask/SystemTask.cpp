@@ -251,16 +251,18 @@ void SystemTask::Work() {
           }
           wakeLocksHeld--;
           break;
-        case Messages::StartFileTransfer:
-          NRF_LOG_INFO("[systemtask] FS Started");
-          GoToRunning();
-          wakeLocksHeld++;
-          // TODO add intent of fs access icon or something
+        case Messages::AcquireFlash:
+          if (flashUsers == 0 && state == SystemTaskState::Sleeping) {
+            WakeSpiAndFlash();
+          }
+          flashUsers++;
+          flashAcquisitions = flashAcquisitions + 1;
           break;
-        case Messages::StopFileTransfer:
-          NRF_LOG_INFO("[systemtask] FS Stopped");
-          wakeLocksHeld--;
-          // TODO add intent of fs access icon or something
+        case Messages::ReleaseFlash:
+          flashUsers--;
+          if (flashUsers == 0 && state == SystemTaskState::Sleeping) {
+            SleepSpiAndFlash();
+          }
           break;
         case Messages::OnTouchEvent:
           // Finish immediately if no new events
@@ -312,13 +314,8 @@ void SystemTask::Work() {
           }
 
           // Must keep SPI and flash awake when still updating the display for always on
-          if (msg == Messages::OnDisplayTaskSleeping) {
-            if (BootloaderVersion::IsValid()) {
-              // First versions of the bootloader do not expose their version and cannot initialize the SPI NOR FLASH
-              // if it's in sleep mode. Avoid bricked device by disabling sleep mode on these versions.
-              spiNorFlash.Sleep();
-            }
-            spi.Sleep();
+          if (msg == Messages::OnDisplayTaskSleeping && flashUsers == 0) {
+            SleepSpiAndFlash();
           }
 
           // Double Tap needs the touch screen to be in normal mode
@@ -407,9 +404,8 @@ void SystemTask::GoToRunning() {
   }
   if (state == SystemTaskState::Sleeping || state == SystemTaskState::AODSleeping) {
     // SPI only switched off when entering Sleeping, not AOD or GoingToSleep
-    if (state == SystemTaskState::Sleeping) {
-      spi.Wakeup();
-      spiNorFlash.Wakeup();
+    if (state == SystemTaskState::Sleeping && flashUsers == 0) {
+      WakeSpiAndFlash();
     }
 
     // Double Tap needs the touch screen to be in normal mode
@@ -427,6 +423,32 @@ void SystemTask::GoToRunning() {
 
   state = SystemTaskState::Running;
 };
+
+void SystemTask::WakeSpiAndFlash() {
+  spi.Wakeup();
+  spiNorFlash.Wakeup();
+}
+
+void SystemTask::SleepSpiAndFlash() {
+  if (BootloaderVersion::IsValid()) {
+    // First versions of the bootloader do not expose their version and cannot initialize the SPI NOR FLASH
+    // if it's in sleep mode. Avoid bricked device by disabling sleep mode on these versions.
+    spiNorFlash.Sleep();
+  }
+  spi.Sleep();
+}
+
+void SystemTask::AcquireFlash() {
+  const uint8_t seen = flashAcquisitions;
+  PushMessage(Messages::AcquireFlash);
+  while (flashAcquisitions == seen) {
+    vTaskDelay(1);
+  }
+}
+
+void SystemTask::ReleaseFlash() {
+  PushMessage(Messages::ReleaseFlash);
+}
 
 void SystemTask::GoToSleep() {
   if (IsSleeping()) {

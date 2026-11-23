@@ -451,18 +451,7 @@ void NimbleController::PersistBond(struct ble_gap_conn_desc& desc) {
       ble_store_read_cccd(&key.cccd, &peer_cccd_set[i].cccd);
     }
 
-    /* Wakeup Spi and SpiNorFlash before accessing the file system
-     * This should be fixed in the FS driver
-     */
-    systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
-
-    // This isn't quite correct
-    // SystemTask could receive EnableSleeping right after passing this check
-    // We need some guarantee that the SystemTask has processed the above message
-    // before we can continue
-    while (!systemTask.IsSleepDisabled()) {
-      vTaskDelay(pdMS_TO_TICKS(5));
-    }
+    Pinetime::System::FlashAccess flashAccess {systemTask};
 
     lfs_file_t file_p;
 
@@ -476,7 +465,6 @@ void NimbleController::PersistBond(struct ble_gap_conn_desc& desc) {
       }
       fs.FileClose(&file_p);
     }
-    systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
   }
 }
 

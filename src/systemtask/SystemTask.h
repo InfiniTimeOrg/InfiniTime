@@ -79,6 +79,9 @@ namespace Pinetime {
       void Start();
       void PushMessage(Messages msg);
 
+      void AcquireFlash();
+      void ReleaseFlash();
+
       bool IsSleepDisabled() {
         return wakeLocksHeld > 0;
       }
@@ -134,6 +137,8 @@ namespace Pinetime {
       uint8_t bleDiscoveryTimer = 0;
       TimerHandle_t measureBatteryTimer;
       uint8_t wakeLocksHeld = 0;
+      uint8_t flashUsers = 0;
+      volatile uint8_t flashAcquisitions = 0;
       SystemTaskState state = SystemTaskState::Running;
 
       void HandleButtonAction(Controllers::ButtonActions action);
@@ -141,10 +146,29 @@ namespace Pinetime {
 
       void GoToRunning();
       void GoToSleep();
+      void WakeSpiAndFlash();
+      void SleepSpiAndFlash();
       void UpdateMotion();
       static constexpr TickType_t batteryMeasurementPeriod = pdMS_TO_TICKS(10 * 60 * 1000);
 
       SystemMonitor monitor;
+    };
+
+    class FlashAccess {
+    public:
+      explicit FlashAccess(SystemTask& systemTask) : systemTask {systemTask} {
+        systemTask.AcquireFlash();
+      }
+
+      ~FlashAccess() {
+        systemTask.ReleaseFlash();
+      }
+
+      FlashAccess(const FlashAccess&) = delete;
+      FlashAccess& operator=(const FlashAccess&) = delete;
+
+    private:
+      SystemTask& systemTask;
     };
   }
 }
