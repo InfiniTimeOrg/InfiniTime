@@ -6,7 +6,7 @@
 using namespace Pinetime::Applications::Screens;
 using namespace Pinetime::Controllers;
 
-namespace {
+namespace Pinetime::Applications::Screens {
   TimeSeparated ConvertTicksToTimeSegments(const TickType_t timeElapsed) {
     const uint32_t timeElapsedSecs = timeElapsed / configTICK_RATE_HZ;
     const uint16_t timeElapsedFraction = timeElapsed % configTICK_RATE_HZ;
@@ -17,7 +17,9 @@ namespace {
     const uint16_t hours = (timeElapsedSecs / 60) / 60;
     return TimeSeparated {hours, mins, secs, hundredths, timeElapsedSecs};
   }
+}
 
+namespace {
   void PlayPauseEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
     if (event == LV_EVENT_CLICKED) {

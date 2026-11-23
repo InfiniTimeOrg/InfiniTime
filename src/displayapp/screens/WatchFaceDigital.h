@@ -36,6 +36,7 @@ namespace Pinetime {
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
                          Controllers::MotionController& motionController,
+                         Controllers::StopWatchController& stopWatchController,
                          Controllers::SimpleWeatherService& weather);
         ~WatchFaceDigital() override;
 
@@ -44,6 +45,8 @@ namespace Pinetime {
       private:
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         Utility::DirtyValue<uint32_t> stepCount {};
+        Utility::DirtyValue<TickType_t> stopWatchTime {};
+        Utility::DirtyValue<bool> stopWatchRunning {};
         Utility::DirtyValue<uint8_t> heartbeat {};
         Utility::DirtyValue<bool> heartbeatRunning {};
         Utility::DirtyValue<bool> notificationState {};
@@ -58,6 +61,8 @@ namespace Pinetime {
         lv_obj_t* heartbeatValue;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
+        lv_obj_t* stopWatchIcon;
+        lv_obj_t* stopWatchValue;
         lv_obj_t* notificationIcon;
         lv_obj_t* weatherIcon;
         lv_obj_t* temperature;
@@ -67,6 +72,7 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
+        Controllers::StopWatchController& stopWatchController;
         Controllers::SimpleWeatherService& weatherService;
 
         lv_task_t* taskRefresh;
@@ -88,6 +94,7 @@ namespace Pinetime {
                                              controllers.settingsController,
                                              controllers.heartRateController,
                                              controllers.motionController,
+                                             controllers.stopWatchController,
                                              *controllers.weatherController);
       };
 
