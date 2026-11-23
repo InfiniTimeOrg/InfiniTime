@@ -18,6 +18,7 @@ FlashLight::FlashLight(System::SystemTask& systemTask, Controllers::BrightnessCo
   : wakeLock(systemTask), brightnessController {brightnessController} {
 
   previousBrightnessLevel = brightnessController.Level();
+  currentMode = Mode::Off;
   brightnessController.Set(Controllers::BrightnessController::Levels::Low);
 
   flashLight = lv_label_create(lv_scr_act(), nullptr);
@@ -51,14 +52,31 @@ FlashLight::FlashLight(System::SystemTask& systemTask, Controllers::BrightnessCo
 }
 
 FlashLight::~FlashLight() {
+  if (taskRefresh != nullptr) {
+    lv_task_del(taskRefresh);
+  }
   lv_obj_clean(lv_scr_act());
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   brightnessController.Set(previousBrightnessLevel);
 }
 
 void FlashLight::SetColors() {
-  lv_color_t bgColor = isOn ? LV_COLOR_WHITE : LV_COLOR_BLACK;
-  lv_color_t fgColor = isOn ? Colors::lightGray : LV_COLOR_WHITE;
+  lv_color_t bgColor;
+  lv_color_t fgColor;
+
+  if (currentMode == Mode::Off) {
+    bgColor = LV_COLOR_BLACK;
+    fgColor = LV_COLOR_MAROON;
+  } else if (currentMode == Mode::Red) {
+    bgColor = LV_COLOR_RED;
+    fgColor = LV_COLOR_BLACK;
+  } else if (currentMode == Mode::White) {
+    bgColor = LV_COLOR_WHITE;
+    fgColor = LV_COLOR_GRAY;
+  } else {
+    bgColor = LV_COLOR_WHITE;
+    fgColor = LV_COLOR_GRAY;
+  }
 
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, bgColor);
   lv_obj_set_style_local_text_color(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, fgColor);
@@ -85,23 +103,47 @@ void FlashLight::SetIndicators() {
 }
 
 void FlashLight::Toggle() {
-  isOn = !isOn;
-  SetColors();
-  if (isOn) {
-    brightnessController.Set(brightnessLevel);
+  // Clean up strobe task if leaving strobe mode
+  if (currentMode == Mode::Strobe && taskRefresh != nullptr) {
+    lv_task_del(taskRefresh);
+    taskRefresh = nullptr;
+  }
+
+  if (currentMode == Mode::Off) {
+    currentMode = Mode::Red;
+  } else if (currentMode == Mode::Red) {
+    currentMode = Mode::White;
+  } else if (currentMode == Mode::White) {
+    currentMode = Mode::Strobe;
   } else {
+    currentMode = Mode::Off;
+  }
+
+  // Create strobe task if entering strobe mode
+  if (currentMode == Mode::Strobe) {
+    taskRefresh = lv_task_create(RefreshTaskCallback, 50, LV_TASK_PRIO_MID, this);
+  }
+
+  SetColors();
+
+  if (currentMode == Mode::Off) {
     brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+  } else if (currentMode != Mode::Strobe) {
+    brightnessController.Set(brightnessLevel);
   }
 }
 
 bool FlashLight::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   using namespace Pinetime::Controllers;
 
+  if (currentMode == Mode::Off || currentMode == Mode::Strobe) {
+    return false;
+  }
+
   auto SetState = [this]() {
-    if (isOn) {
-      brightnessController.Set(brightnessLevel);
-    }
+    brightnessController.Set(brightnessLevel);
     SetIndicators();
+    SetColors();
   };
 
   if (event == TouchEvents::SwipeLeft) {
@@ -126,4 +168,22 @@ bool FlashLight::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   }
 
   return false;
+}
+
+void FlashLight::Refresh() {
+  if (currentMode == Mode::Strobe) {
+    static bool strobeOn = false;
+    strobeOn = !strobeOn;
+
+    // Toggle backlight brightness to flash light at the hardware level
+    if (strobeOn) {
+      brightnessController.Set(Controllers::BrightnessController::Levels::High);
+    } else {
+      brightnessController.Set(Controllers::BrightnessController::Levels::Off);
+    }
+
+    // Set next callback time based on current state
+    // 100ms on, 400ms off (2Hz, 20% duty cycle)
+    lv_task_set_period(taskRefresh, strobeOn ? 100 : 400);
+  }
 }
