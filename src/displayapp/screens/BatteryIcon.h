@@ -22,6 +22,9 @@ namespace Pinetime {
         lv_obj_t* batteryImg;
         lv_obj_t* batteryJuice;
         bool colorOnLowBattery = false;
+        lv_color_t normalColor = LV_COLOR_WHITE;
+
+        void ApplyColor(lv_color_t color);
       };
     }
   }

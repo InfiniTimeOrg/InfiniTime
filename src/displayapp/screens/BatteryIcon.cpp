@@ -32,16 +32,21 @@ void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
     static constexpr int lowBatteryThreshold = 15;
     static constexpr int criticalBatteryThreshold = 5;
     if (percentage > lowBatteryThreshold) {
-      SetColor(LV_COLOR_WHITE);
+      ApplyColor(normalColor);
     } else if (percentage > criticalBatteryThreshold) {
-      SetColor(LV_COLOR_ORANGE);
+      ApplyColor(LV_COLOR_ORANGE);
     } else {
-      SetColor(Colors::deepOrange);
+      ApplyColor(Colors::deepOrange);
     }
   }
 }
 
 void BatteryIcon::SetColor(lv_color_t color) {
+  normalColor = color;
+  ApplyColor(color);
+}
+
+void BatteryIcon::ApplyColor(lv_color_t color) {
   lv_obj_set_style_local_image_recolor(batteryImg, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, color);
   lv_obj_set_style_local_image_recolor_opa(batteryImg, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_obj_set_style_local_bg_color(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, color);
