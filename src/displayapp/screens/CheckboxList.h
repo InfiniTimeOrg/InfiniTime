@@ -27,7 +27,8 @@ namespace Pinetime {
                      const char* optionsSymbol,
                      uint32_t originalValue,
                      std::function<void(uint32_t)> OnValueChanged,
-                     std::array<Item, MaxItems> options);
+                     std::array<Item, MaxItems> options,
+                     const char* optionsHelptext = nullptr);
         ~CheckboxList() override;
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
