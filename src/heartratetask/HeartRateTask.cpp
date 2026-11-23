@@ -96,7 +96,15 @@ void HeartRateTask::Start() {
 
   if (pdPASS != xTaskCreate(HeartRateTask::Process, "Heartrate", 500, this, 1, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+  } else {
+    if (settings.GetHeartRateRebootMode())
+      controller.Enable();
   }
+}
+
+void HeartRateTask::SaveSettings() {
+  if (task)
+    task->SaveSettings();
 }
 
 void HeartRateTask::Process(void* instance) {
@@ -143,9 +151,11 @@ void HeartRateTask::Work() {
           // will self-resolve at the next screen on event
           newState = States::ForegroundMeasuring;
           valueCurrentlyShown = false;
+          settings.SetHeartRateRebootMode(true);
           break;
         case Messages::Disable:
           newState = States::Disabled;
+          settings.SetHeartRateRebootMode(false);
           break;
       }
     }
@@ -170,6 +180,10 @@ void HeartRateTask::Work() {
       count++;
     }
   }
+}
+
+void HeartRateTask::SaveSettings() {
+  settings.SaveSettings();
 }
 
 void HeartRateTask::PushMessage(HeartRateTask::Messages msg) {

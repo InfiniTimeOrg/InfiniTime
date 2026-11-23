@@ -27,6 +27,7 @@ namespace Pinetime {
       void Start();
       void Work();
       void PushMessage(Messages msg);
+      void SaveSettings();
 
     private:
       enum class States : uint8_t { Disabled, Waiting, BackgroundMeasuring, ForegroundMeasuring };

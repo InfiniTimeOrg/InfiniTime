@@ -32,6 +32,8 @@ namespace Pinetime {
         return heartRate;
       }
 
+      void SaveSettings() const;
+
       void SetService(Pinetime::Controllers::HeartRateService* service);
 
     private:
