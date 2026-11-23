@@ -22,6 +22,7 @@
 #include "components/ble/ServiceDiscovery.h"
 #include "components/ble/MotionService.h"
 #include "components/ble/SimpleWeatherService.h"
+#include "components/ble/HomeService.h"
 #include "components/fs/FS.h"
 
 namespace Pinetime {
@@ -71,6 +72,10 @@ namespace Pinetime {
         return weatherService;
       };
 
+      Pinetime::Controllers::HomeService& home() {
+        return homeService;
+      };
+
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
 
@@ -107,6 +112,7 @@ namespace Pinetime {
       MotionService motionService;
       FSService fsService;
       ServiceDiscovery serviceDiscovery;
+      HomeService homeService;
 
       uint8_t addrType;
       uint16_t connectionHandle = BLE_HS_CONN_HANDLE_NONE;
