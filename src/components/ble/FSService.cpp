@@ -100,7 +100,12 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.status = 0x01;
       resp.chunkoff = header->chunkoff;
       int res = fs.Stat(filepath, &info);
-      if (res == LFS_ERR_NOENT && info.type != LFS_TYPE_DIR) {
+      if (res == 0 && info.type == LFS_TYPE_REG) {
+        res = fs.FileOpen(&f, filepath, LFS_O_RDONLY);
+      } else if (res == 0) {
+        res = LFS_ERR_ISDIR;
+      }
+      if (res != 0) {
         resp.status = (int8_t) res;
         resp.chunklen = 0;
         resp.totallen = 0;
@@ -108,7 +113,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       } else {
         resp.chunklen = std::min(header->chunksize, info.size); // TODO add mtu somehow
         resp.totallen = info.size;
-        fs.FileOpen(&f, filepath, LFS_O_RDONLY);
         fs.FileSeek(&f, header->chunkoff);
         uint8_t fileData[resp.chunklen] = {0};
         resp.chunklen = fs.FileRead(&f, fileData, resp.chunklen);
@@ -128,14 +132,18 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.status = 0x01;
       resp.chunkoff = header->chunkoff;
       int res = fs.Stat(filepath, &info);
-      if (res == LFS_ERR_NOENT && info.type != LFS_TYPE_DIR) {
+      if (res == 0 && info.type == LFS_TYPE_REG) {
+        res = fs.FileOpen(&f, filepath, LFS_O_RDONLY);
+      } else if (res == 0) {
+        res = LFS_ERR_ISDIR;
+      }
+      if (res != 0) {
         resp.status = (int8_t) res;
         resp.chunklen = 0;
         resp.totallen = 0;
       } else {
         resp.chunklen = std::min(header->chunksize, info.size); // TODO add mtu somehow
         resp.totallen = info.size;
-        fs.FileOpen(&f, filepath, LFS_O_RDONLY);
         fs.FileSeek(&f, header->chunkoff);
       }
       os_mbuf* om;
@@ -148,7 +156,9 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         resp.chunklen = 0;
         om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
       }
-      fs.FileClose(&f);
+      if (res == 0) {
+        fs.FileClose(&f);
+      }
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
     }
@@ -289,7 +299,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         vTaskDelay(100); // Allow stuff to actually go out over the BLE conn
         resp.entry++;
       }
-      assert(fs.DirClose(&dir) == 0);
+      fs.DirClose(&dir);
       resp.file_size = 0;
       resp.path_length = 0;
       resp.flags = 0;
