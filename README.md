@@ -66,6 +66,7 @@
 - [InfiniTime simulator](https://github.com/InfiniTimeOrg/InfiniSim)
 - [Build the project](doc/buildAndProgram.md)
 - [Build the project with Docker](doc/buildWithDocker.md)
+- [Build the project with Nix](doc/buildWithNix.md)
 - [Build the project with VSCode](doc/buildWithVScode.md)
 - [Flash the firmware using OpenOCD and STLinkV2](doc/openOCD.md)
 - [Flash the firmware using SWD interface](doc/SWD.md)
