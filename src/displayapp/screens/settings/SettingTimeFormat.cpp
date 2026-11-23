@@ -1,59 +1,40 @@
 #include "displayapp/screens/settings/SettingTimeFormat.h"
-#include <lvgl/lvgl.h>
+#include "displayapp/screens/settings/SettingClockFormat.h"
+#include "displayapp/screens/settings/SettingDateFormat.h"
 #include "displayapp/DisplayApp.h"
-#include "displayapp/screens/Styles.h"
-#include "displayapp/screens/Screen.h"
-#include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/ScreenList.h"
+#include "components/settings/Settings.h"
+#include "displayapp/widgets/DotIndicator.h"
 
 using namespace Pinetime::Applications::Screens;
 
-namespace {
-  struct Option {
-    Pinetime::Controllers::Settings::ClockType clockType;
-    const char* name;
-  };
-
-  constexpr std::array<Option, 2> options = {{
-    {Pinetime::Controllers::Settings::ClockType::H12, "12-hour"},
-    {Pinetime::Controllers::Settings::ClockType::H24, "24-hour"},
-  }};
-
-  std::array<CheckboxList::Item, CheckboxList::MaxItems> CreateOptionArray() {
-    std::array<Pinetime::Applications::Screens::CheckboxList::Item, CheckboxList::MaxItems> optionArray;
-    for (size_t i = 0; i < CheckboxList::MaxItems; i++) {
-      if (i >= options.size()) {
-        optionArray[i].name = "";
-        optionArray[i].enabled = false;
-      } else {
-        optionArray[i].name = options[i].name;
-        optionArray[i].enabled = true;
-      }
-    }
-    return optionArray;
-  }
-
-  uint32_t GetDefaultOption(Pinetime::Controllers::Settings::ClockType currentOption) {
-    for (size_t i = 0; i < options.size(); i++) {
-      if (options[i].clockType == currentOption) {
-        return i;
-      }
-    }
-    return 0;
-  }
+bool SettingTimeFormat::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  return screens.OnTouchEvent(event);
 }
 
-SettingTimeFormat::SettingTimeFormat(Pinetime::Controllers::Settings& settingsController)
-  : checkboxList(
-      0,
-      1,
-      "Time format",
-      Symbols::clock,
-      GetDefaultOption(settingsController.GetClockType()),
-      [&settings = settingsController](uint32_t index) {
-        settings.SetClockType(options[index].clockType);
-        settings.SaveSettings();
-      },
-      CreateOptionArray()) {
+SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
+  : settingsController {settingsController},
+    screens {app,
+             0,
+             {[this]() -> std::unique_ptr<Screen> {
+                return screenClockFormat();
+              },
+              [this]() -> std::unique_ptr<Screen> {
+                return screenDateFormat();
+              }},
+             Screens::ScreenListModes::UpDown} {
+}
+
+std::unique_ptr<Screen> SettingTimeFormat::screenDateFormat() {
+  Widgets::DotIndicator dotIndicator(1, 2);
+  dotIndicator.Create();
+  return std::make_unique<Screens::SettingDateFormat>(settingsController);
+}
+
+std::unique_ptr<Screen> SettingTimeFormat::screenClockFormat() {
+  Widgets::DotIndicator dotIndicator(0, 2);
+  dotIndicator.Create();
+  return std::make_unique<Screens::SettingClockFormat>(settingsController);
 }
 
 SettingTimeFormat::~SettingTimeFormat() {
