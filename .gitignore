@@ -11,6 +11,8 @@ cmake_install.cmake
 Makefile
 build
 tools
+# Exception: include the root Makefile
+!Makefile
 
 # Resulting binary files
 *.a
@@ -55,3 +57,12 @@ src/arm-none-eabi
 node_modules
 package.json
 package-lock.json
+
+# Local simulation and container virtualization artifacts
+build_lv_sim/
+InfiniSim/
+.podman/
+.containers/
+
+# Local duplicate helper script (tracked copy lives in tools/)
+run-infinisim-podman.sh
