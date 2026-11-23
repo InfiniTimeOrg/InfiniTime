@@ -73,7 +73,7 @@ namespace Pinetime {
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
-      void StartApp(Apps app, DisplayApp::FullRefreshDirections direction);
+      void StartApp(Apps app, DisplayApp::FullRefreshDirections direction, bool setPrevious = false);
 
       void SetFullRefresh(FullRefreshDirections direction);
 
@@ -118,7 +118,9 @@ namespace Pinetime {
       std::unique_ptr<Screens::Screen> currentScreen;
 
       Apps currentApp = Apps::None;
+      Apps previousApp = Apps::None;
       Apps returnToApp = Apps::None;
+
       FullRefreshDirections returnDirection = FullRefreshDirections::None;
       TouchEvents returnTouchEvent = TouchEvents::None;
 

@@ -218,6 +218,12 @@ void DisplayApp::Refresh() {
       case FullRefreshDirections::RightAnim:
         returnDirection = FullRefreshDirections::LeftAnim;
         break;
+      case FullRefreshDirections::Left:
+        returnDirection = FullRefreshDirections::Right;
+        break;
+      case FullRefreshDirections::Right:
+        returnDirection = FullRefreshDirections::Left;
+        break;
       default:
         returnDirection = FullRefreshDirections::None;
         break;
@@ -418,6 +424,10 @@ void DisplayApp::Refresh() {
               return TouchEvents::SwipeRight;
             case DisplayApp::FullRefreshDirections::RightAnim:
               return TouchEvents::SwipeLeft;
+            case DisplayApp::FullRefreshDirections::Left:
+              return TouchEvents::SwipeRight;
+            case DisplayApp::FullRefreshDirections::Right:
+              return TouchEvents::SwipeLeft;
           }
         };
         if (!currentScreen->OnTouchEvent(gesture)) {
@@ -432,6 +442,11 @@ void DisplayApp::Refresh() {
               case TouchEvents::SwipeRight:
                 LoadNewScreen(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
                 break;
+              case TouchEvents::SwipeLeft:
+                if (previousApp != Apps::None) {
+                  LoadNewScreen(previousApp, DisplayApp::FullRefreshDirections::LeftAnim);
+                }
+                break;
               case TouchEvents::DoubleTap:
                 PushMessageToSystemTask(System::Messages::GoToSleep);
                 break;
@@ -440,6 +455,10 @@ void DisplayApp::Refresh() {
             }
           } else if (gesture == LoadDirToReturnSwipe(appStackDirections.Top())) {
             LoadPreviousScreen();
+          } else if (gesture == TouchEvents::SwipeRight && currentApp != Apps::QuickSettings) {
+            LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::RightAnim);
+            appStackDirections.Reset();
+            returnAppStack.Reset();
           }
         } else {
           lvgl.CancelTap();
@@ -460,6 +479,8 @@ void DisplayApp::Refresh() {
             LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::Up);
           } else if (currentApp == Apps::QuickSettings) {
             LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
+          } else if (currentApp == previousApp) {
+            LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::RightAnim);
           } else {
             LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
           }
@@ -500,7 +521,10 @@ void DisplayApp::Refresh() {
   }
 }
 
-void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction) {
+void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction, bool setPrevious) {
+  if (setPrevious) {
+    previousApp = app;
+  }
   nextApp = app;
   nextDirection = direction;
 }
