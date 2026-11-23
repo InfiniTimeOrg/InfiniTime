@@ -17,6 +17,7 @@ This page describes the BLE implementation and API built in this firmware.
 - [Getting Information](#getting-information)
   - [Firmware Version](#firmware-version)
   - [Battery Level](#battery-level)
+  - [Battery Level Status](#battery-level-status)
   - [Heart Rate](#heart-rate)
 - [Notifications](#notifications)
   - [New Alert](#new-alert)
@@ -121,6 +122,7 @@ The InfiniTime firmware exposes some information about itself through BLE. The B
 
 - Firmware Version: `00002a26-0000-1000-8000-00805f9b34fb`
 - Battery Level: `00002a19-0000-1000-8000-00805f9b34fb`
+- Battery Level Status: `00002bed-0000-1000-8000-00805f9b34fb`
 - Heart Rate: `00002a37-0000-1000-8000-00805f9b34fb`
 
 #### Firmware Version
@@ -130,6 +132,18 @@ Reading a value from the firmware version characteristic will yield a UTF-8 enco
 #### Battery Level
 
 Reading from the battery level characteristic yields a single byte of data. This byte can be converted to an unsigned 8-bit integer which will be the battery percentage. This characteristic allows notifications for updates as the value changes.
+
+#### Battery Level Status
+
+Reading from the battery level status characteristic yields three bytes: a flags byte (always `0`, no optional fields are included) followed by the 16-bit little-endian Power State:
+
+- Bit 0: battery present (always `1`)
+- Bits 1-2: wired power connected (`0` = no, `1` = yes)
+- Bits 3-4: wireless power connected (always `0` = no)
+- Bits 5-6: charge state (`1` = charging, `2` = discharging, `3` = on the charger but full)
+- Bits 7-15: `0` (charge level and charging type unknown, no faults)
+
+Notifications are sent when state changes, for example when the charger is connected or the battery finishes charging.
 
 #### Heart Rate
 

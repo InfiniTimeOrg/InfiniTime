@@ -403,6 +403,10 @@ void NimbleController::NotifyBatteryLevel(uint8_t level) {
   }
 }
 
+void NimbleController::NotifyBatteryLevelStatus() {
+  batteryInformationService.NotifyBatteryLevelStatus();
+}
+
 void NimbleController::EnableRadio() {
   bleController.EnableRadio();
   bleController.Disconnect();
