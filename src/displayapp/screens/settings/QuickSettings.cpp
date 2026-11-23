@@ -29,13 +29,14 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
                              Controllers::MotorController& motorController,
                              Pinetime::Controllers::Settings& settingsController,
                              const Controllers::Ble& bleController,
-                             const Controllers::AlarmController& alarmController)
+                             const Controllers::AlarmController& alarmController,
+                             const Controllers::Timer& timer)
   : app {app},
     dateTimeController {dateTimeController},
     brightness {brightness},
     motorController {motorController},
     settingsController {settingsController},
-    statusIcons(batteryController, bleController, alarmController) {
+    statusIcons(batteryController, bleController, alarmController, timer, settingsController) {
 
   statusIcons.Create();
 
