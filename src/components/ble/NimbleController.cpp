@@ -46,8 +46,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     weatherService {dateTimeController},
     batteryInformationService {batteryController},
     immediateAlertService {systemTask, notificationManager},
-    heartRateService {*this, heartRateController},
-    motionService {*this, motionController},
+    heartRateService {*this, bleController, heartRateController},
+    motionService {*this, bleController, motionController},
     fsService {systemTask, fs},
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }

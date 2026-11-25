@@ -1,6 +1,7 @@
 #include "components/ble/MotionService.h"
 #include "components/motion/MotionController.h"
 #include "components/ble/NimbleController.h"
+#include "components/ble/BleController.h"
 #include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
@@ -28,8 +29,9 @@ namespace {
 }
 
 // TODO Refactoring - remove dependency to SystemTask
-MotionService::MotionService(NimbleController& nimble, Controllers::MotionController& motionController)
+MotionService::MotionService(NimbleController& nimble, Ble& bleController, Controllers::MotionController& motionController)
   : nimble {nimble},
+    bleController {bleController},
     motionController {motionController},
     characteristicDefinition {{.uuid = &stepCountCharUuid.u,
                                .access_cb = MotionServiceCallback,
@@ -77,16 +79,20 @@ int MotionService::OnStepCountRequested(uint16_t attributeHandle, ble_gatt_acces
 }
 
 void MotionService::OnNewStepCountValue(uint32_t stepCount) {
-  if (!stepCountNotificationEnabled) {
+  // Don't queue notifications during a firmware update
+  if (!stepCountNotificationEnabled || bleController.IsFirmwareUpdating()) {
+    return;
+  }
+
+  uint16_t connectionHandle = nimble.connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return;
   }
 
   uint32_t buffer = stepCount;
   auto* om = ble_hs_mbuf_from_flat(&buffer, sizeof(buffer));
-
-  uint16_t connectionHandle = nimble.connHandle();
-
-  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+  if (om == nullptr) {
     return;
   }
 
@@ -94,16 +100,20 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
 }
 
 void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
-  if (!motionValuesNotificationEnabled) {
+  // See L82
+  if (!motionValuesNotificationEnabled || bleController.IsFirmwareUpdating()) {
+    return;
+  }
+
+  uint16_t connectionHandle = nimble.connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return;
   }
 
   int16_t buffer[3] = {x, y, z};
   auto* om = ble_hs_mbuf_from_flat(buffer, 3 * sizeof(int16_t));
-
-  uint16_t connectionHandle = nimble.connHandle();
-
-  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+  if (om == nullptr) {
     return;
   }
 

@@ -10,10 +10,11 @@ namespace Pinetime {
   namespace Controllers {
     class HeartRateController;
     class NimbleController;
+    class Ble;
 
     class HeartRateService {
     public:
-      HeartRateService(NimbleController& nimble, Controllers::HeartRateController& heartRateController);
+      HeartRateService(NimbleController& nimble, Ble& bleController, Controllers::HeartRateController& heartRateController);
       void Init();
       int OnHeartRateRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context);
       void OnNewHeartRateValue(uint8_t hearRateValue);
@@ -26,6 +27,7 @@ namespace Pinetime {
 
     private:
       NimbleController& nimble;
+      Ble& bleController;
       Controllers::HeartRateController& heartRateController;
       static constexpr uint16_t heartRateMeasurementId {0x2A37};
 

@@ -1,6 +1,7 @@
 #include "components/ble/HeartRateService.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/ble/NimbleController.h"
+#include "components/ble/BleController.h"
 #include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
@@ -16,8 +17,9 @@ namespace {
 }
 
 // TODO Refactoring - remove dependency to SystemTask
-HeartRateService::HeartRateService(NimbleController& nimble, Controllers::HeartRateController& heartRateController)
+HeartRateService::HeartRateService(NimbleController& nimble, Ble& bleController, Controllers::HeartRateController& heartRateController)
   : nimble {nimble},
+    bleController {bleController},
     heartRateController {heartRateController},
     characteristicDefinition {{.uuid = &heartRateMeasurementUuid.u,
                                .access_cb = HeartRateServiceCallback,
@@ -57,15 +59,20 @@ int HeartRateService::OnHeartRateRequested(uint16_t attributeHandle, ble_gatt_ac
 }
 
 void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
-  if (!heartRateMeasurementNotificationEnable)
+  // Don't queue notifications during a firmware update
+  if (!heartRateMeasurementNotificationEnable || bleController.IsFirmwareUpdating()) {
     return;
-
-  uint8_t buffer[2] = {0, heartRateValue}; // [0] = flags, [1] = hr value
-  auto* om = ble_hs_mbuf_from_flat(buffer, 2);
+  }
 
   uint16_t connectionHandle = nimble.connHandle();
 
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+
+  uint8_t buffer[2] = {0, heartRateValue}; // [0] = flags, [1] = hr value
+  auto* om = ble_hs_mbuf_from_flat(buffer, 2);
+  if (om == nullptr) {
     return;
   }
 
