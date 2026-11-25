@@ -43,12 +43,6 @@ Dice::Dice(Controllers::MotionController& motionController,
            Controllers::MotorController& motorController,
            Controllers::Settings& settingsController)
   : motorController {motorController}, motionController {motionController}, settingsController {settingsController} {
-  std::seed_seq sseq {static_cast<uint32_t>(xTaskGetTickCount()),
-                      static_cast<uint32_t>(motionController.X()),
-                      static_cast<uint32_t>(motionController.Y()),
-                      static_cast<uint32_t>(motionController.Z())};
-  gen.seed(sseq);
-
   lv_obj_t* nCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
                                       LV_COLOR_WHITE,
                                       LV_LABEL_LONG_EXPAND,
@@ -155,6 +149,12 @@ void Dice::Refresh() {
 }
 
 void Dice::Roll() {
+  std::seed_seq sseq {static_cast<uint32_t>(xTaskGetTickCount()),
+                      static_cast<uint32_t>(motionController.X()),
+                      static_cast<uint32_t>(motionController.Y()),
+                      static_cast<uint32_t>(motionController.Z())};
+  gen.seed(sseq);
+
   uint8_t resultIndividual;
   uint16_t resultTotal = 0;
   std::uniform_int_distribution<> distrib(1, dCounter.GetValue());
