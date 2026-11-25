@@ -53,7 +53,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
                                                Controllers::MotionController& motionController,
                                                Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
-    batteryIcon(false),
+    batteryIcon(true),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
