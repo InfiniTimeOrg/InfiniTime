@@ -12,6 +12,41 @@ namespace Pinetime {
     };
 
     namespace Screens {
+      // Holds the state of a game of Twos and the rules that manipulate it.
+      // Knows nothing about how the game is drawn.
+      class TwosGrid {
+      public:
+        static constexpr int nCols = 4;
+        static constexpr int nRows = 4;
+        static constexpr int nCells = nCols * nRows;
+
+        // Puts a new tile on a randomly chosen empty cell.
+        // Returns false when there is no empty cell left, which means the game is lost.
+        bool PlaceNewTile();
+
+        // Slides every tile as far as it goes in the given direction, merging equal
+        // tiles it runs into. rowStep and colStep give the direction, for example
+        // {0, -1} to slide left and {1, 0} to slide down.
+        // Returns true if any tile moved or merged.
+        bool Slide(int rowStep, int colStep);
+
+        unsigned int GetTileValue(int row, int col) const {
+          return grid[row][col].value;
+        }
+
+        unsigned int GetScore() const {
+          return score;
+        }
+
+      private:
+        bool TryMerge(int newRow, int newCol, int oldRow, int oldCol);
+        bool TryMove(int newRow, int newCol, int oldRow, int oldCol);
+        void ResetMergeState();
+
+        TwosTile grid[nRows][nCols];
+        unsigned int score = 0;
+      };
+
       class Twos : public Screen {
       public:
         Twos();
@@ -25,15 +60,9 @@ namespace Pinetime {
 
         lv_obj_t* scoreText;
         lv_obj_t* gridDisplay;
-        static constexpr int nCols = 4;
-        static constexpr int nRows = 4;
-        static constexpr int nCells = nCols * nRows;
-        TwosTile grid[nRows][nCols];
-        unsigned int score = 0;
-        void updateGridDisplay();
-        bool tryMerge(int newRow, int newCol, int oldRow, int oldCol);
-        bool tryMove(int newRow, int newCol, int oldRow, int oldCol);
-        bool placeNewTile();
+        TwosGrid grid;
+        void UpdateGridDisplay();
+        void UpdateScoreDisplay();
       };
     }
 
