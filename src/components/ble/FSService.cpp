@@ -75,12 +75,7 @@ int FSService::OnFSServiceRequested(uint16_t connectionHandle, uint16_t attribut
 int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   auto command = static_cast<commands>(om->om_data[0]);
   NRF_LOG_INFO("[FS_S] -> FSCommandHandler Command %d", command);
-  // Just always make sure we are awake...
-  systemTask.PushMessage(Pinetime::System::Messages::StartFileTransfer);
-  vTaskDelay(10);
-  while (systemTask.IsSleeping()) {
-    vTaskDelay(100); // 50ms
-  }
+  Pinetime::System::FlashAccess flashAccess {systemTask};
   lfs_dir_t dir = {0};
   lfs_info info = {0};
   lfs_file f = {0};
@@ -317,7 +312,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
   }
   NRF_LOG_INFO("[FS_S] -> done ");
-  systemTask.PushMessage(Pinetime::System::Messages::StopFileTransfer);
   return 0;
 }
 
