@@ -5,7 +5,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
-#include "displayapp/widgets/DotIndicator.h"
+#include "displayapp/widgets/PageIndicator.h"
 #include "displayapp/screens/settings/SettingSetDateTime.h"
 
 namespace Pinetime {
@@ -30,6 +30,7 @@ namespace Pinetime {
         Widgets::Counter dayCounter = Widgets::Counter(1, 31, jetbrains_mono_bold_20);
         Widgets::Counter monthCounter = Widgets::Counter(1, 12, jetbrains_mono_bold_20);
         Widgets::Counter yearCounter = Widgets::Counter(1970, 9999, jetbrains_mono_bold_20);
+        Widgets::PageIndicator pageIndicator = Widgets::PageIndicator(0, 2);
       };
     }
   }
