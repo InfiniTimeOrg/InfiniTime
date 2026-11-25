@@ -354,10 +354,12 @@ void SystemTask::Work() {
           break;
         case Messages::OnChargingEvent:
           batteryController.ReadPowerState();
+          nimbleController.NotifyBatteryLevelStatus();
           GoToRunning();
           break;
         case Messages::MeasureBatteryTimerExpired:
           batteryController.MeasureVoltage();
+          nimbleController.NotifyBatteryLevelStatus();
           break;
         case Messages::BatteryPercentageUpdated:
           nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
