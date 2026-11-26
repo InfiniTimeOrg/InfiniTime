@@ -23,3 +23,5 @@ The current raw motion values. This is a 3 `int16_t` array:
 - [2] : Z
 
 The three motion values are in units of "binary milli-g", where 1g is represented by a value of 1024.
+
+**Timing:** InfiniTime sends a Bluetooth motion notification whenever the X, Y, or Z reading changes. Because these packets do not include timestamps, you must log the arrival time of each packet to use as your horizontal axis. Spacing the data points evenly instead of using arrival times will distort the apparent speed of the wrist movement.
